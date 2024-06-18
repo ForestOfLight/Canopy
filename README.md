@@ -1,7 +1,7 @@
 # InfoDisplay (& more) for the Amelix Foundation
 This pack aims to bring technical informatics and QoL changes to a Technical Minecraft Bedrock Edition SMP (Survival Multi-Player) setting.
 It is recommended to also use the [Bedrock Technical Resource Pack](https://github.com/RavinMaddHatter/Bedrock-Technical-Resource-Pack/wiki) for even more information.
-The original Info Display made by Alecs Developer can be found [here](https://www.curseforge.com/minecraft-bedrock/scripts/info-display).
+The original Info Display made by Alecs Developer can be found [here](https://www.curseforge.com/minecraft-bedrock/scripts/info-display). To learn more about the Amelix Foundation Technical Minecraft Bedrock Edition server, join our (Discord Server)[https://discord.gg/FabqwVzgyD]!
 
 # Usage
 
