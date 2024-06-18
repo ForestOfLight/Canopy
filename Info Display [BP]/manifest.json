@@ -1,0 +1,32 @@
+{
+	"format_version": 2,
+	"header": {
+		"name": "Info Display [BP]",
+		"description": "Info Display by §uAlecs§r and largely expanded by §aForestOfLight§r for the §dAmelix SMP§r.",
+		"uuid": "e9f3a30c-f040-4cb7-a146-e15e7088f2ff",
+		"min_engine_version": [1, 21, 0],
+		"version": [1, 2, 0]
+	},
+	"modules": [
+		{
+			"description": "Behavior Pack Module",
+			"type": "data",
+			"uuid": "47787f93-ec3c-4b0c-95fb-55a70e029041",
+			"version": [1, 0, 0]
+		},
+		{
+			"description": "Gametest Module",
+			"type": "script",
+			"language": "javascript",
+			"entry": "scripts/main.js",
+			"uuid": "3d753132-e3c9-4305-a995-eae30b486093",
+			"version": [1, 0, 0]
+		}
+	],
+	"dependencies": [
+		{
+			"module_name": "@minecraft/server",
+			"version": "1.12.0-beta"
+		}
+	]
+}

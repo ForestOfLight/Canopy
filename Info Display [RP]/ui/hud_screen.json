@@ -1,0 +1,63 @@
+{
+	"hud_actionbar_text": {
+		"type": "image",
+		"size": [ "100%c + 10px", "100%c + 8px" ],
+		"anchor_from": "top_right",
+		"anchor_to": "top_right",
+		"offset": [ 0, 0 ],
+		"texture": "textures/ui/Black",
+		"layer": 30,
+		"alpha": "@hud.anim_alpha",
+		"controls": [{
+			"actionbar_message": {
+				"type": "label",
+				"anchor_from": "center",
+				"anchor_to": "center",
+				"color": "$tool_tip_text",
+				"layer": 31,
+				"text": "$actionbar_text",
+				"localize": false,
+				"font_size": "small",
+				"font_scale_factor": 1.6,
+				"alpha": "@hud.anim_actionbar_text_alpha_out"
+			}
+		}]
+	},
+
+	"hud_title_text": {
+		"type": "image",
+		"size": [ "100%c + 8px", "100%c + 6px"],
+		"anchor_from": "left_middle",
+		"anchor_to": "left_middle",
+		"offset": [ 0, -30 ],
+		"texture": "textures/ui/Black",
+		"alpha": "@hud.anim_alpha",
+		"controls": [
+			{
+				"title": {
+					"type": "label",
+					"text": "#text",
+					"layer": 31,
+					"localize": false,
+					"font_size": "small",
+					"font_scale_factor": 1.4,
+					"bindings": [
+						{
+							"binding_name": "#hud_title_text_string",
+							"binding_name_override": "#text",
+							"binding_type": "global"
+						}
+					]
+				}
+			}
+		]
+	},
+	
+	"anim_alpha": {
+		"anim_type": "alpha",
+		"easing": "linear",
+		"duration": 3.0,
+		"from": 0.8,
+		"to": 0
+	}
+}
