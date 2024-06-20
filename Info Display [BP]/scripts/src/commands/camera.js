@@ -30,15 +30,20 @@ class Camera {
 }
 
 function placeCameraCommand(sender) {
+    if (!mc.world.getDynamicProperty('placeCamera')) return sender.sendMessage('§cThis command is disabled.');
     if (sender.getDynamicProperty('isViewingCamera')) return sender.sendMessage('§cYou cannot place a camera while viewing one.');
-    const camera = new Camera({ x: sender.getHeadLocation().x, y: sender.getHeadLocation().y + 0.1, z: sender.getHeadLocation().z }, 
+
+    const camera = new Camera({ x: sender.getHeadLocation().x, y: sender.getHeadLocation().y + 0.1, z: sender.getHeadLocation().z },
         sender.getRotation(), sender.dimension.id);
+    
     sender.setDynamicProperty('placedCamera', JSON.stringify(camera));
-    sender.sendMessage(`§aCamera placed at [${camera.location.x.toFixed(0)}, ${camera.location.y.toFixed(0)}, ${camera.location.z.toFixed(0)}].`);
+    sender.sendMessage(`§7Camera placed at [${camera.location.x.toFixed(0)}, ${camera.location.y.toFixed(0)}, ${camera.location.z.toFixed(0)}].`);
 }
 
 function viewCameraCommand(sender) {
+    if (!mc.world.getDynamicProperty('placeCamera')) return sender.sendMessage('§cThis command is disabled.');
     if (!sender.getDynamicProperty('placedCamera')) return sender.sendMessage('§cYou have not placed a camera yet.');
+
     const placedCamera = JSON.parse(sender.getDynamicProperty('placedCamera'));
 
     if (!sender.getDynamicProperty('isViewingCamera')) {
@@ -46,11 +51,11 @@ function viewCameraCommand(sender) {
         sender.camera.setCamera('minecraft:free', { easeOptions: { easeTime: 1.0, easeType: 'InOutSine' }, 
             location: placedCamera.location, rotation: placedCamera.rotation });
         sender.setDynamicProperty('isViewingCamera', true);
-        sender.sendMessage(`Now viewing placed camera at [${placedCamera.location.x.toFixed(0)}, ${placedCamera.location.y.toFixed(0)}, ${placedCamera.location.z.toFixed(0)}].`);
+        sender.sendMessage(`§7Now viewing placed camera at [${placedCamera.location.x.toFixed(0)}, ${placedCamera.location.y.toFixed(0)}, ${placedCamera.location.z.toFixed(0)}].`);
     } else {
         sender.camera.clear();
         sender.setDynamicProperty('isViewingCamera', false);
-        sender.sendMessage(`Stopped viewing placed camera.`);
+        sender.sendMessage(`§7Stopped viewing placed camera.`);
     }
 }
 

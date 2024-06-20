@@ -1,4 +1,5 @@
 import Command from 'stickycore/command'
+import * as mc from '@minecraft/server'
 
 new Command()
     .setName('jump')
@@ -11,10 +12,13 @@ new Command()
     .build()
 
 function jumpCommand(sender) {
-    const lookingAt = sender.getBlockFromViewDirection(
-		{ includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: 64*16 }
-    );
-    if (!lookingAt.block) return sender.sendMessage('§cNo block found.');
+    if (!mc.world.getDynamicProperty('jump'))
+        return sender.sendMessage('§cThis command is disabled.');
+    else if (!mc.world.getDynamicProperty('jumpInSurvival') && sender.getGameMode() === 'survival')
+        return sender.sendMessage('§cThis command cannot be used in survival mode.');
+
+    const lookingAt = sender.getBlockFromViewDirection({ includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: 64*16 });
+    if (!lookingAt?.block) return sender.sendMessage('§cNo block found.');
     const location = getBlockLocationFromFace(lookingAt.block, lookingAt.face);
     sender.teleport(location);
 }

@@ -1,5 +1,6 @@
-import Dynamic, { module } from 'stickycore/dynamic'
+import { module } from 'stickycore/dynamic'
 import Command from 'stickycore/command'
+import * as mc from '@minecraft/server'
 
 new Command()
     .setName('help')
@@ -8,25 +9,35 @@ new Command()
 
 function helpCommand(sender) {
     const INFO = module.exports['infoDisplay'];
+    const FEATURES = module.exports['features'];
     const PEEK = module.exports['peek'];
     const JUMP = module.exports['jump'];
-    const PLOT = module.exports['plot'];
+    const WARP = module.exports['warp'];
     const GAMEMODE = module.exports['gamemode'];
     const CAMERA = module.exports['camera'];
+    const DISTANCE = module.exports['distance'];
+    const TICKPEARL = module.exports['tickPearl'];
+    const TNTLOG = module.exports['tntLog'];
 
-    const MODULES = { INFO, PEEK, JUMP, PLOT, GAMEMODE, CAMERA };
+    const MODULES = { INFO, FEATURES, PEEK, JUMP, WARP, GAMEMODE, CAMERA, DISTANCE, TICKPEARL, TNTLOG };
     const CMDS = {
-        INFO: './info <feature> <true/false> - Toggles a feature on or off. (alias: ./i)',
-        PEEK: './peek - Peeks at a block or entity\'s inventory. (alias: ./p)',
-        JUMP: './jump - Teleports you to the block you\'re looking at. (alias: ./j)',
-        PLOT: './plot tp <name> - Teleports you to a plot. (alias: ./pl)' +
-            '\n./plot <add/remove> <name> - Adds or removes a plot. (alias: ./pl)' +
-            '\n./plotlist - Lists all available plots.',
-        GAMEMODE: './s, ./c, ./sp - Easy gamemode switching.',
-        CAMERA: './placeCamera - Places a camera at your current location. (alias: ./pc)' +
-            '\n./viewCamera - Toggles viewing your latest camera placement. (alias: ./vc)'
-    }
-    const DynamicFeatures = [ 'INFO' ];
+        INFO:           './info <feature> <true/false> - Toggles some info on or off. (alias: ./i)',
+        FEATURES:       './feature <feature> <true/false> - Toggles a global feature on or off.',
+        PEEK:           './peek - Peeks at a block or entity\'s inventory. (alias: ./p)',
+        JUMP:           './jump - Teleports you to the block you are looking at. (alias: ./j)',
+        WARP:           './warp tp <name> - Teleports you to a warp. (alias: ./w)' +
+                      '\n./warp <add/remove> <name> - Adds or removes a warp. (alias: ./w)' +
+                      '\n./warps - Lists all available warps.',
+        GAMEMODE:       './s, ./c, ./sp - Easy gamemode switching.',
+        CAMERA:         './placeCamera - Places a camera at your current location. (alias: ./pc)' +
+                      '\n./viewCamera - Toggles viewing your latest camera placement. (alias: ./vc)',
+        DISTANCE:       './distance - Calculates the distance between you and the block you are looking at.',
+        TICKPEARL:      './tickPearl - Adds a simulation distance to the closest pearl to you.' +
+                      '\n./tickingPearls - Lists all ticking pearls and their locations.',
+        TNTLOG:         './tntLog <on/off> - Toggles primed TNT location logging.' +
+                      '\n./tntLog <precision> - Sets the precision of primed TNT location logging. (default: 2)',
+    };
+    const DynamicFeatures = [ 'INFO', 'FEATURES' ];
 
     let outputHelp = '§2InfoDisplay Pack Features:§r';
 
@@ -38,9 +49,10 @@ function helpCommand(sender) {
         for (let feature of content) {
             let value = '';
             if (DynamicFeatures.includes(mod)) {
-                value = sender.getDynamicProperty(feature)
+                if (mod === 'INFO') value = sender.getDynamicProperty(feature);
+                else if (mod === 'FEATURES') value = mc.world.getDynamicProperty(feature);
                 if (value === undefined) value = false;
-                value = value ? '§aenabled' : '§cdisabled';
+                value = value ? '§atrue' : '§cfalse';
                 outputHelp += `\n  §7- ${feature}: ${value}§r`;
             }
         }

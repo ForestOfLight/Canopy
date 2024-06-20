@@ -16,10 +16,10 @@ Displays the list of commands and InfoDisplay features. Each InfoDisplay feature
 
 ## InfoDisplay Toggles
 
-These are the main features of the InfoDisplay. The whatever features listed below are selected by each player will show up in the top-right of their screen. Only features they turn on will be calculated and shown in the InfoDisplay. (Some of these can become laggy with several players online, so it is best to use only what you need at those times.)
+These are the main features of the InfoDisplay. The features listed below are selected by each player independently and will show up in the top-right of their screen. Only features they turn on will be calculated and shown in the InfoDisplay. (Some of these can become laggy with several players online, so it is best to use only what you need at those times.) All features are disabled by default.
 
-`./info <feature> <true/false> (or ./i <feature> <true/false>)`\
-Toggles a feature on and off.
+`./info (or ./i) <feature> <true/false>`\
+Toggles some info in your InfoDisplay.
 ```
 shouldDisplay - whether the whole InfoDisplay shows up on the screen.
 coords - coordinates (truncated at 2 decimal places).
@@ -36,18 +36,54 @@ peekInventory - the inventory of the block or entity you're looking at (works in
 all - toggle all of the above true or false.
 ```
 
-## Plots Commands
+## Features Toggles
 
-The plots commands are simply warp locations that can be set by any player. They are not player-specific, so any player can teleport to a plot once it has been added. These commands are particularly useful in a CMP (Creative Multi-Player) setting.
+These are global features that can be toggled by any player. They are not a part of the InfoDisplay, but instead they control the other features available in this pack. All features are disabled by default.
 
-`./plot (or ./pl) <add/remove> <name>`\
-Adds or removes a plot. Any name that is not a single-word string should be encased in quotes.
+`./feature <feature> <true/false>`\
+Toggles a global feature.
+```
+placeCamera - Enables/disables the placeCamera and viewCamera commands.
+jump - Enables/disables the jump command. Cannot be used while in Survival mode.
+jumpInSurvival - Enables/disables the use of the jump command while in Survival mode. Depends on the jump feature.
+warp - Enables/disables the warp and warps commands. Cannot be used while in Survival mode.
+warpInSurvival - Enables/disables the use of the warp command while in Survival mode. Depends on the warp feature.
+tickingPearls - Enables/disables the tickPearl and numTickingPearls commands. Also enables/disables all known ticking pearls.
+tntnt - Enables/disables tnt explosion damage. Tnt will still prime but will not break blocks when this is enabled.
+summonTnt - Enables/disables the summonTnt command. Cannot be used while in Survival mode.
+```
 
-`./plot (or ./pl) tp <name>`\
-Teleports you to a plot. Not usable while in survival mode. That your plot name should still be encased in quotes if it is not a single-word string.
+## Features Commands
 
-`./plotlist`\
-Lists all available plots in chat.
+These commands allow you to control features in more specific ways.
+
+`./tickPearl`\
+Adds a simulated area the same size as a player's to the closest ender pearl within ten blocks of you. To remove it, let the pearl land. If there are any pearls that are still ticking when the `tickingPearls` feature is disabled, they will be paused until is it re-enabled, and then they will start ticking again. You do not need to load the area for this to take effect.
+
+`./numTickingPearls`\
+Lists all ticking pearls and their locations.
+
+`./tntLog <on/off>`\
+Logs the location of all primed TNT entities in chat. This command is per-player and will not affect other players.
+
+`./tntLog <precision>`\
+Sets the number of decimal places to truncate the tnt location at. The default is 2. Please include quotes around the number field (ex. `./tntLog "6"). There is a maximum of 15 and a minimum of 0. This command is per-player and will not affect other players.
+
+`./summonTnt <amount>`\
+Summons the specified amount of primed TNT at your location. Only usable while in Creative mode.
+
+## Warps Commands
+
+Warps are simple teleport locations that can be set by any player. They are global, so any player can teleport to a warp once it has been added. These commands are particularly useful in a CMP (Creative Multi-Player) setting. Warps cannot be set or used while in Survival mode unless the `warpInSurvival` feature is enabled.
+
+`./warp (or ./w) <add/remove> <name>`\
+Adds or removes a warp. Any name that is not a single-word string should be encased in quotes.
+
+`./warp (or ./w) tp <name>`\
+Teleports you to a warp. Not usable while in survival mode. That your warp name should still be encased in quotes if it is not a single-word string.
+
+`./warps`\
+Lists all available warps in chat.
 
 ## Camera Commands
 
@@ -67,7 +103,10 @@ Some extra commands are also included to make your life easier. Enjoy!
 Show the inventory in chat of the block or entity you're looking at.
 
 `./jump (or ./j)`\
-Teleports you to the block you are currently looking at with a maximum range of 64 chunks.
+Teleports you to the block you are currently looking at with a maximum range of 64 chunks. Jumping is disabled in Survival mode unless the `jumpInSurvival` feature is enabled.
 
 `./c, ./s, and ./sp`\
 Can be used to quickly switch between survival (s), creative (c), and spectator (sp) mode.
+
+`./distance`\
+Calculates the distance in blocks between you and the block or entity you are looking at down to three decimal places. Note that player and entity positions are at their foot, and block position is non-exact (no decimal places).

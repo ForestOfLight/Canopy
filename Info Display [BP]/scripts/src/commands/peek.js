@@ -1,5 +1,4 @@
 import Command from 'stickycore/command'
-import Data from 'stickycore/data'
 
 new Command()
     .setName('peek')
