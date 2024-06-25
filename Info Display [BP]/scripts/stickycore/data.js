@@ -1,27 +1,25 @@
 import * as mc from '@minecraft/server'
 import MT from './src/mt.js'
+import Utils from 'stickycore/utils'
 
 class Data {
-	// Private Properties
-	static #dimension = mc.world.getDimension('overworld');
+	static #owDimension = mc.world.getDimension('overworld');
 	
-	// Cloned Methods
 	static getDay = () => mc.world.getDay();
 	static getTimeOfDay = () => mc.world.getTimeOfDay();
 	static getMoonPhase = () => this.parseMoonPhase(mc.world.getMoonPhase());
 	static getAbsoluteTime = () => mc.world.getAbsoluteTime();
 	static getDefaultSpawnLocation = () => mc.world.getDefaultSpawnLocation();
 	static getWeather = () => {
-		return mc.system.run(() => this.#dimension.getWeather())
+		return mc.system.run(() => this.#owDimension.getWeather())
 	};
-	static getLookingAtBlock = (player) => player.getBlockFromViewDirection(
-		{ includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: 7 }
+	static getLookingAtBlock = (player, distance = 7) => player.getBlockFromViewDirection(
+		{ includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: distance }
 	);
-	static getLookingAtEntities = (player) => player.getEntitiesFromViewDirection(
-		{ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: false, maxDistance: 7 }
+	static getLookingAtEntities = (player, distance = 7) => player.getEntitiesFromViewDirection(
+		{ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: false, maxDistance: distance }
 	);
 	
-	// Chunk
 	static Chunk = class {
 		#baseX;
 		#baseZ;
@@ -80,55 +78,6 @@ class Data {
 		else return 'N (-z)';
 	}
 
-	static parseLookingAtBlock(lookingAtBlock) {
-		let block;
-		let blockName = '';
-		let raycastHitFace;
-		let blockLocation;
-
-		block = lookingAtBlock?.block ?? undefined;
-		if (block) {
-			const raycastHitFace = lookingAtBlock.face;
-			const blockLocation = block.location;
-			try {
-				blockName = `§a${block.typeId}`;
-			} catch (error) {
-				if (error.message.includes('loaded')) {
-					blockName = '§cUnloaded (' + block.location.x + ' ' + block.location.y + ' ' + block.location.z + ')';
-				} else if (error.message.includes('undefined')) {
-					blockName = '§7Undefined';
-				}
-			}
-		}
-		if (blockName === `§aminecraft:redstone_wire`) { blockName += `§7: §c` + block.permutation.getState('redstone_signal'); }
-
-		return { LookingAtName: blockName, LookingAtFace: raycastHitFace, LookingAtLocation: blockLocation, LookingAtBlock: block };
-	}
-
-	static parseLookingAtEntity(lookingAtEntities) {
-		let entity;
-		let entityName;
-
-		entity = lookingAtEntities[0]?.entity ?? undefined;
-		if (entity) {
-			try {
-				entityName = `§a${entity.typeId}`;
-
-				if (entity.typeId === 'minecraft:player') {
-					entityName = `§a§o${entity.name}§r`;
-				}
-			} catch (error) {
-				if (error.message.includes('loaded')) {
-					entityName = '§cUnloaded (' + entity.location.x + ' ' + entity.location.y + ' ' + entity.location.z + ')';
-				} else if (error.message.includes('undefined')) {
-					entityName = '§7Undefined';
-				}
-			}
-		}
-
-		return { LookingAtName: entityName, LookingAtEntity: entity }
-	}
-
 	static parseMoonPhase(moonPhase) {
 		switch (moonPhase) {
 			case 0: return 'Full';
@@ -143,46 +92,46 @@ class Data {
 		}
 	}
 
-	static peekInventory(LookingAtBlock, LookingAtEntities) {
-		let entity;
-		let block;
-		let inv;
-		let items = {};
-
-		if (!LookingAtBlock && !LookingAtEntities) {
-			return '';
-		} else if (LookingAtEntities) {
-			entity = LookingAtEntities[0]?.entity;
-		} 
-		if (LookingAtBlock) {
-			block = LookingAtBlock.block;
-		}
+	static getRaycastResults(player, distance) {
+		let blockRayResult;
+		let entityRayResult;
 	
+		blockRayResult = Data.getLookingAtBlock(player, distance);
+		entityRayResult = Data.getLookingAtEntities(player, distance);
+	
+		return { blockRayResult, entityRayResult };
+	}
+
+	static peekInventory(sender, blockRayResult, entityRayResult) {
+		let target;
+		let inventory;
+		let items = {};
+		let output;
+
+		if (!blockRayResult && !entityRayResult) return '';
+		target = Utils.getClosestTarget(sender, blockRayResult, entityRayResult);
 		try {
-			if (entity) inv = entity.getComponent('inventory');
-        	else inv = block.getComponent('inventory');
+			inventory = target.getComponent('inventory');
 		} catch(error) {
 			return '';
 		}
-		if (!inv) return '';
-		
-		inv = inv.container;
-		for (let i=0; i<inv.size; i++) {
-			try {
-				const item = inv.getSlot(i);
-				
-				let data = item.typeId.replace('minecraft:','');
-				if (items[data]) items[data] += item.amount;
-				else items[data] = item.amount;
-			} catch {}
-		}
+		if (!inventory) return '';
 	
-		let output = '';
+		output = '';
+		items = Utils.populateItems(inventory, items);
 		if (Object.keys(items).length > 0)
 			for (let i in items) output += `\n§r${i}: ${items[i]}`;
 		else output = '\n§rEmpty';
 				
 		return output;
+	}
+
+	static updateFeature(sender, feature, enable, global = false) {
+		if (!sender || !feature || typeof enable !== 'boolean') return console.warn('updateFeature: Invalid arguments.');
+
+		if (global) mc.world.setDynamicProperty(feature, enable);
+		else sender.setDynamicProperty(feature, enable);
+		sender.sendMessage(`§7${feature} has been ${enable ? '§l§aenabled' : '§l§cdisabled'}§r§7.`);
 	}
 }
 

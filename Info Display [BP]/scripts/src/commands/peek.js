@@ -1,4 +1,8 @@
 import Command from 'stickycore/command'
+import Data from 'stickycore/data'
+import Utils from 'stickycore/utils'
+
+const MAX_DISTANCE = 6*16;
 
 new Command()
     .setName('peek')
@@ -11,59 +15,38 @@ new Command()
     .build();
 
 function peekCommand(sender) {
-    let lookingAtBlock = sender.getBlockFromViewDirection(
-		{ includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: 6*16 }
-	);
-	let lookingAtEntities = sender.getEntitiesFromViewDirection(
-		{ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: false, maxDistance: 6*16 }
-	);
+    let blockRayResult;
+    let entityRayResult;
+    let target;
+    let inventory;
+    let items = {};
+    let targetName;
+    let output;
 
-    let entity;
-    let block;
-    if (!lookingAtBlock && !lookingAtEntities) {
-        sender.sendMessage('§cNo inventory found.');
-        return;
-    } else if (lookingAtEntities.length > 0) {
-        entity = lookingAtEntities[0]?.entity;
-    } else if (lookingAtBlock) {
-        block = lookingAtBlock.block;
-    }
-
-    let inv;
+    ({blockRayResult, entityRayResult} = Data.getRaycastResults(sender, MAX_DISTANCE));
+    if (!blockRayResult && !entityRayResult[0]) return sender.sendMessage('§cNo target found.');
+    target = Utils.getClosestTarget(sender, blockRayResult, entityRayResult);
+    targetName = Utils.parseName(target);
     try {
-        if (entity) inv = entity.getComponent('inventory');
-        else inv = block.getComponent('inventory');
+        inventory = target.getComponent('inventory');
     } catch(error) {
-        sender.sendMessage('§cBlock is unloaded.');
-        return;
+        return sender.sendMessage(`§cTarget at ${Utils.stringifyLocation(target.location, 0)} is unloaded.`);
     }
-    const items = {};
+    if (!inventory) return sender.sendMessage(`§cNo inventory found in ${targetName} at ${Utils.stringifyLocation(target.location, 0)}.`);
 
-    if (!inv) {
-        sender.sendMessage('§cNo inventory found.');
-        return;
-    }
-    inv = inv.container;
+    items = Utils.populateItems(inventory);
+    output = formatOutput(targetName, target.location, items);
+    sender.sendMessage(output);
+}
 
-    for (let i=0; i<inv.size; i++) {
-        try {
-            const item = inv.getSlot(i);
-            
-            let data = item.typeId.replace('minecraft:','');
-            if (items[data]) items[data] += item.amount;
-            else items[data] = item.amount;
-        } catch {}
-    }
+function formatOutput(targetName, targetLocation, items) {
+    let output = '';
+    
+    output += '§g-------------\n';
+    output += `§l§e${targetName}§r: ${Utils.stringifyLocation(targetLocation, 0)}`;
+    if (Object.keys(items).length === 0) output += '\n§eEmpty';
+    else for (let item in items) output += `\n§e${item}§r: ${items[item]}`;
+    output += '\n§g-------------';
 
-    let containerId = entity ? entity.typeId.replace('minecraft:','') : block.typeId.replace('minecraft:','');
-    if (containerId === 'player') containerId = `§o${entity.name}§r`;
-    const coords = entity ? entity.location : block.location;
-
-    let message = '§g-------------§r\n';
-    message += `§l§e${containerId}§r: [${Math.floor(coords.x)}, ${Math.floor(coords.y)}, ${Math.floor(coords.z)}]`;
-    if (Object.keys(items).length === 0) message += '\n§r§eEmpty';
-    else for (let i in items) message += `\n§r§e${i}§r: ${items[i]}`;
-    message += '\n§r§g-------------';
-
-    sender.sendMessage(message.trim());
+    return output;
 }

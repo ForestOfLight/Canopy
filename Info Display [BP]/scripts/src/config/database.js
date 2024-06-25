@@ -17,14 +17,15 @@ const infoDisplay = newDB([
 ]);
 
 const features = newDB([
-    'placeCamera',
+    'placecamera',
     'jump',
     'jumpInSurvival',
     'warp',
     'warpInSurvival',
-    'tickingPearls',
-    'noTntExplode',
-    'summonTnt',
+    'noExplosionBlockDamage',
+    'summontnt',
+    'pickupOnMine',
+    'universalChunkLoading',
 ]);
 
 const peek = newDB([
@@ -47,25 +48,33 @@ const gamemode = newDB([
 ]);
 
 const camera = newDB([
-    'placeCamera',
-    'viewCamera'
+    'placecamera',
+    'viewcamera'
 ]);
 
 const distance = newDB([
     'distance'
 ]);
 
-const tickPearl = newDB([
-    'tickPearl',
-    'numTickingPearls'
+const tickcart = newDB([
+    'tickcart',
+    'tickingcarts'
 ])
 
-const tntLog = newDB([
-    'tntLog'
+const tntlog = newDB([
+    'tntlog'
+]);
+
+const entitydensity = newDB([
+    'entitydensity'
+]);
+
+const tps = newDB([
+    'tps'
 ]);
 
 module({
-    infoDisplay, features, peek, jump, warp, gamemode, camera, distance, tickPearl, tntLog,
+    infoDisplay, features, peek, jump, warp, gamemode, camera, distance, tntlog, entitydensity, tps,
 });
 
 function newDB(arr, db = true) {

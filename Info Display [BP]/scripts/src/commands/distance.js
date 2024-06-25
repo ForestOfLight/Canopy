@@ -1,40 +1,38 @@
 import Command from 'stickycore/command'
 import Utils from 'stickycore/utils'
+import Data from 'stickycore/data'
+
+const MAX_DISTANCE = 64*16;
 
 new Command()
     .setName('distance')
     .setCallback(distanceCommand)
     .build()
 
+new Command()
+    .setName('d')
+    .setCallback(distanceCommand)
+    .build()
+
 function distanceCommand(sender, args) {
-    let { decimalPlaces } = args;
+    let target;
+    let targetLocation;
+    let distance;
+    
+    let { decimalPlaces } = args; // can't be implemented with current command system
     if (!decimalPlaces) decimalPlaces = 3;
     else decimalPlaces = Math.max(0, Math.min(decimalPlaces, 15));
 
-    let lookingAtBlock = sender.getBlockFromViewDirection({ includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: 64*16 });
-    let lookingAtEntities = sender.getEntitiesFromViewDirection({ includePlayers: false, maxDistance: 64*16 });
-    
-    let entity;
-    let block;
-    if (!lookingAtBlock && !lookingAtEntities) {
-        sender.sendMessage('§cNo block or entity found to calculate distance from.');
-        return;
-    } else if (lookingAtEntities.length > 0) {
-        entity = lookingAtEntities[0]?.entity;
-    } else if (lookingAtBlock) {
-        block = lookingAtBlock.block;
-    }
+    const { blockRayResult, entityRayResult } = Data.getRaycastResults(sender, MAX_DISTANCE);
+    if (!blockRayResult && !entityRayResult[0]) return sender.sendMessage('§cNo block or entity found to calculate distance from.');
+    target = Utils.getClosestTarget(sender, blockRayResult, entityRayResult);
 
-    let lookingAtLocation;
     try {
-        if (entity) lookingAtLocation = entity.location;
-        else lookingAtLocation = block.location;
+        targetLocation = target.location;
     } catch(error) {
-        sender.sendMessage('§cUnable to get block or entity location.');
-        return;
+        return sender.sendMessage('§cUnable to get block or entity location.');
     }
 
-    const playerLocation = sender.location;
-    const distance = Utils.calcDistance(playerLocation, lookingAtLocation).toFixed(decimalPlaces);
+    distance = Utils.calcDistance(sender.location, targetLocation).toFixed(decimalPlaces);
     sender.sendMessage(`§7${distance} blocks.`);
 }

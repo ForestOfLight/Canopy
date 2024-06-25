@@ -1,5 +1,6 @@
 import Command from 'stickycore/command'
 import * as mc from '@minecraft/server'
+import Data from 'stickycore/data'
 
 new Command()
     .setName('jump')
@@ -12,15 +13,19 @@ new Command()
     .build()
 
 function jumpCommand(sender) {
-    if (!mc.world.getDynamicProperty('jump'))
-        return sender.sendMessage('§cThis command is disabled.');
-    else if (!mc.world.getDynamicProperty('jumpInSurvival') && sender.getGameMode() === 'survival')
-        return sender.sendMessage('§cThis command cannot be used in survival mode.');
+    let blockRayResult;
+    let maxDistance = 64*16;
+    let jumpLocation;
 
-    const lookingAt = sender.getBlockFromViewDirection({ includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: 64*16 });
-    if (!lookingAt?.block) return sender.sendMessage('§cNo block found.');
-    const location = getBlockLocationFromFace(lookingAt.block, lookingAt.face);
-    sender.teleport(location);
+    if (!mc.world.getDynamicProperty('jump'))
+        return sender.sendMessage('§cThe jump feature is disabled.');
+    else if (!mc.world.getDynamicProperty('jumpInSurvival') && sender.getGameMode() === 'survival')
+        return sender.sendMessage('§cThe jump feature is disabled in survival mode.');
+
+    blockRayResult = Data.getLookingAtBlock(sender, maxDistance);
+    if (!blockRayResult?.block) return sender.sendMessage('§cNo block found.');
+    jumpLocation = getBlockLocationFromFace(blockRayResult.block, blockRayResult.face);
+    sender.teleport(jumpLocation);
 }
 
 function getBlockLocationFromFace(block, face) {

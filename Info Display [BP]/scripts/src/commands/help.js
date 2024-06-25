@@ -16,10 +16,11 @@ function helpCommand(sender) {
     const GAMEMODE = module.exports['gamemode'];
     const CAMERA = module.exports['camera'];
     const DISTANCE = module.exports['distance'];
-    const TICKPEARL = module.exports['tickPearl'];
-    const TNTLOG = module.exports['tntLog'];
+    const TNTLOG = module.exports['tntlog'];
+    const ENTITYDENSITY = module.exports['entitydensity'];
+    const TPS = module.exports['tps'];
 
-    const MODULES = { INFO, FEATURES, PEEK, JUMP, WARP, GAMEMODE, CAMERA, DISTANCE, TICKPEARL, TNTLOG };
+    const MODULES = { INFO, FEATURES, PEEK, JUMP, WARP, GAMEMODE, CAMERA, DISTANCE, TNTLOG, ENTITYDENSITY, TPS };
     const CMDS = {
         INFO:           './info <feature> <true/false> - Toggles some info on or off. (alias: ./i)',
         FEATURES:       './feature <feature> <true/false> - Toggles a global feature on or off.',
@@ -29,13 +30,13 @@ function helpCommand(sender) {
                       '\n./warp <add/remove> <name> - Adds or removes a warp. (alias: ./w)' +
                       '\n./warps - Lists all available warps.',
         GAMEMODE:       './s, ./c, ./sp - Easy gamemode switching.',
-        CAMERA:         './placeCamera - Places a camera at your current location. (alias: ./pc)' +
-                      '\n./viewCamera - Toggles viewing your latest camera placement. (alias: ./vc)',
-        DISTANCE:       './distance - Calculates the distance between you and the block you are looking at.',
-        TICKPEARL:      './tickPearl - Adds a simulation distance to the closest pearl to you.' +
-                      '\n./tickingPearls - Lists all ticking pearls and their locations.',
-        TNTLOG:         './tntLog <on/off> - Toggles primed TNT location logging.' +
-                      '\n./tntLog <precision> - Sets the precision of primed TNT location logging. (default: 2)',
+        CAMERA:         './placecamera - Places a camera at your current location. (alias: ./pc)' +
+                      '\n./viewcamera - Toggles viewing your latest camera placement. (alias: ./vc)',
+        DISTANCE:       './distance - Calculates the distance between you and the block you are looking at. (alias: ./d)',
+        TNTLOG:         './tntlog <on/off> - Toggles primed TNT location logging.' +
+                      '\n./tntlog <precision> - Sets the precision of primed TNT location logging. (default: 2)',
+        ENTITYDENSITY:  './entitydensity <dimension> <grid size> - Identifies dense areas of entities in the specified dimension.',
+        TPS:            './tps - Displays the server\'s current ticks per second (TPS) in chat.',
     };
     const DynamicFeatures = [ 'INFO', 'FEATURES' ];
 

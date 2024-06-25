@@ -84,7 +84,7 @@ mc.world.beforeEvents.chatSend.subscribe((ev) => {
 	let [name, ...args] = Parser(message);
 	if (!name.startsWith(Command.prefix)) return;
 	ev.cancel = true;
-	if (!commands[name]) return sender.sendMessage(`§cInvalid command: '${name.replace('./','')}'.  Use ./help or read the docs for more information.`);
+	if (!commands[name]) return sender.sendMessage(`§cInvalid command: '${name.replace('./','')}'. Use ./help or read the docs on GitHub for more information.`);
 	
 	mc.system.run(() => {
 		let cmd = commands[name];
@@ -96,7 +96,7 @@ mc.world.beforeEvents.chatSend.subscribe((ev) => {
 		});
 		
 		let vals = Object.values(parsedArgs);
-		if (vals.includes(null) || vals.length < args.length || vals.length > args.length) return sender.sendMessage('§cSyntax error. Use ./help or read the docs for more information.');
+		if (vals.includes(null) || vals.length < args.length || vals.length > args.length) return sender.sendMessage('§cSyntax error. Use ./help or read the docs on GitHub for more information.');
 		cmd.callback(sender, parsedArgs);
 	});
 });

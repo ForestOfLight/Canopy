@@ -1,5 +1,21 @@
 import Command from 'stickycore/command'
 import { module } from 'stickycore/dynamic'
+import Data from 'stickycore/data'
+
+class DependantFeature {
+    constructor(validFeature, dependantFeature, turnsOn) {
+        this.validFeature = validFeature;
+        this.dependantFeature = dependantFeature;
+    }
+}
+
+class DependantFeatures {
+    constructor() {
+        this.dependantFeatures = [
+            new DependantFeature('peekInventory', 'lookingAt'),
+        ];
+    }
+}
 
 new Command()
     .setName('info')
@@ -18,9 +34,8 @@ new Command()
 function infoDisplayFeatures(sender, args) {
     const features = module.exports['infoDisplay'];
     const { feature, enable } = args;
-    const loweredFeature = feature.toLowerCase();
-    const validFeature = features[loweredFeature];
-    const txtOut = enable ? '§l§aenabled' : '§l§cdisabled';
+    const validFeature = features[feature.toLowerCase()];
+    const enabledText = enable ? '§l§aenabled' : '§l§cdisabled';
 
     if (!validFeature) return sender.sendMessage(`§c${feature} not found.`);
 
@@ -28,15 +43,23 @@ function infoDisplayFeatures(sender, args) {
         for (let entry of Object.values(features)) {
             sender.setDynamicProperty(entry, enable);
         }
-    } else if (validFeature === 'peekInventory' && enable === true) {
-        sender.setDynamicProperty('lookingAt', enable);
-        sender.sendMessage(`§7lookingAt has been ${txtOut}§r§7.`);
-        sender.setDynamicProperty(validFeature, enable);
-    } else if (validFeature === 'lookingAt' && enable === false) {
-        sender.setDynamicProperty('peekInventory', enable);
-        sender.sendMessage(`§7peekInventory has been ${txtOut}§r§7.`);
-        sender.setDynamicProperty(validFeature, enable);
-    } else sender.setDynamicProperty(validFeature, enable);
+        return sender.sendMessage(`${enabledText}§r§7 all InfoDisplay features.`);
+    }
 
-    sender.sendMessage(`§7${feature} has been ${txtOut}§r§7.`);
+    updateDependantFeatures(sender, validFeature, enable);
+
+    Data.updateFeature(sender, validFeature, enable);
+}
+
+function updateDependantFeatures(sender, validFeature, enable) {
+    for (const dependantFeature of new DependantFeatures().dependantFeatures) {
+        let targetFeature = null;
+        if (enable && validFeature === dependantFeature.validFeature)
+            targetFeature = dependantFeature.dependantFeature;
+        else if (!enable && validFeature === dependantFeature.dependantFeature)
+            targetFeature = dependantFeature.validFeature;
+        else continue;
+
+        Data.updateFeature(sender, targetFeature, enable);
+    }
 }

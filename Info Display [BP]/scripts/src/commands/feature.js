@@ -1,10 +1,9 @@
-import * as mc from '@minecraft/server'
 import Command from 'stickycore/command'
 import { module } from 'stickycore/dynamic'
-import { updatePearls } from 'src/commands/tickPearl'
+import Data from 'stickycore/data'
 
 class DependantFeature {
-    constructor(validFeature, dependantFeature, turnsOn) {
+    constructor(validFeature, dependantFeature) {
         this.validFeature = validFeature;
         this.dependantFeature = dependantFeature;
     }
@@ -31,28 +30,24 @@ function featureCommand(sender, args) {
     const { feature, enable } = args;
     const loweredFeature = feature.toLowerCase();
     const validFeature = features[loweredFeature];
-    const txtOut = enable ? '§l§aenabled' : '§l§cdisabled';
 
+    if (!sender.isOp()) return sender.sendMessage('§cYou do not have permission to use this command.');
     if (!validFeature) return sender.sendMessage(`§c${feature} not found.`);
 
-    if (validFeature === 'tickingPearls') updatePearls(sender, enable);
-
-    updateDependantFeatures(sender, validFeature, enable, txtOut);
-
-    mc.world.setDynamicProperty(validFeature, enable);
-    sender.sendMessage(`§7${feature} has been ${txtOut}§r§7.`);
+    updateDependantFeatures(sender, validFeature, enable);
+    
+    Data.updateFeature(sender, validFeature, enable, true);
 }
 
-function updateDependantFeatures(sender, validFeature, enable, txtOut) {
+function updateDependantFeatures(sender, validFeature, enable) {
     for (const dependantFeature of new DependantFeatures().dependantFeatures) {
-        let targetFeature = null;
+        let targetFeature;
         if (enable && validFeature === dependantFeature.validFeature)
             targetFeature = dependantFeature.dependantFeature;
         else if (!enable && validFeature === dependantFeature.dependantFeature)
             targetFeature = dependantFeature.validFeature;
         else continue;
 
-        mc.world.setDynamicProperty(targetFeature, enable);
-        sender.sendMessage(`§7${targetFeature} has been ${txtOut}§r§7.`);
+        Data.updateFeature(sender, targetFeature, enable, true);
     }
 }
