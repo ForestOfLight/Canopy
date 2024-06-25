@@ -52,7 +52,7 @@ warpInSurvival - Enables/disables the use of the warp command while in Survival 
 noExplosionBlockDamage - Enables/disables explosion block damage. Tnt will still prime but will not break blocks when this is enabled.
 summontnt - Enables/disables the summontnt command.
 pickupOnMine - Enables/disables the automatic pickup of items when you break a block.
-universalChunkLoading - Enables/disables minecarts ticking for ten seconds after they are spawned.
+universalChunkLoading - Enables/disables minecarts ticking a 5x5 chunk area for ten seconds after they are spawned.
 ```
 
 ## Features Commands
