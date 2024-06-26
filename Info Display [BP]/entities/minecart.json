@@ -8,6 +8,15 @@
         "is_experimental": false
       },
       "component_groups": {
+        "info:ticking_timer": {
+          "minecraft:timer": {
+            "looping": false,
+            "time": 10,
+            "time_down_event": {
+              "event": "info:disable_ticking"
+            }
+          }
+        },
         "info:ticking": {
           "minecraft:tick_world": {
             "never_despawn": true,
@@ -74,14 +83,14 @@
           }
         ]
       },
-      "info:enable_ticking": {
+      "info:tick_tenSeconds": {
         "add": {
-          "component_groups": [ "info:ticking" ]
+          "component_groups": [ "info:ticking", "info:ticking_timer"]
         }
       },
       "info:disable_ticking": {
         "remove": {
-          "component_groups": [ "info:ticking" ]
+          "component_groups": [ "info:ticking", "info:ticking_timer" ]
         }
       }
     }
