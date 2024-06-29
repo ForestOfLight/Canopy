@@ -10,33 +10,43 @@ new Command()
 function helpCommand(sender) {
     const INFO = module.exports['infoDisplay'];
     const FEATURES = module.exports['features'];
-    const PEEK = module.exports['peek'];
-    const JUMP = module.exports['jump'];
-    const WARP = module.exports['warp'];
-    const GAMEMODE = module.exports['gamemode'];
     const CAMERA = module.exports['camera'];
+    const COUNTERS = module.exports['hopperCounters'];
     const DISTANCE = module.exports['distance'];
-    const TNTLOG = module.exports['tntlog'];
     const ENTITYDENSITY = module.exports['entitydensity'];
-    const TPS = module.exports['tps'];
+    const HEALTH = module.exports['health'];
+    const GAMEMODE = module.exports['gamemode'];
+    const JUMP = module.exports['jump'];
+    const PEEK = module.exports['peek'];
+    const SUMMONTNT = module.exports['summontnt'];
+    const TNTLOG = module.exports['tntlog'];
+    const WARP = module.exports['warp'];
+    const RESETALL = module.exports['resetall'];
 
-    const MODULES = { INFO, FEATURES, PEEK, JUMP, WARP, GAMEMODE, CAMERA, DISTANCE, TNTLOG, ENTITYDENSITY, TPS };
+    const MODULES = { INFO, FEATURES, CAMERA, COUNTERS, DISTANCE, ENTITYDENSITY, HEALTH, GAMEMODE, JUMP, PEEK, SUMMONTNT, TNTLOG, WARP, 
+        RESETALL, };
     const CMDS = {
         INFO:           './info <feature> <true/false> - Toggles some info on or off. (alias: ./i)',
         FEATURES:       './feature <feature> <true/false> - Toggles a global feature on or off.',
+        CAMERA:         './placecamera - Places a camera at your current location. (alias: ./pc)' +
+                      '\n./viewcamera - Toggles viewing your latest camera placement. (alias: ./vc)',
+        COUNTERS:       './counter <color> <add/remove/reset/query> - Manages hopper counters. (alias: ./ct)' +
+                      '\n./counter <color> <track/untrack> - Tracks or untracks a hopper counter in the InfoDisplay. (alias: ./ct)' +
+                      '\n./counter <color> <mode> - Sets the mode of a hopper counter: countmode, hourmode, minutemode, or secondmode. (alias: ./ct)' +
+                      '\n./counters - Lists all active hopper counters, their count, and hourly rate. (alias: ./cts)',
+        DISTANCE:       './distance - Calculates the distance between you and the block you are looking at. (alias: ./d)',
+        ENTITYDENSITY:  './entitydensity <dimension> <grid size> - Identifies dense areas of entities in the specified dimension.',
+        HEALTH:         './health - Displays the server\'s current TPS and MSPT in chat.',
+        GAMEMODE:       './s, ./c, ./sp - Easy gamemode switching.',
+        JUMP:           './jump - Teleports you to the block you\'re looking at. (alias: ./j)',
         PEEK:           './peek - Peeks at a block or entity\'s inventory. (alias: ./p)',
-        JUMP:           './jump - Teleports you to the block you are looking at. (alias: ./j)',
+        SUMMONTNT:      './summontnt <amount> - Summons the specified amount of primed TNT entity at your location.',
+        TNTLOG:         './tntlog <on/off> - Toggles primed TNT location logging.' +
+                      '\n./tntlog <precision> - Sets the precision of primed TNT location logging. (default: 2)',
         WARP:           './warp tp <name> - Teleports you to a warp. (alias: ./w)' +
                       '\n./warp <add/remove> <name> - Adds or removes a warp. (alias: ./w)' +
                       '\n./warps - Lists all available warps.',
-        GAMEMODE:       './s, ./c, ./sp - Easy gamemode switching.',
-        CAMERA:         './placecamera - Places a camera at your current location. (alias: ./pc)' +
-                      '\n./viewcamera - Toggles viewing your latest camera placement. (alias: ./vc)',
-        DISTANCE:       './distance - Calculates the distance between you and the block you are looking at. (alias: ./d)',
-        TNTLOG:         './tntlog <on/off> - Toggles primed TNT location logging.' +
-                      '\n./tntlog <precision> - Sets the precision of primed TNT location logging. (default: 2)',
-        ENTITYDENSITY:  './entitydensity <dimension> <grid size> - Identifies dense areas of entities in the specified dimension.',
-        TPS:            './tps - Displays the server\'s current ticks per second (TPS) in chat.',
+        RESETALL:       './resetall - Resets all InfoDisplay features and data.',
     };
     const DynamicFeatures = [ 'INFO', 'FEATURES' ];
 

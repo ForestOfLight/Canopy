@@ -6,26 +6,28 @@ const infoDisplay = newDB([
     'facing',
     'tps',
     'entities',
-    //'light',
+    'light',
     'slimeChunk',
     'worldDay',
     'timeOfDay',
     'moonPhase',
+    'hopperCounters',
     'lookingAt',
     'peekInventory',
     'all',
 ]);
 
 const features = newDB([
-    'placecamera',
+    'hopperCounters',
     'jump',
     'jumpInSurvival',
+    'noExplosionBlockDamage',
+    'pickupOnMine',
+    'placecamera',
+    'summontnt',
+    'universalChunkLoading',
     'warp',
     'warpInSurvival',
-    'noExplosionBlockDamage',
-    'summontnt',
-    'pickupOnMine',
-    'universalChunkLoading',
 ]);
 
 const peek = newDB([
@@ -56,25 +58,33 @@ const distance = newDB([
     'distance'
 ]);
 
-const tickcart = newDB([
-    'tickcart',
-    'tickingcarts'
-])
-
 const tntlog = newDB([
     'tntlog'
+]);
+
+const summontnt = newDB([
+    'summontnt'
 ]);
 
 const entitydensity = newDB([
     'entitydensity'
 ]);
 
-const tps = newDB([
-    'tps'
+const health = newDB([
+    'health'
+]);
+
+const hopperCounters = newDB([
+    'counter',
+    'counters',
+]);
+
+const resetall = newDB([
+    'resetall'
 ]);
 
 module({
-    infoDisplay, features, peek, jump, warp, gamemode, camera, distance, tntlog, entitydensity, tps,
+    infoDisplay, features, camera, distance, entitydensity, gamemode, hopperCounters, jump, peek, summontnt, tntlog, health, warp, resetall
 });
 
 function newDB(arr, db = true) {

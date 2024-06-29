@@ -1,6 +1,8 @@
-import Command from 'stickycore/command'
+import * as mc from '@minecraft/server'
 import { module } from 'stickycore/dynamic'
+import Command from 'stickycore/command'
 import Data from 'stickycore/data'
+import { removeAllCounters } from 'src/commands/counter'
 
 class DependantFeature {
     constructor(validFeature, dependantFeature) {
@@ -31,9 +33,10 @@ function featureCommand(sender, args) {
     const loweredFeature = feature.toLowerCase();
     const validFeature = features[loweredFeature];
 
-    if (!sender.isOp()) return sender.sendMessage('§cYou do not have permission to use this command.');
     if (!validFeature) return sender.sendMessage(`§c${feature} not found.`);
+    if (enable === mc.world.getDynamicProperty(validFeature)) return sender.sendMessage(`§7${feature} is already ${enable ? '§l§aenabled' : '§l§cdisabled'}.`);
 
+    if (validFeature === 'hopperCounters' && !enable) removeAllCounters();
     updateDependantFeatures(sender, validFeature, enable);
     
     Data.updateFeature(sender, validFeature, enable, true);

@@ -4,8 +4,8 @@
 		"name": "Info Display [BP]",
 		"description": "Info Display by §uAlecs§r and largely expanded by §aForestOfLight§r for the §dAmelix Foundation§r.",
 		"uuid": "e9f3a30c-f040-4cb7-a146-e15e7088f2ff",
-		"min_engine_version": [1, 21, 0],
-		"version": [1, 2, 1]
+		"min_engine_version": [1, 21, 1],
+		"version": [1, 2, 2]
 	},
 	"modules": [
 		{

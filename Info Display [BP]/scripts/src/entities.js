@@ -1,20 +1,20 @@
 import * as mc from '@minecraft/server'
 import Utils from 'stickycore/utils'
 
-const UPDATE_INTERVAL = 100;
+const UPDATE_INTERVAL = 100; // 100 ticks = 5 seconds
 
-mc.system.runInterval(() => {
-    const shouldUpdate = mc.world.getAllPlayers().some(player => player.getDynamicProperty('entities'));
+// mc.system.runInterval(() => {
+//     const shouldUpdate = mc.world.getAllPlayers().some(player => player.getDynamicProperty('entities'));
     
-    if (!shouldUpdate) return;
+//     if (!shouldUpdate) return;
 
-    Entities.owEntities = mc.world.getDimension('overworld').getEntities();
-    Entities.netherEntities = mc.world.getDimension('nether').getEntities();
-    Entities.endEntities = mc.world.getDimension('the_end').getEntities();
-    Entities.owEntityCount = countEntities(Entities.owEntities, true);
-    Entities.netherEntityCount = countEntities(Entities.netherEntities, true);
-    Entities.endEntityCount = countEntities(Entities.endEntities, true);
-}, UPDATE_INTERVAL);
+//     Entities.owEntities = mc.world.getDimension('overworld').getEntities();
+//     Entities.netherEntities = mc.world.getDimension('nether').getEntities();
+//     Entities.endEntities = mc.world.getDimension('the_end').getEntities();
+//     Entities.owEntityCount = countEntities(Entities.owEntities, true);
+//     Entities.netherEntityCount = countEntities(Entities.netherEntities, true);
+//     Entities.endEntityCount = countEntities(Entities.endEntities, true);
+// }, UPDATE_INTERVAL);
 
 const Entities = {
 	owEntities: [],
@@ -72,12 +72,12 @@ const Entities = {
 
     getEntitiesOnScreenCount(player) { // author: jeanmajid
         const vd = normalizeVector(player.getViewDirection());
-        const entities = this.getDimensionEntities(player.dimension.id);
+        const entities = player.dimension.getEntities();
 
         let count = 0;
         for (const entity of entities) {
             try{
-                const distance = Utils.calcDistance(player.location, entity.location);
+                const distance = Utils.calcDistance(player.location, entity.location, false);
                 const toEntity = normalizeVector(subtractVectors(entity.location, player.location));
                 const dotProduct = vd.x * toEntity.x + vd.y * toEntity.y + vd.z * toEntity.z;
                 if (dotProduct > 0.4 && distance < 256) count++;

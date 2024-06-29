@@ -18,9 +18,10 @@ class Utils {
 		return `${formattedHours}:${formattedMinutes} ${period}`;
 	}
 
-    static calcDistance(locationOne, locationTwo) {
+    static calcDistance(locationOne, locationTwo, useZ = true) {
 		const x = locationOne.x - locationTwo.x;
 		const y = locationOne.y - locationTwo.y;
+		if (!useZ) return Math.sqrt(x*x + y*y);
 		const z = locationOne.z - locationTwo.z;
 		return Math.sqrt(x*x + y*y + z*z);
 	}
@@ -86,8 +87,8 @@ class Utils {
 		if (blockRayResult) block = blockRayResult.block;
 		if (!entity) return block;
 		if (!block) return entity;
-		entityDist = Utils.calcDistance(player.location, entity.location);
-		blockDist = Utils.calcDistance(player.location, block.location);
+		entityDist = Utils.calcDistance(player.getHeadLocation(), entity.location);
+		blockDist = Utils.calcDistance(player.getHeadLocation(), block.location);
 	
 		return entityDist < blockDist ? entity : block;
 	}
@@ -125,6 +126,28 @@ class Utils {
 	
 		return items;
 	}
+
+	static getColorCode(color) {
+		switch (color) {
+			case 'red': return '§c';
+			case 'orange': return '§6';
+			case 'yellow': return '§e';
+			case 'lime': return '§a';
+			case 'green': return '§2';
+			case 'cyan': return '§3';
+			case 'light_blue': return '§b';
+			case 'blue': return '§9';
+			case 'purple': return '§5';
+			case 'pink': return '§d';
+			case 'magenta': return '§d';
+			case 'brown': return '§6';
+			case 'black': return '§0';
+			case 'white': return '§f';
+			case 'light_gray': return '§7';
+			case 'gray': return '§8';
+			default: return '';
+		}
+	};
 }
 
 export default Utils;

@@ -30,7 +30,7 @@ function tntlogCommand(sender, args) {
     else if (value !== 'on' && value !== 'off')
         return sender.sendMessage('§cInvalid argument. Please use on or off or a precision value between 0 and 15.');
 
-    sender.setDynamicProperty('tntlog', value);
+    sender.setDynamicProperty('tntlog', boolValue);
     sender.sendMessage(`§7TNT logging has been turned ${value}.`);
 }
 
