@@ -95,8 +95,6 @@ mc.world.beforeEvents.chatSend.subscribe((ev) => {
 			} catch {}
 		});
 		
-		let vals = Object.values(parsedArgs);
-		if (vals.includes(null) || vals.length < args.length || vals.length > args.length) return sender.sendMessage('§cSyntax error. Use ./help or read the docs on GitHub for more information.');
 		cmd.callback(sender, parsedArgs);
 	});
 });

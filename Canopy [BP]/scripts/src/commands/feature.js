@@ -2,7 +2,7 @@ import * as mc from '@minecraft/server'
 import { module } from 'stickycore/dynamic'
 import Command from 'stickycore/command'
 import Data from 'stickycore/data'
-import { removeAllCounters } from 'src/commands/counter'
+import { resetCounterMap } from 'src/commands/counter'
 
 class DependantFeature {
     constructor(validFeature, dependantFeature) {
@@ -33,10 +33,11 @@ function featureCommand(sender, args) {
     const loweredFeature = feature.toLowerCase();
     const validFeature = features[loweredFeature];
 
-    if (!validFeature) return sender.sendMessage(`§c${feature} not found.`);
+    if (enable === undefined) return sender.sendMessage(`§cUsage: ./feature <feature> <true/false>.`);
+    if (!validFeature) return sender.sendMessage(`§cInvalid feature: ${feature}`);
     if (enable === mc.world.getDynamicProperty(validFeature)) return sender.sendMessage(`§7${feature} is already ${enable ? '§l§aenabled' : '§l§cdisabled'}.`);
 
-    if (validFeature === 'hopperCounters' && !enable) removeAllCounters();
+    if (validFeature === 'hopperCounters' && !enable) resetCounterMap();
     updateDependantFeatures(sender, validFeature, enable);
     
     Data.updateFeature(sender, validFeature, enable, true);

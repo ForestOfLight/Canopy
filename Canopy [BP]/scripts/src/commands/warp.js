@@ -3,15 +3,15 @@ import Command from 'stickycore/command'
 
 new Command()
     .setName('warp')
-    .addArgument('string', 'action')
-    .addArgument('string', 'name')
+    .addArgument('string|number', 'action')
+    .addArgument('string|number', 'name')
     .setCallback(warpActionCommand)
     .build()
 
 new Command()
     .setName('w')
-    .addArgument('string', 'action')
-    .addArgument('string', 'name')
+    .addArgument('string|number', 'action')
+    .addArgument('string|number', 'name')
     .setCallback(warpActionCommand)
     .build()
 
@@ -40,22 +40,20 @@ function warpActionCommand(sender, args) {
     else if (!mc.world.getDynamicProperty('warpInSurvival') && sender.getGameMode() === 'survival')
         return sender.sendMessage('§cThe warp feature is disabled in survival mode.');
 
-    const { action, name } = args;
+    let { action, name } = args;
+    if (Number.isInteger(action)) action = action.toString();
+    if (Number.isInteger(name)) name = name.toString();
     const warpMap = getWarpMapCopy();
 
-    switch (action) {
-        case 'add':
-            addWarp(sender, name, warpMap);
-            break;
-        case 'remove':
-            removeWarp(sender, name, warpMap);
-            break;
-        case 'tp':
-            warpTP(sender, name, warpMap);
-            break;
-        default:
-            sender.sendMessage('§cInvalid command. Usage: ./warp <name> or ./warp <add/remove> <name>');
-            break;
+    if (action === 'add') {
+        addWarp(sender, name, warpMap);
+    } else if (action === 'remove') {
+        removeWarp(sender, name, warpMap);
+    } else if (warpMap.has(action)) {
+        name = action;
+        warpTP(sender, name, warpMap);
+    } else {
+        sender.sendMessage('§cUsage: ./warp <name> or ./warp <add/remove> <name>');
     }
 }
 

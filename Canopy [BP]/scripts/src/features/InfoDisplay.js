@@ -4,7 +4,7 @@ import Utils from 'stickycore/utils'
 import { DataTPS } from 'src/tps'
 import { Entities } from 'src/entities'
 import { LightLevel } from 'src/light'
-import { getChannelFormatted, getTrackedChannelsList, getModeOutput } from 'src/commands/counter'
+import { getInfoDisplayOutput } from 'src/commands/counter'
 
 mc.system.runInterval(() => {
 	const Players = mc.world.getAllPlayers();
@@ -50,51 +50,28 @@ function parseCoordsAndFacing(player) {
 
 function parseTPSAndMSPT(player) {
 	const showTPS = player.getDynamicProperty('tps');
+	const showMSPT = player.getDynamicProperty('mspt');
+	let tpsData;
+	let msptData;
 	let tps;
 	let mspt;
 	let output = '';
 
-	if (showTPS) {
-		const _tps = DataTPS.tps.toFixed(1);
-		tps = _tps >= 20 ? `§a20.0` : `§c${_tps}`;
+	if (!showTPS && !showMSPT) return;
 
-		const _mspt = DataTPS.avgMspt.toFixed(1);
-		mspt = _mspt <= 51 ? `§a${_mspt}` : `§c${_mspt}`;
-		output += `§rTPS: ${tps}§r §7(${mspt}§r §7mspt)\n`;
+	if (showTPS) {
+		tpsData = DataTPS.tps.toFixed(1);
+		tps = tpsData >= 20 ? `§a20.0` : `§c${tpsData}`;
 	}
+	if (showMSPT) {
+		msptData = DataTPS.avgMspt.toFixed(1);
+		mspt = msptData <= 51 ? `§a${msptData}` : `§c${msptData}`;
+	}
+	if (showTPS && showMSPT) output += `§rTPS: ${tps}§r §7(${mspt}§r §7mspt)\n`;
+	else if (showTPS) output += `§rTPS: ${tps}§r\n`;
+	else if (showMSPT) output += `§rMSPT: ${mspt}§r\n`;
 	return output;
 }
-
-// function parseTPSAndEntities(player) {
-// 	const showTPS = player.getDynamicProperty('tps');
-// 	const showEntities = player.getDynamicProperty('entities');
-// 	let tps;
-// 	let mspt;
-// 	let fovEntities;
-// 	// let simDistanceEntities;
-// 	// let dimensionEntities;
-// 	// let worldEntities;
-// 	let output = '';
-
-// 	if (showTPS) {
-// 		const _tps = DataTPS.tps.toFixed(1);
-// 		tps = _tps >= 20 ? `§a20.0` : `§c${_tps}`;
-
-// 		const _mspt = DataTPS.avgMspt.toFixed(1);
-// 		mspt = _mspt <= 51 ? `§a${_mspt}` : `§c${_mspt}`;
-// 	}
-// 	if (showEntities) {
-// 		fovEntities = Entities.getEntitiesOnScreenCount(player);
-// 		// simDistanceEntities = Entities.getPlayerRadiusEntityCount(player, 96);
-// 		// dimensionEntities = Entities.getDimensionEntityCount(player.dimension.id);
-// 		// worldEntities = Entities.getWorldEntityCount();
-// 	}
-// 	if (showTPS && showEntities) output += `§rTPS: ${tps}§r (${mspt}§r mspt) Entities: §7${fovEntities}§r\n`;
-// 	else if (showTPS) output += `§rTPS: ${tps}§r (${mspt}§r mspt)\n`;
-// 	else if (showEntities) output += `§rEntities: §7${fovEntities}§r\n`;
-
-// 	return output;
-// }
 
 function parseLightAndEntities(player) {
 	const showLight = player.getDynamicProperty('light');
@@ -143,26 +120,8 @@ function parseMoonPhaseAndSlimeChunk(player) {
 }
 
 function parseHopperCounters(player) {
-	const showHopperCounters = player.getDynamicProperty('hopperCounters');
-	const trackedChannels = getTrackedChannelsList(player);
-	let output = '';
-	
-	if (!showHopperCounters || trackedChannels?.length === 0) return '';
-	if (trackedChannels.length <= 4) {
-		output += 'Counters: ';
-	}
-	for (let i = 0; i < trackedChannels.length; i++) {
-		const color = trackedChannels[i];
-		if (i != 0 && (i % 4) == 0) output += '\n';
-		const channel = getChannelFormatted(color);
-		if (channel === 'N/A') {
-			output += `${Utils.getColorCode(color)}N/A§r `;
-			continue;
-		}
-		output += `${Utils.getColorCode(color)}${getModeOutput(channel)}§r `;
-	}
-	output += '\n';
-	return output;
+	if (!player.getDynamicProperty('hopperCounters')) return;
+	return getInfoDisplayOutput();
 }
 
 function parseLookingAtAndPeek(player) {

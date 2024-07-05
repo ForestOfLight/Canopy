@@ -26,6 +26,10 @@ class Utils {
 		return Math.sqrt(x*x + y*y + z*z);
 	}
 
+	static isString(str) {
+		return typeof str === 'string' || str instanceof String;
+	}
+
     static isNumeric(str) {
         return !isNaN(Number(str)) && isFinite(str);
     }
@@ -94,19 +98,10 @@ class Utils {
 	}
 
 	static parseName(target, includePrefix = true) {
-		let targetId;
-
-		targetId = includePrefix ? target.typeId : target.typeId.replace('minecraft:', '');
-		if (targetId === 'player') targetId = `§o${target.name}§r`;
-
-		return targetId;
-	}
-
-	static parseName(target, includePrefix = true) {
 		return target.typeId === 'player' ? `§o${target.name}§r` : (includePrefix ? target.typeId : target.typeId.replace('minecraft:', ''));
 	}
 
-	static stringifyLocation(location, precision) {
+	static stringifyLocation(location, precision = 0) {
 		return `[${location.x.toFixed(precision)}, ${location.y.toFixed(precision)}, ${location.z.toFixed(precision)}]`
 	}
 
@@ -147,7 +142,20 @@ class Utils {
 			case 'gray': return '§8';
 			default: return '';
 		}
-	};
+	}
+
+	static normalizeVector(vector) {
+		const length = Math.sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
+		return {
+			x: vector.x / length,
+			y: vector.y / length,
+			z: vector.z / length,
+		};
+	}
+
+	static dotProduct(vectorOne, vectorTwo) {
+		return vectorOne.x * vectorTwo.x + vectorOne.y * vectorTwo.y + vectorOne.z * vectorTwo.z;
+	}
 }
 
 export default Utils;

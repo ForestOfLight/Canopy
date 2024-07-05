@@ -5,8 +5,9 @@ const infoDisplay = newDB([
     'coords',
     'facing',
     'tps',
-    'entities',
+    'mspt',
     'light',
+    'entities',
     'slimeChunk',
     'worldDay',
     'timeOfDay',
@@ -22,8 +23,9 @@ const features = newDB([
     'jump',
     'jumpInSurvival',
     'noExplosionBlockDamage',
+    'noTileDrops',
     'pickupOnMine',
-    'placecamera',
+    'placeCamera',
     'summontnt',
     'universalChunkLoading',
     'warp',
@@ -50,8 +52,7 @@ const gamemode = newDB([
 ]);
 
 const camera = newDB([
-    'placecamera',
-    'viewcamera'
+    'camera',
 ]);
 
 const distance = newDB([
@@ -83,8 +84,12 @@ const resetall = newDB([
     'resetall'
 ]);
 
+const data = newDB([
+    'data'
+]);
+
 module({
-    infoDisplay, features, camera, distance, entitydensity, gamemode, hopperCounters, jump, peek, summontnt, tntlog, health, warp, resetall
+    infoDisplay, features, camera, data, distance, entitydensity, gamemode, hopperCounters, jump, peek, summontnt, tntlog, health, warp, resetall
 });
 
 function newDB(arr, db = true) {

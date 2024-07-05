@@ -1,6 +1,5 @@
 import Command from 'stickycore/command'
 import * as mc from '@minecraft/server'
-import Utils from 'stickycore/utils'
 
 mc.world.beforeEvents.playerLeave.subscribe((ev) => {
     const player = ev.player;
@@ -16,23 +15,19 @@ mc.world.afterEvents.playerDimensionChange.subscribe((ev) => {
 });
 
 new Command()
-    .setName('placecamera')
-    .setCallback(placeCameraCommand)
+    .setName('camera')
+    .addArgument('string', 'action')
+    .setCallback(cameraCommand)
     .build()
 
 new Command()
-    .setName('pc')
-    .setCallback(placeCameraCommand)
+    .setName('cp')
+    .setCallback((sender) => cameraCommand(sender, 'place'))
     .build()
 
 new Command()
-    .setName('viewcamera')
-    .setCallback(viewCameraCommand)
-    .build()
-
-new Command()
-    .setName('vc')
-    .setCallback(viewCameraCommand)
+    .setName('cv')
+    .setCallback((sender) => cameraCommand(sender, 'view'))
     .build()
 
 class Camera {
@@ -43,10 +38,26 @@ class Camera {
     }
 }
 
-function placeCameraCommand(sender) {
+function cameraCommand(sender, args) {
+    const { action } = args;
+    if (!mc.world.getDynamicProperty('placecamera')) return sender.sendMessage('§cThe placecamera feature is disabled.');
+
+    switch (action) {
+        case 'place':
+            placeCameraAction(sender);
+            break;
+        case 'view':
+            viewCameraAction(sender);
+            break;
+        default:
+            sender.sendMessage('§cUsage: ./camera <place/view>');
+            break;
+    }
+}
+
+function placeCameraAction(sender) {
     let camera;
 
-    if (!mc.world.getDynamicProperty('placecamera')) return sender.sendMessage('§cThe placecamera feature is disabled.');
     if (sender.getDynamicProperty('isViewingCamera')) return sender.sendMessage('§cYou cannot place a camera while viewing one.');
 
     camera = new Camera(
@@ -62,10 +73,9 @@ function placeCamera(sender, camera) {
     sender.sendMessage(`§7Camera placed at [${camera.location.x.toFixed(0)}, ${camera.location.y.toFixed(0)}, ${camera.location.z.toFixed(0)}].`);
 }
 
-function viewCameraCommand(sender) {
+function viewCameraAction(sender) {
     let placedCamera;
 
-    if (!mc.world.getDynamicProperty('placecamera')) return sender.sendMessage('§cThe placecamera feature is disabled.');
     if (!sender.getDynamicProperty('placedCamera')) return sender.sendMessage('§cYou have not placed a camera yet.');
 
     placedCamera = JSON.parse(sender.getDynamicProperty('placedCamera'));
@@ -88,7 +98,6 @@ function startCameraView(sender, placedCamera) {
         rotation: placedCamera.rotation
     });
     sender.setDynamicProperty('isViewingCamera', true);
-    // sender.sendMessage(`§7Now viewing placed camera at ${Utils.stringifyLocation(placedCamera.location, 0)}.`);
 }
 
 function endCameraView(sender) {
@@ -100,5 +109,4 @@ function endCameraView(sender) {
         sender.camera.clear();
     }, 8);
     sender.setDynamicProperty('isViewingCamera', false);
-    // sender.sendMessage(`§7Stopped viewing placed camera.`);
 }

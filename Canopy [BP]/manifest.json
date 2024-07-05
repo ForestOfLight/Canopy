@@ -1,11 +1,11 @@
 {
 	"format_version": 2,
 	"header": {
-		"name": "Info Display [BP]",
-		"description": "Info Display by §uAlecs§r and largely expanded by §aForestOfLight§r for the §dAmelix Foundation§r.",
+		"name": "Canopy [BP]",
+		"description": "Technical informatics and QoL addon by §aForestOfLight§r.",
 		"uuid": "e9f3a30c-f040-4cb7-a146-e15e7088f2ff",
 		"min_engine_version": [1, 21, 1],
-		"version": [1, 2, 2]
+		"version": [1, 2, 3]
 	},
 	"modules": [
 		{

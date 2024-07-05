@@ -1,7 +1,6 @@
 import Command from 'stickycore/command'
 import * as mc from '@minecraft/server'
 import Data from 'stickycore/data'
-import Utils from 'stickycore/utils'
 
 let previousTntLocations = {};
 let lastObsoleteTime;
@@ -15,23 +14,24 @@ mc.system.runInterval(() => {
 
 new Command()
     .setName('tntlog')
-    .addArgument('string', 'value')
+    .addArgument('boolean|number', 'value')
     .setCallback(tntlogCommand)
     .build()
 
 function tntlogCommand(sender, args) {
     let { value } = args;
     let boolValue;
-    boolValue = value === 'on' ? true : value === 'off' ? false : boolValue;
     if (sender.getDynamicProperty('tntlogPrecision') === undefined) sender.setDynamicProperty('tntlogPrecision', 2);
 
-    if (Utils.isNumeric(value))
+    if (Number.isInteger(value))
         return setLogPrecsion(sender, value);
-    else if (value !== 'on' && value !== 'off')
-        return sender.sendMessage('§cInvalid argument. Please use on or off or a precision value between 0 and 15.');
+    else if (value === true || value === false)
+        boolValue = value;
+    else
+        return sender.sendMessage('§cInvalid argument. Please use true or false or a precision value between 0 and 15.');
 
     sender.setDynamicProperty('tntlog', boolValue);
-    sender.sendMessage(`§7TNT logging has been turned ${value}.`);
+    sender.sendMessage(`§7TNT logging has been set to ${value}.`);
 }
 
 function setLogPrecsion(sender, value) {

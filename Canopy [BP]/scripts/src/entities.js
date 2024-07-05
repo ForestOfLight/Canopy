@@ -71,15 +71,15 @@ const Entities = {
     },
 
     getEntitiesOnScreenCount(player) { // author: jeanmajid
-        const vd = normalizeVector(player.getViewDirection());
+        const vd = Utils.normalizeVector(player.getViewDirection());
         const entities = player.dimension.getEntities();
 
         let count = 0;
         for (const entity of entities) {
             try{
                 const distance = Utils.calcDistance(player.location, entity.location, false);
-                const toEntity = normalizeVector(subtractVectors(entity.location, player.location));
-                const dotProduct = vd.x * toEntity.x + vd.y * toEntity.y + vd.z * toEntity.z;
+                const toEntity = Utils.normalizeVector(subtractVectors(entity.location, player.location));
+                const dotProduct = Utils.dotProduct(vd, toEntity);
                 if (dotProduct > 0.4 && distance < 256) count++;
             } catch (error) {
                 if (error.message.includes('property')) continue; // Entity has despawned
@@ -112,35 +112,37 @@ const Entities = {
             gridSize
         }));
     },
-}
 
-function countEntities(entities, checkValid) {
-    if (!checkValid) {
-        return entities.length;
-    }
-
-    let count = 0;
-    for (const entity of entities) {
-        if (!entity.isValid()) continue;
-        count++;
-    }
-    return count;
-}
+    printDimensionEntities(sender) {
+        let dimensionIds = ['overworld', 'nether', 'the_end'];
+        let dimensionColors = ['§a', '§c', '§d'];
+        let dimensionEntities = {};
+        let totalEntities;
+        let output = '';
+        for (let dimensionId of dimensionIds) {
+            dimensionEntities[dimensionId] = mc.world.getDimension(dimensionId).getEntities();
+        }
+    
+        totalEntities = dimensionEntities.overworld.length + dimensionEntities.nether.length + dimensionEntities.the_end.length;
+        output = '§7Dimension entities: '
+        for (let i = 0; i < dimensionIds.length; i++) {
+            let dimensionId = dimensionIds[i];
+            let count = dimensionEntities[dimensionId].length;
+            let color = dimensionColors[i];
+            output += `${color}${count}§r`;
+            if (i < dimensionIds.length - 1) output += '/';
+            else output += ` §7Total: §f${totalEntities}`;
+        }
+        
+        sender.sendMessage(output);
+    },
+};
 
 function subtractVectors(vector1, vector2) {
     return {
         x: vector1.x - vector2.x,
         y: vector1.y - vector2.y,
         z: vector1.z - vector2.z,
-    };
-}
-
-function normalizeVector(vector) {
-    const length = Math.sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
-    return {
-        x: vector.x / length,
-        y: vector.y / length,
-        z: vector.z / length,
     };
 }
 
