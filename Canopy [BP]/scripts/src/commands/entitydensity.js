@@ -15,7 +15,6 @@ function entityDensityCommand(sender, args) {
     let { firstArg, gridSize } = args;
     const { validDimensionId, parsedGridSize, hasNoErrors } = parseArgs(sender, firstArg, gridSize);
     if (hasNoErrors === false) return;
-    console.warn(`entitydensity: ${validDimensionId}, ${parsedGridSize}`);
     if (parsedGridSize) gridSize = parsedGridSize;
     
     Entities.printDimensionEntities(sender);

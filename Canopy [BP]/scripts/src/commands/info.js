@@ -35,8 +35,9 @@ new Command()
 function infoDisplayFeatures(sender, args) {
     const features = module.exports['infoDisplay'];
     const { feature, enable } = args;
+    if (feature === null || enable === null) return sender.sendMessage(`§cUsage: /info <feature> <true/false>`);
+    
     const validFeature = features[feature.toLowerCase()];
-
     if (!validFeature) return sender.sendMessage(`§c${feature} not found.`);
     if (enable === sender.getDynamicProperty(validFeature)) return sender.sendMessage(`§7${feature} is already ${enable ? '§l§aenabled' : '§l§cdisabled'}.`);
 

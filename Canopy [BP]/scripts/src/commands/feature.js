@@ -33,7 +33,7 @@ function featureCommand(sender, args) {
     const loweredFeature = feature.toLowerCase();
     const validFeature = features[loweredFeature];
 
-    if (enable === undefined) return sender.sendMessage(`§cUsage: ./feature <feature> <true/false>.`);
+    if (enable === null) return sender.sendMessage(`§cUsage: ./feature <feature> <true/false>`);
     if (!validFeature) return sender.sendMessage(`§cInvalid feature: ${feature}`);
     if (enable === mc.world.getDynamicProperty(validFeature)) return sender.sendMessage(`§7${feature} is already ${enable ? '§l§aenabled' : '§l§cdisabled'}.`);
 

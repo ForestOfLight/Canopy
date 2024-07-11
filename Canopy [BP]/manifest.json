@@ -5,7 +5,7 @@
 		"description": "Technical informatics and QoL addon by §aForestOfLight§r.",
 		"uuid": "e9f3a30c-f040-4cb7-a146-e15e7088f2ff",
 		"min_engine_version": [1, 21, 1],
-		"version": [1, 2, 3]
+		"version": [1, 2, 4]
 	},
 	"modules": [
 		{

@@ -1,6 +1,9 @@
 import Command from 'stickycore/command'
 import { DataTPS } from 'src/tps'
 import  { Entities } from 'src/entities'
+import Data from 'stickycore/data'
+import Utils from 'stickycore/utils'
+import * as mc from '@minecraft/server'
 
 new Command()
     .setName('health')
@@ -8,8 +11,27 @@ new Command()
     .build()
 
 function healthCommand(sender) {
-    const tpsFormatted = DataTPS.tps > 20.0 ? `§a20.0` : `§c${DataTPS.tps.toFixed(1)}`;
-    const msptFormatted = DataTPS.avgMspt > 51.0 ? `§c${DataTPS.avgMspt.toFixed(1)}` : `§a${DataTPS.avgMspt.toFixed(1)}`;
-    sender.sendMessage(`§7TPS:§r ${tpsFormatted} §7MSPT:§r ${msptFormatted}`);
+    mc.system.runTimeout(() => {
+        printRealMspt(sender);
+    }, 0);
     Entities.printDimensionEntities(sender);
+    const tpsFormatted = DataTPS.tps > 20.0 ? `§a20.0` : `§c${DataTPS.tps.toFixed(1)}`;
+    sender.sendMessage(`§7TPS:§r ${tpsFormatted}`);
+}
+
+function printRealMspt(sender) {
+    let lastTick;
+    let startTime;
+    let endTime;
+    let realMspt;
+
+    lastTick = Data.getAbsoluteTime();
+    ({ startTime, endTime } = Utils.wait(50));
+    mc.system.runTimeout(() => {
+        if (Data.getAbsoluteTime() - lastTick != 1) return sender.sendMessage(`§cCould not compute MSPT. Please report this error.`);
+        
+        realMspt = Date.now() - startTime - (endTime - startTime);
+        const realMsptFormatted = realMspt > 50.0 ? `§c${realMspt}` : `§a${realMspt}`;
+        sender.sendMessage(`§7MSPT:§r ${realMsptFormatted}`)
+    }, 1);
 }

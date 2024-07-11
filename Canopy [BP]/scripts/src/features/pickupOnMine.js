@@ -29,7 +29,12 @@ mc.world.afterEvents.entitySpawn.subscribe(entityEvent => {
 });
 
 function canAdd(inventory, itemStack) {
-    return (inventory.emptySlotsCount !== 0) || inventory.some(slot => slot.hasItem() && slot.isStackableWith(itemStack));
+    if (inventory.emptySlotsCount !== 0) return true;
+    for (let i = 0; i < inventory.size; i++) {
+        const slot = inventory.getSlot(i);
+        if (slot.hasItem() && slot.isStackableWith(itemStack)) return true;
+    }
+    return false;
 }
 
 export default { brokenBlockEventsThisTick }

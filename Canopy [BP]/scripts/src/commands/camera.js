@@ -1,6 +1,28 @@
 import Command from 'stickycore/command'
 import * as mc from '@minecraft/server'
 
+class BeforeSpectatorPlayer {
+    constructor(player) {
+        this.location = player.location;
+        this.rotation = player.getRotation();
+        this.dimensionId = player.dimension.id;
+        this.gamemode = player.getGameMode();
+        this.effects = [];
+        for (let effect of player.getEffects())
+            this.effects.push({ typeId: effect.typeId, duration: effect.duration, amplifier: effect.amplifier });
+    }
+}
+
+mc.world.beforeEvents.playerGameModeChange.subscribe((ev) => {
+    const player = ev.player;
+    if (player.getDynamicProperty('isSpectating') && ev.fromGameMode === 'spectator' && ev.toGameMode !== 'spectator') {
+        player.sendMessage('§cYou cannot change your gamemode while spectating.');
+        mc.system.run(() => {
+            player.setGameMode(ev.fromGameMode);
+        });
+    }
+});
+
 mc.world.beforeEvents.playerLeave.subscribe((ev) => {
     const player = ev.player;
     if (!player.getDynamicProperty('isViewingCamera')) return;
@@ -22,12 +44,17 @@ new Command()
 
 new Command()
     .setName('cp')
-    .setCallback((sender) => cameraCommand(sender, 'place'))
+    .setCallback(placeCameraAction)
     .build()
 
 new Command()
     .setName('cv')
-    .setCallback((sender) => cameraCommand(sender, 'view'))
+    .setCallback(viewCameraAction)
+    .build()
+
+new Command()
+    .setName('cs')
+    .setCallback(spectateAction)
     .build()
 
 class Camera {
@@ -40,7 +67,7 @@ class Camera {
 
 function cameraCommand(sender, args) {
     const { action } = args;
-    if (!mc.world.getDynamicProperty('placecamera')) return sender.sendMessage('§cThe placecamera feature is disabled.');
+    if (!mc.world.getDynamicProperty('camera')) return sender.sendMessage('§cThe camera feature is disabled.');
 
     switch (action) {
         case 'place':
@@ -49,8 +76,11 @@ function cameraCommand(sender, args) {
         case 'view':
             viewCameraAction(sender);
             break;
+        case 'spectate':
+            spectateAction(sender);
+            break;
         default:
-            sender.sendMessage('§cUsage: ./camera <place/view>');
+            sender.sendMessage('§cUsage: ./camera <place/view/spectate>');
             break;
     }
 }
@@ -76,6 +106,7 @@ function placeCamera(sender, camera) {
 function viewCameraAction(sender) {
     let placedCamera;
 
+    if (sender.getDynamicProperty('isSpectating')) return sender.sendMessage('§cYou cannot view a camera while spectating.');
     if (!sender.getDynamicProperty('placedCamera')) return sender.sendMessage('§cYou have not placed a camera yet.');
 
     placedCamera = JSON.parse(sender.getDynamicProperty('placedCamera'));
@@ -101,12 +132,51 @@ function startCameraView(sender, placedCamera) {
 }
 
 function endCameraView(sender) {
-    sender.camera.fade({
-        fadeColor: { red: 0, green: 0, blue: 0 }, 
-        fadeTime: { fadeInTime: 0.5, fadeOutTime: 0.5, holdTime: 0.0 }
-    });
+    cameraFadeOut(sender);
     mc.system.runTimeout(() => {
         sender.camera.clear();
     }, 8);
     sender.setDynamicProperty('isViewingCamera', false);
+}
+
+function cameraFadeOut(sender) {
+    sender.camera.fade({
+        fadeColor: { red: 0, green: 0, blue: 0 }, 
+        fadeTime: { fadeInTime: 0.5, fadeOutTime: 0.5, holdTime: 0.0 }
+    });
+}
+
+function spectateAction(sender) {
+    if (sender.getDynamicProperty('isViewingCamera')) return sender.sendMessage('§cYou cannot spectate while viewing a camera.');
+    if (!sender.getDynamicProperty('isSpectating')) return startSpectate(sender);
+    else endSpectate(sender);
+}
+
+function startSpectate(sender) {
+    cameraFadeOut(sender);
+    sender.setDynamicProperty('isSpectating', true);
+    const savedPlayer = new BeforeSpectatorPlayer(sender);
+    sender.setDynamicProperty('beforeSpectatorPlayer', JSON.stringify(savedPlayer));
+    
+    mc.system.runTimeout(() => {
+        sender.setGameMode('spectator');
+        for (let effect of sender.getEffects())
+            sender.removeEffect(effect.typeId);
+        sender.addEffect('night_vision', 999999, { amplifier: 0, showParticles: false });
+        sender.addEffect('conduit_power', 999999, { amplifier: 0, showParticles: false });
+    }, 8);
+}
+
+function endSpectate(sender) {
+    cameraFadeOut(sender);
+    const beforeSpectatorPlayer = JSON.parse(sender.getDynamicProperty('beforeSpectatorPlayer'));
+    sender.setDynamicProperty('isSpectating', false);
+    mc.system.runTimeout(() => {
+        for (let effect of sender.getEffects())
+            sender.removeEffect(effect.typeId);
+        sender.teleport(beforeSpectatorPlayer.location, { dimension: mc.world.getDimension(beforeSpectatorPlayer.dimensionId), rotation: beforeSpectatorPlayer.rotation });
+        for (const effect of beforeSpectatorPlayer.effects)
+            sender.addEffect(effect.typeId, effect.duration, { amplifier: effect.amplifier });
+        sender.setGameMode(beforeSpectatorPlayer.gamemode);
+    }, 8);
 }

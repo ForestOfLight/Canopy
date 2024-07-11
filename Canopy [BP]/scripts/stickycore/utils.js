@@ -156,6 +156,31 @@ class Utils {
 	static dotProduct(vectorOne, vectorTwo) {
 		return vectorOne.x * vectorTwo.x + vectorOne.y * vectorTwo.y + vectorOne.z * vectorTwo.z;
 	}
+
+	static wait(ms) {
+		let startTime = Date.now();
+		let endTime = Date.now();
+		while (endTime - startTime < ms) {
+			endTime = Date.now();
+		}
+		return { startTime, endTime };
+	}
+
+	static calculatePerTime(totalCount, deltaTime, mode) {
+		const ticksPerHour = 72000;
+		let itemsPerHour = totalCount / (deltaTime / ticksPerHour);
+		let unit = 'h';
+		if (mode === 'perminuteMode') {
+			itemsPerHour /= 60;
+			unit = 'm';
+		}
+		if (mode === 'persecondMode') {
+			itemsPerHour /= 3600;
+			unit = 's';
+		}
+		if (itemsPerHour == NaN || itemsPerHour == Infinity) return '?/?';
+		return `${itemsPerHour.toFixed(1)}/${unit}`;
+	}
 }
 
 export default Utils;

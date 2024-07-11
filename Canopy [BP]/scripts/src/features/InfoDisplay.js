@@ -13,16 +13,11 @@ mc.system.runInterval(() => {
 	}
 });
 
-let dayTime = 0;
-mc.system.runInterval(() => {
-	dayTime = Utils.ticksToTime(Data.getTimeOfDay());
-}, 20);
-
 function InfoDisplay(player) {
 	let InfoText = '';
 
 	InfoText += parseCoordsAndFacing(player);
-	InfoText += parseTPSAndMSPT(player);
+	InfoText += parseTPS(player);
 	InfoText += parseLightAndEntities(player)
 	InfoText += parseDayAndTime(player);
 	InfoText += parseMoonPhaseAndSlimeChunk(player)
@@ -48,28 +43,17 @@ function parseCoordsAndFacing(player) {
 	return output;
 }
 
-function parseTPSAndMSPT(player) {
+function parseTPS(player) {
 	const showTPS = player.getDynamicProperty('tps');
-	const showMSPT = player.getDynamicProperty('mspt');
 	let tpsData;
-	let msptData;
 	let tps;
-	let mspt;
 	let output = '';
 
-	if (!showTPS && !showMSPT) return;
+	if (!showTPS) return output;
 
-	if (showTPS) {
-		tpsData = DataTPS.tps.toFixed(1);
-		tps = tpsData >= 20 ? `§a20.0` : `§c${tpsData}`;
-	}
-	if (showMSPT) {
-		msptData = DataTPS.avgMspt.toFixed(1);
-		mspt = msptData <= 51 ? `§a${msptData}` : `§c${msptData}`;
-	}
-	if (showTPS && showMSPT) output += `§rTPS: ${tps}§r §7(${mspt}§r §7mspt)\n`;
-	else if (showTPS) output += `§rTPS: ${tps}§r\n`;
-	else if (showMSPT) output += `§rMSPT: ${mspt}§r\n`;
+	tpsData = DataTPS.tps.toFixed(1);
+	tps = tpsData >= 20 ? `§a20.0` : `§c${tpsData}`;
+	output += `§rTPS: ${tps}§r\n`;
 	return output;
 }
 
@@ -93,9 +77,11 @@ function parseDayAndTime(player) {
 	const showDay = player.getDynamicProperty('worldDay');
 	const showTimeOfDay = player.getDynamicProperty('timeOfDay');
 	let day;
+	let dayTime;
 	let output = '';
 
 	if (showDay) day = Data.getDay();
+	if (showTimeOfDay) dayTime = Utils.ticksToTime(Data.getTimeOfDay());
 	if (showDay && showTimeOfDay) output += `Day: §7${day}§r §7${dayTime}§r\n`;
 	else if (showDay) output += `§rDay: §7${day}§r\n`;
 	else if (showTimeOfDay) output += `§rTime: §7${dayTime}§r\n`;
@@ -120,7 +106,7 @@ function parseMoonPhaseAndSlimeChunk(player) {
 }
 
 function parseHopperCounters(player) {
-	if (!player.getDynamicProperty('hopperCounters')) return;
+	if (!player.getDynamicProperty('hopperCounters')) return '';
 	return getInfoDisplayOutput();
 }
 

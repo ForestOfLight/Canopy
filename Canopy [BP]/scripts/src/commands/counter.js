@@ -14,9 +14,11 @@ class CounterChannel {
     constructor(color) {
         this.color = color;
         this.hopperList = new Array();
-        this.itemMap = new Map();
         this.mode = 'countMode';
         this.totalCount = 0;
+        this.itemMap = new Map();
+        this.startTickTime = Data.getAbsoluteTime();
+        this.startRealTime = Date.now();
     }
 }
 
@@ -24,13 +26,12 @@ class CounterChannelMap {
     colors = ['red', 'orange', 'yellow', 'lime', 'green', 'cyan', 'light_blue',
         'blue', 'purple', 'pink', 'magenta', 'brown', 'black', 'white', 'light_gray', 'gray'];
     realtime = false;
-    startTime = this.realtime ? Date.now() : Data.getAbsoluteTime();
 
     constructor() {
         for (const color of this.colors) {
             const channelJSON = mc.world.getDynamicProperty(`${color}CounterChannel`);
             if (channelJSON) {
-                this.reset();
+                this.resetAll();
                 continue;
             }
             mc.world.setDynamicProperty(`${color}CounterChannel`, JSON.stringify(new CounterChannel(color)));
@@ -96,16 +97,22 @@ class CounterChannelMap {
                 this.removeChannel(color);
             else
                 this.setChannel(color, channel);
-        }, 1);
+        }, 0);
     }
 
-    reset() {
-        this.forEach(channel => {
-            channel.totalCount = 0;
-            channel.itemMap = new Map();
-            this.setChannel(channel.color, channel);
-        })
-        this.startTime = this.realtime ? Date.now() : Data.getAbsoluteTime();
+    reset(color) {
+        const channel = this.getChannel(color);
+        channel.totalCount = 0;
+        channel.itemMap = new Map();
+        channel.startTickTime = Data.getAbsoluteTime();
+        channel.startRealTime = Date.now();
+        this.setChannel(color, channel);
+    }
+
+    resetAll() {
+        for (const color of this.colors) {
+            this.reset(color);
+        }
     }
 
     setMode(color, mode) {
@@ -114,46 +121,34 @@ class CounterChannelMap {
         this.setChannel(color, channel);
     }
 
-    getDeltaTime() {
-        const msPerTick = 50.0;
-        let deltaTime;
-        
-        if (this.realtime) {
-            deltaTime = (Date.now() - channelMap.startTime) / msPerTick;
-        } else {
-            deltaTime = Data.getAbsoluteTime() - channelMap.startTime;
-        }
-        deltaTime = Math.floor(deltaTime / 8) * 8;
-        return deltaTime;
-    }
-
-    getMinutesSinceStart() {
-        const minutes = this.getDeltaTime() / 1200;
-        return minutes.toFixed(2);
-    }
-
     getQueryOutput(channel) {
-        let output = `§7Items for ${formatColor(channel.color)}§7 (${this.getMinutesSinceStart()} min.), total: §f${channel.totalCount}§7, (§f${calculateItemsPerTime(channel.totalCount, channel.mode)}§7):`;
+        let realtimeText = this.realtime ? 'realtime: ' : '';
+        let output = `§7Items for ${formatColor(channel.color)}§7 (${realtimeText}${this.getMinutesSinceStart(channel)} min.), total: §f${channel.totalCount}§7, (§f${Utils.calculatePerTime(channel.totalCount, this.getDeltaTime(channel), channel.mode)}§7):`;
         for (const item of Object.keys(channel.itemMap)) {
             const count = channel.itemMap[item];
             output += `\n §7- ${item}: ${getAllModeOutput(channel, item)}`;
         }
         return output;
     }
-}
 
-//
-new Command()
-    .setName('t')
-    .setCallback(viewChannelData)
-    .build()
+    getDeltaTime(channel) {
+        const msPerTick = 50.0;
+        let deltaTime;
+        
+        if (this.realtime) {
+            deltaTime = (Date.now() - channel.startRealTime) / msPerTick;
+        } else {
+            deltaTime = Data.getAbsoluteTime() - channel.startTickTime;
+        }
+        deltaTime = Math.floor(deltaTime / 8) * 8;
+        return deltaTime;
+    }
 
-function viewChannelData(sender) {
-    for (const color of channelMap.colors) {
-        sender.sendMessage(mc.world.getDynamicProperty(`${color}CounterChannel`));
+    getMinutesSinceStart(channel) {
+        const minutes = this.getDeltaTime(channel) / 1200;
+        return minutes.toFixed(2);
     }
 }
-//
 
 const channelMap = new CounterChannelMap();
 const validModes = ['countMode', 'perhourMode', 'perminuteMode', 'persecondMode'];
@@ -233,36 +228,45 @@ function counterCommand(sender, args) {
     }
 
     if (argOne === 'reset')
-        reset(sender);
+        resetAll(sender);
     else if (argOne === 'realtime')
-        realtimeToggle(sender);
+        realtimeQueryAll(sender);
     else if (channelMap.colors.includes(argOne) && !argTwo)
         query(sender, argOne);
     else if (!argOne && !argTwo || argOne === 'all' && !argTwo)
         queryAll(sender);
+    else if (argOne && argTwo === 'realtime')
+        realtimeQuery(sender, argOne);
+    else if (argOne && argTwo === 'reset')
+        reset(sender, argOne);
     else if (argOne && argTwo && argOne !== 'all')
         setMode(sender, argOne, argTwo);
     else if (argOne === 'all' && argTwo)
         setAllMode(sender, argTwo);
     else
-        sender.sendMessage('§cUsage: ./counter <color/all/reset/realtime> [add/remove/mode]');
+        sender.sendMessage('§cUsage: ./counter <color/all/reset/realtime> [add/remove/mode/realtime]');
 }
 
-function reset(sender) {
-    channelMap.reset();
-    sender.sendMessage(`§7All channels have been reset. Hopper Counter timer starts now.`);
+function reset(sender, color) {
+    channelMap.reset(color);
+    sender.sendMessage(`§7Reset and time restarted: ${formatColor(color)}`);
 }
 
-function realtimeToggle(sender) {
-    let output = '§7Reset all counters and switched to ';
+function resetAll(sender) {
+    channelMap.resetAll();
+    sender.sendMessage(`§7All channels have been reset and hopper counter timer started.`);
+}
 
-    channelMap.realtime = !channelMap.realtime;
-    if (channelMap.realtime)
-        output += 'real time.';
-    else
-        output += 'tick-based time.';
-    channelMap.reset();
-    sender.sendMessage(output);
+function realtimeQuery(sender, color) {
+    channelMap.realtime = true;
+    query(sender, color);
+    channelMap.realtime = false;
+}
+
+function realtimeQueryAll(sender) {
+    channelMap.realtime = true;
+    queryAll(sender);
+    channelMap.realtime = false;
 }
 
 function query(sender, color) {
@@ -302,21 +306,6 @@ function setAllMode(sender, mode) {
     sender.sendMessage(`§7All Hopper Counters mode: ${mode}`);
 }
 
-function calculateItemsPerTime(totalCount, mode) {
-    const ticksPerHour = 72000;
-    let itemsPerHour = totalCount / (channelMap.getDeltaTime() / ticksPerHour);
-    let unit = 'h';
-    if (mode === 'perminuteMode') {
-        itemsPerHour /= 60;
-        unit = 'm';
-    }
-    if (mode === 'persecondMode') {
-        itemsPerHour /= 3600;
-        unit = 's';
-    }
-    return `${itemsPerHour.toFixed(1)}/${unit}`;
-}
-
 function getHopperFacingBlock(hopper) {
     const facing = hopper.permutation.getState("facing_direction");
     switch (facing) {
@@ -341,7 +330,7 @@ function formatColor(color) {
 }
 
 function getModeOutput(channel) {
-    if (channel.mode !== 'countMode') return calculateItemsPerTime(channel.totalCount, channel.mode);
+    if (channel.mode !== 'countMode') return Utils.calculatePerTime(channel.totalCount, channelMap.getDeltaTime(channel), channel.mode);
     return channel.totalCount;
 }
 
@@ -358,7 +347,7 @@ function getAllModeOutput(channel, item) {
         else output += '§7, ';
         if (rateModes[i] === channel.mode)
             output += `${Utils.getColorCode(channel.color)}`;
-        output += `${calculateItemsPerTime(channel.itemMap[item], rateModes[i])}`;
+        output += `${Utils.calculatePerTime(channel.itemMap[item], channelMap.getDeltaTime(channel), rateModes[i])}`;
     }
     output += '§7)';
     return output;

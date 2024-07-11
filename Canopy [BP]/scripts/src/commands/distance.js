@@ -129,21 +129,19 @@ function hasSavedLocation() {
 }
 
 function calculateDistances(locationOne, locationTwo) {
-    const unitVectorOne = Utils.normalizeVector(locationOne);
-    const unitVectorTwo = Utils.normalizeVector(locationTwo);
     const cartesianDistance = Utils.calcDistance(locationOne, locationTwo, true);
+    const cylindricalDistance = Utils.calcDistance(locationOne, locationTwo, false);
     const manhattanDistance = Math.abs(locationOne.x - locationTwo.x) + Math.abs(locationOne.y - locationTwo.y) + Math.abs(locationOne.z - locationTwo.z);
-    const sphericalDistance = Math.acos(Utils.dotProduct(unitVectorOne, unitVectorTwo));
 
-    return { cartesianDistance, manhattanDistance, sphericalDistance };
+    return { cartesianDistance, cylindricalDistance, manhattanDistance };
 }
 
 function getCompleteOutput(locationOne, locationTwo) {
     let output = '';
-    const { cartesianDistance, manhattanDistance, sphericalDistance } = calculateDistances(locationOne, locationTwo);
-    output += `§7Distance from ${Utils.stringifyLocation(locationOne)} to ${Utils.stringifyLocation(locationTwo)}:\n`;
-    output += `§7Cartesian: ${cartesianDistance.toFixed(3)}\n`;
-    output += `§7Manhattan: ${manhattanDistance.toFixed(0)}\n`;
-    output += `§7Spherical: ${sphericalDistance.toFixed(3)}\n`;
+    const { cartesianDistance, cylindricalDistance, manhattanDistance } = calculateDistances(locationOne, locationTwo);
+    output += `§7Distance from §a${Utils.stringifyLocation(locationOne)}§7 to §a${Utils.stringifyLocation(locationTwo)}§7:\n`;
+    output += `§7Cartesian: §r§l${cartesianDistance.toFixed(3)}\n`;
+    output += `§7Cartesian(XZ): §r§l${cylindricalDistance.toFixed(3)}\n`;
+    output += `§7Manhattan: §r§l${manhattanDistance.toFixed(3)}\n`;
     return output;
 }

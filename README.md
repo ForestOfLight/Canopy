@@ -7,6 +7,19 @@ Related pack: [Bedrock Technical Resource Pack](https://github.com/RavinMaddHatt
 
 The original Info Display that this pack has its foundation in, created by AlecsDeveloper, can be found [here](https://www.curseforge.com/minecraft-bedrock/scripts/info-display).
 
+# What is Canopy?
+
+Canopy is an addon for vanilla Minecraft Bedrock Edition that allows more control over what matters from a technical perspective of the game.
+
+```
+Add useful information to your HUD, including light level, TPS, the number of entities in view, 
+the inventory of the block or entity in front of you, and more.
+Receive a detailed breakdown of the items your farms and machines produce using hopperCounters.
+Analyze your builds in slow motion using the tick command.
+Create contraptions that load themselves using universalChunkLoading.
+... and much, much more!
+```
+
 ## Usage
 
 > [!NOTE]

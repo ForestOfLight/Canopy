@@ -13,20 +13,24 @@ import 'src/commands/gamemode'
 import 'src/commands/camera'
 import 'src/commands/feature'
 import 'src/commands/distance'
-import 'src/commands/tntlog'
+import 'src/commands/log'
 import 'src/commands/summontnt'
 import 'src/commands/entitydensity'
 import 'src/commands/health'
 import 'src/commands/counter'
 import 'src/commands/resetall'
 import 'src/commands/data'
+import 'src/commands/tick'
 
 // Features
 import 'src/features/InfoDisplay'
-import 'src/features/noExplosionBlockDamage'
+import 'src/features/tnt/noExplosionBlockDamage'
 import 'src/features/pickupOnMine'
 import 'src/features/universalChunkLoading'
 import 'src/features/noTileDrops'
+import 'src/features/flippinArrows'
+import 'src/features/tnt/noTntPrimeMomentum'
+import 'src/features/tnt/hardcodedTntPrimeMomentum'
 
 let hasShownWelcome = false;
 

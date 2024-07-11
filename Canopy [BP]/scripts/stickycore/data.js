@@ -2,18 +2,13 @@ import * as mc from '@minecraft/server'
 import MT from './src/mt.js'
 import Utils from 'stickycore/utils'
 
-mc.system.runInterval(() => {
-	Data.ticks++;
-});
-
 class Data {
 	static #owDimension = mc.world.getDimension('overworld');
-	static ticks = mc.world.getAbsoluteTime();
 	
 	static getDay = () => mc.world.getDay();
 	static getTimeOfDay = () => mc.world.getTimeOfDay();
 	static getMoonPhase = () => this.parseMoonPhase(mc.world.getMoonPhase());
-	static getAbsoluteTime = () => this.ticks;
+	static getAbsoluteTime = () => mc.system.currentTick;
 	static getDefaultSpawnLocation = () => mc.world.getDefaultSpawnLocation();
 	static getWeather = () => {
 		return mc.system.run(() => this.#owDimension.getWeather())

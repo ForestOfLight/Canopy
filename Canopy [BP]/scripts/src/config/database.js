@@ -5,7 +5,6 @@ const infoDisplay = newDB([
     'coords',
     'facing',
     'tps',
-    'mspt',
     'light',
     'entities',
     'slimeChunk',
@@ -19,77 +18,24 @@ const infoDisplay = newDB([
 ]);
 
 const features = newDB([
+    'camera',
+    'flippinArrows',
+    'hardcodedTntPrimeMomentum',
     'hopperCounters',
     'jump',
     'jumpInSurvival',
     'noExplosionBlockDamage',
     'noTileDrops',
+    'noTntPrimeMomentum',
     'pickupOnMine',
-    'placeCamera',
     'summontnt',
     'universalChunkLoading',
     'warp',
     'warpInSurvival',
 ]);
 
-const peek = newDB([
-    'peek'
-]);
-
-const jump = newDB([
-    'jump'
-]);
-
-const warp = newDB([
-    'warp',
-    'warps'
-]);
-
-const gamemode = newDB([
-    's',
-    'c',
-    'spc'
-]);
-
-const camera = newDB([
-    'camera',
-]);
-
-const distance = newDB([
-    'distance'
-]);
-
-const tntlog = newDB([
-    'tntlog'
-]);
-
-const summontnt = newDB([
-    'summontnt'
-]);
-
-const entitydensity = newDB([
-    'entitydensity'
-]);
-
-const health = newDB([
-    'health'
-]);
-
-const hopperCounters = newDB([
-    'counter',
-    'counters',
-]);
-
-const resetall = newDB([
-    'resetall'
-]);
-
-const data = newDB([
-    'data'
-]);
-
 module({
-    infoDisplay, features, camera, data, distance, entitydensity, gamemode, hopperCounters, jump, peek, summontnt, tntlog, health, warp, resetall
+    infoDisplay, features
 });
 
 function newDB(arr, db = true) {
