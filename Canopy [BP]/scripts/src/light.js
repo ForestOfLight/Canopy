@@ -15,7 +15,10 @@ mc.world.beforeEvents.playerLeave.subscribe(event => {
 const LightLevel = {
     lightEntityMap: {},
 
-    getLightLevel(playerId, location, dimension) {
+    getLightLevel(player) {
+        const playerId = player.id;
+        const location = player.location;
+        const dimension = player.dimension;
         if (!this.lightEntityMap[playerId]) {
             try {
                 this.lightEntityMap[playerId] = dimension.spawnEntity('info:light_level', location, { initialPersistence: false });
@@ -26,7 +29,8 @@ const LightLevel = {
         
         let lightLevel;
         if (this.lightEntityMap[playerId]) {
-            lightLevel = getLightForPlayer(playerId, location, dimension);
+            const playerYaw = player.getRotation().x;
+            lightLevel = getLightForPlayer(playerId, getPlayerTeleportLocation(playerYaw, location), dimension);
         }
         return lightLevel;
     },
@@ -59,6 +63,12 @@ function getLightForPlayer(playerId, location, dimension) {
     }
     if (lightLevel === undefined) lightLevel = '?';
     return lightLevel;
+}
+
+function getPlayerTeleportLocation(yaw, location) {
+    const x = location.x - Math.sin(yaw * Math.PI / 180) * .1;
+    const z = location.z + Math.cos(yaw * Math.PI / 180) * .1;
+    return { x, y: location.y, z };
 }
 
 export { LightLevel }

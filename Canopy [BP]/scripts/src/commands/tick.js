@@ -43,7 +43,7 @@ function tickSlow(sender, mspt) {
     if (mspt < 50.0)
         return sender.sendMessage('§cMSPT cannot be less than 50.0.');
     else if (mspt === 50.0)
-        return sender.sendMessage('§cReset MSPT to 50.0.');
+        return mc.world.sendMessage('§7Reset tick speed.');
     currentTickSpeed = mspt;
     mc.world.sendMessage(`§7Tick speed set to ${mspt} mspt.`);
     tickSpeed(mspt);
