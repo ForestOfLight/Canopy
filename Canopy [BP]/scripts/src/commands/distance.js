@@ -56,7 +56,7 @@ function trySaveLocation(sender, args) {
     else if (areDefined(fromArgX, fromArgY, fromArgZ))
         savedLocation = { x: fromArgX, y: fromArgY, z: fromArgZ };
     else
-        return '§cInvalid arguments. Usage: ./distance from [x y z]';
+        return '§cUsage: ./distance from [x y z]';
 
     return `§7Saved location: ${Utils.stringifyLocation(savedLocation)}`;
 }
@@ -67,7 +67,7 @@ function tryCalculateDistanceFromSave(sender, args) {
     let toLocation;
 
     if (!hasSavedLocation() || (savedLocation.x === null && savedLocation.y === null && savedLocation.z === null))
-        return '§cNo saved location found. Save a location with this command: ./distance from [x y z]';
+        return '§cNo saved location found. Save a location with: ./distance from [x y z]';
     fromLocation = savedLocation;
 
     if (areDefined(fromArgX, fromArgY, fromArgZ))
@@ -75,7 +75,7 @@ function tryCalculateDistanceFromSave(sender, args) {
     else if (areUndefined(fromArgX, fromArgY, fromArgZ))
         toLocation = sender.location;
     else
-        return '§cInvalid arguments. Usage: ./distance to [x y z]';
+        return '§cUsage: ./distance to [x y z]';
     
     return getCompleteOutput(fromLocation, toLocation);
 }
@@ -93,7 +93,7 @@ function tryCalculateDistance(sender, args) {
         fromLocation = { x: fromArgX, y: fromArgY, z: fromArgZ };
         toLocation = { x: toArgX, y: toArgY, z: toArgZ };
     } else {
-        return '§cInvalid arguments. Usage: ./distance from <x y z> to [x y z]';
+        return '§cUsage: ./distance from <x y z> to [x y z]';
     }
 
     return getCompleteOutput(fromLocation, toLocation);
@@ -140,8 +140,8 @@ function getCompleteOutput(locationOne, locationTwo) {
     let output = '';
     const { cartesianDistance, cylindricalDistance, manhattanDistance } = calculateDistances(locationOne, locationTwo);
     output += `§7Distance from §a${Utils.stringifyLocation(locationOne)}§7 to §a${Utils.stringifyLocation(locationTwo)}§7:\n`;
-    output += `§7Cartesian: §r§l${cartesianDistance.toFixed(3)}\n`;
-    output += `§7Cartesian(XZ): §r§l${cylindricalDistance.toFixed(3)}\n`;
-    output += `§7Manhattan: §r§l${manhattanDistance.toFixed(3)}\n`;
+    output += `§7Cartesian: §r§l${cartesianDistance.toFixed(3)}§r\n`;
+    output += `§7Cartesian(XZ): §r§l${cylindricalDistance.toFixed(3)}§r\n`;
+    output += `§7Manhattan: §r§l${manhattanDistance.toFixed(3)}§r\n`;
     return output;
 }

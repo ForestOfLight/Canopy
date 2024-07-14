@@ -19,6 +19,7 @@ const infoDisplay = newDB([
 
 const features = newDB([
     'camera',
+    'dupeTnt',
     'flippinArrows',
     'hardcodedTntPrimeMomentum',
     'hopperCounters',

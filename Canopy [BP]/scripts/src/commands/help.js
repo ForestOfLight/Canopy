@@ -74,6 +74,7 @@ class HelpBook {
         this.helpPages[1].addItem('help', './help [infodisplay/features/page number]', 'Displays help pages.');
         this.helpPages[1].addItem('camera', './camera place', 'Places a camera at your current location. (alias: ./cp)');
         this.helpPages[1].addItem('camera', './camera view', 'Toggles viewing your latest camera placement. (alias: ./cv)');
+        this.helpPages[1].addItem('changedimension', './changedimension <dimension> [x y z]', 'Teleports you to the specified dimension.');
         this.helpPages[1].addItem('hopper counters', './counter [color/all]', 'Displays the count and rates of the hopper counters. (alias: ./ct)');
         this.helpPages[1].addItem('hopper counters', './counter <color/all> <mode>', 'Sets the mode of a hopper counter: countMode, perhourMode, perminuteMode, or persecondMode. (alias: ./ct)');
         this.helpPages[1].addItem('hopper counters', './counter realtime', 'Toggles real-world time and tick-based time to do rate calculations. (alias: ./ct)');
@@ -86,7 +87,7 @@ class HelpBook {
         this.helpPages[2].addItem('gamemode', './s, ./c, ./sp', 'Easy gamemode switching.');
         this.helpPages[2].addItem('health', './health', 'Displays the server\'s current TPS, MSPT, and entity counts.');
         this.helpPages[2].addItem('jump', './jump', 'Teleports you to the block you\'re looking at. (alias: ./j)');
-        this.helpPages[2].addItem('peek', './peek', 'Peeks at a block or entity\'s inventory. (alias: ./p)');
+        this.helpPages[2].addItem('peek', './peek [search term]', 'Peeks at a block or entity\'s inventory. Use the search term to highlight items that include it. (alias: ./p [search term])');
         this.helpPages[2].addItem('summon tnt', './summontnt <amount>', 'Summons the specified amount of primed TNT entity at your location.');
         this.helpPages[3].addItem('tnt log', './tntlog <true/false>', 'Enables/disables primed TNT location logging.');
         this.helpPages[3].addItem('tnt log', './tntlog <precision>', 'Sets the precision of primed TNT location logging. (default: 2)');

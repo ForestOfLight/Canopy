@@ -5,7 +5,7 @@ mc.world.afterEvents.playerSpawn.subscribe(event => {
     const player = event.player;
     if (event.initialSpawn || !player.getDynamicProperty('light')) return;
     const dimension = player.dimension;
-    LightLevel.lightEntityMap[player.id] = dimension.spawnEntity('info:light_level', player.location, { initialPersistence: false });
+    LightLevel.lightEntityMap[player.id] = dimension.spawnEntity('canopy:light_level', player.location, { initialPersistence: false });
 });
 
 mc.world.beforeEvents.playerLeave.subscribe(event => {
@@ -21,7 +21,7 @@ const LightLevel = {
         const dimension = player.dimension;
         if (!this.lightEntityMap[playerId]) {
             try {
-                this.lightEntityMap[playerId] = dimension.spawnEntity('info:light_level', location, { initialPersistence: false });
+                this.lightEntityMap[playerId] = dimension.spawnEntity('canopy:light_level', location, { initialPersistence: false });
             } catch(error) {
                 this.cleanUp();
             }
@@ -29,14 +29,14 @@ const LightLevel = {
         
         let lightLevel;
         if (this.lightEntityMap[playerId]) {
-            const playerYaw = player.getRotation().x;
+            const playerYaw = player.getRotation().y;
             lightLevel = getLightForPlayer(playerId, getPlayerTeleportLocation(playerYaw, location), dimension);
         }
         return lightLevel;
     },
 
     cleanUp() {
-        const lightEntities = Data.getEntitiesByType('info:light_level');
+        const lightEntities = Data.getEntitiesByType('canopy:light_level');
         for (const entity of lightEntities) {
             LightLevel.lightEntityMap = {};
             entity.remove();
@@ -50,13 +50,13 @@ function getLightForPlayer(playerId, location, dimension) {
 
     try {
         entity.teleport(location, { dimension: dimension});
-        lightLevel = entity.getProperty('info:light');
+        lightLevel = entity.getProperty('canopy:light');
     } catch(error) {
         try {
             LightLevel.cleanUp();
-            LightLevel.lightEntityMap[playerId] = dimension.spawnEntity('info:light_level', location, { initialPersistence: false });
+            LightLevel.lightEntityMap[playerId] = dimension.spawnEntity('canopy:light_level', location, { initialPersistence: false });
             entity = LightLevel.lightEntityMap[playerId];
-            lightLevel = entity.getProperty('info:light');
+            lightLevel = entity.getProperty('canopy:light');
         } catch(innerError) {
             LightLevel.cleanUp();
         }
@@ -66,9 +66,9 @@ function getLightForPlayer(playerId, location, dimension) {
 }
 
 function getPlayerTeleportLocation(yaw, location) {
-    const x = location.x - Math.sin(yaw * Math.PI / 180) * .1;
-    const z = location.z + Math.cos(yaw * Math.PI / 180) * .1;
-    return { x, y: location.y, z };
+    const x = location.x + Math.sin(yaw * Math.PI / 180) * .15;
+    const z = location.z - Math.cos(yaw * Math.PI / 180) * .15;
+    return { x: x, y: location.y, z: z };
 }
 
 export { LightLevel }

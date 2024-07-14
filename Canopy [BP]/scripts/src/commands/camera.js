@@ -87,11 +87,12 @@ function cameraCommand(sender, args) {
 
 function placeCameraAction(sender) {
     let camera;
+    let eyeHeight = 1.62001002;
 
     if (sender.getDynamicProperty('isViewingCamera')) return sender.sendMessage('§cYou cannot place a camera while viewing one.');
 
     camera = new Camera(
-        { x: sender.getHeadLocation().x, y: sender.getHeadLocation().y + 0.1, z: sender.getHeadLocation().z },
+        { x: sender.location.x, y: sender.location.y + eyeHeight, z: sender.location.z },
         sender.getRotation(),
         sender.dimension.id
     );

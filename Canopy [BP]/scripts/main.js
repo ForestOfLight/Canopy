@@ -21,6 +21,7 @@ import 'src/commands/counter'
 import 'src/commands/resetall'
 import 'src/commands/data'
 import 'src/commands/tick'
+import 'src/commands/changedimension'
 
 // Features
 import 'src/features/InfoDisplay'
@@ -31,6 +32,7 @@ import 'src/features/noTileDrops'
 import 'src/features/flippinArrows'
 import 'src/features/tnt/noTntPrimeMomentum'
 import 'src/features/tnt/hardcodedTntPrimeMomentum'
+import 'src/features/tnt/dupeTnt'
 
 let hasShownWelcome = false;
 

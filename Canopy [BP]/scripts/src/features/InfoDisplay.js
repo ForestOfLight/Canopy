@@ -64,7 +64,7 @@ function parseLightAndEntities(player) {
 	let fovEntities;
 	let output = '';
 
-	if (showLight) lightLevel = LightLevel.getLightLevel(player.id, player.location, player.dimension);
+	if (showLight) lightLevel = LightLevel.getLightLevel(player);
 	if (showEntities) fovEntities = Entities.getEntitiesOnScreenCount(player);
 	if (showLight && showEntities) output += `§rLight: §e${lightLevel} §rEntities: §7${fovEntities}§r\n`;
 	else if (showLight) output += `§rLight: §e${lightLevel}§r\n`;

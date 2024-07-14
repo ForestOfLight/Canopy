@@ -11,14 +11,14 @@ mc.system.runInterval(() => {
 
 mc.world.afterEvents.playerBreakBlock.subscribe(blockEvent => {
     if (blockEvent.player.getGameMode() !== 'creative' 
-        || !mc.world.getDynamicProperty('noContainerTileDrops')) 
+        || !mc.world.getDynamicProperty('noTileDrops')) 
         return;
     brokenBlockEventsThisTick.push(blockEvent);
 });
 
 mc.world.afterEvents.entitySpawn.subscribe(entityEvent => {
     if (entityEvent.cause !== 'Spawned' || entityEvent.entity.typeId !== 'minecraft:item') return;
-    if (!mc.world.getDynamicProperty('noContainerTileDrops')) return;
+    if (!mc.world.getDynamicProperty('noTileDrops')) return;
 
     const item = entityEvent.entity;
     const brokenBlockEvents = brokenBlockEventsThisTick.concat(brokenBlockEventsLastTick);

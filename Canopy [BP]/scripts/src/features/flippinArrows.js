@@ -5,7 +5,7 @@ const WAIT_TIME_BETWEEN_USE = 5; // in ticks
 
 let previousBlocks = new Array(WAIT_TIME_BETWEEN_USE).fill(null);
 const flipBlocksOnPlace = ['piston', 'sticky_piston', 'dropper', 'dispenser', 'observer', 'crafter', 'repeater', 'comparator', 'hopper', 'end_rod', 'lightning_rod'];
-const flipBlocks = ['piston', 'sticky_piston', 'dropper', 'dispenser', 'observer', 'crafter', 'end_rod', 'lightning_rod'];
+const flipBlocks = ['piston', 'sticky_piston', 'observer', 'crafter', 'end_rod', 'lightning_rod'];
 const openBlocks = ['iron_trapdoor', 'iron_door'];
 const facingFlipMap = {
     0: 1,
@@ -30,10 +30,10 @@ const rotateMap = {
     1: 0
 }
 const orientationMap = {
-    'east_up': 'west_up',
-    'west_up': 'east_up',
-    'south_up': 'north_up',
-    'north_up': 'south_up',
+    'east_up': 'south_up',
+    'south_up': 'west_up',
+    'west_up': 'north_up',
+    'north_up': 'east_up',
     'up_east': 'down_west',
     'up_west': 'down_east',
     'up_north': 'down_south',
@@ -196,6 +196,8 @@ function safeSetblock(player, block, blockId, directionState, permutationValue, 
     if (Object.keys(otherPermutations).length === 0) otherPermutations = '';
     else otherPermutations = ',' + Object.entries(otherPermutations).map(([key, value]) => `\"${key}\"=${value}`).join(',');
     const setblockCmd = `setblock ${block.location.x} ${block.location.y} ${block.location.z} ${blockId} ["${directionState.name}"=${permutationValue}${otherPermutations}] replace`;
-    player.runCommand(`setblock ${block.location.x} ${block.location.y} ${block.location.z} air replace`);
-    player.runCommand(setblockCmd);
+    (async () => {
+        player.runCommandAsync(`setblock ${block.location.x} ${block.location.y} ${block.location.z} air replace`);
+        player.runCommandAsync(setblockCmd);
+    })();
 }

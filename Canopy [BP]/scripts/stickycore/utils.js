@@ -18,11 +18,11 @@ class Utils {
 		return `${formattedHours}:${formattedMinutes} ${period}`;
 	}
 
-    static calcDistance(locationOne, locationTwo, useZ = true) {
+    static calcDistance(locationOne, locationTwo, useY = true) {
 		const x = locationOne.x - locationTwo.x;
-		const y = locationOne.y - locationTwo.y;
-		if (!useZ) return Math.sqrt(x*x + y*y);
 		const z = locationOne.z - locationTwo.z;
+		if (!useY) return Math.sqrt(x*x + z*z);
+		const y = locationOne.y - locationTwo.y;
 		return Math.sqrt(x*x + y*y + z*z);
 	}
 

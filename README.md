@@ -1,10 +1,10 @@
 ![Canopy Logo](./CanopyLogo_icon_text.jpg)
 
 [![GitHub Downloads](https://img.shields.io/github/downloads/ForestOfLight/Canopy/total?label=Github%20downloads&logo=github)](https://github.com/ForestOfLight/Canopy/releases/latest)
-[![Curseforge Downloads](https://cf.way2muchnoise.eu/full_canopy_downloads.svg)]()
+[![Curseforge Downloads](https://cf.way2muchnoise.eu/full_1062078_downloads.svg)](https://www.curseforge.com/minecraft-bedrock/addons/canopy)
 [![Discord](https://badgen.net/discord/members/9KGche8fxm?icon=discord&label=Discord&list=what)](https://discord.gg/9KGche8fxm)
 
-This pack brings technical informatics and quality-of-life changes to Minecraft Bedrock Edition, similar to the Carpet Mod for Minecraft: Java Edition.
+This pack brings technical informatics, new features, and quality-of-life changes to Minecraft Bedrock Edition, similar to the Carpet Mod for Minecraft: Java Edition.
 
 # What is Canopy?
 

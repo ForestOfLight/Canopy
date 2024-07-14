@@ -39,6 +39,4 @@ function parseArgs(text) {
 	return args.filter(_ => _ != '$nll_');
 }
 
-
-
 export default parseArgs;

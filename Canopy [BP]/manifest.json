@@ -2,10 +2,10 @@
 	"format_version": 2,
 	"header": {
 		"name": "Canopy [BP]",
-		"description": "Technical informatics and quality-of-life addon by §aForestOfLight§r.",
+		"description": "Technical informatics and QoL addon by §aForestOfLight§r.",
 		"uuid": "e9f3a30c-f040-4cb7-a146-e15e7088f2ff",
-		"min_engine_version": [1, 21, 1],
-		"version": [1, 2, 4]
+		"min_engine_version": [1, 21, 0],
+		"version": [1, 2, 5]
 	},
 	"modules": [
 		{

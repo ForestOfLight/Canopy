@@ -28,12 +28,12 @@ new Command()
     .build()
 
 function featureCommand(sender, args) {
+    if (!sender.hasTag('CanopyAdmin')) return sender.sendMessage('§cYou do not have permission to use this command.');
     const features = module.exports['features'];
     const { feature, enable } = args;
-    const loweredFeature = feature.toLowerCase();
-    const validFeature = features[loweredFeature];
+    if (feature === null || enable === null) return sender.sendMessage(`§cUsage: ./feature <feature> <true/false>`);
+    const validFeature = features[feature.toLowerCase()];
 
-    if (enable === null) return sender.sendMessage(`§cUsage: ./feature <feature> <true/false>`);
     if (!validFeature) return sender.sendMessage(`§cInvalid feature: ${feature}`);
     if (enable === mc.world.getDynamicProperty(validFeature)) return sender.sendMessage(`§7${feature} is already ${enable ? '§l§aenabled' : '§l§cdisabled'}.`);
 

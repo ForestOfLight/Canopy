@@ -1,6 +1,7 @@
 import * as mc from '@minecraft/server'
 import MT from './src/mt.js'
 import Utils from 'stickycore/utils'
+import { currentQuery } from 'src/commands/peek'
 
 class Data {
 	static #owDimension = mc.world.getDimension('overworld');
@@ -119,9 +120,14 @@ class Data {
 	
 		output = '';
 		items = Utils.populateItems(inventory, items);
-		if (Object.keys(items).length > 0)
-			for (let i in items) output += `\n§r${i}: ${items[i]}`;
-		else output = '\n§rEmpty';
+		if (Object.keys(items).length > 0) {
+			for (let itemName in items) {
+				if (itemName.includes(currentQuery[sender.name]))
+					output += `\n§c${itemName}: ${items[itemName]}`;
+				else
+					output += `\n§r${itemName}: ${items[itemName]}`;
+			}
+		} else output = '\n§rEmpty';
 				
 		return output;
 	}

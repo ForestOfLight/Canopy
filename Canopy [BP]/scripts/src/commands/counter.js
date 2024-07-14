@@ -153,6 +153,36 @@ class CounterChannelMap {
 const channelMap = new CounterChannelMap();
 const validModes = ['countMode', 'perhourMode', 'perminuteMode', 'persecondMode'];
 
+mc.system.afterEvents.scriptEventReceive.subscribe((event) => {
+    if (event.id !== 'canopy:counter') return;
+    const sourceName = getSourceName(event);
+    const message = event.message;
+    if (message === 'reset') {
+        channelMap.resetAll();
+        mc.world.sendMessage(`§7[${sourceName}] Reset all hopper counters.`);
+        return;
+    }
+});
+
+function getSourceName(event) {
+    switch (event.sourceType) {
+        case 'Block':
+            if (event.sourceBlock.typeId === 'minecraft:command_block')
+                return '@';
+            return event.sourceBlock.typeId;
+        case 'Entity':
+            if (event.sourceEntity.typeId === 'minecraft:player')
+                return event.sourceEntity.name;
+            else 
+                return event.sourceEntity.typeId;
+        case 'Server':
+            return 'Server';
+        default:
+            return 'Unknown';
+    }
+
+}
+
 mc.world.afterEvents.playerPlaceBlock.subscribe((event) => {
     if ((event.block.typeId !== 'minecraft:hopper' && !event.block.typeId.slice(-4) === 'wool')
         || !mc.world.getDynamicProperty('hopperCounters')) return;

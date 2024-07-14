@@ -43,9 +43,9 @@ function tickSlow(sender, mspt) {
     if (mspt < 50.0)
         return sender.sendMessage('§cMSPT cannot be less than 50.0.');
     else if (mspt === 50.0)
-        return mc.world.sendMessage('§7Reset tick speed.');
+        return mc.world.sendMessage(`§7[${sender.name}] Reset tick speed.`);
     currentTickSpeed = mspt;
-    mc.world.sendMessage(`§7Tick speed set to ${mspt} mspt.`);
+    mc.world.sendMessage(`§7[${sender.name}] Tick speed set to ${mspt} mspt.`);
     tickSpeed(mspt);
 }
 
@@ -62,7 +62,7 @@ function tickStep(sender, steps) {
         shouldStep = 1;
     else
         shouldStep = steps;
-    mc.world.sendMessage(`§7Stepping ${shouldStep} tick(s)...`);
+    mc.world.sendMessage(`§[${sender.name}] Stepping ${shouldStep} tick(s)...`);
 }
 
 function tickSpeed(desiredMspt) {
