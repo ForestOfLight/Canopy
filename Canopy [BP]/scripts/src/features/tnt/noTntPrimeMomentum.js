@@ -1,9 +1,14 @@
-import * as mc from '@minecraft/server'
+import { world, system } from '@minecraft/server'
+import { negateXZVelocity, correctErrorAndNegateXZVelocity } from './hardcodedTntPrimeMomentum.js'
 
-mc.world.afterEvents.entitySpawn.subscribe((event) => {
-    if (!mc.world.getDynamicProperty('noTntPrimeMomentum')) return;
+world.afterEvents.entitySpawn.subscribe((event) => {
+    if (event.entity.typeId !== 'minecraft:tnt' || !world.getDynamicProperty('noTntPrimeMomentum')) return;
     const entity = event.entity;
-    if (entity.typeId === 'minecraft:tnt') {
-        entity.clearVelocity();
+    if (world.getDynamicProperty('dupeTnt')) {
+        system.runTimeout(() => {
+            correctErrorAndNegateXZVelocity(entity);
+        }, 1);
+    } else {
+        negateXZVelocity(entity);
     }
 });

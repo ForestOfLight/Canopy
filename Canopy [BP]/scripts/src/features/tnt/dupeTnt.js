@@ -1,26 +1,26 @@
-import * as mc from '@minecraft/server';
+import { system, world } from '@minecraft/server';
 
 let spawnedEntitiesThisTick = [];
 
-mc.system.runInterval(() => {
-    mc.system.runTimeout(() => {
+system.runInterval(() => {
+    system.runTimeout(() => {
         spawnedEntitiesThisTick = [];
     }, 0);
 }, 1);
 
-mc.world.afterEvents.entitySpawn.subscribe((event) => {
-	if (event.entity.typeId !== 'minecraft:tnt' || !mc.world.getDynamicProperty('dupeTnt')) return;
+world.afterEvents.entitySpawn.subscribe((event) => {
+	if (event.entity.typeId !== 'minecraft:tnt' || !world.getDynamicProperty('dupeTnt')) return;
     const entity = event.entity;
     spawnedEntitiesThisTick.push(entity);
 });
 
-mc.world.afterEvents.pistonActivate.subscribe((event) => {
-    if (!mc.world.getDynamicProperty('dupeTnt')) return;
+world.afterEvents.pistonActivate.subscribe((event) => {
+    if (!world.getDynamicProperty('dupeTnt')) return;
     const block = event.block;
     const direction = block.permutation.getState('facing_direction');
     const pistonState = event.piston.state;
     const attachedLocations = correctAttachedLocations(event.piston.getAttachedBlocksLocations(), pistonState, direction);
-    mc.system.runTimeout(() => {
+    system.runTimeout(() => {
         if (isOverlapping(spawnedEntitiesThisTick, attachedLocations)) {
             for (let i = 0; i < attachedLocations.length; i++) {
                 const tntBlock = event.dimension.getBlock(attachedLocations[i]);

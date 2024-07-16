@@ -1,3 +1,5 @@
+import { ItemStack } from '@minecraft/server';
+
 class Utils {
 	static ticksToTime(ticks) {
 		const ticksPerDay = 24000;
@@ -181,6 +183,28 @@ class Utils {
 		if (itemsPerHour == NaN || itemsPerHour == Infinity) return '?/?';
 		return `${itemsPerHour.toFixed(1)}/${unit}`;
 	}
+
+	static getInventory(block) {
+        const container = block.getComponent('inventory')?.container;
+        if (container === undefined) return {};
+		const items = {};
+		for (let i = 0; i < container.size; i++) {
+			const itemStack = container.getItem(i);
+			if (itemStack === undefined) continue;
+			items[i] = { typeId: itemStack.type.id, amount: itemStack.amount };
+		}
+        return items;
+    }
+
+    static restoreInventory(block, items) {
+        const container = block.getComponent('inventory')?.container;
+        if (container === undefined) return;
+		for (let i = 0; i < container.size; i++) {
+			const item = items[i];
+			if (item === undefined) continue;
+			container.getSlot(i).setItem(new ItemStack(item.typeId, item.amount));
+		}
+    }
 }
 
 export default Utils;

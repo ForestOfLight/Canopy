@@ -2,8 +2,8 @@
   "format_version": 2,
   "header": {
     "name": "Canopy [RP]",
-    "description": "§3Developed by Alecs",
-    "uuid": "a33372c8-a0bf-d56d-3627-4319d4b96d2b",
+    "description": "Technical informatics and QoL addon by §aForestOfLight§r.",
+    "uuid": "bcf34368-ed0c-4cf7-938e-582cccf9950d",
     "version": [1, 0, 0],
     "min_engine_version": [1,17,0]
   },

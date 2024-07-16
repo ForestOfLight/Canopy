@@ -71,4 +71,6 @@ function getPlayerTeleportLocation(yaw, location) {
     return { x: x, y: location.y, z: z };
 }
 
+LightLevel.cleanUp();
+
 export { LightLevel }

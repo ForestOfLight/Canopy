@@ -140,13 +140,6 @@ function endCameraView(sender) {
     sender.setDynamicProperty('isViewingCamera', false);
 }
 
-function cameraFadeOut(sender) {
-    sender.camera.fade({
-        fadeColor: { red: 0, green: 0, blue: 0 }, 
-        fadeTime: { fadeInTime: 0.5, fadeOutTime: 0.5, holdTime: 0.0 }
-    });
-}
-
 function spectateAction(sender) {
     if (sender.getDynamicProperty('isViewingCamera')) return sender.sendMessage('§cYou cannot spectate while viewing a camera.');
     if (!sender.getDynamicProperty('isSpectating')) return startSpectate(sender);
@@ -180,4 +173,11 @@ function endSpectate(sender) {
             sender.addEffect(effect.typeId, effect.duration, { amplifier: effect.amplifier });
         sender.setGameMode(beforeSpectatorPlayer.gamemode);
     }, 8);
+}
+
+function cameraFadeOut(sender) {
+    sender.camera.fade({
+        fadeColor: { red: 0, green: 0, blue: 0 }, 
+        fadeTime: { fadeInTime: 0.5, fadeOutTime: 0.5, holdTime: 0.0 }
+    });
 }

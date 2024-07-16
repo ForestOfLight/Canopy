@@ -24,7 +24,7 @@ function InfoDisplay(player) {
 	InfoText += parseHopperCounters(player);
 	InfoText += parseLookingAtAndPeek(player);
 	
-	player.onScreenDisplay.setActionBar(InfoText.trim());
+	player.onScreenDisplay.setTitle(InfoText.trim());
 }
 
 function parseCoordsAndFacing(player) {

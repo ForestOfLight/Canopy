@@ -1,5 +1,5 @@
-import * as mc from '@minecraft/server'
+import { world } from "@minecraft/server";
 
-mc.world.beforeEvents.explosion.subscribe(ev => {
-    if (mc.world.getDynamicProperty('noExplosionBlockDamage')) ev.setImpactedBlocks([]);
+world.beforeEvents.explosion.subscribe(ev => {
+    if (world.getDynamicProperty('noExplosionBlockDamage')) ev.setImpactedBlocks([]);
 });

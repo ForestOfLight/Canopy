@@ -35,7 +35,7 @@ new Command()
 function infoDisplayFeatures(sender, args) {
     const features = module.exports['infoDisplay'];
     const { feature, enable } = args;
-    if (feature === null || enable === null) return sender.sendMessage(`§cUsage: /info <feature> <true/false>`);
+    if (feature === null || enable === null) return sender.sendMessage(`§cUsage: ./info <feature> <true/false>`);
     
     const validFeature = features[feature.toLowerCase()];
     if (!validFeature) return sender.sendMessage(`§c${feature} not found.`);
