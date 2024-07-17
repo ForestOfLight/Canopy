@@ -1,16 +1,16 @@
-import * as mc from '@minecraft/server'
+import { system, world } from '@minecraft/server'
 import Utils from 'stickycore/utils'
 
 const UPDATE_INTERVAL = 100; // 100 ticks = 5 seconds
 
-// mc.system.runInterval(() => {
-//     const shouldUpdate = mc.world.getAllPlayers().some(player => player.getDynamicProperty('entities'));
+// system.runInterval(() => {
+//     const shouldUpdate = world.getAllPlayers().some(player => player.getDynamicProperty('entities'));
     
 //     if (!shouldUpdate) return;
 
-//     Entities.owEntities = mc.world.getDimension('overworld').getEntities();
-//     Entities.netherEntities = mc.world.getDimension('nether').getEntities();
-//     Entities.endEntities = mc.world.getDimension('the_end').getEntities();
+//     Entities.owEntities = world.getDimension('overworld').getEntities();
+//     Entities.netherEntities = world.getDimension('nether').getEntities();
+//     Entities.endEntities = world.getDimension('the_end').getEntities();
 //     Entities.owEntityCount = countEntities(Entities.owEntities, true);
 //     Entities.netherEntityCount = countEntities(Entities.netherEntities, true);
 //     Entities.endEntityCount = countEntities(Entities.endEntities, true);
@@ -52,7 +52,7 @@ const Entities = {
 
     getPlayerRadiusEntityCount(player, radius) {
         const { x, z } = player.location;
-        const dimensionEntities = this.getDimensionEntities(player.dimension.id);
+        const dimensionEntities = player.dimension.getEntities();
 
         let count = 0;
         for (const entity of dimensionEntities) {
@@ -91,7 +91,7 @@ const Entities = {
 
     findDenseAreas(dimensionId, gridSize, numResults = 10) {
         const grid = new Map();
-        const entities = mc.world.getDimension(dimensionId).getEntities();
+        const entities = world.getDimension(dimensionId).getEntities();
     
         for (const entity of entities) {
             try{
@@ -120,7 +120,7 @@ const Entities = {
         let totalEntities;
         let output = '';
         for (let dimensionId of dimensionIds) {
-            dimensionEntities[dimensionId] = mc.world.getDimension(dimensionId).getEntities();
+            dimensionEntities[dimensionId] = world.getDimension(dimensionId).getEntities();
         }
     
         totalEntities = dimensionEntities.overworld.length + dimensionEntities.nether.length + dimensionEntities.the_end.length;

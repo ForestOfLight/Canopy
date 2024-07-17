@@ -1,17 +1,16 @@
+import { system, world } from '@minecraft/server'
 import Command from 'stickycore/command'
 import Utils from 'stickycore/utils'
 import { DataTPS } from 'src/tps'
-import * as mc from '@minecraft/server'
 
 let currentTickSpeed = 50.0;
 let shouldReset = false;
 let shouldStep = 0;
 
-mc.system.runInterval(() => {
+system.runInterval(() => {
     if (shouldStep > 0) {
         shouldStep--;
-        if (shouldStep == 0)
-            mc.world.sendMessage('§7Completed tick step.');
+        if (shouldStep == 0) Utils.broadcastActionBar('§7Tick step complete.');
         return;
     }
     tickSpeed(currentTickSpeed);
@@ -43,16 +42,16 @@ function tickSlow(sender, mspt) {
     if (mspt < 50.0)
         return sender.sendMessage('§cMSPT cannot be less than 50.0.');
     else if (mspt === 50.0)
-        return mc.world.sendMessage(`§7[${sender.name}] Reset tick speed.`);
+        return world.sendMessage(`§7${sender.name} reset tick speed.`);
     currentTickSpeed = mspt;
-    mc.world.sendMessage(`§7[${sender.name}] Tick speed set to ${mspt} mspt.`);
+    Utils.broadcastActionBar(sender, `§7${sender.name} set tick speed to ${mspt} mspt.`);
     tickSpeed(mspt);
 }
 
 function tickReset(sender) {
     shouldReset = true;
     currentTickSpeed = 50.0;
-    mc.world.sendMessage('§7Reset tick speed.');
+    Utils.broadcastActionBar(sender, `§7${sender.name} reset tick speed.`);
 }
 
 function tickStep(sender, steps) {
@@ -62,7 +61,7 @@ function tickStep(sender, steps) {
         shouldStep = 1;
     else
         shouldStep = steps;
-    mc.world.sendMessage(`§[${sender.name}] Stepping ${shouldStep} tick(s)...`);
+    Utils.broadcastActionBar(sender, `§7${sender.name} stepping ${shouldStep} tick(s)...`);
 }
 
 function tickSpeed(desiredMspt) {

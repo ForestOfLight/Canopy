@@ -1,14 +1,14 @@
-import * as mc from '@minecraft/server'
+import { world } from '@minecraft/server'
 import Data from 'stickycore/data'
 
-mc.world.afterEvents.playerSpawn.subscribe(event => {
+world.afterEvents.playerSpawn.subscribe(event => {
     const player = event.player;
     if (event.initialSpawn || !player.getDynamicProperty('light')) return;
     const dimension = player.dimension;
     LightLevel.lightEntityMap[player.id] = dimension.spawnEntity('canopy:light_level', player.location, { initialPersistence: false });
 });
 
-mc.world.beforeEvents.playerLeave.subscribe(event => {
+world.beforeEvents.playerLeave.subscribe(event => {
     delete LightLevel.lightEntityMap[event.player.id];
 });
 

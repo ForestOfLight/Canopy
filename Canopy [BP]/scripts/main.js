@@ -1,4 +1,4 @@
-import * as mc from '@minecraft/server'
+import { system, world} from '@minecraft/server'
 
 // Config
 import 'src/config/database'
@@ -36,12 +36,12 @@ import 'src/features/tnt/dupeTnt'
 
 let hasShownWelcome = false;
 
-mc.world.afterEvents.playerJoin.subscribe((event) => {
-    let runner = mc.system.runInterval(() => {
-        const players = mc.world.getPlayers({ name: event.playerName });
+world.afterEvents.playerJoin.subscribe((event) => {
+    let runner = system.runInterval(() => {
+        const players = world.getPlayers({ name: event.playerName });
         players.forEach(player => {
             if (!hasShownWelcome && player.isValid()) {
-                mc.system.clearRun(runner);
+                system.clearRun(runner);
                 hasShownWelcome = true;
                 displayWelcome(player);
             }

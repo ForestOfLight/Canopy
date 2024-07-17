@@ -1,6 +1,6 @@
+import { system, world } from '@minecraft/server'
 import Command from 'stickycore/command'
 import Data from 'stickycore/data'
-import * as mc from '@minecraft/server'
 import Utils from 'stickycore/utils'
 
 class HopperCounter {
@@ -29,12 +29,12 @@ class CounterChannelMap {
 
     constructor() {
         for (const color of this.colors) {
-            const channelJSON = mc.world.getDynamicProperty(`${color}CounterChannel`);
+            const channelJSON = world.getDynamicProperty(`${color}CounterChannel`);
             if (channelJSON) {
                 this.resetAll();
                 continue;
             }
-            mc.world.setDynamicProperty(`${color}CounterChannel`, JSON.stringify(new CounterChannel(color)));
+            world.setDynamicProperty(`${color}CounterChannel`, JSON.stringify(new CounterChannel(color)));
         }
     }
 
@@ -59,21 +59,21 @@ class CounterChannelMap {
     }
 
     getChannel(color) {
-        const channelJSON = mc.world.getDynamicProperty(`${color}CounterChannel`);
+        const channelJSON = world.getDynamicProperty(`${color}CounterChannel`);
         if (!channelJSON) {
             const newChannel = new CounterChannel(color);
-            mc.world.setDynamicProperty(`${color}CounterChannel`, JSON.stringify(newChannel));
+            world.setDynamicProperty(`${color}CounterChannel`, JSON.stringify(newChannel));
             return newChannel;
         }
         return JSON.parse(channelJSON);
     }
 
     setChannel(color, channel) {
-        mc.world.setDynamicProperty(`${color}CounterChannel`, JSON.stringify(channel));
+        world.setDynamicProperty(`${color}CounterChannel`, JSON.stringify(channel));
     }
 
     removeChannel(color) {
-        mc.world.setDynamicProperty(`${color}CounterChannel`, JSON.stringify(new CounterChannel(color)));
+        world.setDynamicProperty(`${color}CounterChannel`, JSON.stringify(new CounterChannel(color)));
     }
 
     addCounter(color, hopper) {
@@ -92,7 +92,7 @@ class CounterChannelMap {
             hopperCounter.location.z !== hopper.location.z ||
             hopperCounter.dimensionId !== hopper.dimension.id
         );
-        mc.system.runTimeout(() => {
+        system.runTimeout(() => {
             if (channel.hopperList.length === 0)
                 this.removeChannel(color);
             else
@@ -153,13 +153,13 @@ class CounterChannelMap {
 const channelMap = new CounterChannelMap();
 const validModes = ['countMode', 'perhourMode', 'perminuteMode', 'persecondMode'];
 
-mc.system.afterEvents.scriptEventReceive.subscribe((event) => {
+system.afterEvents.scriptEventReceive.subscribe((event) => {
     if (event.id !== 'canopy:counter') return;
     const sourceName = getSourceName(event);
     const message = event.message;
     if (message === 'reset') {
         channelMap.resetAll();
-        mc.world.sendMessage(`§7[${sourceName}] Reset all hopper counters.`);
+        Utils.broadcastActionBar(null, `§7[${sourceName}] Reset all hopper counters.`);
         return;
     }
 });
@@ -183,9 +183,9 @@ function getSourceName(event) {
 
 }
 
-mc.world.afterEvents.playerPlaceBlock.subscribe((event) => {
+world.afterEvents.playerPlaceBlock.subscribe((event) => {
     if ((event.block.typeId !== 'minecraft:hopper' && !event.block.typeId.slice(-4) === 'wool')
-        || !mc.world.getDynamicProperty('hopperCounters')) return;
+        || !world.getDynamicProperty('hopperCounters')) return;
 
     tryCreateCounter(event.block);
 });
@@ -208,18 +208,18 @@ function tryCreateCounter(block) {
     }
 }
 
-mc.system.runInterval(() => {
-    if (!mc.world.getDynamicProperty('hopperCounters')) return;
+system.runInterval(() => {
+    if (!world.getDynamicProperty('hopperCounters')) return;
     channelMap.forEach(channel => {
         if (channel.hopperList.length === 0) return;
         updateCount(channel);
-        mc.world.setDynamicProperty(`${channel.color}CounterChannel`, JSON.stringify(channel));
+        world.setDynamicProperty(`${channel.color}CounterChannel`, JSON.stringify(channel));
     });
 });
 
 function updateCount(channel) {
     for (const hopperCounter of channel.hopperList) {
-        const hopper = mc.world.getDimension(hopperCounter.dimensionId).getBlock(hopperCounter.location);
+        const hopper = world.getDimension(hopperCounter.dimensionId).getBlock(hopperCounter.location);
 
         if (!hopper) return; // hopper is unloaded
         if (hopper.typeId !== 'minecraft:hopper' || getHopperFacingBlock(hopper)?.typeId !== `minecraft:${channel.color}_wool`)
@@ -250,7 +250,7 @@ new Command()
     .build()
 
 function counterCommand(sender, args) {
-    if (!mc.world.getDynamicProperty('hopperCounters')) return sender.sendMessage('§cThe hopperCounters feature is disabled.');
+    if (!world.getDynamicProperty('hopperCounters')) return sender.sendMessage('§cThe hopperCounters feature is disabled.');
     const { argOne, argTwo } = args;
 
     if (!channelMap.colors.includes(argOne) && argOne !== 'reset' && argOne !== 'realtime' && argOne !== 'all' && validModes.includes(argTwo)) {

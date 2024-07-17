@@ -4,7 +4,7 @@ import Data from 'stickycore/data'
 import { LightLevel } from 'src/light';
 
 class DependantFeature {
-    constructor(validFeature, dependantFeature, turnsOn) {
+    constructor(validFeature, dependantFeature) {
         this.validFeature = validFeature;
         this.dependantFeature = dependantFeature;
     }

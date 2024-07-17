@@ -1,6 +1,6 @@
 import Command from 'stickycore/command';
 import Utils from 'stickycore/utils';
-import * as mc from '@minecraft/server';
+import { world } from '@minecraft/server';
 
 const validDimensions = {
     'o': 'overworld',
@@ -27,7 +27,7 @@ function changedimensionCommand(player, args) {
     const validDimensionId = validDimensions[dimension.toLowerCase()];
     if (!validDimensionId) return player.sendMessage(`§cInvalid dimension. Please use one of these: ${Object.keys(validDimensions).join(', ')}`);
     
-    const validDimension = mc.world.getDimension(validDimensionId);
+    const validDimension = world.getDimension(validDimensionId);
     if ((x !== null && y !== null && z !== null) && (Utils.isNumeric(x) && Utils.isNumeric(y) && Utils.isNumeric(z))) {
         player.teleport({ x, y, z }, { dimension: validDimension } );
         player.sendMessage(`§7Teleported to ${x}, ${y}, ${z} in the ${validDimensionId} dimension.`);

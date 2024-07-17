@@ -1,4 +1,4 @@
-import { ItemStack } from '@minecraft/server';
+import { world, ItemStack } from '@minecraft/server';
 
 class Utils {
 	static ticksToTime(ticks) {
@@ -205,6 +205,42 @@ class Utils {
 			container.getSlot(i).setItem(new ItemStack(item.typeId, item.amount));
 		}
     }
+
+	static broadcastActionBar(player = null, message) {
+		if (player === null) Utils.broadcastActionBar(message);
+		player.sendMessage(message);
+		const otherPlayers = world.getPlayers({ excludeNames: [player.name] });
+		otherPlayers.forEach(player => player.onScreenDisplay.setActionBar(message));
+	}
+
+	static locationInArea(area, position) {
+		const { posOne, posTwo } = area;
+		const { dimensionId } = position;
+		if (area.dimensionId !== dimensionId) return false;
+		const { x: x1, y: y1, z: z1 } = posOne;
+		const { x: x2, y: y2, z: z2 } = posTwo;
+		const { x, y, z } = position;
+		const inX = x >= Math.min(x1, x2) && x <= Math.max(x1, x2);
+		const inY = y >= Math.min(y1, y2) && y <= Math.max(y1, y2);
+		const inZ = z >= Math.min(z1, z2) && z <= Math.max(z1, z2);
+		return inX && inY && inZ;
+	}
+
+	static getColoredDimensionName(dimensionId) {
+		switch (dimensionId) {
+			case 'minecraft:overworld':
+			case 'overworld':
+				return '§aOverworld';
+			case 'minecraft:nether':
+			case 'nether':
+				return '§cNether';
+			case 'minecraft:the_end':
+			case 'the_end':
+				return '§dThe End';
+			default:
+				return '§7Unknown';
+		}
+	}
 }
 
 export default Utils;

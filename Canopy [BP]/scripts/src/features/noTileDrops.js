@@ -1,24 +1,24 @@
-import * as mc from '@minecraft/server'
+import { system, world } from '@minecraft/server'
 import Utils from 'stickycore/utils'
 
 let brokenBlockEventsThisTick = [];
 let brokenBlockEventsLastTick = [];
 
-mc.system.runInterval(() => {
+system.runInterval(() => {
     brokenBlockEventsLastTick = brokenBlockEventsThisTick;
     brokenBlockEventsThisTick = [];
 });
 
-mc.world.afterEvents.playerBreakBlock.subscribe(blockEvent => {
+world.afterEvents.playerBreakBlock.subscribe(blockEvent => {
     if (blockEvent.player.getGameMode() !== 'creative' 
-        || !mc.world.getDynamicProperty('noTileDrops')) 
+        || !world.getDynamicProperty('noTileDrops')) 
         return;
     brokenBlockEventsThisTick.push(blockEvent);
 });
 
-mc.world.afterEvents.entitySpawn.subscribe(entityEvent => {
+world.afterEvents.entitySpawn.subscribe(entityEvent => {
     if (entityEvent.cause !== 'Spawned' || entityEvent.entity.typeId !== 'minecraft:item') return;
-    if (!mc.world.getDynamicProperty('noTileDrops')) return;
+    if (!world.getDynamicProperty('noTileDrops')) return;
 
     const item = entityEvent.entity;
     const brokenBlockEvents = brokenBlockEventsThisTick.concat(brokenBlockEventsLastTick);

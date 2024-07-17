@@ -1,5 +1,5 @@
+import { world } from '@minecraft/server'
 import Command from 'stickycore/command'
-import * as mc from '@minecraft/server'
 import Data from 'stickycore/data'
 
 new Command()
@@ -17,9 +17,9 @@ function jumpCommand(sender) {
     let maxDistance = 64*16;
     let jumpLocation;
 
-    if (!mc.world.getDynamicProperty('jump'))
+    if (!world.getDynamicProperty('jump'))
         return sender.sendMessage('§cThe jump feature is disabled.');
-    else if (!mc.world.getDynamicProperty('jumpInSurvival') && sender.getGameMode() === 'survival')
+    else if (!world.getDynamicProperty('jumpInSurvival') && sender.getGameMode() === 'survival')
         return sender.sendMessage('§cThe jump feature is disabled in survival mode.');
 
     blockRayResult = Data.getLookingAtBlock(sender, maxDistance);
@@ -31,10 +31,10 @@ function jumpCommand(sender) {
 function getBlockLocationFromFace(block, face) {
     switch(face) {
         case 'Up': return { x: block.x, y: block.y + 1, z: block.z};
-        case 'Down': return { x: block.x, y: block.y - 1, z: block.z};
-        case 'North': return { x: block.x, y: block.y + 1, z: block.z};
-        case 'South': return { x: block.x, y: block.y + 1, z: block.z};
-        case 'East': return { x: block.x + 1, y: block.y + 1, z: block.z};
-        case 'West': return { x: block.x - 1, y: block.y + 1, z: block.z};
+        case 'Down': return { x: block.x, y: block.y - 2, z: block.z};
+        case 'North': return { x: block.x, y: block.y, z: block.z - 1};
+        case 'South': return { x: block.x, y: block.y, z: block.z + 1};
+        case 'East': return { x: block.x + 1, y: block.y, z: block.z};
+        case 'West': return { x: block.x - 1, y: block.y, z: block.z};
     }
 }

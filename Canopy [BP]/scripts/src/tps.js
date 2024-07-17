@@ -1,6 +1,5 @@
-import * as mc from '@minecraft/server'
+import { system } from '@minecraft/server'
 
-// Track TPS
 const DataTPS = {
 	tps: 0,
 	avgMspt: 0,
@@ -18,7 +17,7 @@ const DataTPS = {
 	}
 }
 
-mc.system.runInterval(() => {
+system.runInterval(() => {
 	if (DataTPS.tpsArray.length >= 20) DataTPS.tpsArray.shift();
 	if (DataTPS.msptArray.length >= 20) DataTPS.msptArray.shift();
 	DataTPS.mspt = Date.now() - DataTPS.lastTick;

@@ -1,0 +1,139 @@
+import { world, DimensionTypes, MolangVariableMap, system } from '@minecraft/server';
+import SpawnTracker from 'src/classes/SpawnTracker'
+
+const categories = [ 'creatures', 'ambient', 'axolotls', 'monster', 'water_creature', 'water_ambient', 'underground_water_creature', 'misc', 'other' ];
+const dimensionIds = DimensionTypes.getAll().map(({ typeId }) => typeId);
+
+class WorldSpawns {
+    constructor(mobIds = [], activeArea = null) {
+        this.activeArea = activeArea;
+        this.areaHighlightRunner = null;
+        this.trackers = {};
+        this.startTick = system.currentTick;
+        if (activeArea) highlightActiveArea();
+        if (mobIds.length > 0) this.trackMobs(mobIds);
+        else this.trackAll();
+    }
+
+    destruct() {
+        if (this.areaHighlightRunner) system.clearRun(this.areaHighlightRunner);
+        Object.values(this.trackers).forEach(dimensionTracker => {
+            Object.values(dimensionTracker).forEach(tracker => {
+                tracker.stopTracking();
+            });
+        });
+    }
+
+    highlightActiveArea() {
+        this.areaHighlightRunner = system.runInterval(() => {
+            traceAreaEdges(this.activeArea);
+        });
+    }
+
+    traceAreaEdges(activeArea) {
+        const { posOne, posTwo, dimensionId } = activeArea;
+        const startPos = { x: Math.min(posOne.x, posTwo.x), y: Math.min(posOne.y, posTwo.y), z: Math.min(posOne.z, posTwo.z) };
+        const endPos = { x: Math.max(posOne.x, posTwo.x), y: Math.max(posOne.y, posTwo.y), z: Math.max(posOne.z, posTwo.z) };
+        const edges = [
+            ['x', startPos.x, endPos.x, 'y', 'z'],
+            ['y', startPos.y, endPos.y, 'x', 'z'],
+            ['z', startPos.z, endPos.z, 'x', 'y']
+        ];
+    
+        edges.forEach(([axis, start, end, fixed1, fixed2]) => {
+            [startPos[fixed1], endPos[fixed1]].forEach(fixed1Value => {
+                [startPos[fixed2], endPos[fixed2]].forEach(fixed2Value => {
+                    for (let pos = start; pos <= end; pos++) {
+                        const coordinates = { [axis]: pos, [fixed1]: fixed1Value, [fixed2]: fixed2Value };
+                        if (axis !== 'x' && (pos === start || pos === end)) continue;
+                        world.getDimension(dimensionId).spawnParticle('minecraft:endrod', coordinates, new MolangVariableMap());
+                    }
+                });
+            });
+        });
+    }
+
+    trackAll() {
+        dimensionIds.forEach(dimensionId => {
+            this.trackers[dimensionId] = {};
+            categories.forEach(category => {
+                this.trackers[dimensionId][category] = new SpawnTracker(dimensionId, category, [], this.activeArea);
+            });
+        });
+    }
+
+    trackMobs(mobIds) {
+        dimensionIds.forEach(dimensionId => {
+            this.trackers[dimensionId] = this.trackers[dimensionId] || {};
+            this.trackers[dimensionId]['custom'] = new SpawnTracker(dimensionId, null, mobIds, this.activeArea);
+        });
+    }
+
+    reset() {
+        this.startTick = system.currentTick;
+        Object.values(this.trackers).forEach(dimensionTracker => {
+            Object.values(dimensionTracker).forEach(tracker => {
+                tracker.reset();
+            });
+        });
+    }
+
+    getOutput() {
+        let output = `§7Spawn statistics (${this.getMinutesSinceStart()} min.):`;
+        for (const dimensionId in this.trackers) {
+            output += `\n${Utils.getColoredDimensionName(dimensionId)}§7: ${this.getFormattedDimensionValues(dimensionId)}`;
+            for (const category in this.trackers[dimensionId]) {
+                const tracker = this.trackers[dimensionId][category];
+                output += `\n§7> ${category}: ${tracker.getOutput()}`;
+            }
+        }
+    }
+
+    getMinutesSinceStart() {
+        const deltaTime = system.currentTick - this.startTick
+        return (Math.floor(deltaTime / 8) * 8) / 1200;
+    }
+
+    getFormattedDimensionValues(dimensionId) {
+        const mobsPerTick = this.getMobsPerTick(dimensionId);
+        const avgMobsPerTick = this.getAvgMobsPerTick(mobsPerTick).toFixed(1);
+        const successSpawnsPercent = Math.round(this.getSpawnSuccessPercent(mobsPerTick));
+        const unsuccessSpawnsPercent = 100 - successSpawnsPercent;
+        const avgMobsPerSuccessTick = this.getAvgMobsPerSuccessTick(mobsPerTick).toFixed(1);
+
+        return `§7(§f${avgMobsPerTick}§7 m/t, (§f${unsuccessSpawnsPercent}%§7- / §f${successSpawnsPercent}%§7+): §f${avgMobsPerSuccessTick}§7 m/att)`;
+    }
+
+    getMobsPerTick(dimensionId) {
+        const mobsPerTick = [];
+        for (const category in this.trackers[dimensionId]) {
+            const tracker = this.trackers[dimensionId][category];
+            const trackerMobsPerTick = tracker.getMobsPerTickMap();
+            for (const tick in trackerMobsPerTick)
+                mobsPerTick[tick] = mobsPerTick[tick] ? mobsPerTick[tick] + trackerMobsPerTick[tick] : trackerMobsPerTick[tick];
+        }
+        return mobsPerTick;
+    }
+
+    getAvgMobsPerTick(dimensionMobsPerTick) {
+        const ticksSinceStart = system.currentTick - this.startTick;
+        if (ticksSinceStart === 0) return 0;
+        return this.getTotalMobs(dimensionMobsPerTick) / ticksSinceStart;
+    }
+
+    getSpawnSuccessPercent(dimensionMobsPerTick) {
+        const ticksSinceStart = system.currentTick - this.startTick;
+        if (ticksSinceStart === 0) return 0;
+        return (Object.keys(dimensionMobsPerTick).length / ticksSinceStart) * 100;
+    }
+
+    getAvgMobsPerSuccessTick(dimensionMobsPerTick) {
+        const mptLength = Object.keys(dimensionMobsPerTick).length;
+        if (mptLength === 0) return 0;
+        return this.getTotalMobs(dimensionMobsPerTick) / mptLength;
+    }
+
+    getTotalMobs(dimensionMobsPerTick) {
+        return Object.keys(dimensionMobsPerTick).reduce((acc, tick) => acc + dimensionMobsPerTick[tick], 0);
+    }
+}

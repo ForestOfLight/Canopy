@@ -1,9 +1,9 @@
+import { system } from '@minecraft/server'
 import Command from 'stickycore/command'
 import { DataTPS } from 'src/tps'
 import  { Entities } from 'src/entities'
 import Data from 'stickycore/data'
 import Utils from 'stickycore/utils'
-import * as mc from '@minecraft/server'
 
 new Command()
     .setName('health')
@@ -11,7 +11,7 @@ new Command()
     .build()
 
 function healthCommand(sender) {
-    mc.system.runTimeout(() => {
+    system.runTimeout(() => {
         printRealMspt(sender);
     }, 0);
     Entities.printDimensionEntities(sender);
@@ -27,7 +27,7 @@ function printRealMspt(sender) {
 
     lastTick = Data.getAbsoluteTime();
     ({ startTime, endTime } = Utils.wait(50));
-    mc.system.runTimeout(() => {
+    system.runTimeout(() => {
         if (Data.getAbsoluteTime() - lastTick != 1) return sender.sendMessage(`§cCould not compute MSPT. Please report this error.`);
         
         realMspt = Date.now() - startTime - (endTime - startTime);

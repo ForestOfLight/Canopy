@@ -137,7 +137,7 @@ class Data {
 
 		if (global) mc.world.setDynamicProperty(feature, enable);
 		else sender.setDynamicProperty(feature, enable);
-		sender.sendMessage(`§7${feature} has been ${enable ? '§l§aenabled' : '§l§cdisabled'}§r§7.`);
+		Utils.broadcastActionBar(`§7${feature} has been ${enable ? '§l§aenabled' : '§l§cdisabled'}§r§7.`);
 	}
 
 	static getEntitiesByType(type) {

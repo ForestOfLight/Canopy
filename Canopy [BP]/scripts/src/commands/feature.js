@@ -1,4 +1,4 @@
-import * as mc from '@minecraft/server'
+import { world } from '@minecraft/server'
 import { module } from 'stickycore/dynamic'
 import Command from 'stickycore/command'
 import Data from 'stickycore/data'
@@ -35,7 +35,7 @@ function featureCommand(sender, args) {
     const validFeature = features[feature.toLowerCase()];
 
     if (!validFeature) return sender.sendMessage(`§cInvalid feature: ${feature}`);
-    if (enable === mc.world.getDynamicProperty(validFeature)) return sender.sendMessage(`§7${feature} is already ${enable ? '§l§aenabled' : '§l§cdisabled'}.`);
+    if (enable === world.getDynamicProperty(validFeature)) return sender.sendMessage(`§7${feature} is already ${enable ? '§l§aenabled' : '§l§cdisabled'}.`);
 
     if (validFeature === 'hopperCounters' && !enable) resetCounterMap();
     updateDependantFeatures(sender, validFeature, enable);

@@ -1,4 +1,4 @@
-import * as mc from '@minecraft/server'
+import { system, world } from '@minecraft/server'
 import Data from 'stickycore/data'
 import Utils from 'stickycore/utils'
 import { DataTPS } from 'src/tps'
@@ -6,8 +6,8 @@ import { Entities } from 'src/entities'
 import { LightLevel } from 'src/light'
 import { getInfoDisplayOutput } from 'src/commands/counter'
 
-mc.system.runInterval(() => {
-	const Players = mc.world.getAllPlayers();
+system.runInterval(() => {
+	const Players = world.getAllPlayers();
 	for (const player of Players) {
 		if (player.getDynamicProperty('showDisplay')) InfoDisplay(player);
 	}

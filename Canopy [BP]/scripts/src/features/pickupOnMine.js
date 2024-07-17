@@ -1,20 +1,20 @@
-import * as mc from '@minecraft/server'
+import { system, world } from '@minecraft/server'
 import Utils from 'stickycore/utils'
 
 let brokenBlockEventsThisTick = [];
 
-mc.system.runInterval(() => {
+system.runInterval(() => {
     brokenBlockEventsThisTick = [];
 });
 
-mc.world.afterEvents.playerBreakBlock.subscribe(blockEvent => {
-    if (blockEvent.player.getGameMode() === 'creative' || !mc.world.getDynamicProperty('pickupOnMine')) return;
+world.afterEvents.playerBreakBlock.subscribe(blockEvent => {
+    if (blockEvent.player.getGameMode() === 'creative' || !world.getDynamicProperty('pickupOnMine')) return;
     brokenBlockEventsThisTick.push(blockEvent);
 });
 
-mc.world.afterEvents.entitySpawn.subscribe(entityEvent => {
+world.afterEvents.entitySpawn.subscribe(entityEvent => {
     if (entityEvent.cause !== 'Spawned' || entityEvent.entity.typeId !== 'minecraft:item') return;
-    if (!mc.world.getDynamicProperty('pickupOnMine')) return;
+    if (!world.getDynamicProperty('pickupOnMine')) return;
 
     const item = entityEvent.entity;
     const brokenBlockEvent = brokenBlockEventsThisTick.find(blockEvent => Utils.calcDistance(blockEvent.block.location, item.location) < 2);
@@ -23,7 +23,7 @@ mc.world.afterEvents.entitySpawn.subscribe(entityEvent => {
     const itemStack = item.getComponent('minecraft:item').itemStack;
     const inventory = brokenBlockEvent.player.getComponent('minecraft:inventory').container;
     if (canAdd(inventory, itemStack)) {
-        inventory.addItem(itemStack)
+        inventory.addItem(itemStack) // doesnt always put things in the right slot 🎉
         item.remove();
     }
 });

@@ -1,6 +1,5 @@
 import Command from 'stickycore/command'
 import Utils from 'stickycore/utils'
-import Data from 'stickycore/data'
 
 const BLOCK_COMPONENTS = ['minecraft:inventory', 'minecraft:lavaContainer', 'minecraft:piston', 'minecraft:potionContainer', 'minecraft:record_player',
     'minecraft:sign', 'minecraft:snowContainer', 'minecraft:waterContainer'];

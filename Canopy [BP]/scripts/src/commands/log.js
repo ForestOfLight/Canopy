@@ -1,5 +1,5 @@
+import { system, world } from '@minecraft/server'
 import Command from 'stickycore/command'
-import * as mc from '@minecraft/server'
 import Data from 'stickycore/data'
 import Utils from 'stickycore/utils'
 
@@ -61,7 +61,7 @@ class TypeLog {
         this.thisTickEntities = [];
         this.movingEntities = [];
         for (const dimensionId of ['overworld', 'nether', 'the_end']) {
-            const dimEntities = mc.world.getDimension(dimensionId).getEntities();
+            const dimEntities = world.getDimension(dimensionId).getEntities();
             for (const entity of dimEntities) {
                 if (hasTrait(entity, this.logType)) {
                     this.thisTickEntities.push(entity);
@@ -137,14 +137,14 @@ const fallingBlockLog = new TypeLog('falling_blocks');
 let logStartTick = Data.getAbsoluteTime();
 let activeTntLocations = {};
 
-mc.world.afterEvents.entitySpawn.subscribe((event) => {
+world.afterEvents.entitySpawn.subscribe((event) => {
     const entity = event.entity;
     if (entity.typeId === 'minecraft:tnt') {
         activeTntLocations[entity.id] = entity.location;
     }
 });
 
-mc.world.beforeEvents.entityRemove.subscribe((event) => {
+world.beforeEvents.entityRemove.subscribe((event) => {
     const removedEntity = event.removedEntity;
     if (removedEntity.typeId === 'minecraft:tnt') {
         loggingPlayers.forEach(loggingPlayer => {
@@ -166,7 +166,7 @@ function printTntLog(player, tntEntity) {
     player.sendMessage(output);
 }
 
-mc.system.runInterval(() => {
+system.runInterval(() => {
 	loggingPlayers.forEach(loggingPlayer => {
         if (loggingPlayer.types.length === 0) loggingPlayers.remove(loggingPlayer.player);
         if (loggingPlayer.types.includes('projectiles') || loggingPlayer.types.includes('falling_blocks'))

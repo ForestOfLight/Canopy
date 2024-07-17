@@ -1,5 +1,5 @@
 import Command from 'stickycore/command'
-import * as mc from '@minecraft/server'
+import { system, world } from '@minecraft/server'
 
 class BeforeSpectatorPlayer {
     constructor(player) {
@@ -13,23 +13,21 @@ class BeforeSpectatorPlayer {
     }
 }
 
-mc.world.beforeEvents.playerGameModeChange.subscribe((ev) => {
+world.beforeEvents.playerGameModeChange.subscribe((ev) => {
     const player = ev.player;
     if (player.getDynamicProperty('isSpectating') && ev.fromGameMode === 'spectator' && ev.toGameMode !== 'spectator') {
         player.sendMessage('§cYou cannot change your gamemode while spectating.');
-        mc.system.run(() => {
+        system.run(() => {
             player.setGameMode(ev.fromGameMode);
         });
     }
 });
 
-mc.world.beforeEvents.playerLeave.subscribe((ev) => {
-    const player = ev.player;
-    if (!player.getDynamicProperty('isViewingCamera')) return;
-    player.setDynamicProperty('isViewingCamera', false);
+world.beforeEvents.playerLeave.subscribe((ev) => {
+    ev.player.setDynamicProperty('isViewingCamera', false);
 });
 
-mc.world.afterEvents.playerDimensionChange.subscribe((ev) => {
+world.afterEvents.playerDimensionChange.subscribe((ev) => {
     const player = ev.player;
     if (!player.getDynamicProperty('isViewingCamera')) return;
     player.camera.clear();
@@ -67,7 +65,7 @@ class Camera {
 
 function cameraCommand(sender, args) {
     const { action } = args;
-    if (!mc.world.getDynamicProperty('camera')) return sender.sendMessage('§cThe camera feature is disabled.');
+    if (!world.getDynamicProperty('camera')) return sender.sendMessage('§cThe camera feature is disabled.');
 
     switch (action) {
         case 'place':
@@ -134,7 +132,7 @@ function startCameraView(sender, placedCamera) {
 
 function endCameraView(sender) {
     cameraFadeOut(sender);
-    mc.system.runTimeout(() => {
+    system.runTimeout(() => {
         sender.camera.clear();
     }, 8);
     sender.setDynamicProperty('isViewingCamera', false);
@@ -152,7 +150,7 @@ function startSpectate(sender) {
     const savedPlayer = new BeforeSpectatorPlayer(sender);
     sender.setDynamicProperty('beforeSpectatorPlayer', JSON.stringify(savedPlayer));
     
-    mc.system.runTimeout(() => {
+    system.runTimeout(() => {
         sender.setGameMode('spectator');
         for (let effect of sender.getEffects())
             sender.removeEffect(effect.typeId);
@@ -165,10 +163,10 @@ function endSpectate(sender) {
     cameraFadeOut(sender);
     const beforeSpectatorPlayer = JSON.parse(sender.getDynamicProperty('beforeSpectatorPlayer'));
     sender.setDynamicProperty('isSpectating', false);
-    mc.system.runTimeout(() => {
+    system.runTimeout(() => {
         for (let effect of sender.getEffects())
             sender.removeEffect(effect.typeId);
-        sender.teleport(beforeSpectatorPlayer.location, { dimension: mc.world.getDimension(beforeSpectatorPlayer.dimensionId), rotation: beforeSpectatorPlayer.rotation });
+        sender.teleport(beforeSpectatorPlayer.location, { dimension: world.getDimension(beforeSpectatorPlayer.dimensionId), rotation: beforeSpectatorPlayer.rotation });
         for (const effect of beforeSpectatorPlayer.effects)
             sender.addEffect(effect.typeId, effect.duration, { amplifier: effect.amplifier });
         sender.setGameMode(beforeSpectatorPlayer.gamemode);
