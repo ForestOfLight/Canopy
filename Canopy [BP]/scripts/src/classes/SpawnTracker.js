@@ -1,5 +1,5 @@
 import { system, world } from '@minecraft/server'
-import Utils from 'src/stickycore/utils'
+import Utils from 'stickycore/utils'
 
 const categoryToMobMap = {
     'creature' : [
@@ -104,7 +104,17 @@ const categoryToMobMap = {
     ],
 }
 
-const CLEAR_RECENTS_THRESHOLD = 200; // 10 seconds
+const CLEAR_RECENTS_THRESHOLD = 600; // 600 ticks = 30 seconds
+const wasTrackingLastTick = false;
+
+world.afterEvents.entitySpawn.subscribe((event) => {
+    if (!world.getDynamicProperty('isTrackingSpawns') && wasTrackingLastTick) this.stopTracking();
+    else if (!world.getDynamicProperty('isTrackingSpawns')) return;
+    const entity = event.entity; 
+    if (entity.dimension.id !== this.dimensionId || !this.mobs.includes(entity.typeId.replace('minecraft:', ''))) return;
+    if (this.activeArea && !Utils.locationInArea(this.activeArea, { location: entity.location, dimensionId: entity.dimension.id })) return;
+    this.countMob(entity);
+});
 
 class SpawnTracker {
     constructor(dimensionId, category = null, mobIds = [], activeArea = null) {
@@ -129,21 +139,15 @@ class SpawnTracker {
     }
 
     startTracking() {
-        world.afterEvents.entitySpawn.subscribe((event) => {
-            if (world.getDynamicProperty('isTrackingSpawns') !== true) this.stopTracking();
-            const entity = event.entity; 
-            if (entity.dimension.id !== this.dimensionId || !this.mobs.includes(entity.typeId.replace('minecraft:', ''))) return;
-            if (this.activeArea && !Utils.locationInArea(this.activeArea, { location: entity.location, dimensionId: entity.dimension.id })) return;
-            this.countMob(entity);
-        });
         this.recentsClearRunner = system.runInterval(() => {
             this.clearOldMobs(CLEAR_RECENTS_THRESHOLD);
         });
+        wasTrackingLastTick = true;
     }
 
     stopTracking() {
-        world.afterEvents.entitySpawn.unsubscribe();
         system.clearRun(this.recentsClearRunner);
+        wasTrackingLastTick = false;
     }
 
     countMob(entity) {
@@ -211,11 +215,8 @@ class SpawnTracker {
         return recents;
     }
 
-    getRecentSpawns(mobname) {
-        return this.recents[mobname] ? this.recents[mobname].map((timedLocation) => timedLocation.location) : [];
-    }
-
     getOutput() {
+        if (this.mobs.length === 0) return '';
         let output = '§7 > ';
         if (!this.category) output += `${this.category.toUpperCase()}`;
         else output += `TRACKED`;
@@ -224,6 +225,7 @@ class SpawnTracker {
         for (const mobname of this.mobs) {
             output += `\n§7  - ${mobname}: §f${this.getTotalSpawns(mobname)}§7 spawns, §f${this.calcSpawnsPerHr(mobname).toFixed(1)}§7/hr`;
         }
+        return output
     }
 
     getFormattedCategoryHeader() {

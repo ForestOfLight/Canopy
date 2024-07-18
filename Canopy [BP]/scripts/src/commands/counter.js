@@ -1,4 +1,4 @@
-import { system, world } from '@minecraft/server'
+import { system, world, ItemStack } from '@minecraft/server'
 import Command from 'stickycore/command'
 import Data from 'stickycore/data'
 import Utils from 'stickycore/utils'
@@ -153,36 +153,6 @@ class CounterChannelMap {
 const channelMap = new CounterChannelMap();
 const validModes = ['countMode', 'perhourMode', 'perminuteMode', 'persecondMode'];
 
-system.afterEvents.scriptEventReceive.subscribe((event) => {
-    if (event.id !== 'canopy:counter') return;
-    const sourceName = getSourceName(event);
-    const message = event.message;
-    if (message === 'reset') {
-        channelMap.resetAll();
-        Utils.broadcastActionBar(null, `§7[${sourceName}] Reset all hopper counters.`);
-        return;
-    }
-});
-
-function getSourceName(event) {
-    switch (event.sourceType) {
-        case 'Block':
-            if (event.sourceBlock.typeId === 'minecraft:command_block')
-                return '@';
-            return event.sourceBlock.typeId;
-        case 'Entity':
-            if (event.sourceEntity.typeId === 'minecraft:player')
-                return event.sourceEntity.name;
-            else 
-                return event.sourceEntity.typeId;
-        case 'Server':
-            return 'Server';
-        default:
-            return 'Unknown';
-    }
-
-}
-
 world.afterEvents.playerPlaceBlock.subscribe((event) => {
     if ((event.block.typeId !== 'minecraft:hopper' && !event.block.typeId.slice(-4) === 'wool')
         || !world.getDynamicProperty('hopperCounters')) return;
@@ -231,7 +201,7 @@ function updateCount(channel) {
         const itemType = itemStack.typeId.replace('minecraft:', '');
         channel.itemMap[itemType] = (channel.itemMap[itemType] || 0) + itemStack.amount;
         channel.totalCount += itemStack.amount;
-        hopperContainer.setItem(0, new mc.ItemStack('minecraft:air', 1));
+        hopperContainer.setItem(0, new ItemStack('minecraft:air', 1));
     }
 }
 
@@ -280,11 +250,13 @@ function counterCommand(sender, args) {
 function reset(sender, color) {
     channelMap.reset(color);
     sender.sendMessage(`§7Reset and time restarted: ${formatColor(color)}`);
+    Utils.broadcastActionBar(`${sender.name}: reset ${formatColor(color)} hopper counter`, sender);
 }
 
 function resetAll(sender) {
     channelMap.resetAll();
     sender.sendMessage(`§7All channels have been reset and hopper counter timer started.`);
+    Utils.broadcastActionBar(`${sender.name}: reset all hopper counters`, sender);
 }
 
 function realtimeQuery(sender, color) {
@@ -324,6 +296,7 @@ function setMode(sender, color, mode) {
 
     channelMap.setMode(color, mode);
     sender.sendMessage(`§7Hopper Counter ${formatColor(color)}§7 mode: ${mode}`);
+    Utils.broadcastActionBar(`${sender.name}: set ${formatColor(color)} hopper counter mode to ${mode}`, sender);
 }
 
 function setAllMode(sender, mode) {
@@ -334,6 +307,7 @@ function setAllMode(sender, mode) {
         channelMap.setMode(channel.color, mode);
     });
     sender.sendMessage(`§7All Hopper Counters mode: ${mode}`);
+    Utils.broadcastActionBar(`${sender.name}: set all hopper counters mode to ${mode}`, sender);
 }
 
 function getHopperFacingBlock(hopper) {
@@ -413,3 +387,5 @@ export function resetCounterMap() {
         channelMap.removeChannel(color);
     }
 }
+
+export { channelMap, formatColor, query, queryAll };

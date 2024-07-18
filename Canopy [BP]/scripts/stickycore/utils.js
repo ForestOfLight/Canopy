@@ -206,11 +206,11 @@ class Utils {
 		}
     }
 
-	static broadcastActionBar(player = null, message) {
-		if (player === null) Utils.broadcastActionBar(message);
-		player.sendMessage(message);
-		const otherPlayers = world.getPlayers({ excludeNames: [player.name] });
-		otherPlayers.forEach(player => player.onScreenDisplay.setActionBar(message));
+	static broadcastActionBar(message, sender) {
+		let players;
+		if (sender) players = world.getPlayers({ excludeNames: [sender.name] });
+		else players = world.getAllPlayers();
+		players.forEach(player => player.onScreenDisplay.setActionBar(message));
 	}
 
 	static locationInArea(area, position) {
@@ -239,6 +239,24 @@ class Utils {
 				return '§dThe End';
 			default:
 				return '§7Unknown';
+		}
+	}
+
+	static getScriptEventSourceName(event) {
+		switch (event.sourceType) {
+			case 'Block':
+				if (event.sourceBlock.typeId === 'minecraft:command_block')
+					return '!';
+				return event.sourceBlock.typeId;
+			case 'Entity':
+				if (event.sourceEntity.typeId === 'minecraft:player')
+					return event.sourceEntity.name;
+				else 
+					return event.sourceEntity.typeId;
+			case 'Server':
+				return 'Server';
+			default:
+				return 'Unknown';
 		}
 	}
 }

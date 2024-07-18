@@ -16,9 +16,9 @@ class BeforeSpectatorPlayer {
 world.beforeEvents.playerGameModeChange.subscribe((ev) => {
     const player = ev.player;
     if (player.getDynamicProperty('isSpectating') && ev.fromGameMode === 'spectator' && ev.toGameMode !== 'spectator') {
-        player.sendMessage('§cYou cannot change your gamemode while spectating.');
         system.run(() => {
             player.setGameMode(ev.fromGameMode);
+            player.onScreenDisplay.setActionBar('§cYou cannot change your gamemode while spectating.');
         });
     }
 });
@@ -128,6 +128,7 @@ function startCameraView(sender, placedCamera) {
         rotation: placedCamera.rotation
     });
     sender.setDynamicProperty('isViewingCamera', true);
+    sender.onScreenDisplay.setActionBar('§aViewing camera');
 }
 
 function endCameraView(sender) {
@@ -136,6 +137,7 @@ function endCameraView(sender) {
         sender.camera.clear();
     }, 8);
     sender.setDynamicProperty('isViewingCamera', false);
+    sender.onScreenDisplay.setActionBar('§7Camera view ended');
 }
 
 function spectateAction(sender) {
@@ -156,6 +158,7 @@ function startSpectate(sender) {
             sender.removeEffect(effect.typeId);
         sender.addEffect('night_vision', 999999, { amplifier: 0, showParticles: false });
         sender.addEffect('conduit_power', 999999, { amplifier: 0, showParticles: false });
+        sender.onScreenDisplay.setActionBar('§aSpectating');
     }, 8);
 }
 
@@ -170,6 +173,7 @@ function endSpectate(sender) {
         for (const effect of beforeSpectatorPlayer.effects)
             sender.addEffect(effect.typeId, effect.duration, { amplifier: effect.amplifier });
         sender.setGameMode(beforeSpectatorPlayer.gamemode);
+        sender.onScreenDisplay.setActionBar('§7Spectating ended');
     }, 8);
 }
 

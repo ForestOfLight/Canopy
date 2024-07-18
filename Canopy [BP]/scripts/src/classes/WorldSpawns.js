@@ -78,13 +78,41 @@ class WorldSpawns {
         });
     }
 
+    getRecentsOutput(mobname) {
+        let output = `§7Recent spawns (last 30s):`;
+        let recents = this.getRecents(mobname);
+        for (const dimensionId in recents) {
+            output += `\n${Utils.getColoredDimensionName(dimensionId)}§7:`;
+            for (const category in recents[dimensionId]) {
+                output += `\n§7 > ${category.toUpperCase()}:`;
+                for (const mobname in recents[dimensionId][category]) {
+                    output += `\n§7  - ${mobname}: ${recents[dimensionId][category][mobname].join(', ')}`;
+                }
+            }
+        }
+        return output;
+    }
+
+    getRecents(mobname) {
+        let recents = {};
+        for (const dimensionId in this.trackers) {
+            recents[dimensionId] = {};
+            for (const category in this.trackers[dimensionId]) {
+                const tracker = this.trackers[dimensionId][category];
+                if (mobname) recents[dimensionId][category] = tracker.getRecents()[mobname];
+                else recents[dimensionId][category] = tracker.getRecents();
+            }
+        }
+        return recents;
+    }
+
     getOutput() {
         let output = `§7Spawn statistics (${this.getMinutesSinceStart()} min.):`;
         for (const dimensionId in this.trackers) {
             output += `\n${Utils.getColoredDimensionName(dimensionId)}§7: ${this.getFormattedDimensionValues(dimensionId)}`;
             for (const category in this.trackers[dimensionId]) {
                 const tracker = this.trackers[dimensionId][category];
-                output += `\n§7> ${category}: ${tracker.getOutput()}`;
+                output += `\n${tracker.getOutput()}`;
             }
         }
     }
@@ -137,3 +165,5 @@ class WorldSpawns {
         return Object.keys(dimensionMobsPerTick).reduce((acc, tick) => acc + dimensionMobsPerTick[tick], 0);
     }
 }
+
+export default WorldSpawns;

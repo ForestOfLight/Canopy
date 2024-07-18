@@ -22,6 +22,11 @@ import 'src/commands/resetall'
 import 'src/commands/data'
 import 'src/commands/tick'
 import 'src/commands/changedimension'
+import 'src/commands/spawn'
+
+// Script Events
+import 'src/commands/scriptevents/counter'
+import 'src/commands/scriptevents/spawn'
 
 // Features
 import 'src/features/InfoDisplay'
@@ -33,7 +38,20 @@ import 'src/features/flippinArrows'
 import 'src/features/tnt/noTntPrimeMomentum'
 import 'src/features/tnt/hardcodedTntPrimeMomentum'
 import 'src/features/tnt/dupeTnt'
+import 'src/features/pistonBedrockBreaking'
+import 'src/features/hotbarSwitching'
 
+// Data & Utils
+import Data from 'stickycore/data'
+import Utils from 'stickycore/utils'
+
+// Reload message
+const allPlayers = world.getAllPlayers();
+if (allPlayers[0] !== undefined && allPlayers[0].isValid()) {
+    Utils.broadcastActionBar('§aBehavior packs have been reloaded.');
+}
+
+// Welcome message
 let hasShownWelcome = false;
 
 world.afterEvents.playerJoin.subscribe((event) => {

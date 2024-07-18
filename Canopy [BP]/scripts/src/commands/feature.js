@@ -16,6 +16,7 @@ class DependantFeatures {
         this.dependantFeatures = [
             new DependantFeature('jumpInSurvival', 'jump'),
             new DependantFeature('warpInSurvival', 'warp'),
+            new DependantFeature('hotberSwitching', 'hotbarSwitchingInSurvival'),
         ];
     }
 }
@@ -35,7 +36,7 @@ function featureCommand(sender, args) {
     const validFeature = features[feature.toLowerCase()];
 
     if (!validFeature) return sender.sendMessage(`§cInvalid feature: ${feature}`);
-    if (enable === world.getDynamicProperty(validFeature)) return sender.sendMessage(`§7${feature} is already ${enable ? '§l§aenabled' : '§l§cdisabled'}.`);
+    if (enable === world.getDynamicProperty(validFeature)) return sender.sendMessage(`§7${feature} is already ${enable ? '§l§aenabled' : '§l§cdisabled'}§r§7.`);
 
     if (validFeature === 'hopperCounters' && !enable) resetCounterMap();
     updateDependantFeatures(sender, validFeature, enable);

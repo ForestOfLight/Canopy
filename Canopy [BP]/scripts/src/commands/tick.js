@@ -10,7 +10,7 @@ let shouldStep = 0;
 system.runInterval(() => {
     if (shouldStep > 0) {
         shouldStep--;
-        if (shouldStep == 0) Utils.broadcastActionBar('§7Tick step complete.');
+        if (shouldStep == 0) world.sendMessage('Tick step complete.');
         return;
     }
     tickSpeed(currentTickSpeed);
@@ -42,16 +42,16 @@ function tickSlow(sender, mspt) {
     if (mspt < 50.0)
         return sender.sendMessage('§cMSPT cannot be less than 50.0.');
     else if (mspt === 50.0)
-        return world.sendMessage(`§7${sender.name} reset tick speed.`);
+        return world.sendMessage(`${sender.name} reset the tick speed.`);
     currentTickSpeed = mspt;
-    Utils.broadcastActionBar(sender, `§7${sender.name} set tick speed to ${mspt} mspt.`);
+    world.sendMessage(sender, `${sender.name} set the tick speed to ${mspt} mspt.`);
     tickSpeed(mspt);
 }
 
 function tickReset(sender) {
     shouldReset = true;
     currentTickSpeed = 50.0;
-    Utils.broadcastActionBar(sender, `§7${sender.name} reset tick speed.`);
+    world.sendMessage(sender, `${sender.name} reset the tick speed.`);
 }
 
 function tickStep(sender, steps) {
@@ -61,7 +61,7 @@ function tickStep(sender, steps) {
         shouldStep = 1;
     else
         shouldStep = steps;
-    Utils.broadcastActionBar(sender, `§7${sender.name} stepping ${shouldStep} tick(s)...`);
+    world.sendMessage(sender, `${sender.name} stepping ${shouldStep} tick(s)...`);
 }
 
 function tickSpeed(desiredMspt) {
