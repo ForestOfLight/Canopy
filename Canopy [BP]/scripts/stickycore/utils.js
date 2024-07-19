@@ -214,15 +214,12 @@ class Utils {
 	}
 
 	static locationInArea(area, position) {
+		if (area?.dimensionId !== position.dimensionId) return false;
 		const { posOne, posTwo } = area;
-		const { dimensionId } = position;
-		if (area.dimensionId !== dimensionId) return false;
-		const { x: x1, y: y1, z: z1 } = posOne;
-		const { x: x2, y: y2, z: z2 } = posTwo;
-		const { x, y, z } = position;
-		const inX = x >= Math.min(x1, x2) && x <= Math.max(x1, x2);
-		const inY = y >= Math.min(y1, y2) && y <= Math.max(y1, y2);
-		const inZ = z >= Math.min(z1, z2) && z <= Math.max(z1, z2);
+		const { location } = position;
+		const inX = location.x >= Math.min(posOne.x, posTwo.x) && location.x <= Math.max(posOne.x, posTwo.x);
+		const inY = location.y >= Math.min(posOne.y, posTwo.y) && location.y <= Math.max(posOne.y, posTwo.y);
+		const inZ = location.z >= Math.min(posOne.z, posTwo.z) && location.z <= Math.max(posOne.z, posTwo.z);
 		return inX && inY && inZ;
 	}
 

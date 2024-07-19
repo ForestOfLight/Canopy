@@ -1,4 +1,4 @@
-import { BlockPermutation, world } from '@minecraft/server'
+import { BlockPermutation, ItemStack, world } from '@minecraft/server'
 import DirectionStateFinder from 'src/classes/DirectionState'
 
 const insideBedrockPistonList = [];
@@ -8,6 +8,7 @@ world.afterEvents.pistonActivate.subscribe(event => {
     const piston = event.piston;
     const block = event.block;
     let directionState = DirectionStateFinder.getDirectionState(block.permutation);
+    if (directionState === undefined) return;
     directionState.value = DirectionStateFinder.getRawMirroredDirection(block);
     if (piston.state === 'Expanding') {
         const behindBlock = DirectionStateFinder.getRelativeBlock(block, directionState);
@@ -18,7 +19,8 @@ world.afterEvents.pistonActivate.subscribe(event => {
     } else if (piston.state === 'Retracting') {
         const oldPiston = getBlockFromPistonList(block);
         if (oldPiston !== undefined) {
-            block.setPermutation(BlockPermutation.resolve(block.typeId, { [directionState.name]: directionState.value }));
+            block.setType('minecraft:air');
+            event.dimension.spawnItem(new ItemStack('minecraft:piston', 1), block.location);
             insideBedrockPistonList.splice(insideBedrockPistonList.indexOf(oldPiston), 1);
         }
     }

@@ -5,9 +5,9 @@ import Utils from 'stickycore/utils';
 system.afterEvents.scriptEventReceive.subscribe((event) => {
     if (event.id !== 'canopy:counter') return;
     if (!world.getDynamicProperty('hopperCounters')) return Utils.broadcastActionBar('§cThe hopperCounters feature is disabled.');
-
     const sourceName = Utils.getScriptEventSourceName(event);
     const message = event.message;
+    
     if (message === '') {
         world.getAllPlayers().forEach(player => { queryAll(player); });
     } else if (channelMap.colors.includes(message)) {

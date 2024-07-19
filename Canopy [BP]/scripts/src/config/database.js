@@ -18,6 +18,7 @@ const infoDisplay = newDB([
 ]);
 
 const features = newDB([
+    'allowSpawnMocking',
     'camera',
     'dupeTnt',
     'flippinArrows',

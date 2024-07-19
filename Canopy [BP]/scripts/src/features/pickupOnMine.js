@@ -17,6 +17,7 @@ world.afterEvents.entitySpawn.subscribe(entityEvent => {
     if (!world.getDynamicProperty('pickupOnMine')) return;
 
     const item = entityEvent.entity;
+    brokenBlockEventsThisTick = brokenBlockEventsThisTick.filter(blockEvent => blockEvent.block !== undefined);
     const brokenBlockEvent = brokenBlockEventsThisTick.find(blockEvent => Utils.calcDistance(blockEvent.block.location, item.location) < 2);
     if (!brokenBlockEvent) return;
 

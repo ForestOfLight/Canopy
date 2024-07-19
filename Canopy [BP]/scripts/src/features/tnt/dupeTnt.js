@@ -18,7 +18,12 @@ world.afterEvents.pistonActivate.subscribe((event) => {
     if (!world.getDynamicProperty('dupeTnt')) return;
     const block = event.block;
     const direction = block.permutation.getState('facing_direction');
-    const pistonState = event.piston.state;
+    let pistonState;
+    try {
+        pistonState = event.piston.state;
+    } catch {
+        return 'Piston was removed';
+    }
     const attachedLocations = correctAttachedLocations(event.piston.getAttachedBlocksLocations(), pistonState, direction);
     system.runTimeout(() => {
         if (isOverlapping(spawnedEntitiesThisTick, attachedLocations)) {

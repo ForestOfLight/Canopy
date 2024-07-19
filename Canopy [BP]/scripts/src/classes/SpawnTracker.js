@@ -105,16 +105,7 @@ const categoryToMobMap = {
 }
 
 const CLEAR_RECENTS_THRESHOLD = 600; // 600 ticks = 30 seconds
-const wasTrackingLastTick = false;
-
-world.afterEvents.entitySpawn.subscribe((event) => {
-    if (!world.getDynamicProperty('isTrackingSpawns') && wasTrackingLastTick) this.stopTracking();
-    else if (!world.getDynamicProperty('isTrackingSpawns')) return;
-    const entity = event.entity; 
-    if (entity.dimension.id !== this.dimensionId || !this.mobs.includes(entity.typeId.replace('minecraft:', ''))) return;
-    if (this.activeArea && !Utils.locationInArea(this.activeArea, { location: entity.location, dimensionId: entity.dimension.id })) return;
-    this.countMob(entity);
-});
+let wasTrackingLastTick = false;
 
 class SpawnTracker {
     constructor(dimensionId, category = null, mobIds = [], activeArea = null) {
@@ -142,12 +133,30 @@ class SpawnTracker {
         this.recentsClearRunner = system.runInterval(() => {
             this.clearOldMobs(CLEAR_RECENTS_THRESHOLD);
         });
+        world.setDynamicProperty('isTrackingSpawns', true)
         wasTrackingLastTick = true;
     }
 
     stopTracking() {
         system.clearRun(this.recentsClearRunner);
+        world.setDynamicProperty('isTrackingSpawns', false);
         wasTrackingLastTick = false;
+    }
+
+    recieveMob(entity) {
+        if (!world.getDynamicProperty('isTrackingSpawns') && wasTrackingLastTick) this.stopTracking();
+        else if (!world.getDynamicProperty('isTrackingSpawns')) return;
+        if (!entity.isValid()) return;
+        if (entity.dimension.id !== this.dimensionId || !this.isTracking(entity.typeId.replace('minecraft:', ''))) return;
+
+        const position = { location: entity.location, dimensionId: entity.dimension.id };
+        if (this.activeArea && !Utils.locationInArea(this.activeArea, position)) return;
+        this.countMob(entity);
+    }
+
+    isTracking(mobname) {
+        if (!this.category) return this.mobs.includes(mobname);
+        return categoryToMobMap[this.category].includes(mobname);
     }
 
     countMob(entity) {
@@ -178,22 +187,22 @@ class SpawnTracker {
         this.mobsPerTick = {};
     }
 
-    calcMobsPerTick() {
+    calcAvgMobsPerSecond() {
         const ticksSinceStart = system.currentTick - this.startTick;
         if (ticksSinceStart === 0) return 0;
-        return Object.keys(this.mobsPerTick).reduce((acc, tick) => acc + this.mobsPerTick[tick], 0) / ticksSinceStart;
+        return (this.getTotalMobs() / ticksSinceStart) * 20;
     }
 
-    calcSuccessTickPercent() {
+    calcSpawnSuccessPercent() {
         const ticksSinceStart = system.currentTick - this.startTick;
         if (ticksSinceStart === 0) return 0;
-        return this.mobsPerTick.length / ticksSinceStart;
+        return (Object.keys(this.mobsPerTick).length / ticksSinceStart) * 100;
     }
 
-    calcMobsPerSuccessTick() {
+    calcAvgMobsPerSuccessTick() {
         const mptLength = Object.keys(this.mobsPerTick).length;
         if (mptLength === 0) return 0;
-        return (this.mobsPerTick.reduce((acc, tick) => acc + this.mobsPerTick[tick], 0) / mptLength) * 100;
+        return this.getTotalMobs() / mptLength;
     }
 
     getTotalSpawns(mobname) {
@@ -201,8 +210,7 @@ class SpawnTracker {
     }
 
     calcSpawnsPerHr(mobname) {
-        const currentTick = system.currentTick;
-        const ticksSinceStart = currentTick - this.startTick;
+        const ticksSinceStart = system.currentTick - this.startTick;
         if (ticksSinceStart === 0) return 0;
         return (this.spawns[mobname] / ticksSinceStart) * 72000;
     }
@@ -216,26 +224,33 @@ class SpawnTracker {
     }
 
     getOutput() {
-        if (this.mobs.length === 0) return '';
-        let output = '§7 > ';
-        if (!this.category) output += `${this.category.toUpperCase()}`;
+        if (Object.keys(this.spawns).length === 0) return '';
+        let output = '\n§7 > ';
+        if (this.category) output += `${this.category.toUpperCase()}`;
         else output += `TRACKED`;
         output += `: ${this.getFormattedCategoryHeader()}`;
 
-        for (const mobname of this.mobs) {
-            output += `\n§7  - ${mobname}: §f${this.getTotalSpawns(mobname)}§7 spawns, §f${this.calcSpawnsPerHr(mobname).toFixed(1)}§7/hr`;
+        for (let mobname of this.mobs) {
+            mobname = 'minecraft:' + mobname;
+            const totalSpawns = this.getTotalSpawns(mobname);
+            if (totalSpawns === 0) continue;
+            output += `\n§7  - ${mobname.replace('minecraft:', '')}: §f${totalSpawns}§7 spawns, §f${this.calcSpawnsPerHr(mobname).toFixed(1)}§7/hr`;
         }
         return output
     }
 
     getFormattedCategoryHeader() {
-        const mobsPerTick = this.calcMobsPerTick().toFixed(1);
-        const successSpawnsPercent = Math.round(this.calcSuccessTickPercent());
-        const unsuccessSpawnsPercent = 100 - successSpawnsPercent;
-        const avgMobsPerSuccessTick = this.calcMobsPerSuccessTick().toFixed(1);
+        const mobsPerTick = this.calcAvgMobsPerSecond().toFixed(1);
+        const successSpawnsPercent = (this.calcSpawnSuccessPercent()).toFixed(1);
+        const unsuccessSpawnsPercent = (100 - successSpawnsPercent).toFixed(1);
+        const avgMobsPerSuccessTick = this.calcAvgMobsPerSuccessTick().toFixed(1);
 
-        return `§f${mobsPerTick}§7 m/t, (§f${this.calcSuccessTickPercent()}%§7- / §f${unsuccessSpawnsPercent}%§7+): §f${avgMobsPerSuccessTick}§7 m/att`;
+        return `§f${mobsPerTick}§7m/s, (§f${unsuccessSpawnsPercent}§7%%- / §f${successSpawnsPercent}§7%%+): §f${avgMobsPerSuccessTick}§7m/att`;
+    }
+
+    getTotalMobs() {
+        return Object.values(this.mobsPerTick).reduce((acc, tick) => acc + tick, 0);
     }
 }
 
-export default SpawnTracker
+export { categoryToMobMap, SpawnTracker }

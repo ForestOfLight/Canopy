@@ -114,6 +114,7 @@ class DirectionStateFinder {
 
     static getRawMirroredDirection(block) {
         const directionState = this.getDirectionState(block.permutation);
+        if (!directionState) return 0;
         switch (directionState.name) {
             case 'facing_direction':
                 return {

@@ -1,7 +1,8 @@
 import { world, DimensionTypes, MolangVariableMap, system } from '@minecraft/server';
-import SpawnTracker from 'src/classes/SpawnTracker'
+import { categoryToMobMap, SpawnTracker } from 'src/classes/SpawnTracker';
+import Utils from 'stickycore/utils';
 
-const categories = [ 'creatures', 'ambient', 'axolotls', 'monster', 'water_creature', 'water_ambient', 'underground_water_creature', 'misc', 'other' ];
+const categories = Object.keys(categoryToMobMap);
 const dimensionIds = DimensionTypes.getAll().map(({ typeId }) => typeId);
 
 class WorldSpawns {
@@ -10,7 +11,7 @@ class WorldSpawns {
         this.areaHighlightRunner = null;
         this.trackers = {};
         this.startTick = system.currentTick;
-        if (activeArea) highlightActiveArea();
+        if (activeArea !== null) this.highlightActiveArea();
         if (mobIds.length > 0) this.trackMobs(mobIds);
         else this.trackAll();
     }
@@ -24,10 +25,19 @@ class WorldSpawns {
         });
     }
 
+    sendMobToTrackers(entity) {
+        for (const dimensionId in this.trackers) {
+            for (const category in this.trackers[dimensionId]) {
+                this.trackers[dimensionId][category].recieveMob(entity);
+            }
+        }
+    }
+
     highlightActiveArea() {
+        this.traceAreaEdges(this.activeArea);
         this.areaHighlightRunner = system.runInterval(() => {
-            traceAreaEdges(this.activeArea);
-        });
+            this.traceAreaEdges(this.activeArea);
+        }, 25);
     }
 
     traceAreaEdges(activeArea) {
@@ -46,7 +56,11 @@ class WorldSpawns {
                     for (let pos = start; pos <= end; pos++) {
                         const coordinates = { [axis]: pos, [fixed1]: fixed1Value, [fixed2]: fixed2Value };
                         if (axis !== 'x' && (pos === start || pos === end)) continue;
-                        world.getDimension(dimensionId).spawnParticle('minecraft:endrod', coordinates, new MolangVariableMap());
+                        try{
+                            world.getDimension(dimensionId).spawnParticle('minecraft:villager_happy', coordinates, new MolangVariableMap());
+                        } catch(error) {
+                            if (!error.message.includes('Trying to access')) console.warn(error.message);
+                        }
                     }
                 });
             });
@@ -78,15 +92,17 @@ class WorldSpawns {
         });
     }
 
-    getRecentsOutput(mobname) {
-        let output = `§7Recent spawns (last 30s):`;
+    getRecentsOutput(mobname = null) {
+        let output = `Recent spawns (last 30s):`;
         let recents = this.getRecents(mobname);
         for (const dimensionId in recents) {
             output += `\n${Utils.getColoredDimensionName(dimensionId)}§7:`;
             for (const category in recents[dimensionId]) {
+                if (Object.keys(recents[dimensionId][category]).length === 0) continue;
                 output += `\n§7 > ${category.toUpperCase()}:`;
                 for (const mobname in recents[dimensionId][category]) {
-                    output += `\n§7  - ${mobname}: ${recents[dimensionId][category][mobname].join(', ')}`;
+                    const recentLocations = recents[dimensionId][category][mobname].map(location => Utils.stringifyLocation(location)).join(', ')
+                    output += `\n§7  - ${mobname}: ${recentLocations}`;
                 }
             }
         }
@@ -107,14 +123,16 @@ class WorldSpawns {
     }
 
     getOutput() {
-        let output = `§7Spawn statistics (${this.getMinutesSinceStart()} min.):`;
+        let output = `Spawn statistics (${this.getMinutesSinceStart().toFixed(2)} min.):`;
         for (const dimensionId in this.trackers) {
+            if (this.getTotalMobs(this.getMobsPerTick(dimensionId)) === 0) continue;
             output += `\n${Utils.getColoredDimensionName(dimensionId)}§7: ${this.getFormattedDimensionValues(dimensionId)}`;
             for (const category in this.trackers[dimensionId]) {
                 const tracker = this.trackers[dimensionId][category];
-                output += `\n${tracker.getOutput()}`;
+                output += `${tracker.getOutput()}`;
             }
         }
+        return output;
     }
 
     getMinutesSinceStart() {
@@ -124,12 +142,12 @@ class WorldSpawns {
 
     getFormattedDimensionValues(dimensionId) {
         const mobsPerTick = this.getMobsPerTick(dimensionId);
-        const avgMobsPerTick = this.getAvgMobsPerTick(mobsPerTick).toFixed(1);
-        const successSpawnsPercent = Math.round(this.getSpawnSuccessPercent(mobsPerTick));
-        const unsuccessSpawnsPercent = 100 - successSpawnsPercent;
+        const avgMobsPerTick = this.getAvgMobsPerSecond(mobsPerTick).toFixed(1);
+        const successSpawnsPercent = (this.getSpawnSuccessPercent(mobsPerTick)).toFixed(1);
+        const unsuccessSpawnsPercent = (100 - parseFloat(successSpawnsPercent)).toFixed(1);
         const avgMobsPerSuccessTick = this.getAvgMobsPerSuccessTick(mobsPerTick).toFixed(1);
 
-        return `§7(§f${avgMobsPerTick}§7 m/t, (§f${unsuccessSpawnsPercent}%§7- / §f${successSpawnsPercent}%§7+): §f${avgMobsPerSuccessTick}§7 m/att)`;
+        return `§7(§f${avgMobsPerTick}§7m/s, (§f${unsuccessSpawnsPercent}§7%%- / §f${successSpawnsPercent}§7%%+): §f${avgMobsPerSuccessTick}§7m/att)`;
     }
 
     getMobsPerTick(dimensionId) {
@@ -143,10 +161,10 @@ class WorldSpawns {
         return mobsPerTick;
     }
 
-    getAvgMobsPerTick(dimensionMobsPerTick) {
+    getAvgMobsPerSecond(dimensionMobsPerTick) {
         const ticksSinceStart = system.currentTick - this.startTick;
         if (ticksSinceStart === 0) return 0;
-        return this.getTotalMobs(dimensionMobsPerTick) / ticksSinceStart;
+        return (this.getTotalMobs(dimensionMobsPerTick) / ticksSinceStart) * 20;
     }
 
     getSpawnSuccessPercent(dimensionMobsPerTick) {
