@@ -20,6 +20,7 @@ const infoDisplay = newDB([
 const features = newDB([
     'allowSpawnMocking',
     'camera',
+    'claimprojectiles',
     'dupeTnt',
     'flippinArrows',
     'hardcodedTntPrimeMomentum',

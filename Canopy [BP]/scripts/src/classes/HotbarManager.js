@@ -1,17 +1,15 @@
-import { ItemStack } from "@minecraft/server";
-
 class SavedHotbar {
     constructor(index) {
         this.index = index;
         this.hotbar = [];
     }
-
-    saveHotbar(items) {
-        this.hotbar = items;
-    }
-
+    
     getHotbar() {
         return this.hotbar;
+    }
+
+    setHotbar(items) {
+        this.hotbar = items;
     }
 }
 
@@ -37,7 +35,7 @@ class HotbarManager {
     }
 
     saveHotbar(index, items) {
-        this.hotbars[index].saveHotbar(items);
+        this.hotbars[index].setHotbar(items);
     }
 
     loadHotbar(index) {

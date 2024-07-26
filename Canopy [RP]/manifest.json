@@ -1,8 +1,8 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Canopy [RP]",
-    "description": "Technical informatics and QoL addon by §aForestOfLight§r.",
+    "name": "Canopy [RP] v1.2.7",
+    "description": "Technical informatics and features addon by §aForestOfLight§r.",
     "uuid": "bcf34368-ed0c-4cf7-938e-582cccf9950d",
     "version": [1, 0, 0],
     "min_engine_version": [1,17,0]

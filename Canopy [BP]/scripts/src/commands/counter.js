@@ -154,9 +154,9 @@ const channelMap = new CounterChannelMap();
 const validModes = ['countMode', 'perhourMode', 'perminuteMode', 'persecondMode'];
 
 world.afterEvents.playerPlaceBlock.subscribe((event) => {
-    if ((event.block.typeId !== 'minecraft:hopper' && !event.block.typeId.slice(-4) === 'wool')
+    if ((event.block.typeId !== 'minecraft:hopper' 
+        && !event.block.typeId.slice(-4) === 'wool')
         || !world.getDynamicProperty('hopperCounters')) return;
-
     tryCreateCounter(event.block);
 });
 

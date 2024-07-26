@@ -13,29 +13,19 @@ system.runInterval(() => {
         processHotbarSwitching(player);
     }
 });
-
+// bug when you switch slots, then sneak. It will save the current hotbar to the slot you switched to, overwiting previous hotbar. Only happens when switching from the 0 slot.
 function processHotbarSwitching(player) {
-    if (!hasArrowInTopRight(player) || !isInAppropriateGameMode(player)) {
+    if (lastSelectedSlots[player.id] !== undefined && (!hasArrowInCorrectSlot(player) || !isInAppropriateGameMode(player))) {
+        console.warn('Deleting lastSelectedSlot: ', player.name, lastSelectedSlots[player.id]);
         delete lastSelectedSlots[player.id];
+        return;
+    } else if (lastSelectedSlots[player.id] === undefined && (!hasArrowInCorrectSlot(player) || !isInAppropriateGameMode(player))) {
         return;
     }
     if (hasScrolled(player) && player.isSneaking) {
         switchToHotbar(player, player.selectedSlotIndex);
     }
-    lastSelectedSlots[player.id] = player.selectedSlotIndex;
-}
-
-function isInAppropriateGameMode(player) {
-    return world.getDynamicProperty('hotbarSwitchingInSurvival') || player.getGameMode() === 'creative';
-}
-
-function hasArrowInTopRight(player) {
-    const container = player.getComponent('inventory')?.container;
-    return container?.getItem(ARROW_SLOT)?.typeId === 'minecraft:arrow';
-}
-
-function hasScrolled(player) {
-    return player.selectedSlotIndex !== lastSelectedSlots[player.id];
+    updateLastSelectedSlots(player);
 }
 
 function switchToHotbar(player, index) {
@@ -46,4 +36,21 @@ function switchToHotbar(player, index) {
     hotbarMgr.loadHotbar(index);
     lastLoadedSlots[player.id] = index;
     player.onScreenDisplay.setActionBar(`§a${index + 1}`);
+}
+
+function hasArrowInCorrectSlot(player) {
+    const container = player.getComponent('inventory')?.container;
+    return container?.getItem(ARROW_SLOT)?.typeId === 'minecraft:arrow';
+}
+
+function isInAppropriateGameMode(player) {
+    return world.getDynamicProperty('hotbarSwitchingInSurvival') || player.getGameMode() === 'creative';
+}
+
+function hasScrolled(player) {
+    return player.selectedSlotIndex !== lastSelectedSlots[player.id];
+}
+
+function updateLastSelectedSlots(player) {
+    lastSelectedSlots[player.id] = player.selectedSlotIndex;
 }

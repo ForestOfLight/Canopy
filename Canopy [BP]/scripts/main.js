@@ -23,6 +23,7 @@ import 'src/commands/data'
 import 'src/commands/tick'
 import 'src/commands/changedimension'
 import 'src/commands/spawn'
+import 'src/commands/claimprojectiles'
 
 // Script Events
 import 'src/commands/scriptevents/counter'
