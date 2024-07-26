@@ -13,7 +13,7 @@ system.runInterval(() => {
         processHotbarSwitching(player);
     }
 });
-// bug when you switch slots, then sneak. It will save the current hotbar to the slot you switched to, overwiting previous hotbar. Only happens when switching from the 0 slot.
+
 function processHotbarSwitching(player) {
     if (lastSelectedSlots[player.id] !== undefined && (!hasArrowInCorrectSlot(player) || !isInAppropriateGameMode(player))) {
         console.warn('Deleting lastSelectedSlot: ', player.name, lastSelectedSlots[player.id]);
@@ -29,8 +29,8 @@ function processHotbarSwitching(player) {
 }
 
 function switchToHotbar(player, index) {
-    if (!hotbarManagers[player.id]) hotbarManagers[player.id] = new HotbarManager(player);
-    if (!lastLoadedSlots[player.id]) lastLoadedSlots[player.id] = lastSelectedSlots[player.id];
+    if (hotbarManagers[player.id] === undefined) hotbarManagers[player.id] = new HotbarManager(player);
+    if (lastLoadedSlots[player.id] === undefined) lastLoadedSlots[player.id] = lastSelectedSlots[player.id];
     const hotbarMgr = hotbarManagers[player.id];
     hotbarMgr.saveHotbar(lastLoadedSlots[player.id], hotbarMgr.getActiveHotbarItems());
     hotbarMgr.loadHotbar(index);

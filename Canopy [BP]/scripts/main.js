@@ -1,5 +1,3 @@
-import { system, world} from '@minecraft/server'
-
 // Config
 import 'src/config/database'
 
@@ -42,40 +40,17 @@ import 'src/features/tnt/dupeTnt'
 import 'src/features/pistonBedrockBreaking'
 import 'src/features/hotbarSwitching'
 
+// Misc Processes
+import 'src/validWorld'
+
 // Data & Utils
 import Data from 'stickycore/data'
 import Utils from 'stickycore/utils'
 
 // Reload message
+import { world} from '@minecraft/server'
+
 const allPlayers = world.getAllPlayers();
 if (allPlayers[0] !== undefined && allPlayers[0].isValid()) {
     Utils.broadcastActionBar('§aBehavior packs have been reloaded.');
-}
-
-// Welcome message
-let hasShownWelcome = false;
-
-world.afterEvents.playerJoin.subscribe((event) => {
-    let runner = system.runInterval(() => {
-        const players = world.getPlayers({ name: event.playerName });
-        players.forEach(player => {
-            if (!hasShownWelcome && player.isValid()) {
-                system.clearRun(runner);
-                hasShownWelcome = true;
-                displayWelcome(player);
-            }
-        });
-    });
-});
-
-function displayWelcome(player) {
-    let output = '';
-    output += `§a   + ----- +\n`;
-    output += `§a /          / |\n`;
-    output += `§a+ ----- +  |\n`;
-    output += `§a |          |  +\n`;
-    output += `§a |          | /\n`;
-    output += `§a+ ----- +\n`;
-    output += `§7This server is running §l§aCanopy§r§7. Type ./help to get started.§r\n`;
-    player.sendMessage(output);
 }
