@@ -16,10 +16,7 @@ system.runInterval(() => {
 
 function processHotbarSwitching(player) {
     if (lastSelectedSlots[player.id] !== undefined && (!hasArrowInCorrectSlot(player) || !isInAppropriateGameMode(player))) {
-        console.warn('Deleting lastSelectedSlot: ', player.name, lastSelectedSlots[player.id]);
         delete lastSelectedSlots[player.id];
-        return;
-    } else if (lastSelectedSlots[player.id] === undefined && (!hasArrowInCorrectSlot(player) || !isInAppropriateGameMode(player))) {
         return;
     }
     if (hasScrolled(player) && player.isSneaking) {

@@ -39,6 +39,7 @@ import 'src/features/tnt/hardcodedTntPrimeMomentum'
 import 'src/features/tnt/dupeTnt'
 import 'src/features/pistonBedrockBreaking'
 import 'src/features/hotbarSwitching'
+import 'src/features/renewableSponge'
 
 // Misc Processes
 import 'src/validWorld'

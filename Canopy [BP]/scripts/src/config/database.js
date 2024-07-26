@@ -34,6 +34,7 @@ const features = newDB([
     'noTntPrimeMomentum',
     'pickupOnMine',
     'pistonBedrockBreaking',
+    'renewableSponge',
     'summontnt',
     'universalChunkLoading',
     'warp',
