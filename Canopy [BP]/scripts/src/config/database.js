@@ -26,7 +26,7 @@ const features = newDB([
     'hardcodedTntPrimeMomentum',
     'hopperCounters',
     'hotbarSwitching',
-    'hotberSwitchingInSurvival',
+    'hotbarSwitchingInSurvival',
     'jump',
     'jumpInSurvival',
     'noExplosionBlockDamage',

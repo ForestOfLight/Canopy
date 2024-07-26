@@ -29,14 +29,14 @@ import 'src/commands/scriptevents/spawn'
 
 // Features
 import 'src/features/InfoDisplay'
-import 'src/features/tnt/noExplosionBlockDamage'
+import 'src/features/noExplosionBlockDamage'
 import 'src/features/pickupOnMine'
 import 'src/features/universalChunkLoading'
 import 'src/features/noTileDrops'
 import 'src/features/flippinArrows'
-import 'src/features/tnt/noTntPrimeMomentum'
-import 'src/features/tnt/hardcodedTntPrimeMomentum'
-import 'src/features/tnt/dupeTnt'
+import 'src/features/noTntPrimeMomentum'
+import 'src/features/hardcodedTntPrimeMomentum'
+import 'src/features/dupeTnt'
 import 'src/features/pistonBedrockBreaking'
 import 'src/features/hotbarSwitching'
 import 'src/features/renewableSponge'
@@ -49,7 +49,7 @@ import Data from 'stickycore/data'
 import Utils from 'stickycore/utils'
 
 // Reload message
-import { world} from '@minecraft/server'
+import { world } from '@minecraft/server'
 
 const allPlayers = world.getAllPlayers();
 if (allPlayers[0] !== undefined && allPlayers[0].isValid()) {

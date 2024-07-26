@@ -91,10 +91,11 @@ class HelpBook {
         this.helpPages[2].addItem('gamemode', './s, ./c, ./sp', 'Easy gamemode switching.');
         this.helpPages[2].addItem('health', './health', 'Displays the server\'s current TPS, MSPT, and entity counts.');
         this.helpPages[2].addItem('jump', './jump', 'Teleports you to the block you\'re looking at. (alias: ./j)');
+        this.helpPages[2].addItem('log', './log <tnt/projectiles/falling_blocks> [precision]', 'Logs the location of the specified entity type in chat.');
         this.helpPages[2].addItem('peek', './peek [search term]', 'Peeks at a block or entity\'s inventory. Use the search term to highlight items that include it. (alias: ./p)');
-        this.helpPages[2].addItem('spawn', './spawn entities', 'Displays a list of all entities in the world.');
-
-        this.helpPages[3].addItem('spawn', './spawn recents [mobname]', 'Displays all mob spawns in the last 30s. Optionally specify a mob name to filter results.');
+        
+        this.helpPages[3].addItem('spawn', './spawn entities', 'Displays a list of all entities in the world.');
+        this.helpPages[3].addItem('spawn', './spawn recent [mobname]', 'Displays all mob spawns in the last 30s. Optionally specify a mob name to filter results.');
         this.helpPages[3].addItem('spawn', './spawn tracking start [x1 y1 z1] [x2 y2 z2]', 'Starts tracking mob spawns. Specify coords to track spawns within that area.');
         this.helpPages[3].addItem('spawn', './spawn tracking <mobname> [x1 y1 z1] [x2 y2 z2]', 'Starts tracking a specific mob spawn. Specify coords to track spawns within that area. Run this again to add more mob types to track.');
         this.helpPages[3].addItem('spawn', './spawn tracking', 'Displays a summary of all spawns that have occurred since the start of your test.');
@@ -102,9 +103,10 @@ class HelpBook {
         this.helpPages[3].addItem('spawn', './spawn mocking <true/false>', 'Enables/disables mob spawning while allowing the spawning algorithm to run.');
         this.helpPages[3].addItem('spawn', './spawn test', 'Resets spawn tracking data and all hopper counters.');
         this.helpPages[3].addItem('summon tnt', './summontnt <amount>', 'Summons the specified amount of primed TNT entity at your location.');
-        // this.helpPages[3].addItem('tnt log', './tntlog <true/false>', 'Enables/disables primed TNT location logging.');
-        // this.helpPages[3].addItem('tnt log', './tntlog <precision>', 'Sets the precision of primed TNT location logging. (default: 2)');
-
+        this.helpPages[3].addItem('tick', './tick <mspt>', 'Slows down the server tick speed to the specified mspt.');
+        
+        this.helpPages[4].addItem('tick', './tick step [steps]', 'Allows the server to run at normal speed for the specified amount of steps.');
+        this.helpPages[4].addItem('tick', './tick reset', 'Resets the server tick speed to normal.');
         this.helpPages[4].addItem('warp', './warp tp <name>', 'Teleports you to a warp. (alias: ./w)');
         this.helpPages[4].addItem('warp', './warp <add/remove> <name>', 'Adds or removes a warp. (alias: ./w)');
         this.helpPages[4].addItem('warps', './warps', 'Lists all available warps.');

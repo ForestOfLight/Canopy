@@ -53,6 +53,7 @@ function spawnCommand(sender, args) {
         '\n§c./spawn tracking [start/stop/mobname] [x1 y1 z1] [x2 y2 z2]' +
         '\n§c./spawn mocking <true/false>' +
         '\n§c./spawn test' +
+        '\n§c./spawn recent [mobname]' +
         '\n§c./spawn tracking <mobname/all>' +
         '\n§c./spawn entities');
 }
