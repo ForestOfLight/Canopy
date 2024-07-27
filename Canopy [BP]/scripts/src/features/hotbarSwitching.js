@@ -10,6 +10,8 @@ system.runInterval(() => {
     if (!world.getDynamicProperty('hotbarSwitching')) return;
     const players = world.getAllPlayers();
     for (const player of players) {
+        if (hotbarManagers[player.id] === undefined) 
+            hotbarManagers[player.id] = new HotbarManager(player);
         processHotbarSwitching(player);
     }
 });
@@ -18,19 +20,21 @@ function processHotbarSwitching(player) {
     if (lastSelectedSlots[player.id] !== undefined && (!hasArrowInCorrectSlot(player) || !isInAppropriateGameMode(player))) {
         delete lastSelectedSlots[player.id];
         return;
+    } else if (lastSelectedSlots[player.id] === undefined && (!hasArrowInCorrectSlot(player) || !isInAppropriateGameMode(player))) {
+        return;
     }
     if (hasScrolled(player) && player.isSneaking) {
         switchToHotbar(player, player.selectedSlotIndex);
     }
-    updateLastSelectedSlots(player);
+    lastSelectedSlots[player.id] = player.selectedSlotIndex;
 }
 
 function switchToHotbar(player, index) {
-    if (hotbarManagers[player.id] === undefined) hotbarManagers[player.id] = new HotbarManager(player);
-    if (lastLoadedSlots[player.id] === undefined) lastLoadedSlots[player.id] = lastSelectedSlots[player.id];
+    if (lastLoadedSlots[player.id] === undefined) 
+        lastLoadedSlots[player.id] = lastSelectedSlots[player.id];    
     const hotbarMgr = hotbarManagers[player.id];
-    hotbarMgr.saveHotbar(lastLoadedSlots[player.id], hotbarMgr.getActiveHotbarItems());
-    hotbarMgr.loadHotbar(index);
+    hotbarMgr.saveHotbar(lastLoadedSlots[player.id]);
+    hotbarMgr.loadHotbar(index)
     lastLoadedSlots[player.id] = index;
     player.onScreenDisplay.setActionBar(`§a${index + 1}`);
 }
@@ -46,8 +50,4 @@ function isInAppropriateGameMode(player) {
 
 function hasScrolled(player) {
     return player.selectedSlotIndex !== lastSelectedSlots[player.id];
-}
-
-function updateLastSelectedSlots(player) {
-    lastSelectedSlots[player.id] = player.selectedSlotIndex;
 }

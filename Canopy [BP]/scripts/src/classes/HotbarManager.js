@@ -1,48 +1,40 @@
-class SavedHotbar {
-    constructor(index) {
-        this.index = index;
-        this.hotbar = [];
-    }
-    
-    getHotbar() {
-        return this.hotbar;
-    }
-
-    setHotbar(items) {
-        this.hotbar = items;
-    }
-}
+import SRCItemDatabase from 'src/classes/SRCItemDatabase';
 
 class HotbarManager {
     constructor(player) {
         this.player = player;
-        this.hotbars = [];
-        for (let index = 0; index < 9; index++) {
-            this.hotbars.push(new SavedHotbar(index));
-        }
+        let tableName = 'bar' + player.id.toString().substr(0, 9);
+        this.itemDatabase = new SRCItemDatabase(tableName);
+        console.warn(`HotbarManager for ${player.id} created with table name ${tableName}`);
     }
 
     getActiveHotbarItems() {
         const container = this.player.getComponent('minecraft:inventory')?.container;
-        let hotbarItems = {};
+        let hotbarItems = [];
         for (let slotIndex = 0; slotIndex < 9; slotIndex++) {
             const itemStack = container.getItem(slotIndex);
             if (itemStack) {
-                hotbarItems[slotIndex] = itemStack;
+                hotbarItems.push({ key: slotIndex, item: itemStack });
             }
         }
         return hotbarItems;
     }
 
-    saveHotbar(index, items) {
-        this.hotbars[index].setHotbar(items);
+    saveHotbar(index) {
+        if (index === undefined) throw new Error('Index must be provided to save hotbar');
+        const items = this.getActiveHotbarItems().map(item => ({ ...item, key: `${index}-${item.key}` }));
+        this.itemDatabase.setMany(items);
+        for (let slotIndex = 0; slotIndex < 9; slotIndex++) {
+            if (!items.some(item => item.key === `${index}-${slotIndex}`)) {
+                this.itemDatabase.delete(`${index}-${slotIndex}`);
+            }
+        }
     }
 
     loadHotbar(index) {
         let playerInventory = this.player.getComponent('inventory').container;
-        const items = this.hotbars[index].getHotbar();
         for (let slotIndex = 0; slotIndex < 9; slotIndex++) {
-            const item = items[slotIndex];
+            const item = this.itemDatabase.get(`${index}-${slotIndex}`);
             if (item)
                 playerInventory.setItem(slotIndex, item);
             else
@@ -53,7 +45,8 @@ class HotbarManager {
     getItemsString(items) {
         let output = 'Items:';
         for (let slotIndex in items) {
-            output += `${slotIndex}: ${items[slotIndex].typeId} x${items[slotIndex].amount}\n`;
+            const itemStruct = items[slotIndex];
+            output += `\n${itemStruct.key}: ${itemStruct.item.typeId} x${itemStruct.item.count}`;
         }
         return output;
     }
