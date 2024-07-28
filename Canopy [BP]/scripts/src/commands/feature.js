@@ -16,7 +16,7 @@ class DependantFeatures {
         this.dependantFeatures = [
             new DependantFeature('jumpInSurvival', 'jump'),
             new DependantFeature('warpInSurvival', 'warp'),
-            new DependantFeature('hotberSwitching', 'hotbarSwitchingInSurvival'),
+            new DependantFeature('hotbarSwitching', 'hotbarSwitchingInSurvival'),
         ];
     }
 }
