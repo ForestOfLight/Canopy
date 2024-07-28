@@ -52,6 +52,8 @@ function warpActionCommand(sender, args) {
     } else if (warpMap.has(action)) {
         name = action;
         warpTP(sender, name, warpMap);
+    } else if (action !== null && !warpMap.has(action)) {
+        sender.sendMessage(`§cWarp "${action}" not found. Use ./warps to see the list of warps.`);
     } else {
         sender.sendMessage('§cUsage: ./warp <name> or ./warp <add/remove> <name>');
     }
