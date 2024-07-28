@@ -5,6 +5,7 @@ import { DataTPS } from 'src/tps'
 import { Entities } from 'src/entities'
 import { LightLevel } from 'src/light'
 import { getInfoDisplayOutput } from 'src/commands/counter'
+import { getAllTrackerInfoString } from 'src/commands/track';
 
 system.runInterval(() => {
 	const Players = world.getAllPlayers();
@@ -21,6 +22,7 @@ function InfoDisplay(player) {
 	InfoText += parseLightAndEntities(player)
 	InfoText += parseDayAndTime(player);
 	InfoText += parseMoonPhaseAndSlimeChunk(player)
+	InfoText += parseEventTrackerInfo(player);
 	InfoText += parseHopperCounters(player);
 	InfoText += parseLookingAtAndPeek(player);
 	
@@ -102,6 +104,13 @@ function parseMoonPhaseAndSlimeChunk(player) {
 	else if (showMoonPhase) output += `§rMoon: §7${moonPhase}§r\n`;
 	else if (showSlimeChunk) output += `§rChunk: ${slimeChunk}\n`;
 
+	return output;
+}
+
+function parseEventTrackerInfo(player) {
+	if (!player.getDynamicProperty('eventTrackers')) return '';
+	let output = getAllTrackerInfoString().join('\n');
+	if (output !== '') output += '\n';
 	return output;
 }
 

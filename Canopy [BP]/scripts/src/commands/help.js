@@ -107,6 +107,7 @@ class HelpBook {
         
         this.helpPages[4].addItem('tick', './tick step [steps]', 'Allows the server to run at normal speed for the specified amount of steps.');
         this.helpPages[4].addItem('tick', './tick reset', 'Resets the server tick speed to normal.');
+        this.helpPages[4].addItem('trackevent', './trackevent <eventName> [beforeEvent/afterEvent]', 'Toggles counting the specified event in the InfoDisplay.');
         this.helpPages[4].addItem('warp', './warp tp <name>', 'Teleports you to a warp. (alias: ./w)');
         this.helpPages[4].addItem('warp', './warp <add/remove> <name>', 'Adds or removes a warp. (alias: ./w)');
         this.helpPages[4].addItem('warps', './warps', 'Lists all available warps.');

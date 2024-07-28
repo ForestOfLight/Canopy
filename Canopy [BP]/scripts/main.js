@@ -22,6 +22,7 @@ import 'src/commands/tick'
 import 'src/commands/changedimension'
 import 'src/commands/spawn'
 import 'src/commands/claimprojectiles'
+import 'src/commands/track'
 
 // Script Events
 import 'src/commands/scriptevents/counter'

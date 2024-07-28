@@ -11,6 +11,7 @@ const infoDisplay = newDB([
     'worldDay',
     'timeOfDay',
     'moonPhase',
+    'eventTrackers',
     'hopperCounters',
     'lookingAt',
     'peekInventory',

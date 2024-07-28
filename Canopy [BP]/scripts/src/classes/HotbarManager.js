@@ -5,7 +5,6 @@ class HotbarManager {
         this.player = player;
         let tableName = 'bar' + player.id.toString().substr(0, 9);
         this.itemDatabase = new SRCItemDatabase(tableName);
-        console.warn(`HotbarManager for ${player.id} created with table name ${tableName}`);
     }
 
     getActiveHotbarItems() {
