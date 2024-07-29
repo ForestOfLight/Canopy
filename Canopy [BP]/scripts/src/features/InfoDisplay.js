@@ -19,9 +19,9 @@ function InfoDisplay(player) {
 
 	InfoText += parseCoordsAndFacing(player);
 	InfoText += parseTPS(player);
-	InfoText += parseLightAndEntities(player)
+	InfoText += parseLightAndEntities(player);
 	InfoText += parseDayAndTime(player);
-	InfoText += parseMoonPhaseAndSlimeChunk(player)
+	InfoText += parseMoonPhaseAndSlimeChunk(player);
 	InfoText += parseEventTrackerInfo(player);
 	InfoText += parseHopperCounters(player);
 	InfoText += parseLookingAtAndPeek(player);
@@ -94,15 +94,16 @@ function parseDayAndTime(player) {
 function parseMoonPhaseAndSlimeChunk(player) {
 	const showMoonPhase = player.getDynamicProperty('moonPhase');
 	const showSlimeChunk = player.getDynamicProperty('slimeChunk');
+	const isSlime = player.dimension.id === "minecraft:overworld" && Data.isSlime(player.location.x, player.location.z);
 	let moonPhase;
 	let slimeChunk;
 	let output = '';
 
 	if (showMoonPhase) moonPhase = Data.getMoonPhase();
-	if (showSlimeChunk) slimeChunk = player.dimension.id == "minecraft:overworld" && Data.isSlime(player.location.x, player.location.z) ? '§7(§aSlime Chunk§7)§r' : '';
+	if (showSlimeChunk) slimeChunk = isSlime ? '§7(§aSlime Chunk§7)§r' : '';
 	if (showMoonPhase && showSlimeChunk) output += `§rMoon: §7${moonPhase}§r ${slimeChunk}\n`;
 	else if (showMoonPhase) output += `§rMoon: §7${moonPhase}§r\n`;
-	else if (showSlimeChunk) output += `§rChunk: ${slimeChunk}\n`;
+	else if (showSlimeChunk && isSlime) output += `§r${slimeChunk}\n`;
 
 	return output;
 }
