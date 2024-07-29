@@ -15,6 +15,6 @@ function summonTntCommand(sender, args) {
 
     amount = Math.max(0, Math.min(amount, 5000));
     if (amount === 0) return sender.sendMessage('§7No TNT summoned.')
-    Utils.broadcastToolTip(sender, `§7${sender.name} summoned §c${amount} TNT§7.`)
+    Utils.broadcastActionBar(sender, `§7${sender.name} summoned §c${amount} TNT§7.`)
     for (let i = 0; i < amount; i++) sender.dimension.spawnEntity('minecraft:tnt', sender.location);
 }
