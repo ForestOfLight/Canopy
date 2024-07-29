@@ -135,10 +135,13 @@ class Data {
 	static updateFeature(sender, feature, enable, global = false) {
 		if (!sender || !feature || typeof enable !== 'boolean') return console.warn('updateFeature: Invalid arguments.');
 
-		if (global) mc.world.setDynamicProperty(feature, enable);
-		else sender.setDynamicProperty(feature, enable);
+		if (global) { 
+			mc.world.setDynamicProperty(feature, enable);
+			Utils.broadcastActionBar(`${sender.name}: ${feature} has been ${enable ? '§l§aenabled' : '§l§cdisabled'}`, sender);
+		} else {
+			sender.setDynamicProperty(feature, enable);
+		}
 		sender.sendMessage(`§7${feature} has been ${enable ? '§l§aenabled' : '§l§cdisabled'}§r§7.`);
-		Utils.broadcastActionBar(`${sender.name}: ${feature} has been ${enable ? '§l§aenabled' : '§l§cdisabled'}`, sender);
 	}
 
 	static getEntitiesByType(type) {
