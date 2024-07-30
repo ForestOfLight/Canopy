@@ -35,7 +35,6 @@ function canAdd(inventory, itemStack) {
     if (inventory.emptySlotsCount !== 0) return true;
     for (let i = 0; i < inventory.size; i++) {
         const slot = inventory.getSlot(i);
-        console.warn('slot', i, slot.hasItem(), slot.isStackableWith(itemStack), isWithinStackSize(slot, itemStack));
         if (slot.hasItem() && slot.isStackableWith(itemStack) && isWithinStackSize(slot, itemStack)) return true;
     }
     return false;
