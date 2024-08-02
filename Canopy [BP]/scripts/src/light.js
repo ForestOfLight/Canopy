@@ -41,7 +41,10 @@ const LightLevel = {
             LightLevel.lightEntityMap = LightLevel.lightEntityMap.filter((value, key) => value !== entity);
             try{ 
                 entity.remove();
-            } catch {}
+            } catch(error) {
+                if (entity.isValid())
+                    console.warn(`[Light Level] Failed to remove entity ${entity.id}. Error: ${error.message()}`);
+            }
         }
     }
 }
