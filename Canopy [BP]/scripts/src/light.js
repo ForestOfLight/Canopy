@@ -38,8 +38,10 @@ const LightLevel = {
     cleanUp() {
         const lightEntities = Data.getEntitiesByType('canopy:light_level');
         for (const entity of lightEntities) {
-            LightLevel.lightEntityMap = {};
-            entity.remove();
+            LightLevel.lightEntityMap = LightLevel.lightEntityMap.filter((value, key) => value !== entity);
+            try{ 
+                entity.remove();
+            } catch {}
         }
     }
 }
