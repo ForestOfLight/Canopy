@@ -2,7 +2,7 @@
 	"format_version": "1.20.40",
 	"minecraft:entity": {
 		"description": {
-			"identifier": "canopy:light_level",
+			"identifier": "canopy:probe",
 			"is_spawnable": false,
 			"is_summonable": true,
 			"is_experimental": false,
@@ -11,7 +11,7 @@
 		"components": {
 			"minecraft:damage_sensor": {"triggers": {"deals_damage": false}},
 			"minecraft:pushable": {"is_pushable": false,"is_pushable_by_piston": false},
-			"minecraft:collision_box": {"width": 0,"height": 0},
+			"minecraft:collision_box": { "width": 0, "height": 0 },
 			"minecraft:nameable": {"allow_name_tag_renaming": false},
 			"minecraft:breathable": {"breathes_air": true,"breathes_water": true},
 			"minecraft:physics": {"has_gravity": false,"has_collision": false},

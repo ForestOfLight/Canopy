@@ -2,8 +2,8 @@
 	"format_version": 2,
 	"header": {
 		"name": "Canopy [BP] v1.2.8",
-		"description": "Technical informatics and QoL addon by §aForestOfLight§r.",
-		"uuid": "e9f3a30c-f040-4cb7-a146-e15e7088f2ff",
+		"description": "Technical informatics & features addon by §aForestOfLight§r.",
+		"uuid": "7f6b23df-a583-476b-b0e4-87457e65f7c0",
 		"min_engine_version": [1, 21, 0],
 		"version": [1, 2, 8]
 	},

@@ -1,5 +1,4 @@
 import { world, system } from '@minecraft/server';
-import { LightLevel } from 'src/light'
 
 let hasShownWelcome = false;
 
@@ -18,7 +17,6 @@ world.afterEvents.playerJoin.subscribe((event) => {
 
 function onValidWorld(player) {
     displayWelcome(player);
-    LightLevel.cleanUp();
 }
 
 function displayWelcome(player) {

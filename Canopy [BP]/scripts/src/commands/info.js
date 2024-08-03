@@ -1,7 +1,7 @@
 import Command from 'stickycore/command'
 import { module } from 'stickycore/dynamic'
 import Data from 'stickycore/data'
-import { LightLevel } from 'src/light';
+import ProbeManager from 'src/classes/ProbeManager';
 
 class DependantFeature {
     constructor(validFeature, dependantFeature) {
@@ -48,7 +48,8 @@ function infoDisplayFeatures(sender, args) {
         return sender.sendMessage(`${enable ? '§l§aEnabled' : '§l§cDisabled'}§r§7 all InfoDisplay features.`);
     }
 
-    if (validFeature === 'light' && !enable) LightLevel.cleanUp();
+    if (validFeature === 'light' && !enable) 
+        ProbeManager.removeProbe(sender);
     updateDependantFeatures(sender, validFeature, enable);
 
     Data.updateFeature(sender, validFeature, enable);

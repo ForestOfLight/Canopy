@@ -3,7 +3,7 @@ import Data from 'stickycore/data'
 import Utils from 'stickycore/utils'
 import { DataTPS } from 'src/tps'
 import { Entities } from 'src/entities'
-import { LightLevel } from 'src/light'
+import ProbeManager from 'src/classes/ProbeManager'
 import { getInfoDisplayOutput } from 'src/commands/counter'
 import { getAllTrackerInfoString } from 'src/commands/track';
 
@@ -66,7 +66,7 @@ function parseLightAndEntities(player) {
 	let fovEntities;
 	let output = '';
 
-	if (showLight) lightLevel = LightLevel.getLightLevel(player);
+	if (showLight) lightLevel = ProbeManager.getLightLevel(player);
 	if (showEntities) fovEntities = Entities.getEntitiesOnScreenCount(player);
 	if (showLight && showEntities) output += `§rLight: §e${lightLevel} §rEntities: §7${fovEntities}§r\n`;
 	else if (showLight) output += `§rLight: §e${lightLevel}§r\n`;
