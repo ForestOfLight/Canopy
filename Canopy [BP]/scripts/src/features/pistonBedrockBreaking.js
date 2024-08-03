@@ -19,8 +19,10 @@ world.afterEvents.pistonActivate.subscribe(event => {
     } else if (piston.state === 'Retracting') {
         const oldPiston = getBlockFromPistonList(block);
         if (oldPiston !== undefined) {
+            const blockType = block.typeId;
+            const dropLocation = { x: block.location.x + .5, y: block.location.y + .5, z: block.location.z + .5 };
             block.setType('minecraft:air');
-            event.dimension.spawnItem(new ItemStack('minecraft:piston', 1), block.location);
+            event.dimension.spawnItem(new ItemStack(blockType, 1), dropLocation);
             insideBedrockPistonList.splice(insideBedrockPistonList.indexOf(oldPiston), 1);
         }
     }
