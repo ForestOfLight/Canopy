@@ -15,7 +15,6 @@ const infoDisplay = newDB([
     'hopperCounters',
     'lookingAt',
     'peekInventory',
-    'all',
 ]);
 
 const features = newDB([

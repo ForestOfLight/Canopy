@@ -35,18 +35,18 @@ new Command()
 function infoDisplayFeatures(sender, args) {
     const features = module.exports['infoDisplay'];
     const { feature, enable } = args;
-    if (feature === null || enable === null) return sender.sendMessage(`§cUsage: ./info <feature> <true/false>`);
-    
-    const validFeature = features[feature.toLowerCase()];
-    if (!validFeature) return sender.sendMessage(`§c${feature} not found.`);
-    if (enable === sender.getDynamicProperty(validFeature)) return sender.sendMessage(`§7${feature} is already ${enable ? '§l§aenabled' : '§l§cdisabled'}.`);
+    if (feature === null || enable === null) return sender.sendMessage(`§cUsage: ./info <feature/all> <true/false>`);
 
-    if (validFeature === 'all') {
+    if (feature.toLowerCase() === 'all') {
         for (let entry of Object.values(features)) {
             sender.setDynamicProperty(entry, enable);
         }
         return sender.sendMessage(`${enable ? '§l§aEnabled' : '§l§cDisabled'}§r§7 all InfoDisplay features.`);
     }
+    
+    const validFeature = features[feature.toLowerCase()];
+    if (!validFeature) return sender.sendMessage(`§c${feature} not found.`);
+    if (enable === sender.getDynamicProperty(validFeature)) return sender.sendMessage(`§7${feature} is already ${enable ? '§l§aenabled' : '§l§cdisabled'}.`);
 
     if (validFeature === 'light' && !enable) 
         ProbeManager.removeProbe(sender);
@@ -58,12 +58,20 @@ function infoDisplayFeatures(sender, args) {
 function updateDependantFeatures(sender, validFeature, enable) {
     for (const dependantFeature of new DependantFeatures().dependantFeatures) {
         let targetFeature = null;
-        if (enable && validFeature === dependantFeature.validFeature)
+        if (shouldEnableDependantFeature(sender, validFeature, dependantFeature))
             targetFeature = dependantFeature.dependantFeature;
-        else if (!enable && validFeature === dependantFeature.dependantFeature)
+        else if (shouldDisableDependantFeature(sender, validFeature, dependantFeature))
             targetFeature = dependantFeature.validFeature;
         else continue;
 
         Data.updateFeature(sender, targetFeature, enable);
     }
+}
+
+function shouldEnableDependantFeature(sender, validFeature, dependantFeature) {
+    return enable && validFeature === dependantFeature.validFeature && !sender.getDynamicProperty(dependantFeature.dependantFeature);
+}
+
+function shouldDisableDependantFeature(sender, validFeature, dependantFeature) {
+    return !enable && validFeature === dependantFeature.dependantFeature && sender.getDynamicProperty(dependantFeature.validFeature);
 }
