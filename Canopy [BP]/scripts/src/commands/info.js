@@ -41,6 +41,7 @@ function infoDisplayFeatures(sender, args) {
         for (let entry of Object.values(features)) {
             sender.setDynamicProperty(entry, enable);
         }
+        if (!enable) clearInfoDisplay(sender);
         return sender.sendMessage(`${enable ? '§l§aEnabled' : '§l§cDisabled'}§r§7 all InfoDisplay features.`);
     }
     
@@ -50,17 +51,23 @@ function infoDisplayFeatures(sender, args) {
 
     if (validFeature === 'light' && !enable) 
         ProbeManager.removeProbe(sender);
+    if (validFeature === 'showDisplay' && !enable)
+        clearInfoDisplay(sender);
     updateDependantFeatures(sender, validFeature, enable);
 
     Data.updateFeature(sender, validFeature, enable);
 }
 
+function clearInfoDisplay(sender) {
+    sender.onScreenDisplay.setTitle('');
+}
+
 function updateDependantFeatures(sender, validFeature, enable) {
     for (const dependantFeature of new DependantFeatures().dependantFeatures) {
         let targetFeature = null;
-        if (shouldEnableDependantFeature(sender, validFeature, dependantFeature))
+        if (shouldEnableDependantFeature(sender, validFeature, dependantFeature, enable))
             targetFeature = dependantFeature.dependantFeature;
-        else if (shouldDisableDependantFeature(sender, validFeature, dependantFeature))
+        else if (shouldDisableDependantFeature(sender, validFeature, dependantFeature, enable))
             targetFeature = dependantFeature.validFeature;
         else continue;
 
@@ -68,10 +75,10 @@ function updateDependantFeatures(sender, validFeature, enable) {
     }
 }
 
-function shouldEnableDependantFeature(sender, validFeature, dependantFeature) {
+function shouldEnableDependantFeature(sender, validFeature, dependantFeature, enable) {
     return enable && validFeature === dependantFeature.validFeature && !sender.getDynamicProperty(dependantFeature.dependantFeature);
 }
 
-function shouldDisableDependantFeature(sender, validFeature, dependantFeature) {
+function shouldDisableDependantFeature(sender, validFeature, dependantFeature, enable) {
     return !enable && validFeature === dependantFeature.dependantFeature && sender.getDynamicProperty(dependantFeature.validFeature);
 }
