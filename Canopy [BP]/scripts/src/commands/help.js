@@ -62,7 +62,7 @@ class HelpBook {
             const dynamicNames = Object.values(dynamicPages[pageName]);
             this.helpPages[pageName].addDynamicItems(dynamicNames);
         }
-        this.helpPages['infodisplay'].setDescription('./info <feature> <true/false>');
+        this.helpPages['infodisplay'].setDescription('./info <feature/all> <true/false>');
         this.helpPages['features'].setDescription('./feature <feature> <true/false>');
     }
 
