@@ -1,4 +1,4 @@
-import { system, EquipmentSlot, EntityComponentTypes } from '@minecraft/server';
+import { system } from '@minecraft/server';
 
 class Probe {
     constructor(entity, player) {
@@ -36,18 +36,10 @@ class Probe {
 
     getProperty(property) {
         try {
-            if (this.isHoldingTrident(this.assignedPlayer))
-                return -1;
             return this.entity.getProperty('canopy:' + property);
         } catch (error) {
             return -1;
         }
-    }
-
-    isHoldingTrident(player) {
-        const equippable = player.getComponent(EntityComponentTypes.Equippable);
-        const mainhandItemStack = equippable?.getEquipment(EquipmentSlot.Mainhand);
-        return mainhandItemStack?.typeId === 'minecraft:trident';
     }
 }
 

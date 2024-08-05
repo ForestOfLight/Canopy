@@ -18,8 +18,8 @@ function InfoDisplay(player) {
 	let InfoText = '';
 
 	InfoText += parseCoordsAndFacing(player);
-	InfoText += parseTPS(player);
-	InfoText += parseLightAndEntities(player);
+	InfoText += parseTPSAndEntities(player);
+	InfoText += parseLightAndBiome(player);
 	InfoText += parseDayAndTime(player);
 	InfoText += parseMoonPhaseAndSlimeChunk(player);
 	InfoText += parseEventTrackerInfo(player);
@@ -45,32 +45,38 @@ function parseCoordsAndFacing(player) {
 	return output;
 }
 
-function parseTPS(player) {
+function parseTPSAndEntities(player) {
 	const showTPS = player.getDynamicProperty('tps');
+	const showEntities = player.getDynamicProperty('entities');
 	let tpsData;
 	let tps;
-	let output = '';
-
-	if (!showTPS) return output;
-
-	tpsData = DataTPS.tps.toFixed(1);
-	tps = tpsData >= 20 ? `§a20.0` : `§c${tpsData}`;
-	output += `§rTPS: ${tps}§r\n`;
-	return output;
-}
-
-function parseLightAndEntities(player) {
-	const showLight = player.getDynamicProperty('light');
-	const showEntities = player.getDynamicProperty('entities');
-	let lightLevel;
 	let fovEntities;
 	let output = '';
 
-	if (showLight) lightLevel = ProbeManager.getLightLevel(player);
 	if (showEntities) fovEntities = Entities.getEntitiesOnScreenCount(player);
-	if (showLight && showEntities) output += `§rLight: §e${lightLevel} §rEntities: §7${fovEntities}§r\n`;
-	else if (showLight) output += `§rLight: §e${lightLevel}§r\n`;
+	if (showTPS) {
+		tpsData = DataTPS.tps.toFixed(1);
+		tps = tpsData >= 20 ? `§a20.0` : `§c${tpsData}`;	
+	}
+	if (showTPS && showEntities) output += `§rTPS: ${tps}§r Entities: §7${fovEntities}§r\n`;
+	else if (showTPS) output += `§rTPS: ${tps}§r\n`;
 	else if (showEntities) output += `§rEntities: §7${fovEntities}§r\n`;
+
+	return output;
+}
+
+function parseLightAndBiome(player) {
+	const showLight = player.getDynamicProperty('light');
+	const showBiome = player.getDynamicProperty('biome');
+	let lightLevel;
+	let biome;
+	let output = '';
+
+	if (showLight) lightLevel = ProbeManager.getLightLevel(player);
+	if (showBiome) biome = ProbeManager.getBiome(player);
+	if (showLight && showBiome) output += `§rLight: §e${lightLevel} §rBiome: §a${biome}§r\n`;
+	else if (showLight) output += `§rLight: §e${lightLevel}§r\n`;
+	else if (showBiome) output += `§rBiome: §7${biome}§r\n`;
 
 	return output;
 }

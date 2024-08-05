@@ -1,22 +1,1212 @@
 {
-	"format_version": "1.20.40",
-	"minecraft:entity": {
-		"description": {
-			"identifier": "canopy:probe",
-			"is_spawnable": false,
-			"is_summonable": true,
-			"is_experimental": false,
-			"properties":{"canopy:light":{"type": "int","range":[0, 15],"default":0}}
-		},
-		"components": {
-			"minecraft:damage_sensor": {"triggers": {"deals_damage": false}},
-			"minecraft:pushable": {"is_pushable": false,"is_pushable_by_piston": false},
-			"minecraft:collision_box": { "width": 0, "height": 0 },
-			"minecraft:nameable": {"allow_name_tag_renaming": false},
-			"minecraft:breathable": {"breathes_air": true,"breathes_water": true},
-			"minecraft:physics": {"has_gravity": false,"has_collision": false},
-			"minecraft:environment_sensor": {
+    "format_version": "1.20.40",
+    "minecraft:entity": {
+        "description": {
+            "identifier": "canopy:probe",
+            "is_summonable": true,
+            "is_spawnable": false,
+            "is_experimental": false,
+            "properties": {
+                "canopy:biome": {
+                    "type": "int",
+                    "range": [-1, 85],
+                    "default": -1
+                },
+				"canopy:light":{
+					"type": "int",
+					"range":[0, 15],
+					"default": 0
+				}
+            }
+        },
+        "components": {
+            "minecraft:persistent": {},
+            "minecraft:physics": {
+                "has_collision": false,
+                "has_gravity": false
+            },
+            "minecraft:custom_hit_test": {
+                "hitboxes": [
+                    {
+                        "pivot": [0, 100, 0],
+                        "width": 0,
+                        "height": 0
+                    }
+                ]
+            },
+            "minecraft:damage_sensor": {
+                "triggers": {
+                    "deals_damage": false
+                }
+            },
+            "minecraft:collision_box": {
+                "width": 0.0001,
+                "height": 0.0001
+            },
+            "minecraft:health": {
+                "value": 1,
+                "max": 1,
+                "min": 1
+            },
+			"minecraft:pushable": {
+				"is_pushable": false,
+				"is_pushable_by_piston": false
+			},
+			"minecraft:nameable": {
+				"allow_name_tag_renaming": false
+			},
+			"minecraft:breathable": {
+				"breathes_air": true,
+				"breathes_water": true
+			},
+            "minecraft:environment_sensor": {
 				"triggers": [
+					// Bamboo Jungle
+					{
+						"event": "canopy:bamboo_jungle",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "bamboo" },
+								{ "test": "has_biome_tag", "value": "jungle" },
+								{ "test": "has_biome_tag", "value": "monster"},
+								{ "test": "has_biome_tag", "value": "overworld" }
+							],
+							"none_of": [
+								{ "test": "has_biome_tag", "value": "hills" }
+							]
+						}
+					},
+					// Bamboo Jungle Hills CHECK
+					{
+						"event": "canopy:bamboo_jungle_hills",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "bamboo" },
+								{ "test": "has_biome_tag", "value": "hills" },
+								{ "test": "has_biome_tag", "value": "jungle" },
+								{ "test": "has_biome_tag", "value": "monster"},
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Basalt Deltas
+                    {
+						"event": "canopy:basalt_deltas",
+                        "filters": {
+                            "all_of": [
+								{ "test": "has_biome_tag", "value": "nether" },
+								{ "test": "has_biome_tag", "value": "basalt_deltas" },
+								{ "test": "has_biome_tag", "value": "spawn_many_magma_cubes" },
+								{ "test": "has_biome_tag", "value": "spawn_ghast" }
+							]
+                        }
+                    },
+					// Beach
+					{
+						"event": "canopy:beach",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "beach" },
+								{ "test": "has_biome_tag", "value": "warm" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Birch Forest
+					{
+						"event": "canopy:birch_forest",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "birch" },
+								{ "test": "has_biome_tag", "value": "forest" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "bee_habitat" }
+							]
+						}
+					},
+					// Birch Forest Hills CHECK
+					{
+						"event": "canopy:birch_forest_hills",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "birch" },
+								{ "test": "has_biome_tag", "value": "forest" },
+								{ "test": "has_biome_tag", "value": "hills" },
+								{ "test": "has_biome_tag", "value": "bee_habitat" }
+							]
+						}
+					},
+					// Birch Forest Hills M CHECK
+					{
+						"event": "canopy:birch_forest_hills_m",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "forest" },
+								{ "test": "has_biome_tag", "value": "birch" },
+								{ "test": "has_biome_tag", "value": "mutated" },
+								{ "test": "has_biome_tag", "value": "hills" },
+								{ "test": "has_biome_tag", "value": "overworld_generation" }
+							]
+						}
+					},
+					// Birch Forest M
+					{
+						"event": "canopy:birch_forest_m",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "forest" },
+								{ "test": "has_biome_tag", "value": "birch" },
+								{ "test": "has_biome_tag", "value": "mutated" },
+								{ "test": "has_biome_tag", "value": "bee_habitat" },
+								{ "test": "has_biome_tag", "value": "overworld_generation" }
+							]
+						}
+					},
+					// Cherry Grove
+					{
+						"event": "canopy:cherry_grove",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "mountains" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "cherry_grove" },
+								{ "test": "has_biome_tag", "value": "bee_habitat" }
+							]
+						}
+					},
+					// Cold Beach
+					{
+						"event": "canopy:cold_beach",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "beach" },
+								{ "test": "has_biome_tag", "value": "cold" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Cold Ocean
+					{
+						"event": "canopy:cold_ocean",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "ocean" },
+								{ "test": "has_biome_tag", "value": "cold" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Cold Taiga
+					{
+						"event": "canopy:cold_taiga",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "cold" },
+								{ "test": "has_biome_tag", "value": "forest" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "taiga" }
+							]
+						}
+					},
+					// Cold Taiga Hills CHECK
+					{
+						"event": "canopy:cold_taiga_hills",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "cold" },
+								{ "test": "has_biome_tag", "value": "forest" },
+								{ "test": "has_biome_tag", "value": "hills" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "taiga" }
+							]
+						}
+					},
+					// Cold Taiga M CHECK
+					{
+						"event": "canopy:cold_taiga_m",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "forest" },
+								{ "test": "has_biome_tag", "value": "taiga" },
+								{ "test": "has_biome_tag", "value": "cold" },
+								{ "test": "has_biome_tag", "value": "mutated" },
+								{ "test": "has_biome_tag", "value": "overworld_generation" }
+							]
+						}
+					},
+					// Crimson Forest
+					{
+						"event": "canopy:crimson_forest",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "nether" },
+								{ "test": "has_biome_tag", "value": "netherwart_forest" },
+								{ "test": "has_biome_tag", "value": "crimson_forest" },
+								{ "test": "has_biome_tag", "value": "spawn_few_zombified_piglins" },
+								{ "test": "has_biome_tag", "value": "spawn_piglin" }
+							]
+						}
+					},
+					// Deep Cold Ocean
+					{
+						"event": "canopy:deep_cold_ocean",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "ocean" },
+								{ "test": "has_biome_tag", "value": "cold" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "deep" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Deep Dark
+					{
+						"event": "canopy:deep_dark",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "caves" },
+								{ "test": "has_biome_tag", "value": "deep_dark" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Deep Frozen Ocean
+					{
+						"event": "canopy:deep_frozen_ocean",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "ocean" },
+								{ "test": "has_biome_tag", "value": "frozen" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "deep" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Deep Lukewarm Ocean
+					{
+						"event": "canopy:deep_lukewarm_ocean",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "ocean" },
+								{ "test": "has_biome_tag", "value": "lukewarm" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "deep" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Deep Ocean
+					{
+						"event": "canopy:deep_ocean",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "ocean" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "deep" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							],
+							"none_of": [
+								{ "test": "has_biome_tag", "value": "cold" },
+								{ "test": "has_biome_tag", "value": "frozen" },
+								{ "test": "has_biome_tag", "value": "lukewarm" }
+							]
+						}
+					},
+					// Deep Warm Ocean
+					{
+						"event": "canopy:deep_warm_ocean",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "ocean" },
+								{ "test": "has_biome_tag", "value": "warm" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "deep" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Desert
+					{
+						"event": "canopy:desert",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "desert" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Desert Hills CHECK
+					{
+						"event": "canopy:desert_hills",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "desert" },
+								{ "test": "has_biome_tag", "value": "hills" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Desert M CHECK
+					{
+						"event": "canopy:desert_m",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "desert" },
+								{ "test": "has_biome_tag", "value": "mutated" },
+								{ "test": "has_biome_tag", "value": "overworld_generation" }
+							]
+						}
+					},
+					// Dripstone Caves
+					{
+						"event": "canopy:dripstone_caves",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "caves" },
+								{ "test": "has_biome_tag", "value": "dripstone_caves" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Extreme Hills
+					{
+						"event": "canopy:extreme_hills",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "extreme_hills" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Extreme Hills Edge CHECK
+					{
+						"event": "canopy:extreme_hills_edge",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "edge" },
+								{ "test": "has_biome_tag", "value": "extreme_hills" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "mountain" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Extreme Hills M
+					{
+						"event": "canopy:extreme_hills_m",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "extreme_hills" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "mutated" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Extreme Hills Plus Trees
+					{
+						"event": "canopy:extreme_hills_plus_trees",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "extreme_hills" },
+								{ "test": "has_biome_tag", "value": "forest" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "mountain" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Extreme Hills Plus Trees M CHECK
+					{
+						"event": "canopy:extreme_hills_plus_trees_m",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "extreme_hills" },
+								{ "test": "has_biome_tag", "value": "forest" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "mutated" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Flower Forest
+					{
+						"event": "canopy:flower_forest",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "flower_forest" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "mutated" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "bee_habitat" }
+							]
+						}
+					},
+					// Forest
+					{
+						"event": "canopy:forest",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "forest" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							],
+							"none_of": [
+								{ "test": "has_biome_tag", "value": "birch" },
+								{ "test": "has_biome_tag", "value": "taiga" },
+								{ "test": "has_biome_tag", "value": "extreme_hills" }
+							]
+						}
+					},
+					// Forest Hills CHECK
+					{
+						"event": "canopy:forest_hills",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "forest" },
+								{ "test": "has_biome_tag", "value": "hills" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Frozen Ocean
+					{
+						"event": "canopy:frozen_ocean",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "ocean" },
+								{ "test": "has_biome_tag", "value": "frozen" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							],
+							"none_of": [
+								{ "test": "has_biome_tag", "value": "deep" }
+							]
+						}
+					},
+					// Frozen Peaks
+					{
+						"event": "canopy:frozen_peaks",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "mountains" }, // "mountain" in docs, but "mountains" in game
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "frozen" },
+								{ "test": "has_biome_tag", "value": "frozen_peaks" }
+							]
+						}
+					},
+					// Frozen River
+					{
+						"event": "canopy:frozen_river",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "river" },
+								{ "test": "has_biome_tag", "value": "frozen" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Grove
+					{
+						"event": "canopy:grove",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "mountains" },
+								{ "test": "has_biome_tag", "value": "cold" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "grove" }
+							]
+						}
+					},
+					// Hell
+					{
+						"event": "canopy:hell",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "nether" },
+								{ "test": "has_biome_tag", "value": "nether_wastes" },
+								{ "test": "has_biome_tag", "value": "spawn_magma_cubes" },
+								{ "test": "has_biome_tag", "value": "spawn_zombified_piglin" },
+								{ "test": "has_biome_tag", "value": "spawn_few_piglins" },
+								{ "test": "has_biome_tag", "value": "spawn_ghast" },
+								{ "test": "has_biome_tag", "value": "spawn_endermen" }
+							]
+						}
+					},
+					// Ice Mountains CHECK
+					{
+						"event": "canopy:ice_mountains",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "frozen" },
+								{ "test": "has_biome_tag", "value": "ice" },
+								{ "test": "has_biome_tag", "value": "mountain" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Ice Plains
+					{
+						"event": "canopy:ice_plains",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "frozen" },
+								{ "test": "has_biome_tag", "value": "ice" },
+								{ "test": "has_biome_tag", "value": "ice_plains" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Ice Plains Spikes
+					{
+						"event": "canopy:ice_plains_spikes",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "frozen" },
+								{ "test": "has_biome_tag", "value": "ice_plains" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "mutated" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Jagged Peaks
+					{
+						"event": "canopy:jagged_peaks",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "mountains" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "frozen" },
+								{ "test": "has_biome_tag", "value": "jagged_peaks" }
+							]
+						}
+					},
+					// Jungle
+					{
+						"event": "canopy:jungle",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "jungle" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "rare" }
+							]
+						}
+					},
+					// Jungle Edge
+					{
+						"event": "canopy:jungle_edge",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "jungle" },
+								{ "test": "has_biome_tag", "value": "edge" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Jungle Edge M CHECK
+					{
+						"event": "canopy:jungle_edge_m",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "jungle" },
+								{ "test": "has_biome_tag", "value": "edge" },
+								{ "test": "has_biome_tag", "value": "mutated" },
+								{ "test": "has_biome_tag", "value": "overworld_generation" }
+							]
+						}
+					},
+					// Jungle Hills CHECK
+					{
+						"event": "canopy:jungle_hills",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "jungle" },
+								{ "test": "has_biome_tag", "value": "hills" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Jungle M CHECK
+					{
+						"event": "canopy:jungle_m",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "jungle" },
+								{ "test": "has_biome_tag", "value": "mutated" },
+								{ "test": "has_biome_tag", "value": "overworld_generation" }
+							]
+						}
+					},
+					// Legacy Frozen Ocean
+					{
+						"event": "canopy:legacy_frozen_ocean",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "frozen" },
+								{ "test": "has_biome_tag", "value": "ocean" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							],
+							"none_of": [
+								{ "test": "has_biome_tag", "value": "deep" },
+								{ "test": "has_biome_tag", "value": "monster" }
+							]
+						}
+					},
+					// Lukewarm Ocean
+					{
+						"event": "canopy:lukewarm_ocean",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "ocean" },
+								{ "test": "has_biome_tag", "value": "lukewarm" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							],
+							"none_of": [
+								{ "test": "has_biome_tag", "value": "deep" }
+							]
+						}
+					},
+					// Lush Caves
+					{
+						"event": "canopy:lush_caves",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "caves" },
+								{ "test": "has_biome_tag", "value": "lush_caves" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "monster" }
+							]
+						}
+					},
+					// Mangrove Swamp
+					{
+						"event": "canopy:mangrove_swamp",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "mangrove_swamp" }
+							]
+						}
+					},
+					// Meadow
+					{
+						"event": "canopy:meadow",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "mountains" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "meadow" },
+								{ "test": "has_biome_tag", "value": "bee_habitat" }
+							]
+						}
+					},
+					// Mega Taiga
+					{
+						"event": "canopy:mega_taiga",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "forest" },
+								{ "test": "has_biome_tag", "value": "mega" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "rare" },
+								{ "test": "has_biome_tag", "value": "taiga" }
+							]
+						}
+					},
+					// Mega Taiga Hills CHECK
+					{
+						"event": "canopy:mega_taiga_hills",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "forest" },
+								{ "test": "has_biome_tag", "value": "hills" },
+								{ "test": "has_biome_tag", "value": "mega" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "taiga" }
+							]
+						}
+					},
+					// Mesa
+					{
+						"event": "canopy:mesa",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "mesa" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Mesa Bryce
+					{
+						"event": "canopy:mesa_bryce",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "mesa" },
+								{ "test": "has_biome_tag", "value": "mutated" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Mesa Plateau CHECK
+					{
+						"event": "canopy:mesa_plateau",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "mesa" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "plateau" }
+							]
+						}
+					},
+					// Mesa Plateau M CHECK
+					{
+						"event": "canopy:mesa_plateau_m",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "mesa" },
+								{ "test": "has_biome_tag", "value": "plateau" },
+								{ "test": "has_biome_tag", "value": "mutated" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "stone" }
+							]
+						}
+					},
+					// Mesa Plateau Stone
+					{
+						"event": "canopy:mesa_plateau_stone",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "mesa" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "plateau" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "rare" },
+								{ "test": "has_biome_tag", "value": "stone" }
+							]
+						}
+					},
+					// Mesa Plateau Stone M CHECK
+					{
+						"event": "canopy:mesa_plateau_stone_m",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "mesa" },
+								{ "test": "has_biome_tag", "value": "plateau" },
+								{ "test": "has_biome_tag", "value": "mutated" }
+							]
+						}
+					},
+					// Mushroom Island
+					{
+						"event": "canopy:mushroom_island",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "mooshroom_island" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Mushroom Island Shore CHECK
+					{
+						"event": "canopy:mushroom_island_shore",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "mooshroom_island" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "shore" }
+							]
+						}
+					},
+					// Ocean
+					{
+						"event": "canopy:ocean",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "ocean" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							],
+							"none_of": [
+								{ "test": "has_biome_tag", "value": "cold" },
+								{ "test": "has_biome_tag", "value": "frozen" },
+								{ "test": "has_biome_tag", "value": "lukewarm" },
+								{ "test": "has_biome_tag", "value": "deep" }
+							]
+						}
+					},
+					// Plains
+					{
+						"event": "canopy:plains",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "plains" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "bee_habitat" }
+							]
+						}
+					},
+					// Redwood Taiga Hills M CHECK
+					{
+						"event": "canopy:redwood_taiga_hills_m",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "forest" },
+								{ "test": "has_biome_tag", "value": "hills" },
+								{ "test": "has_biome_tag", "value": "mega" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "mutated" },
+								{ "test": "has_biome_tag", "value": "taiga" },
+								{ "test": "has_biome_tag", "value": "overworld_generation" }
+							]
+						}
+					},
+					// Redwood Taiga M
+					{
+						"event": "canopy:redwood_taiga_m",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "forest" },
+								{ "test": "has_biome_tag", "value": "mega" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "mutated" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "taiga" }
+							]
+						}
+					},
+					// River
+					{
+						"event": "canopy:river",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "river" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							],
+							"none_of": [
+								{ "test": "has_biome_tag", "value": "frozen" }
+							]
+						}
+					},
+					// Roofed Forest
+					{
+						"event": "canopy:roofed_forest",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "forest" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "no_legacy_worldgen" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "roofed" }
+							]
+						}
+					},
+					// Roofed Forest M
+					{
+						"event": "canopy:roofed_forest_m",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "forest" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "mutated" },
+								{ "test": "has_biome_tag", "value": "roofed" },
+								{ "test": "has_biome_tag", "value": "overworld_generation" }
+							]
+						}
+					},
+					// Savanna
+					{
+						"event": "canopy:savanna",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "savanna" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Savanna M
+					{
+						"event": "canopy:savanna_m",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "savanna" },
+								{ "test": "has_biome_tag", "value": "mutated" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Savanna Plateau
+					{
+						"event": "canopy:savanna_plateau",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "savanna" },
+								{ "test": "has_biome_tag", "value": "plateau" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Savanna Plateau M CHECK
+					{
+						"event": "canopy:savanna_plateau_m",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "savanna" },
+								{ "test": "has_biome_tag", "value": "plateau" },
+								{ "test": "has_biome_tag", "value": "mutated" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Snowy Slopes
+					{
+						"event": "canopy:snowy_slopes",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "mountains" }, // "mountain" in docs, but "mountains" in game
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "snowy_slopes" },
+								{ "test": "has_biome_tag", "value": "frozen" }
+							]
+						}
+					},
+					// Soulsand Valley
+					{
+						"event": "canopy:soulsand_valley",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "nether" },
+								{ "test": "has_biome_tag", "value": "soulsand_valley" },
+								{ "test": "has_biome_tag", "value": "spawn_ghast" },
+								{ "test": "has_biome_tag", "value": "spawn_endermen" }
+							]
+						}
+					},
+					// Stone Beach
+					{
+						"event": "canopy:stone_beach",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "beach" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "stone" }
+							]
+						}
+					},
+					// Stony Peaks
+					{
+						"event": "canopy:stony_peaks",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "mountains" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							],
+							"none_of": [
+								{ "test": "has_biome_tag", "value": "cherry_grove" },
+								{ "test": "has_biome_tag", "value": "frozen_peaks" },
+								{ "test": "has_biome_tag", "value": "grove" },
+								{ "test": "has_biome_tag", "value": "jagged_peaks" },
+								{ "test": "has_biome_tag", "value": "meadow" },
+								{ "test": "has_biome_tag", "value": "snowy_slopes" }
+							]
+						}
+					},
+					// Sunflower Plains
+					{
+						"event": "canopy:sunflower_plains",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "mutated" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "plains" },
+								{ "test": "has_biome_tag", "value": "bee_habitat" }
+							]
+						}
+					},
+					// Swampland
+					{
+						"event": "canopy:swampland",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "swamp" }
+							]
+						}
+					},
+					// Swampland M CHECK
+					{
+						"event": "canopy:swampland_m",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "mutated" },
+								{ "test": "has_biome_tag", "value": "swamp" },
+								{ "test": "has_biome_tag", "value": "overworld_generation" }
+							]
+						}
+					},
+					// Taiga
+					{
+						"event": "canopy:taiga",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "taiga" },
+								{ "test": "has_biome_tag", "value": "forest" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							],
+							"none_of": [
+								{ "test": "has_biome_tag", "value": "cold" },
+								{ "test": "has_biome_tag", "value": "mega" }
+							]
+						}
+					},
+					// Taiga Hills CHECK
+					{
+						"event": "canopy:taiga_hills",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "taiga" },
+								{ "test": "has_biome_tag", "value": "hills" },
+								{ "test": "has_biome_tag", "value": "forest" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Taiga M CHECK
+					{
+						"event": "canopy:taiga_m",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "animal" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "taiga" },
+								{ "test": "has_biome_tag", "value": "mutated" },
+								{ "test": "has_biome_tag", "value": "forest" },
+								{ "test": "has_biome_tag", "value": "overworld_generation" }
+							]
+						}
+					},
+					// The End
+					{
+						"event": "canopy:the_end",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "the_end" }
+							]
+						}
+					},
+					// Warm Ocean
+					{
+						"event": "canopy:warm_ocean",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "ocean" },
+								{ "test": "has_biome_tag", "value": "warm" },
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" }
+							]
+						}
+					},
+					// Warped Forest
+					{
+						"event": "canopy:warped_forest",
+						"filters": {
+							"all_of": [
+								{ "test": "has_biome_tag", "value": "nether" },
+								{ "test": "has_biome_tag", "value": "netherwart_forest" },
+								{ "test": "has_biome_tag", "value": "warped_forest" },
+								{ "test": "has_biome_tag", "value": "spawn_endermen" }
+							]
+						}
+					},
+
 					{"filters": {"test": "light_level", "value": 0},"event": "light_0"},
 					{"filters": {"test": "light_level", "value": 1},"event": "light_1"},
 					{"filters": {"test": "light_level", "value": 2},"event": "light_2"},
@@ -33,10 +1223,98 @@
 					{"filters": {"test": "light_level", "value": 13},"event": "light_13"},
 					{"filters": {"test": "light_level", "value": 14},"event": "light_14"},
 					{"filters": {"test": "light_level", "value": 15},"event": "light_15"}
-				]
-			}
-		},
-		"events":{
+                ]
+            }
+        },
+        "events": {
+            "canopy:reset_biome_property": { "set_property": { "canopy:biome": "Unknown" } },
+			"canopy:bamboo_jungle": { "set_property": { "canopy:biome": 0 } },
+			"canopy:bamboo_jungle_hills": { "set_property": { "canopy:biome": 1 } },
+			"canopy:basalt_deltas": { "set_property": { "canopy:biome": 2 } },
+			"canopy:beach": { "set_property": { "canopy:biome": 3 } },
+			"canopy:birch_forest": { "set_property": { "canopy:biome": 4 } },
+			"canopy:birch_forest_hills": { "set_property": { "canopy:biome": 5 } },
+			"canopy:birch_forest_hills_m": { "set_property": { "canopy:biome": 6 } },
+			"canopy:birch_forest_m": { "set_property": { "canopy:biome": 7 } },
+			"canopy:cherry_grove": { "set_property": { "canopy:biome": 8 } },
+			"canopy:cold_beach": { "set_property": { "canopy:biome": 9 } },
+			"canopy:cold_ocean": { "set_property": { "canopy:biome": 10 } },
+			"canopy:cold_taiga": { "set_property": { "canopy:biome": 11 } },
+			"canopy:cold_taiga_hills": { "set_property": { "canopy:biome": 12 } },
+			"canopy:cold_taiga_m": { "set_property": { "canopy:biome": 13 } },
+			"canopy:crimson_forest": { "set_property": { "canopy:biome": 14 } },
+			"canopy:deep_cold_ocean": { "set_property": { "canopy:biome": 15 } },
+			"canopy:deep_dark": { "set_property": { "canopy:biome": 16 } },
+			"canopy:deep_frozen_ocean": { "set_property": { "canopy:biome": 17 } },
+			"canopy:deep_lukewarm_ocean": { "set_property": { "canopy:biome": 18 } },
+			"canopy:deep_ocean": { "set_property": { "canopy:biome": 19 } },
+			"canopy:deep_warm_ocean": { "set_property": { "canopy:biome": 20 } },
+			"canopy:desert": { "set_property": { "canopy:biome": 21 } },
+			"canopy:desert_hills": { "set_property": { "canopy:biome": 22 } },
+			"canopy:desert_m": { "set_property": { "canopy:biome": 23 } },
+			"canopy:dripstone_caves": { "set_property": { "canopy:biome": 24 } },
+			"canopy:extreme_hills": { "set_property": { "canopy:biome": 25 } },
+			"canopy:extreme_hills_edge": { "set_property": { "canopy:biome": 26 } },
+			"canopy:extreme_hills_m": { "set_property": { "canopy:biome": 27 } },
+			"canopy:extreme_hills_plus_trees": { "set_property": { "canopy:biome": 28 } },
+			"canopy:extreme_hills_plus_trees_m": { "set_property": { "canopy:biome": 29 } },
+			"canopy:flower_forest": { "set_property": { "canopy:biome": 30 } },
+			"canopy:forest": { "set_property": { "canopy:biome": 31 } },
+			"canopy:forest_hills": { "set_property": { "canopy:biome": 32 } },
+			"canopy:frozen_ocean": { "set_property": { "canopy:biome": 33 } },
+			"canopy:frozen_peaks": { "set_property": { "canopy:biome": 34 } },
+			"canopy:frozen_river": { "set_property": { "canopy:biome": 35 } },
+			"canopy:grove": { "set_property": { "canopy:biome": 36 } },
+			"canopy:hell": { "set_property": { "canopy:biome": 37 } },
+			"canopy:ice_mountains": { "set_property": { "canopy:biome": 38 } },
+			"canopy:ice_plains": { "set_property": { "canopy:biome": 39 } },
+			"canopy:ice_plains_spikes": { "set_property": { "canopy:biome": 40 } },
+			"canopy:jagged_peaks": { "set_property": { "canopy:biome": 41 } },
+			"canopy:jungle": { "set_property": { "canopy:biome": 42 } },
+			"canopy:jungle_edge": { "set_property": { "canopy:biome": 43 } },
+			"canopy:jungle_edge_m": { "set_property": { "canopy:biome": 44 } },
+			"canopy:jungle_hills": { "set_property": { "canopy:biome": 45 } },
+			"canopy:jungle_m": { "set_property": { "canopy:biome": 46 } },
+			"canopy:legacy_frozen_ocean": { "set_property": { "canopy:biome": 47 } },
+			"canopy:lukewarm_ocean": { "set_property": { "canopy:biome": 48 } },
+			"canopy:lush_caves": { "set_property": { "canopy:biome": 49 } },
+			"canopy:mangrove_swamp": { "set_property": { "canopy:biome": 50 } },
+			"canopy:meadow": { "set_property": { "canopy:biome": 51 } },
+			"canopy:mega_taiga": { "set_property": { "canopy:biome": 52 } },
+			"canopy:mega_taiga_hills": { "set_property": { "canopy:biome": 53 } },
+			"canopy:mesa": { "set_property": { "canopy:biome": 54 } },
+			"canopy:mesa_bryce": { "set_property": { "canopy:biome": 55 } },
+			"canopy:mesa_plateau": { "set_property": { "canopy:biome": 56 } },
+			"canopy:mesa_plateau_m": { "set_property": { "canopy:biome": 57 } },
+			"canopy:mesa_plateau_stone": { "set_property": { "canopy:biome": 58 } },
+			"canopy:mesa_plateau_stone_m": { "set_property": { "canopy:biome": 59 } },
+			"canopy:mushroom_island": { "set_property": { "canopy:biome": 60 } },
+			"canopy:mushroom_island_shore": { "set_property": { "canopy:biome": 61 } },
+			"canopy:ocean": { "set_property": { "canopy:biome": 62 } },
+			"canopy:plains": { "set_property": { "canopy:biome": 63 } },
+			"canopy:redwood_taiga_hills_m": { "set_property": { "canopy:biome": 64 } },
+			"canopy:redwood_taiga_m": { "set_property": { "canopy:biome": 65 } },
+			"canopy:river": { "set_property": { "canopy:biome": 66 } },
+			"canopy:roofed_forest": { "set_property": { "canopy:biome": 67 } },
+			"canopy:roofed_forest_m": { "set_property": { "canopy:biome": 68 } },
+			"canopy:savanna": { "set_property": { "canopy:biome": 69 } },
+			"canopy:savanna_m": { "set_property": { "canopy:biome": 70 } },
+			"canopy:savanna_plateau": { "set_property": { "canopy:biome": 71 } },
+			"canopy:savanna_plateau_m": { "set_property": { "canopy:biome": 72 } },
+			"canopy:snowy_slopes": { "set_property": { "canopy:biome": 73 } },
+			"canopy:soulsand_valley": { "set_property": { "canopy:biome": 74 } },
+			"canopy:stone_beach": { "set_property": { "canopy:biome": 75 } },
+			"canopy:stony_peaks": { "set_property": { "canopy:biome": 76 } },
+			"canopy:sunflower_plains": { "set_property": { "canopy:biome": 77 } },
+			"canopy:swampland": { "set_property": { "canopy:biome": 78 } },
+			"canopy:swampland_m": { "set_property": { "canopy:biome": 79 } },
+			"canopy:taiga": { "set_property": { "canopy:biome": 80 } },
+			"canopy:taiga_hills": { "set_property": { "canopy:biome": 81 } },
+			"canopy:taiga_m": { "set_property": { "canopy:biome": 82 } },
+			"canopy:the_end": { "set_property": { "canopy:biome": 83 } },
+			"canopy:warm_ocean": { "set_property": { "canopy:biome": 84 } },
+			"canopy:warped_forest": { "set_property": { "canopy:biome": 85 } },
+
 			"light_0": {"set_property": {"canopy:light": 0}},
 			"light_1": {"set_property": {"canopy:light": 1}},
 			"light_2": {"set_property": {"canopy:light": 2}},
@@ -53,6 +1331,6 @@
 			"light_13": {"set_property": {"canopy:light": 13}},
 			"light_14": {"set_property": {"canopy:light": 14}},
 			"light_15": {"set_property": {"canopy:light": 15}}
-		}
-	}
+        }
+    }
 }
