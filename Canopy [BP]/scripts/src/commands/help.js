@@ -127,9 +127,10 @@ function helpCommand(sender, args) {
     helpBook.addCommandPages(helpBook);
 
     const { pageName } = args;
+    const numCommandPages = Object.keys(helpBook.helpPages).length - helpBook.numDynamicPages;
     if (pageName === null)
         printAllHelp(sender, helpBook);
-    else if (pageName === 'infodisplay' || pageName === 'features' || (pageName > 0 && pageName < helpBook.numDynamicPages + 1))
+    else if (pageName === 'infodisplay' || pageName === 'features' || (pageName > 0 && pageName <= numCommandPages))
         printHelpPage(sender, helpBook, pageName)
     else
         sender.sendMessage('§cUsage: ./help [infodisplay/features/page number]');
