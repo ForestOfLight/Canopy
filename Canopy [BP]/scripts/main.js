@@ -41,6 +41,7 @@ import 'src/features/dupeTnt'
 import 'src/features/pistonBedrockBreaking'
 import 'src/features/hotbarSwitching'
 import 'src/features/renewableSponge'
+import 'src/features/armorStandRespawning'
 
 // Misc Processes
 import 'src/validWorld'
