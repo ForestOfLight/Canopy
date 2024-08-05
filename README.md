@@ -10,8 +10,9 @@ This pack brings technical informatics, new features, and quality-of-life change
 
 Canopy is an addon for vanilla Minecraft Bedrock Edition that allows more control over what matters from a technical perspective of the game. With it, you can:
 
-- Add useful information to your HUD, including light level, TPS, the number of entities in view, the inventory of the block or entity in front of you, and more.
-- Recieve a detailed breakdown of the items your farms and machines produce using hopperCounters.
+- View useful information in the top right of your screen, including light level, TPS, biome, the number of entities in view, the name of the block in front of you, its inventory, and more.
+- Receive a detailed breakdown of the items your farms and machines produce using hopper counters.
+- Get statistics on the performance of your farms with spawn tracking.
 - Analyze your builds in slow motion using the tick command.
 - much, much more!
 
