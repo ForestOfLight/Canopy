@@ -147,7 +147,7 @@ class WorldSpawns {
         const unsuccessSpawnsPercent = (100 - parseFloat(successSpawnsPercent)).toFixed(1);
         const avgMobsPerSuccessTick = this.getAvgMobsPerSuccessTick(mobsPerTick).toFixed(1);
 
-        return `§7(§f${avgMobsPerTick}§7m/s, (§f${unsuccessSpawnsPercent}§7%%- / §f${successSpawnsPercent}§7%%+): §f${avgMobsPerSuccessTick}§7m/att)`;
+        return `§7(§f${avgMobsPerTick}§7m/t, (§f${unsuccessSpawnsPercent}§7%%- / §f${successSpawnsPercent}§7%%+): §f${avgMobsPerSuccessTick}§7m/att)`;
     }
 
     getMobsPerTick(dimensionId) {

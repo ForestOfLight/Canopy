@@ -245,7 +245,7 @@ class SpawnTracker {
         const unsuccessSpawnsPercent = (100 - successSpawnsPercent).toFixed(1);
         const avgMobsPerSuccessTick = this.calcAvgMobsPerSuccessTick().toFixed(1);
 
-        return `§f${mobsPerTick}§7m/s, (§f${unsuccessSpawnsPercent}§7%%- / §f${successSpawnsPercent}§7%%+): §f${avgMobsPerSuccessTick}§7m/att`;
+        return `§f${mobsPerTick}§7m/t, (§f${unsuccessSpawnsPercent}§7%%- / §f${successSpawnsPercent}§7%%+): §f${avgMobsPerSuccessTick}§7m/att`;
     }
 
     getTotalMobs() {
