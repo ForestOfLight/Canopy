@@ -10,7 +10,7 @@ let shouldStep = 0;
 system.runInterval(() => {
     if (shouldStep > 0) {
         shouldStep--;
-        if (shouldStep == 0) world.sendMessage('Tick step complete.');
+        if (shouldStep == 0) world.sendMessage('§7Tick step complete.');
         return;
     }
     tickSpeed(currentTickSpeed);
