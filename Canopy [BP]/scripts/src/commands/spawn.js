@@ -54,7 +54,7 @@ function spawnCommand(sender, args) {
         '\n§c./spawn mocking <true/false>' +
         '\n§c./spawn test' +
         '\n§c./spawn recent [mobname]' +
-        '\n§c./spawn tracking <mobname/all>' +
+        '\n§c./spawn tracking' +
         '\n§c./spawn entities');
 }
 
