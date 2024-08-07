@@ -13,6 +13,7 @@ new Command()
 
 function entityDensityCommand(sender, args) {
     let { firstArg, gridSize } = args;
+    if (firstArg === null) return sender.sendMessage('§cUsage: ./entitydensity <dimension> <gridSize>');
     const { validDimensionId, parsedGridSize, hasNoErrors } = parseArgs(sender, firstArg, gridSize);
     if (hasNoErrors === false) return;
     if (parsedGridSize) gridSize = parsedGridSize;
@@ -29,6 +30,7 @@ function parseArgs(sender, firstArg, gridSize) {
     let hasNoErrors = true;
     let validDimensionId;
     let parsedGridSize = gridSize;
+
     const validDimensions = {
         'o': 'overworld',
         'overworld': 'overworld',

@@ -133,7 +133,7 @@ function trackMob(sender, mobName, posOne, posTwo) {
         if (categoryToMobMap[category].includes(mobName)) isTrackable = true;
     }
     if (!isTrackable) return sender.sendMessage('§cInvalid mob name. Usage: ./spawn tracking <start/stop/mobname> [x1 y1 z1] [x2 y2 z2]');
-    currMobIds.push(mobName);
+    if (!currMobIds.includes(mobName)) currMobIds.push(mobName);
     if (worldSpawns) worldSpawns.destruct();
     if (!isLocationNull(posOne) && !isLocationNull(posTwo)) currActiveArea = { posOne, posTwo, dimensionId: sender.dimension.id };
     worldSpawns = new WorldSpawns(currMobIds, currActiveArea);
