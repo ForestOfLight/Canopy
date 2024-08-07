@@ -71,19 +71,18 @@ const Entities = {
     },
 
     getEntitiesOnScreenCount(player) { // author: jeanmajid
-        const vd = Utils.normalizeVector(player.getViewDirection());
-        const entities = player.dimension.getEntities();
+        const viewDirection = Utils.normalizeVector(player.getViewDirection());
+        const entities = player.dimension.getEntities({ location: player.location, maxDistance: 96 });
 
         let count = 0;
         for (const entity of entities) {
             try{
-                const distance = Utils.calcDistance(player.location, entity.location, false);
                 const toEntity = Utils.normalizeVector(subtractVectors(entity.location, player.location));
-                const dotProduct = Utils.dotProduct(vd, toEntity);
-                if (dotProduct > 0.4 && distance < 256) count++;
+                const dotProduct = Utils.dotProduct(viewDirection, toEntity);
+                if (dotProduct > 0.4) count++;
             } catch (error) {
                 if (error.message.includes('property')) continue; // Entity has despawned
-                else console.warn(error.message);
+                throw error;
             }
         }
         return count;
