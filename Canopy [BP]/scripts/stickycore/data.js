@@ -3,6 +3,12 @@ import MT from './src/mt.js'
 import Utils from 'stickycore/utils'
 import { currentQuery } from 'src/commands/peek'
 
+mc.world.afterEvents.playerJoin.subscribe((event) => {
+	const player = mc.world.getPlayers({ name: event.playerName })[0];
+	if (!player || player.id !== event.playerId) return;
+	Data.updateJoinDate(player);
+});
+
 class Data {
 	static #owDimension = mc.world.getDimension('overworld');
 	
@@ -132,6 +138,23 @@ class Data {
 		return output;
 	}
 
+	static updateJoinDate(player) {
+		player.setDynamicProperty('joinDate', Date.now());
+	}
+
+	static getSessionTime(player) {
+		const joinDate = player.getDynamicProperty('joinDate');
+		if (!joinDate) return '?:?';
+		const sessionTime = (Date.now() - joinDate) / 1000;
+		const hours = Math.floor(sessionTime / 3600);
+		const minutes = Math.floor((sessionTime % 3600) / 60);
+		const seconds = Math.floor(sessionTime % 60);
+		let output = '';
+		if (hours > 0) output += `${hours}:`;
+		output += `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+		return output;
+	}
+
 	static updateFeature(sender, feature, enable, isGlobal = false) {
 		if (!sender || !feature || typeof enable !== 'boolean') return console.warn('[Data.updateFeature] Invalid arguments.');
 
@@ -139,8 +162,6 @@ class Data {
 			mc.world.setDynamicProperty(feature, enable);
 			Utils.broadcastActionBar(`${sender.name}: ${feature} has been ${enable ? '§l§aenabled' : '§l§cdisabled'}`, sender);
 		} else {
-			if (mc.world.getDynamicProperty(feature) === false && enable === true)
-				return sender.sendMessage(`§cYou cannot enable ${feature} while it is disabled globally.`);
 			sender.setDynamicProperty(feature, enable);
 		}
 		sender.sendMessage(`§7${feature} has been ${enable ? '§l§aenabled' : '§l§cdisabled'}§r§7.`);

@@ -10,6 +10,7 @@ const infoDisplay = newDB([
     'light',
     'worldDay',
     'timeOfDay',
+    'sessionTime',
     'moonPhase',
     'slimeChunk',
     'eventTrackers',
@@ -24,6 +25,7 @@ const features = newDB([
     'commandClaimProjectiles',
     'commandJump',
     'commandJumpSurvival',
+    'commandRemoveEntity',
     'commandSpawnMocking',
     'commandSummonTnt',
     'commandTntFuse',
@@ -31,6 +33,7 @@ const features = newDB([
     'commandWarp',
     'commandWarpSurvival',
     'dupeTnt',
+    'entityInstantDeath',
     'explosionChainReactionOnly',
     'explosionNoBlockDamage',
     'flippinArrows',
@@ -43,10 +46,11 @@ const features = newDB([
     'noTileDrops',
     'pickupOnMine',
     'pistonBedrockBreaking',
+    'renewableElytra',
     'renewableSponge',
     'tntPrimeMaxMomentum',
     'tntPrimeNoMomentum',
-    'universalChunkLoading',
+    'universalChunkLoading'
 ]);
 
 module({

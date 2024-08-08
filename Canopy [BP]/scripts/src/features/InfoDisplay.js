@@ -21,6 +21,7 @@ function InfoDisplay(player) {
 	InfoText += parseTPSAndEntities(player);
 	InfoText += parseLightAndBiome(player);
 	InfoText += parseDayAndTime(player);
+	InfoText += parseSessionTime(player);
 	InfoText += parseMoonPhaseAndSlimeChunk(player);
 	InfoText += parseEventTrackerInfo(player);
 	InfoText += parseHopperCounters(player);
@@ -93,6 +94,19 @@ function parseDayAndTime(player) {
 	if (showDay && showTimeOfDay) output += `Day: §7${day}§r §7${dayTime}§r\n`;
 	else if (showDay) output += `§rDay: §7${day}§r\n`;
 	else if (showTimeOfDay) output += `§rTime: §7${dayTime}§r\n`;
+
+	return output;
+}
+
+function parseSessionTime(player) {
+	const showSessionTime = player.getDynamicProperty('sessionTime');
+	let sessionTime;
+	let output = '';
+
+	if (showSessionTime) {
+		sessionTime = Data.getSessionTime(player);
+		output += `§rSession: §7${sessionTime}§r\n`;
+	}
 
 	return output;
 }

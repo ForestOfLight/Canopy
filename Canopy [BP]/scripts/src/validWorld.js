@@ -1,4 +1,5 @@
 import { world, system } from '@minecraft/server';
+import Data from 'stickycore/data';
 
 let hasShownWelcome = false;
 
@@ -17,6 +18,7 @@ world.afterEvents.playerJoin.subscribe((event) => {
 
 function onValidWorld(player) {
     displayWelcome(player);
+    Data.updateJoinDate(player);
 }
 
 function displayWelcome(player) {

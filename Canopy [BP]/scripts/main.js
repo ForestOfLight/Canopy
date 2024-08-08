@@ -24,6 +24,7 @@ import 'src/commands/spawn'
 import 'src/commands/claimprojectiles'
 import 'src/commands/trackevent'
 import 'src/commands/tntfuse'
+import 'src/commands/removeentity'
 
 // Script Events
 import 'src/commands/scriptevents/counter'
@@ -46,6 +47,8 @@ import 'src/features/armorStandRespawning'
 import 'src/features/noExplosion'
 import 'src/features/explosionChainReactionOnly'
 import 'src/features/instantTame'
+import 'src/features/entityInstantDeath'
+import 'src/features/renewableElytra'
 
 // Misc Processes
 import 'src/validWorld'

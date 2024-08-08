@@ -107,7 +107,7 @@ class ProbeManager {
             this.probeMap[player.id] = probe;
             probe.attachToPlayer();
         } catch (error) {
-            if (error.name === 'LocationInUnloadedChunkError')
+            if (['LocationInUnloadedChunkError', 'LocationOutOfWorldBoundariesError'].includes(error.name))
                 return;
             throw error;
         }
