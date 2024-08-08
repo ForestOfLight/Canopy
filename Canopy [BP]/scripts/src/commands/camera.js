@@ -42,17 +42,17 @@ new Command()
 
 new Command()
     .setName('cp')
-    .setCallback(placeCameraAction)
+    .setCallback((sender) => cameraCommand(sender, { action: 'place' }))
     .build()
 
 new Command()
     .setName('cv')
-    .setCallback(viewCameraAction)
+    .setCallback((sender) => cameraCommand(sender, { action: 'view' }))
     .build()
 
 new Command()
     .setName('cs')
-    .setCallback(spectateAction)
+    .setCallback((sender) => cameraCommand(sender, { action: 'spectate' }))
     .build()
 
 class Camera {
@@ -84,7 +84,6 @@ function cameraCommand(sender, args) {
 }
 
 function placeCameraAction(sender) {
-    if (!world.getDynamicProperty('commandCamera')) return sender.sendMessage('§cThe commandCamera feature is disabled.');
     let camera;
     let eyeHeight = 1.62001002;
 
@@ -104,7 +103,6 @@ function placeCamera(sender, camera) {
 }
 
 function viewCameraAction(sender) {
-    if (!world.getDynamicProperty('commandCamera')) return sender.sendMessage('§cThe commandCamera feature is disabled.');
     let placedCamera;
 
     if (sender.getDynamicProperty('isSpectating')) return sender.sendMessage('§cYou cannot view a camera while spectating.');
@@ -143,7 +141,6 @@ function endCameraView(sender) {
 }
 
 function spectateAction(sender) {
-    if (!world.getDynamicProperty('commandCamera')) return sender.sendMessage('§cThe commandCamera feature is disabled.');
     if (sender.getDynamicProperty('isViewingCamera')) return sender.sendMessage('§cYou cannot spectate while viewing a camera.');
     if (!sender.getDynamicProperty('isSpectating'))
         startSpectate(sender);

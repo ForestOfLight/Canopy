@@ -20,13 +20,29 @@
             "causes_fire": false
           }
         },
-        "canopy:explosion": {
-            "minecraft:explode": {
-                "fuse_length": 4,
-                "fuse_lit": true,
-                "power": 4,
-                "causes_fire": false
-            }
+        "canopy:normalFuse": {
+          "minecraft:explode": {
+            "fuse_length": 4,
+            "fuse_lit": true,
+            "power": 4,
+            "causes_fire": false
+          }
+        },
+        "canopy:longFuse": {
+          "minecraft:explode": {
+            "fuse_length": 3600,
+            "fuse_lit": true,
+            "power": 4,
+            "causes_fire": false
+          }
+        },
+        "canopy:explode": {
+          "minecraft:explode": {
+            "fuse_length": 0,
+            "fuse_lit": true,
+            "power": 4,
+            "causes_fire": false
+          }
         }
       },
       
@@ -61,10 +77,24 @@
             ]
           }
         },
-        "canopy:on_prime": {
+        "canopy:normalFuse": {
           "add": {
             "component_groups": [
-                "canopy:explosion"
+                "canopy:normalFuse"
+            ]
+          }
+        },
+        "canopy:longFuse": {
+          "add": {
+            "component_groups": [
+                "canopy:longFuse"
+            ]
+          }
+        },
+        "canopy:explode": {
+          "add": {
+            "component_groups": [
+                "canopy:explode"
             ]
           }
         }
