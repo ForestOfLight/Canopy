@@ -3,7 +3,7 @@ import { world, system } from '@minecraft/server'
 const MAX_VELOCITY = 0.019600000232548116; // From vanilla TNT: 49/2500 with some floating point error
 
 world.afterEvents.entitySpawn.subscribe((event) => {
-    if (event.entity.typeId !== 'minecraft:tnt' || !world.getDynamicProperty('hardcodedTntPrimeMomentum')) return;
+    if (event.entity.typeId !== 'minecraft:tnt' || !world.getDynamicProperty('tntPrimeMaxMomentum')) return;
     const entity = event.entity;
     if (world.getDynamicProperty('dupeTnt')) {
         system.runTimeout(() => {

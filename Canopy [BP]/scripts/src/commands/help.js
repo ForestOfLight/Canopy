@@ -51,6 +51,14 @@ class HelpBook {
         this.helpPages[name] = page;
     }
 
+    getPageNames() {
+        return Object.keys(this.helpPages).map(pageName => {
+            if (Utils.isNumeric(pageName))
+                return parseInt(pageName);
+            return pageName;
+        });
+    }
+
     addDynamicPages() {
         const infoDisplayModule = module.exports['infoDisplay'];
         const featuresModule = module.exports['features'];
@@ -76,8 +84,8 @@ class HelpBook {
         this.helpPages[1].addItem('camera', './camera place', 'Places a camera at your current location. (alias: ./cp)');
         this.helpPages[1].addItem('camera', './camera view', 'Toggles viewing your latest camera placement. (alias: ./cv)');
         this.helpPages[1].addItem('camera', './camera spectate', 'Survival-friendly spectator mode. Toggles freecam. (alias: ./cs)');
-        this.helpPages[1].addItem('changedimension', './changedimension <dimension> [x y z]', 'Teleports you to the specified dimension.');
-        this.helpPages[1].addItem('claimprojectiles', './claimprojectiles [playerName]', 'Changes the owner of all projectiles within a 10 block radius.');
+        this.helpPages[1].addItem('change dimension', './changedimension <dimension> [x y z]', 'Teleports you to the specified dimension.');
+        this.helpPages[1].addItem('claim projectiles', './claimprojectiles [playerName]', 'Changes the owner of all projectiles within a 10 block radius.');
         this.helpPages[1].addItem('hopper counters', './counter [color/all]', 'Displays the count and rates of the hopper counters. (alias: ./ct)');
         this.helpPages[1].addItem('hopper counters', './counter <color/all> <mode>', 'Sets the mode of a hopper counter: countMode, perhourMode, perminuteMode, or persecondMode. (alias: ./ct)');
         this.helpPages[1].addItem('hopper counters', './counter realtime', 'Toggles real-world time and tick-based time to do rate calculations. (alias: ./ct)');
@@ -127,13 +135,12 @@ function helpCommand(sender, args) {
     helpBook.addCommandPages(helpBook);
 
     const { pageName } = args;
-    const numCommandPages = Object.keys(helpBook.helpPages).length - helpBook.numDynamicPages;
     if (pageName === null)
         printAllHelp(sender, helpBook);
-    else if (pageName === 'infodisplay' || pageName === 'features' || (pageName > 0 && pageName <= numCommandPages))
+    else if (helpBook.getPageNames().includes(pageName))
         printHelpPage(sender, helpBook, pageName)
     else
-        sender.sendMessage('§cUsage: ./help [infodisplay/features/page number]');
+        sender.sendMessage('§cUsage: ./help [infodisplay/globalfeatures/page number]');
 }
 
 function printAllHelp(sender, helpBook) {

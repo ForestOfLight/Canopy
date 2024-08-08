@@ -13,7 +13,7 @@ const openIds = ['iron_trapdoor', 'iron_door'];
 const noInteractBlockIds = ['piston_arm_collision', 'sticky_piston_arm_collision', 'bed'];
 
 system.runInterval(() => {
-    if (!world.getDynamicProperty('flippinArrows')) return;
+    // if (!world.getDynamicProperty('flippinArrows')) return;
     previousBlocks.shift();
     if (previousBlocks.length < WAIT_TIME_BETWEEN_USE) {
         previousBlocks.push(null);
@@ -35,7 +35,8 @@ world.beforeEvents.playerPlaceBlock.subscribe(event => {
 });
 
 world.beforeEvents.itemUseOn.subscribe(event => {
-    if (!world.getDynamicProperty('flippinArrows') || event.itemStack.typeId !== 'minecraft:arrow') return;
+    if (!world.getDynamicProperty('flippinArrows')) return;
+    if (event.itemStack.typeId !== 'minecraft:arrow') return;
     const block = event.block;
     if (needsCooldown(block)) return;
     previousBlocks.push(block);

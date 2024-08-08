@@ -10,8 +10,8 @@ new Command()
     .build()
 
 function claimProjectilesCommand(sender, args) {
-    if (!world.getDynamicProperty('claimprojectiles')) 
-        return sender.sendMessage('§cThe claimprojectiles feature is disabled.')
+    if (!world.getDynamicProperty('commandClaimProjectiles')) 
+        return sender.sendMessage('§cThe commandClaimProjectiles feature is disabled.')
 
     const { playerName } = args;
     const targetPlayer = getTargetPlayer(sender, playerName);

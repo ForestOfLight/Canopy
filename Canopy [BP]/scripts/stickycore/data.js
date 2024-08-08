@@ -132,13 +132,15 @@ class Data {
 		return output;
 	}
 
-	static updateFeature(sender, feature, enable, global = false) {
-		if (!sender || !feature || typeof enable !== 'boolean') return console.warn('updateFeature: Invalid arguments.');
+	static updateFeature(sender, feature, enable, isGlobal = false) {
+		if (!sender || !feature || typeof enable !== 'boolean') return console.warn('[Data.updateFeature] Invalid arguments.');
 
-		if (global) { 
+		if (isGlobal) { 
 			mc.world.setDynamicProperty(feature, enable);
 			Utils.broadcastActionBar(`${sender.name}: ${feature} has been ${enable ? '§l§aenabled' : '§l§cdisabled'}`, sender);
 		} else {
+			if (mc.world.getDynamicProperty(feature) === false && enable === true)
+				return sender.sendMessage(`§cYou cannot enable ${feature} while it is disabled globally.`);
 			sender.setDynamicProperty(feature, enable);
 		}
 		sender.sendMessage(`§7${feature} has been ${enable ? '§l§aenabled' : '§l§cdisabled'}§r§7.`);

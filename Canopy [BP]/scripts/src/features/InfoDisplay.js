@@ -5,7 +5,7 @@ import { DataTPS } from 'src/tps'
 import { Entities } from 'src/entities'
 import ProbeManager from 'src/classes/ProbeManager'
 import { getInfoDisplayOutput } from 'src/commands/counter'
-import { getAllTrackerInfoString } from 'src/commands/track';
+import { getAllTrackerInfoString } from 'src/commands/trackevent';
 
 system.runInterval(() => {
 	const Players = world.getAllPlayers();

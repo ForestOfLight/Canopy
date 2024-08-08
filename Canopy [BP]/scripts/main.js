@@ -22,7 +22,8 @@ import 'src/commands/tick'
 import 'src/commands/changedimension'
 import 'src/commands/spawn'
 import 'src/commands/claimprojectiles'
-import 'src/commands/track'
+import 'src/commands/trackevent'
+import 'src/commands/tntfuse'
 
 // Script Events
 import 'src/commands/scriptevents/counter'
@@ -30,18 +31,20 @@ import 'src/commands/scriptevents/spawn'
 
 // Features
 import 'src/features/InfoDisplay'
-import 'src/features/noExplosionBlockDamage'
+import 'src/features/explosionNoBlockDamage'
 import 'src/features/pickupOnMine'
 import 'src/features/universalChunkLoading'
 import 'src/features/noTileDrops'
 import 'src/features/flippinArrows'
-import 'src/features/noTntPrimeMomentum'
-import 'src/features/hardcodedTntPrimeMomentum'
+import 'src/features/tntPrimeNoMomentum'
+import 'src/features/tntPrimeMaxMomentum'
 import 'src/features/dupeTnt'
 import 'src/features/pistonBedrockBreaking'
 import 'src/features/hotbarSwitching'
 import 'src/features/renewableSponge'
 import 'src/features/armorStandRespawning'
+import 'src/features/noExplosion'
+import 'src/features/explosionChainReactionOnly'
 
 // Misc Processes
 import 'src/validWorld'

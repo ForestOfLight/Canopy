@@ -4,20 +4,15 @@ import Command from 'stickycore/command'
 import Data from 'stickycore/data'
 import { resetCounterMap } from 'src/commands/counter'
 
-class DependantFeature {
-    constructor(validFeature, dependantFeature) {
-        this.validFeature = validFeature;
-        this.dependantFeature = dependantFeature;
-    }
-}
-
-class DependantFeatures {
+class RelatedFeatures {
     constructor() {
-        this.dependantFeatures = [
-            new DependantFeature('jumpInSurvival', 'jump'),
-            new DependantFeature('warpInSurvival', 'warp'),
-            new DependantFeature('hotbarSwitching', 'hotbarSwitchingInSurvival'),
+        this.dependancies = [
+            { validFeature: 'commandJump', dependantFeature: 'commandJumpSurvival' },
+            { validFeature: 'commandWarp', dependantFeature: 'commandWarpSurvival' },
         ];
+        this.independancies = [
+            { featureOne: 'explosionChainReactionOnly', featureTwo: 'explosionNoBlockDamage' },
+        ]
     }
 }
 
@@ -29,30 +24,62 @@ new Command()
     .build()
 
 function featureCommand(sender, args) {
-    if (!sender.hasTag('CanopyAdmin')) return sender.sendMessage('§cYou do not have permission to use this command.');
-    const features = module.exports['features'];
+    const globalFeatures = module.exports['features'];
     const { feature, enable } = args;
-    if (feature === null || enable === null) return sender.sendMessage(`§cUsage: ./feature <feature> <true/false>`);
-    const validFeature = features[feature.toLowerCase()];
+    const loweredFeature = feature.toLowerCase();
 
-    if (!validFeature) return sender.sendMessage(`§cInvalid feature: ${feature}`);
-    if (enable === world.getDynamicProperty(validFeature)) return sender.sendMessage(`§7${feature} is already ${enable ? '§l§aenabled' : '§l§cdisabled'}§r§7.`);
+    if (feature === null || enable === null)
+        return sender.sendMessage(`§cUsage: ./feature <feature> <true/false>`);
+    if (!isValidFeature(loweredFeature)) 
+        return sender.sendMessage(`§cInvalid feature: ${feature}`);
 
-    if (validFeature === 'hopperCounters' && !enable) resetCounterMap();
-    updateDependantFeatures(sender, validFeature, enable);
+    const isGlobal = true;
+    const validFeature = globalFeatures[loweredFeature];
+
+    if (!sender.hasTag('CanopyAdmin'))
+        return sender.sendMessage(`§cYou do not have permission to modify ${feature}.`);
+    else if (enable === world.getDynamicProperty(validFeature))
+        return sender.sendMessage(`§7${feature} is already ${enable ? '§l§aenabled' : '§l§cdisabled'}§r§7.`);
+
+    if (validFeature === 'hopperCounters' && !enable)
+        resetCounterMap();
+
+    updateIndependantFeatures(sender, validFeature, enable, isGlobal);
+    updateDependantFeatures(sender, validFeature, enable, isGlobal);
     
-    Data.updateFeature(sender, validFeature, enable, true);
+    Data.updateFeature(sender, validFeature, enable, isGlobal);
 }
 
-function updateDependantFeatures(sender, validFeature, enable) {
-    for (const dependantFeature of new DependantFeatures().dependantFeatures) {
+function isValidFeature(feature) {
+    return module.exports['features'][feature] !== undefined;
+}
+
+function updateIndependantFeatures(sender, feature, enable, isGlobal) {
+    for (const featurePair of new RelatedFeatures().independancies) {
+        if (feature === featurePair.featureOne || feature === featurePair.featureTwo) {
+            let targetFeature;
+            console.warn('feature', feature, 'enable', enable, 'property of two:', world.getDynamicProperty(featurePair.featureTwo));
+            if (feature === featurePair.featureOne && enable && world.getDynamicProperty(featurePair.featureTwo)) {
+                targetFeature = featurePair.featureTwo;
+            } else if (feature === featurePair.featureTwo && enable && world.getDynamicProperty(featurePair.featureOne)) {
+                targetFeature = featurePair.featureOne;
+            } else continue;
+
+            enable = false;
+            Data.updateFeature(sender, targetFeature, enable, isGlobal);
+        }
+    }
+}
+
+function updateDependantFeatures(sender, feature, enable, isGlobal) {
+    for (const featurePair of new RelatedFeatures().dependancies) {
         let targetFeature;
-        if (enable && validFeature === dependantFeature.validFeature)
-            targetFeature = dependantFeature.dependantFeature;
-        else if (!enable && validFeature === dependantFeature.dependantFeature)
-            targetFeature = dependantFeature.validFeature;
+        if (enable && feature === featurePair.dependantFeature)
+            targetFeature = featurePair.validFeature;
+        else if (!enable && feature === featurePair.validFeature)
+            targetFeature = featurePair.dependantFeature;
         else continue;
 
-        Data.updateFeature(sender, targetFeature, enable, true);
+        Data.updateFeature(sender, targetFeature, enable, isGlobal);
     }
 }

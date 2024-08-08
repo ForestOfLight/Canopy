@@ -64,7 +64,7 @@ class Camera {
 }
 
 function cameraCommand(sender, args) {
-    if (!world.getDynamicProperty('camera')) return sender.sendMessage('§cThe camera feature is disabled.');
+    if (!world.getDynamicProperty('commandCamera')) return sender.sendMessage('§cThe commandCamera feature is disabled.');
     const { action } = args;
 
     switch (action) {
@@ -84,7 +84,7 @@ function cameraCommand(sender, args) {
 }
 
 function placeCameraAction(sender) {
-    if (!world.getDynamicProperty('camera')) return sender.sendMessage('§cThe camera feature is disabled.');
+    if (!world.getDynamicProperty('commandCamera')) return sender.sendMessage('§cThe commandCamera feature is disabled.');
     let camera;
     let eyeHeight = 1.62001002;
 
@@ -104,7 +104,7 @@ function placeCamera(sender, camera) {
 }
 
 function viewCameraAction(sender) {
-    if (!world.getDynamicProperty('camera')) return sender.sendMessage('§cThe camera feature is disabled.');
+    if (!world.getDynamicProperty('commandCamera')) return sender.sendMessage('§cThe commandCamera feature is disabled.');
     let placedCamera;
 
     if (sender.getDynamicProperty('isSpectating')) return sender.sendMessage('§cYou cannot view a camera while spectating.');
@@ -143,7 +143,7 @@ function endCameraView(sender) {
 }
 
 function spectateAction(sender) {
-    if (!world.getDynamicProperty('camera')) return sender.sendMessage('§cThe camera feature is disabled.');
+    if (!world.getDynamicProperty('commandCamera')) return sender.sendMessage('§cThe commandCamera feature is disabled.');
     if (sender.getDynamicProperty('isViewingCamera')) return sender.sendMessage('§cYou cannot spectate while viewing a camera.');
     if (!sender.getDynamicProperty('isSpectating'))
         startSpectate(sender);

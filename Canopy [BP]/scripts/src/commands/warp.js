@@ -35,10 +35,10 @@ class Warps {
 }
 
 function warpActionCommand(sender, args) {
-    if (!mc.world.getDynamicProperty('warp'))
-        return sender.sendMessage('§cThe warp feature is disabled.');
-    else if (!mc.world.getDynamicProperty('warpInSurvival') && sender.getGameMode() === 'survival')
-        return sender.sendMessage('§cThe warp feature is disabled in survival mode.');
+    if (!mc.world.getDynamicProperty('commandWarp'))
+        return sender.sendMessage('§cThe commandWarp feature is disabled.');
+    else if (!mc.world.getDynamicProperty('commandWarpSurvival') && sender.getGameMode() === 'survival')
+        return sender.sendMessage('§cThe commandWarpSurvival feature is disabled in survival mode.');
 
     let { action, name } = args;
     if (Number.isInteger(action)) action = action.toString();

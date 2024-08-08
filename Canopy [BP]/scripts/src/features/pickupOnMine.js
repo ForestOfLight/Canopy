@@ -8,7 +8,9 @@ system.runInterval(() => {
 });
 
 world.afterEvents.playerBreakBlock.subscribe(blockEvent => {
-    if (blockEvent.player.getGameMode() === 'creative' || !world.getDynamicProperty('pickupOnMine')) return;
+    if (!world.getDynamicProperty('pickupOnMine')) return;
+    if (!blockEvent.player.getDynamicProperty('pickupOnMine')) return;
+    if (blockEvent.player.getGameMode() === 'creative') return;
     brokenBlockEventsThisTick.push(blockEvent);
 });
 

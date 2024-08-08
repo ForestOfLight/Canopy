@@ -17,9 +17,9 @@ function jumpCommand(sender) {
     let maxDistance = 64*16;
     let jumpLocation;
 
-    if (!world.getDynamicProperty('jump'))
+    if (!world.getDynamicProperty('commandJump'))
         return sender.sendMessage('§cThe jump feature is disabled.');
-    else if (!world.getDynamicProperty('jumpInSurvival') && sender.getGameMode() === 'survival')
+    else if (!world.getDynamicProperty('commandJumpSurvival') && sender.getGameMode() === 'survival')
         return sender.sendMessage('§cThe jump feature is disabled in survival mode.');
 
     blockRayResult = Data.getLookingAtBlock(sender, maxDistance);

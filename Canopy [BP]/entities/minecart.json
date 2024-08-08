@@ -8,16 +8,16 @@
       "is_experimental": false
     },
     "component_groups": {
-        "info:ticking_timer": {
+        "canopy:ticking_timer": {
           "minecraft:timer": {
             "looping": false,
             "time": 10,
             "time_down_event": {
-              "event": "info:disable_ticking"
+              "event": "canopy:disable_ticking"
             }
           }
         },
-        "info:ticking": {
+        "canopy:ticking": {
           "minecraft:tick_world": {
             "never_despawn": true,
             "radius": 2
@@ -73,14 +73,14 @@
       }
     },
     "events": {
-      "info:tick_tenSeconds": {
+      "canopy:tick_tenSeconds": {
         "add": {
-          "component_groups": [ "info:ticking", "info:ticking_timer"]
+          "component_groups": [ "canopy:ticking", "canopy:ticking_timer"]
         }
       },
-      "info:disable_ticking": {
+      "canopy:disable_ticking": {
         "remove": {
-          "component_groups": [ "info:ticking", "info:ticking_timer" ]
+          "component_groups": [ "canopy:ticking", "canopy:ticking_timer" ]
         }
       }
     }

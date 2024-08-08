@@ -10,11 +10,16 @@ system.runInterval(() => {
     if (!world.getDynamicProperty('hotbarSwitching')) return;
     const players = world.getAllPlayers();
     for (const player of players) {
+        if (!hasAppropriateGameMode(player)) continue;
         if (hotbarManagers[player.id] === undefined) 
             hotbarManagers[player.id] = new HotbarManager(player);
         processHotbarSwitching(player);
     }
 });
+
+function hasAppropriateGameMode(player) {
+    return world.getDynamicProperty('hotbarSwitchingSurvival') || player.getGameMode() === 'creative';
+}
 
 function processHotbarSwitching(player) {
     if (lastSelectedSlots[player.id] !== undefined && (!hasArrowInCorrectSlot(player) || !isInAppropriateGameMode(player))) {

@@ -14,7 +14,7 @@ world.afterEvents.entitySpawn.subscribe((event) => {
     const entity = event.entity;
     if (worldSpawns && entity.typeId !== 'minecraft:item') worldSpawns.sendMobToTrackers(event.entity);
 
-    if (!isMocking || event.cause === 'Loaded' || !world.getDynamicProperty('allowSpawnMocking')) return;
+    if (!isMocking || event.cause === 'Loaded' || !world.getDynamicProperty('commandSpawnMocking')) return;
     let shouldCancelSpawn = false;
     for (const category in categoryToMobMap) {
         if (categoryToMobMap[category].includes(event.entity.typeId.replace('minecraft:', ''))) shouldCancelSpawn = true;
@@ -49,13 +49,16 @@ function spawnCommand(sender, args) {
     else if (action === 'tracking' && actionTwo === 'start') startTracking(sender, posOne, posTwo);
     else if (action === 'tracking' && actionTwo === 'stop') stopTracking(sender);
     else if (action === 'tracking' && actionTwo !== null) trackMob(sender, actionTwo, posOne, posTwo);
-    else return sender.sendMessage('§cUsages for ./spawn:' +
-        '\n§c./spawn tracking [start/stop/mobname] [x1 y1 z1] [x2 y2 z2]' +
-        '\n§c./spawn mocking <true/false>' +
-        '\n§c./spawn test' +
+    else return sender.sendMessage(
+          '§cUsages for ./spawn:' +
+        '\n§c./spawn entities' +
         '\n§c./spawn recent [mobname]' +
+        '\n§c./spawn tracking <start/mobname> [x1 y1 z1] [x2 y2 z2]' +
+        '\n§c./spawn tracking stop' +
         '\n§c./spawn tracking' +
-        '\n§c./spawn entities');
+        '\n§c./spawn test' +
+        '\n§c./spawn mocking <true/false>'
+    );
 }
 
 function printAllEntities(sender) {
@@ -70,7 +73,7 @@ function printAllEntities(sender) {
 }
 
 function handleMockingCmd(sender, enable) {
-    if (!world.getDynamicProperty('allowSpawnMocking')) return sender.sendMessage('§cSpawn mocking is not allowed in this world. Enable the allowSpawnMocking feature to allow mocking.');
+    if (!world.getDynamicProperty('allowSpawnMocking')) return sender.sendMessage('§cThe commandSpawnMocking feature is disabled.');
     if (enable === null) return sender.sendMessage('§cUsage: ./spawn mocking <true/false>');
     isMocking = enable;
     const messageColor = enable ? '§c' : '§a';
