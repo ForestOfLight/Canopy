@@ -44,7 +44,7 @@ world.beforeEvents.itemUseOn.subscribe(event => {
     event.cancel = true;
     const blockId = block.typeId.replace('minecraft:', '');
     system.runTimeout(() => {
-        if (checkForAbortBit(block, blockId)) return;
+        if (checkForAbort(block, blockId)) return;
         if (flipWhenVerticalIds.includes(blockId))
             flipWhenVertical(block);
         else if (flipIds.includes(blockId))
@@ -108,9 +108,11 @@ function flipWhenVertical(block) {
         flip(block);
 }
 
-function checkForAbortBit(block, blockId) {
+function checkForAbort(block, blockId) {
     if (noInteractBlockIds.includes(blockId)) return true;
     if (['piston', 'sticky_piston'].includes(blockId) && block.getComponent('piston').state !== BlockPistonState.Retracted) return true;
+    if (['chest', 'trapped_chest'].includes(blockId) && block.getComponent('inventory')?.container.size > 27) return true;
+    return false;
 }
 
 function safeSetblock(player, block, directionState, permutationValue, otherPermutations = {}) {

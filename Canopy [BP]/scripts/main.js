@@ -45,6 +45,7 @@ import 'src/features/renewableSponge'
 import 'src/features/armorStandRespawning'
 import 'src/features/noExplosion'
 import 'src/features/explosionChainReactionOnly'
+import 'src/features/instantTame'
 
 // Misc Processes
 import 'src/validWorld'

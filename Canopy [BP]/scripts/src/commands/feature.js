@@ -9,6 +9,8 @@ class RelatedFeatures {
         this.dependancies = [
             { validFeature: 'commandJump', dependantFeature: 'commandJumpSurvival' },
             { validFeature: 'commandWarp', dependantFeature: 'commandWarpSurvival' },
+            { validFeature: 'hotbarSwitching', dependantFeature: 'hotbarSwitchingSurvival' },
+            { validFeature: 'instantTame', dependantFeature: 'instantTameSurvival' },
         ];
         this.independancies = [
             { featureOne: 'explosionChainReactionOnly', featureTwo: 'explosionNoBlockDamage' },
@@ -58,7 +60,6 @@ function updateIndependantFeatures(sender, feature, enable, isGlobal) {
     for (const featurePair of new RelatedFeatures().independancies) {
         if (feature === featurePair.featureOne || feature === featurePair.featureTwo) {
             let targetFeature;
-            console.warn('feature', feature, 'enable', enable, 'property of two:', world.getDynamicProperty(featurePair.featureTwo));
             if (feature === featurePair.featureOne && enable && world.getDynamicProperty(featurePair.featureTwo)) {
                 targetFeature = featurePair.featureTwo;
             } else if (feature === featurePair.featureTwo && enable && world.getDynamicProperty(featurePair.featureOne)) {
@@ -74,9 +75,9 @@ function updateIndependantFeatures(sender, feature, enable, isGlobal) {
 function updateDependantFeatures(sender, feature, enable, isGlobal) {
     for (const featurePair of new RelatedFeatures().dependancies) {
         let targetFeature;
-        if (enable && feature === featurePair.dependantFeature)
+        if (enable && feature === featurePair.dependantFeature && !world.getDynamicProperty(featurePair.validFeature))
             targetFeature = featurePair.validFeature;
-        else if (!enable && feature === featurePair.validFeature)
+        else if (!enable && feature === featurePair.validFeature && world.getDynamicProperty(featurePair.dependantFeature))
             targetFeature = featurePair.dependantFeature;
         else continue;
 

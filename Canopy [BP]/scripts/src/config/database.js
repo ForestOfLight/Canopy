@@ -37,6 +37,8 @@ const features = newDB([
     'hopperCounters',
     'hotbarSwitching',
     'hotbarSwitchingSurvival',
+    'instantTame',
+    'instantTameSurvival',
     'noExplosion',
     'noTileDrops',
     'pickupOnMine',
