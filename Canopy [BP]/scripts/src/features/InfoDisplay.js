@@ -77,7 +77,7 @@ function parseLightAndBiome(player) {
 	if (showBiome) biome = ProbeManager.getBiome(player);
 	if (showLight && showBiome) output += `§rLight: §e${lightLevel} §rBiome: §a${biome}§r\n`;
 	else if (showLight) output += `§rLight: §e${lightLevel}§r\n`;
-	else if (showBiome) output += `§rBiome: §7${biome}§r\n`;
+	else if (showBiome) output += `§rBiome: §a${biome}§r\n`;
 
 	return output;
 }
