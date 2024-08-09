@@ -240,12 +240,13 @@ class SpawnTracker {
     }
 
     getFormattedCategoryHeader() {
+        const totalMobs = this.getTotalMobs();
         const mobsPerSecond = this.calcAvgMobsPerSecond().toFixed(1);
         const successSpawnsPercent = (this.calcSpawnSuccessPercent()).toFixed(1);
         const unsuccessSpawnsPercent = (100 - successSpawnsPercent).toFixed(1);
         const avgMobsPerSuccessTick = this.calcAvgMobsPerSuccessTick().toFixed(1);
 
-        return `§f${mobsPerSecond}§7m/s, (§f${unsuccessSpawnsPercent}§7%%- / §f${successSpawnsPercent}§7%%+): §f${avgMobsPerSuccessTick}§7m/att`;
+        return `§f${totalMobs}§7 spawns (§f${mobsPerSecond}§7m/s, (§f${unsuccessSpawnsPercent}§7%%- / §f${successSpawnsPercent}§7%%+): §f${avgMobsPerSuccessTick}§7m/att)`;
     }
 
     getTotalMobs() {

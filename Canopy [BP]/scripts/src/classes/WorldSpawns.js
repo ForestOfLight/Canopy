@@ -142,12 +142,13 @@ class WorldSpawns {
 
     getFormattedDimensionValues(dimensionId) {
         const mobsPerTick = this.getMobsPerTick(dimensionId);
+        const totalMobs = this.getTotalMobs(mobsPerTick);
         const avgMobsPerSecond = this.getAvgMobsPerSecond(mobsPerTick).toFixed(1);
         const successSpawnsPercent = (this.getSpawnSuccessPercent(mobsPerTick)).toFixed(1);
         const unsuccessSpawnsPercent = (100 - parseFloat(successSpawnsPercent)).toFixed(1);
         const avgMobsPerSuccessTick = this.getAvgMobsPerSuccessTick(mobsPerTick).toFixed(1);
 
-        return `§7(§f${avgMobsPerSecond}§7m/s, (§f${unsuccessSpawnsPercent}§7%%- / §f${successSpawnsPercent}§7%%+): §f${avgMobsPerSuccessTick}§7m/att)`;
+        return `§f${totalMobs}§7 spawns (§f${avgMobsPerSecond}§7m/s, (§f${unsuccessSpawnsPercent}§7%%- / §f${successSpawnsPercent}§7%%+): §f${avgMobsPerSuccessTick}§7m/att)`;
     }
 
     getMobsPerTick(dimensionId) {
