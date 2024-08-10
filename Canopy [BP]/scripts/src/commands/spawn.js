@@ -73,7 +73,7 @@ function printAllEntities(sender) {
 }
 
 function handleMockingCmd(sender, enable) {
-    if (!world.getDynamicProperty('allowSpawnMocking')) return sender.sendMessage('§cThe commandSpawnMocking feature is disabled.');
+    if (!world.getDynamicProperty('commandSpawnMocking')) return sender.sendMessage('§cThe commandSpawnMocking feature is disabled.');
     if (enable === null) return sender.sendMessage('§cUsage: ./spawn mocking <true/false>');
     isMocking = enable;
     const messageColor = enable ? '§c' : '§a';
