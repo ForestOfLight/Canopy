@@ -23,7 +23,6 @@ const features = newDB([
     'armorStandRespawning',
     'commandCamera',
     'commandClaimProjectiles',
-    'commandJump',
     'commandJumpSurvival',
     'commandRemoveEntity',
     'commandSpawnMocking',
