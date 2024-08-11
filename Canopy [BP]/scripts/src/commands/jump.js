@@ -18,9 +18,9 @@ function jumpCommand(sender) {
     let jumpLocation;
 
     if (!world.getDynamicProperty('commandJump'))
-        return sender.sendMessage('§cThe jump feature is disabled.');
+        return sender.sendMessage('§cThe commandJump feature is disabled.');
     else if (!world.getDynamicProperty('commandJumpSurvival') && sender.getGameMode() === 'survival')
-        return sender.sendMessage('§cThe jump feature is disabled in survival mode.');
+        return sender.sendMessage('§cThe commandJumpSurvival feature is disabled.');
 
     blockRayResult = Data.getLookingAtBlock(sender, maxDistance);
     if (!blockRayResult?.block) return sender.sendMessage('§cNo block found.');
