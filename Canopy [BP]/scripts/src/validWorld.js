@@ -1,5 +1,6 @@
 import { world, system } from '@minecraft/server';
 import Data from 'stickycore/data';
+import ProbeManager from 'src/classes/ProbeManager';
 
 let hasShownWelcome = false;
 
@@ -19,6 +20,7 @@ world.afterEvents.playerJoin.subscribe((event) => {
 function onValidWorld(player) {
     displayWelcome(player);
     Data.updateJoinDate(player);
+    ProbeManager.startCleanupCycle();
 }
 
 function displayWelcome(player) {

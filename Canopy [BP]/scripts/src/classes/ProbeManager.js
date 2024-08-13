@@ -116,7 +116,7 @@ class ProbeManager {
 
     removeProbe(player) {
         const probe = this.probeMap[player.id];
-        if (!probe) return;
+        if (!probe) return console.warn(`[Probe Manager] Error while removing: No probe found for player ${player.name}`);
         probe.detachFromPlayer();
         if (probe.entity.isValid())
             probe.entity.remove();
@@ -159,6 +159,10 @@ class ProbeManager {
         if (!probe) {
             probe = this.addProbe(player);
             return result;
+        } else if (probe.entityInvalid) {
+            this.removeProbe(player);
+            probe = this.addProbe(player);
+            return result;
         }
 
         const value = probe.getProperty(property);
@@ -192,20 +196,22 @@ class ProbeManager {
         world.afterEvents.playerDimensionChange.subscribe((event) => {
             const player = event.player;
             this.removeProbe(player);
-            this.addProbe(player);
         });
 
         system.runInterval(() => {
             const probeEntities = Data.getEntitiesByType('canopy:probe');
+            let count = 0;
             for (const probe of probeEntities) {
                 if (probe.isValid() && !this.includesProbe(probe)) {
                     try {
                         probe.remove();
+                        count++;
                     } catch(error) {
                         console.warn(`[Probe Manager] Failed to remove unused probe ${probe.id}. Error: ${error.message()}`);
                     }
                 }
             }
+            if (count > 0) console.warn(`[Probe Manager] Removed ${count} unused probes`);
         }, CLEANUP_INTERVAL);
     }
 }

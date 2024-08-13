@@ -61,8 +61,8 @@ import Utils from 'stickycore/utils'
 import { world } from '@minecraft/server'
 import ProbeManager from 'src/classes/ProbeManager'
 
-const allPlayers = world.getAllPlayers();
-if (allPlayers[0] !== undefined && allPlayers[0].isValid()) {
+const players = world.getAllPlayers();
+if (players[0] !== undefined && players[0].isValid()) {
     Utils.broadcastActionBar('§aBehavior packs have been reloaded.');
     ProbeManager.startCleanupCycle();
 }

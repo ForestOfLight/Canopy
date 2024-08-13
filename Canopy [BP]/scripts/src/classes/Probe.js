@@ -5,6 +5,7 @@ class Probe {
         this.assignedPlayer = player;
         this.entity = entity;
         this.attachRunner = null;
+        this.entityInvalid = false;
     }
 
     attachToPlayer() {
@@ -17,6 +18,8 @@ class Probe {
                         return;
                     throw error;
                 }
+            } else {
+                this.entityInvalid = true;
             }
         });
     }
