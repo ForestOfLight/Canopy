@@ -9,7 +9,6 @@ system.runInterval(() => {
 
 world.afterEvents.playerBreakBlock.subscribe(blockEvent => {
     if (!world.getDynamicProperty('autoItemPickup')) return;
-    if (!blockEvent.player.getDynamicProperty('autoItemPickup')) return;
     if (blockEvent.player.getGameMode() === 'creative') return;
     brokenBlockEventsThisTick.push(blockEvent);
 });
