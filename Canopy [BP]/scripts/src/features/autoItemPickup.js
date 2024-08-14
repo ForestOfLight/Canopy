@@ -8,15 +8,15 @@ system.runInterval(() => {
 });
 
 world.afterEvents.playerBreakBlock.subscribe(blockEvent => {
-    if (!world.getDynamicProperty('pickupOnMine')) return;
-    if (!blockEvent.player.getDynamicProperty('pickupOnMine')) return;
+    if (!world.getDynamicProperty('autoItemPickup')) return;
+    if (!blockEvent.player.getDynamicProperty('autoItemPickup')) return;
     if (blockEvent.player.getGameMode() === 'creative') return;
     brokenBlockEventsThisTick.push(blockEvent);
 });
 
 world.afterEvents.entitySpawn.subscribe(entityEvent => {
     if (entityEvent.cause !== 'Spawned' || entityEvent.entity.typeId !== 'minecraft:item') return;
-    if (!world.getDynamicProperty('pickupOnMine')) return;
+    if (!world.getDynamicProperty('autoItemPickup')) return;
 
     const item = entityEvent.entity;
     let brokenBlockEvent;

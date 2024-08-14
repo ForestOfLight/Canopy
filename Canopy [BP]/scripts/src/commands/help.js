@@ -86,10 +86,10 @@ class HelpBook {
         this.helpPages[1].addItem('camera', './camera spectate', 'Survival-friendly spectator mode. Toggles freecam. (alias: ./cs)');
         this.helpPages[1].addItem('change dimension', './changedimension <dimension> [x y z]', 'Teleports you to the specified dimension.');
         this.helpPages[1].addItem('claim projectiles', './claimprojectiles [playerName]', 'Changes the owner of all projectiles within a 10 block radius.');
-        this.helpPages[1].addItem('hopper counters', './counter [color/all]', 'Displays the count and rates of the hopper counters. (alias: ./ct)');
+        this.helpPages[1].addItem('hopper counters', './counter [color]', 'Displays the count and rates of the hopper counters. (alias: ./ct)');
         this.helpPages[1].addItem('hopper counters', './counter <color/all> <mode>', 'Sets the mode of a hopper counter: countMode, perhourMode, perminuteMode, or persecondMode. (alias: ./ct)');
-        this.helpPages[1].addItem('hopper counters', './counter realtime', 'Toggles real-world time and tick-based time to do rate calculations. (alias: ./ct)');
-        this.helpPages[1].addItem('data', './data', 'Displays information about the block you are looking at.');
+        this.helpPages[1].addItem('hopper counters', './counter [color] realtime', 'Like ./counter [color], but uses real-world time instead of tick-based time to do rate calculations. (alias: ./ct)');
+        this.helpPages[1].addItem('data', './data', 'Displays information about the block or entity you are looking at.');
 
         this.helpPages[2].addItem('distance', './distance target', 'Calculates the distance between you and the block or entity you are looking at. (alias: ./d)');
         this.helpPages[2].addItem('distance', './distance from <x y z> to [x y z]', 'Calculates the distance between two points. (alias: ./d)');
@@ -102,6 +102,7 @@ class HelpBook {
         this.helpPages[2].addItem('log', './log <tnt/projectiles/falling_blocks> [precision]', 'Logs the location of the specified entity type in chat.');
         this.helpPages[2].addItem('peek', './peek [search term]', 'Peeks at a block or entity\'s inventory. Use the search term to highlight items that include it. (alias: ./p)');
         
+        this.helpPages[3].addItem('remove entity', './removeentity [id]', 'Removes the entity you are looking at. Specify an entity ID to remove a specific entity.');
         this.helpPages[3].addItem('spawn', './spawn entities', 'Displays a list of all entities in the world.');
         this.helpPages[3].addItem('spawn', './spawn recent [mobname]', 'Displays all mob spawns in the last 30s. Optionally specify a mob name to filter results.');
         this.helpPages[3].addItem('spawn', './spawn tracking start [x1 y1 z1] [x2 y2 z2]', 'Starts tracking mob spawns. Specify coords to track spawns within that area.');
@@ -111,13 +112,14 @@ class HelpBook {
         this.helpPages[3].addItem('spawn', './spawn mocking <true/false>', 'Enables/disables mob spawning while allowing the spawning algorithm to run.');
         this.helpPages[3].addItem('spawn', './spawn test', 'Resets spawn tracking data and all hopper counters.');
         this.helpPages[3].addItem('summon tnt', './summontnt <amount>', 'Summons the specified amount of primed TNT entity at your location.');
-        this.helpPages[3].addItem('tick', './tick <mspt>', 'Slows down the server tick speed to the specified mspt.');
         
+        this.helpPages[4].addItem('tick', './tick <mspt>', 'Slows down the server tick speed to the specified mspt.');
         this.helpPages[4].addItem('tick', './tick step [steps]', 'Allows the server to run at normal speed for the specified amount of steps.');
         this.helpPages[4].addItem('tick', './tick reset', 'Resets the server tick speed to normal.');
+        this.helpPages[4].addItem('tnt fuse', './tntfuse <ticks/reset>', 'Sets the fuse time of primed TNT entities in ticks.');
         this.helpPages[4].addItem('trackevent', './trackevent <eventName> [beforeEvent/afterEvent]', 'Toggles counting the specified event in the InfoDisplay.');
-        this.helpPages[4].addItem('warp', './warp <name>', 'Teleports you to a warp. (alias: ./w)');
         this.helpPages[4].addItem('warp', './warp <add/remove> <name>', 'Adds or removes a warp. (alias: ./w)');
+        this.helpPages[4].addItem('warp', './warp <name>', 'Teleports you to a warp. (alias: ./w)');
         this.helpPages[4].addItem('warps', './warps', 'Lists all available warps.');
         this.helpPages[4].addItem('reset all', './resetall', 'Resets all §l§aCanopy§r§7 features and data.');
     }

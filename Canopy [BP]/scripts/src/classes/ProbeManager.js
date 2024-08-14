@@ -116,7 +116,7 @@ class ProbeManager {
 
     removeProbe(player) {
         const probe = this.probeMap[player.id];
-        if (!probe) return console.warn(`[Probe Manager] Error while removing: No probe found for player ${player.name}`);
+        if (!probe) return console.warn(`[Probe Manager] Error while removing: No probe found for player ${player?.name}`);
         probe.detachFromPlayer();
         if (probe.entity.isValid())
             probe.entity.remove();
@@ -211,7 +211,7 @@ class ProbeManager {
                     }
                 }
             }
-            if (count > 0) console.warn(`[Probe Manager] Removed ${count} unused probes`);
+            if (count > 20) console.warn(`[Probe Manager] Large number of unused probes found! Removed ${count} unused probes.`);
         }, CLEANUP_INTERVAL);
     }
 }

@@ -13,7 +13,6 @@ const openIds = ['iron_trapdoor', 'iron_door'];
 const noInteractBlockIds = ['piston_arm_collision', 'sticky_piston_arm_collision', 'bed'];
 
 system.runInterval(() => {
-    // if (!world.getDynamicProperty('flippinArrows')) return;
     previousBlocks.shift();
     if (previousBlocks.length < WAIT_TIME_BETWEEN_USE) {
         previousBlocks.push(null);

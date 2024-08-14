@@ -7,7 +7,6 @@ import { resetCounterMap } from 'src/commands/counter'
 class RelatedFeatures {
     constructor() {
         this.dependancies = [
-            { validFeature: 'commandJump', dependantFeature: 'commandJumpSurvival' },
             { validFeature: 'commandWarp', dependantFeature: 'commandWarpSurvival' },
             { validFeature: 'hotbarSwitching', dependantFeature: 'hotbarSwitchingSurvival' },
             { validFeature: 'instantTame', dependantFeature: 'instantTameSurvival' },
@@ -28,10 +27,10 @@ new Command()
 function featureCommand(sender, args) {
     const globalFeatures = module.exports['features'];
     const { feature, enable } = args;
-    const loweredFeature = feature.toLowerCase();
-
     if (feature === null || enable === null)
         return sender.sendMessage(`§cUsage: ./feature <feature> <true/false>`);
+
+    const loweredFeature = feature.toLowerCase();
     if (!isValidFeature(loweredFeature)) 
         return sender.sendMessage(`§cInvalid feature: ${feature}`);
 

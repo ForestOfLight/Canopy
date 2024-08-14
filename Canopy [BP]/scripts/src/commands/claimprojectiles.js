@@ -18,6 +18,9 @@ function claimProjectilesCommand(sender, args) {
     if (!targetPlayer)
         return sender.sendMessage(`§cPlayer "${playerName}" was not found.`)
     const projectiles = getProjectilesInRange(sender, CLAIM_RADIUS);
+
+    if (projectiles.length === 0)
+        return sender.sendMessage('§7No projectiles found in range.');
     
     const numChanged = changeOwner(projectiles, targetPlayer);
     sender.sendMessage(`§7Successfully changed the owner of ${numChanged} projectiles to ${targetPlayer.name}.`)
