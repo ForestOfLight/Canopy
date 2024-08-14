@@ -10,8 +10,14 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "2416d92c-b041-dbb9-9538-a8da76f06f81",
+      "uuid": "7f6b23df-a583-476b-b0e4-87457e65f7c0",
       "version": [1, 0, 0]
+    }
+  ],
+  "dependencies": [
+    {
+      "uuid": "7f6b23df-a583-476b-b0e4-87457e65f7c0",
+      "version": [1, 2, 9]
     }
   ]
 }
