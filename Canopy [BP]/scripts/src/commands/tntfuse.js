@@ -1,13 +1,18 @@
 import { system, world } from '@minecraft/server'
-import Command from 'stickycore/command'
+import { Rule, Command } from 'lib/canopy/Canopy'
 
 const MAX_FUSE_TICKS = 72000;
+
+new Rule({
+    identifier: 'commandTntFuse',
+    description: 'Allow the use of the fuse time for primed TNT.'
+});
 
 world.afterEvents.entitySpawn.subscribe(event => {
     if (event.entity.typeId !== 'minecraft:tnt') return;
     const fuseTimeProperty = world.getDynamicProperty('tntFuseTime');
     let fuseTime = 80;
-    if (fuseTimeProperty !== undefined && world.getDynamicProperty('commandTntFuse'))
+    if (fuseTimeProperty !== undefined && Rule.getValue('commandTntFuse'))
         fuseTime = fuseTimeProperty;
     
     if (fuseTime === 80) {
@@ -20,17 +25,21 @@ world.afterEvents.entitySpawn.subscribe(event => {
     }
 });
 
-new Command()
-    .setName('tntfuse')
-    .addArgument('number|string', 'ticks')
-    .setCallback(tntfuseCommand)
-    .build()
+const cmd = new Command({
+    name: 'tntfuse',
+    description: 'Set the fuse time for primed TNT.',
+    usage: 'tntfuse <ticks/reset>',
+    args: [
+        { type: 'number|string', name: 'ticks' }
+    ],
+    callback: tntfuseCommand,
+    contingentRules: ['commandTntFuse']
+});
 
 function tntfuseCommand(sender, args) {
-    if (!world.getDynamicProperty('commandTntFuse')) return sender.sendMessage('§cThe commandTntFuse feature is disabled.');
     let { ticks } = args;
     if (ticks === null) {
-        return sender.sendMessage('§cUsage: ./tntfuse <ticks/reset>');
+        return cmd.sendUsage(sender);
     } else if (ticks === 'reset') {
         ticks = 80;
         sender.sendMessage('§7Reset TNT fuse time to §a80§7 ticks.');

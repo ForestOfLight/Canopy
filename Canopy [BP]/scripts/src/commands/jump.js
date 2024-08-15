@@ -1,16 +1,20 @@
 import { world } from '@minecraft/server'
-import Command from 'stickycore/command'
+import { Command } from 'lib/canopy/Canopy'
 import Data from 'stickycore/data'
 
-new Command()
-    .setName('jump')
-    .setCallback(jumpCommand)
-    .build()
+new Command({
+    name: 'jump',
+    description: 'Teleport to the block you are looking at.',
+    usage: 'jump',
+    callback: jumpCommand
+});
 
-new Command()
-    .setName('j')
-    .setCallback(jumpCommand)
-    .build()
+new Command({
+    name: 'j',
+    description: 'Teleport to the block you are looking at.',
+    usage: 'j',
+    callback: jumpCommand
+})
 
 function jumpCommand(sender) {
     let blockRayResult;

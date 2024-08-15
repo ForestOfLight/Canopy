@@ -1,15 +1,24 @@
 import { Player, world } from '@minecraft/server';
-import Command from 'stickycore/command'
-import Data from 'stickycore/data'
+import { Rule, Command } from 'lib/canopy/Canopy';
+import Data from 'stickycore/data';
 
-new Command()
-    .setName('removeentity')
-    .addArgument('number', 'id')
-    .setCallback(removeEntityCommand)
-    .build()
+new Rule({
+    identifier: 'commandRemoveEntity',
+    description: 'Allows the use of the removeentity command.',
+});
+
+new Command({
+    name: 'removeentity',
+    description: 'Instantly remove the entity you\'re looking at or by id.',
+    usage: 'removeentity [id]',
+    args: [
+        { type: 'number', name: 'id' }
+    ],
+    callback: removeEntityCommand,
+    contingentRules: ['commandRemoveEntity']
+});
 
 function removeEntityCommand(sender, args) {
-    if (!world.getDynamicProperty('commandRemoveEntity')) return sender.sendMessage('§cThe commandRemoveEntity feature is disabled.');
     const { id } = args;
     const target = getTargetEntity(sender, id);
     if (target instanceof Player) {

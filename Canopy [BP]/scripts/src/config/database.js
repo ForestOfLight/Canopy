@@ -19,7 +19,7 @@ const infoDisplay = newDB([
     'peekInventory',
 ]);
 
-const features = newDB([
+const rules = newDB([
     'armorStandRespawning',
     'autoItemPickup',
     'commandCamera',
@@ -53,7 +53,7 @@ const features = newDB([
 ]);
 
 module({
-    infoDisplay, features
+    infoDisplay, rules
 });
 
 function newDB(arr, db = true) {

@@ -1,21 +1,19 @@
-import Command from 'stickycore/command'
-import Data from 'stickycore/data'
-import Utils from 'stickycore/utils'
+import { Command } from 'lib/canopy/Canopy';
+import Data from 'stickycore/data';
+import Utils from 'stickycore/utils';
 
 const MAX_DISTANCE = 6*16;
 const currentQuery = {};
 
-new Command()
-    .setName('peek')
-    .setCallback(peekCommand)
-    .addArgument('string', 'itemQuery')
-    .build();
-
-new Command()
-    .setName('p')
-    .setCallback(peekCommand)
-    .addArgument('string', 'itemQuery')
-    .build();
+new Command({
+    name: 'peek',
+    description: 'Peek into a target\'s inventory and optionally highlight a specific item.',
+    usage: 'peek [itemQuery]',
+    args: [
+        { type: 'string', name: 'itemQuery' }
+    ],
+    callback: peekCommand
+})
 
 function peekCommand(sender, args) {
     let { itemQuery } = args;

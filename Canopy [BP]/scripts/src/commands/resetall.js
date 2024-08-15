@@ -1,10 +1,13 @@
 import { world } from '@minecraft/server'
-import Command from 'stickycore/command'
+import { Command } from 'lib/canopy/Canopy'
 
-new Command()
-    .setName('resetall')
-    .setCallback(resetallCommand)
-    .build()
+new Command({
+    name: 'resetall',
+    description: 'Reset all dynamic properties for the world and all online players.',
+    usage: 'resetall',
+    callback: resetallCommand,
+    adminOnly: true
+});
 
 function resetallCommand(sender) {
     world.clearDynamicProperties();

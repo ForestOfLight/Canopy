@@ -1,13 +1,15 @@
-import Command from 'stickycore/command'
+import { Command } from 'lib/canopy/Canopy'
 import Utils from 'stickycore/utils'
 
 const BLOCK_COMPONENTS = ['minecraft:inventory', 'minecraft:lavaContainer', 'minecraft:piston', 'minecraft:potionContainer', 'minecraft:record_player',
     'minecraft:sign', 'minecraft:snowContainer', 'minecraft:waterContainer'];
 
-new Command()
-    .setName('data')
-    .setCallback(dataCommand)
-    .build()
+new Command({
+    name: 'data',
+    description: 'Get data about the target block or entity you are looking at.',
+    usage: 'data',
+    callback: dataCommand
+});
 
 function dataCommand(sender) {
     let blockRayResult;

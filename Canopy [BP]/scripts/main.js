@@ -9,7 +9,7 @@ import 'src/commands/jump'
 import 'src/commands/warp'
 import 'src/commands/gamemode'
 import 'src/commands/camera'
-import 'src/commands/feature'
+import 'src/commands/canopy'
 import 'src/commands/distance'
 import 'src/commands/log'
 import 'src/commands/summontnt'
@@ -60,9 +60,11 @@ import Utils from 'stickycore/utils'
 // Reload message
 import { world } from '@minecraft/server'
 import ProbeManager from 'src/classes/ProbeManager'
+import { Command } from 'lib/canopy/Canopy'
 
 const players = world.getAllPlayers();
 if (players[0] !== undefined && players[0].isValid()) {
     Utils.broadcastActionBar('§aBehavior packs have been reloaded.');
     ProbeManager.startCleanupCycle();
+    Command.broadcastPrefix();
 }

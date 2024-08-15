@@ -1,5 +1,5 @@
 import { world } from '@minecraft/server'
-import Command from 'stickycore/command'
+import { Command } from 'lib/canopy/Canopy'
 import { module } from 'stickycore/dynamic'
 import Utils from 'stickycore/utils'
 
@@ -61,8 +61,8 @@ class HelpBook {
 
     addDynamicPages() {
         const infoDisplayModule = module.exports['infoDisplay'];
-        const featuresModule = module.exports['features'];
-        const dynamicPages = { 'infodisplay': infoDisplayModule, 'features': featuresModule };
+        const rulesModule = module.exports['rules'];
+        const dynamicPages = { 'infodisplay': infoDisplayModule, 'rules': rulesModule };
     
         for (let pageName of Object.keys(dynamicPages)) {
             this.numDynamicPages++;
@@ -71,7 +71,7 @@ class HelpBook {
             this.helpPages[pageName].addDynamicItems(dynamicNames);
         }
         this.helpPages['infodisplay'].setDescription('./info <feature/all> <true/false>');
-        this.helpPages['features'].setDescription('./feature <feature> <true/false>');
+        this.helpPages['rules'].setDescription('./feature <feature> <true/false>');
     }
 
     addCommandPages() {
@@ -125,11 +125,15 @@ class HelpBook {
     }
 }
 
-new Command()
-    .setName('help')
-    .addArgument('string|number', 'pageName')
-    .setCallback(helpCommand)
-    .build()
+const cmd = new Command({
+    name: 'help',
+    description: 'Displays help pages.',
+    usage: 'help [infodisplay/rules/page number]',
+    args: [
+        { type: 'string|number', name: 'pageName' }
+    ],
+    callback: helpCommand
+});
 
 function helpCommand(sender, args) {
     const helpBook = new HelpBook();
@@ -142,7 +146,7 @@ function helpCommand(sender, args) {
     else if (helpBook.getPageNames().includes(pageName))
         printHelpPage(sender, helpBook, pageName)
     else
-        sender.sendMessage('§cUsage: ./help [infodisplay/globalfeatures/page number]');
+        cmd.sendUsage(sender);
 }
 
 function printAllHelp(sender, helpBook) {
@@ -166,7 +170,7 @@ function printHelpPage(sender, helpBook, pageName) {
         if (page.isDynamic) {
             let value;
             if (pageName == 'infodisplay') value = sender.getDynamicProperty(item.name);
-            else if (pageName == 'features') value = world.getDynamicProperty(item.name);
+            else if (pageName == 'rules') value = world.getDynamicProperty(item.name);
             if (value === undefined) value = false;
             value = value ? '§atrue' : '§cfalse';
             output += `\n  §7- ${item.name}: ${value}`;

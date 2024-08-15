@@ -1,19 +1,23 @@
-import Command from 'stickycore/command'
-import { Entities } from 'src/entities'
-import Utils from 'stickycore/utils'
+import { Command } from 'lib/canopy/Canopy';
+import { Entities } from 'src/entities';
+import Utils from 'stickycore/utils';
 
 const NUM_RESULTS = 10;
 
-new Command()
-    .setName('entitydensity')
-    .addArgument('string|number', 'firstArg')
-    .addArgument('number', 'gridSize')
-    .setCallback(entityDensityCommand)
-    .build()
+const cmd = new Command({
+    name: 'entitydensity',
+    description: 'Find entity-dense areas in a dimension.',
+    usage: 'entitydensity [dimension] <gridSize>',
+    args: [
+        { type: 'string|number', name: 'firstArg' },
+        { type: 'number', name: 'gridSize' }
+    ],
+    callback: entityDensityCommand
+});
 
 function entityDensityCommand(sender, args) {
     let { firstArg, gridSize } = args;
-    if (firstArg === null) return sender.sendMessage('§cUsage: ./entitydensity <dimension> <gridSize>');
+    if (firstArg === null) return cmd.sendUsage(sender);
     const { validDimensionId, parsedGridSize, hasNoErrors } = parseArgs(sender, firstArg, gridSize);
     if (hasNoErrors === false) return;
     if (parsedGridSize) gridSize = parsedGridSize;

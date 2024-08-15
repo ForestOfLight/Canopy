@@ -1,18 +1,25 @@
 import { world } from '@minecraft/server';
-import Command from 'stickycore/command';
+import { Rule, Command } from 'lib/canopy/Canopy';
 
 const CLAIM_RADIUS = 10;
 
-new Command()
-    .setName('claimprojectiles')
-    .addArgument('string', 'playerName')
-    .setCallback(claimProjectilesCommand)
-    .build()
+new Rule({
+    identifier: 'commandClaimProjectiles',
+    description: 'Allow the use of the claimprojectiles command.',
+});
+
+new Command({
+    name: 'claimprojectiles',
+    description: 'Change the owner of projectiles within a radius.',
+    usage: 'claimprojectiles [playerName]',
+    args: [
+        { type: 'string', name: 'playerName' }
+    ],
+    callback: claimProjectilesCommand,
+    contingentRules: ['commandClaimProjectiles']
+});
 
 function claimProjectilesCommand(sender, args) {
-    if (!world.getDynamicProperty('commandClaimProjectiles')) 
-        return sender.sendMessage('§cThe commandClaimProjectiles feature is disabled.')
-
     const { playerName } = args;
     const targetPlayer = getTargetPlayer(sender, playerName);
     if (!targetPlayer)

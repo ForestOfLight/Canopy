@@ -1,6 +1,6 @@
 import { world } from '@minecraft/server';
+import { Command } from 'lib/canopy/Canopy';
 import EventTracker from 'src/classes/EventTracker';
-import Command from 'stickycore/command';
 import Utils from 'stickycore/utils';
 
 const trackers = {
@@ -19,23 +19,27 @@ world.afterEvents.worldInitialize.subscribe(() => {
     }
 });
 
-new Command()
-    .setName('trackevent')
-    .addArgument('string', 'eventName')
-    .addArgument('string', 'isAfterEvent')
-    .setCallback(trackCommand)
-    .build();
+const cmd = new Command({
+    name: 'trackevent',
+    description: 'Count the number of times any event occurs. Displays the count in the InfoDisplay.',
+    usage: 'trackevent <eventName> [beforeEvent/afterEvent]',
+    args: [
+        { type: 'string', name: 'eventName' },
+        { type: 'string', name: 'isAfterEvent' }
+    ],
+    callback: trackCommand,
+});
 
 function trackCommand(sender, args) {
     let { eventName, isAfterEvent } = args;
     if (eventName === null)
-        return sender.sendMessage('§cUsage: ./trackevent <eventName> [beforeEvent/afterEvent]');
+        return cmd.sendUsage(sender);
     if (isAfterEvent == 'beforeEvent')
         isAfterEvent = false;
     else if (isAfterEvent == 'afterEvent' || isAfterEvent === null)
         isAfterEvent = true;
     else
-        return sender.sendMessage('§cUsage: ./trackevent <eventName> [beforeEvent/afterEvent]');
+        return cmd.sendUsage(sender);
 
     if (alreadyTracking(eventName, isAfterEvent))
         stopTracking(sender, eventName, isAfterEvent);

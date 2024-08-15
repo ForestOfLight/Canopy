@@ -1,4 +1,4 @@
-import Command from 'stickycore/command'
+import { Command } from 'lib/canopy/Canopy'
 import { module } from 'stickycore/dynamic'
 import Data from 'stickycore/data'
 import ProbeManager from 'src/classes/ProbeManager';
@@ -18,24 +18,34 @@ class DependantFeatures {
     }
 }
 
-new Command()
-    .setName('info')
-    .addArgument('string', 'feature')
-    .addArgument('boolean', 'enable')
-    .setCallback(infoDisplayFeatures)
-    .build()
+const cmd = new Command({
+    name: 'info',
+    description: 'Toggle InfoDisplay features.',
+    usage: 'info <feature/all> <true/false>',
+    args: [
+        { type: 'string', name: 'feature' },
+        { type: 'boolean', name: 'enable' }
+    ],
+    callback: infoCommand
+});
 
-new Command()
-    .setName('i')
-    .addArgument('string', 'feature')
-    .addArgument('boolean', 'enable')
-    .setCallback(infoDisplayFeatures)
-    .build()
+new Command({
+    name: 'i',
+    description: 'Toggle InfoDisplay features.',
+    usage: 'i <feature/all> [true/false]',
+    args: [
+        { type: 'string', name: 'feature' },
+        { type: 'boolean', name: 'enable' }
+    ],
+    callback: infoCommand
+});
 
-function infoDisplayFeatures(sender, args) {
+function infoCommand(sender, args) {
     const features = module.exports['infoDisplay'];
     const { feature, enable } = args;
-    if (feature === null || enable === null) return sender.sendMessage(`§cUsage: ./info <feature/all> <true/false>`);
+    if (feature === null && enable === null) return cmd.sendUsage(sender);
+
+    if (enable === null) return sender.sendMessage(`§7${feature} is currently ${sender.getDynamicProperty(features[feature.toLowerCase()]) ? '§l§aenabled' : '§l§cdisabled'}.`);
 
     if (feature.toLowerCase() === 'all') {
         for (let entry of Object.values(features)) {

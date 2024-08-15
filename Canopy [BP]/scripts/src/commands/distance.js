@@ -1,35 +1,43 @@
-import Command from 'stickycore/command'
-import Utils from 'stickycore/utils'
-import Data from 'stickycore/data'
+import { Command } from 'lib/canopy/Canopy';
+import Utils from 'stickycore/utils';
+import Data from 'stickycore/data';
 
 let savedLocation = { x: undefined, y: undefined, z: undefined };
 const MAX_DISTANCE = 64*16;
 
-new Command()
-    .setName('distance')
-    .addArgument('string', 'actionArgOne')
-    .addArgument('number', 'fromArgX')
-    .addArgument('number', 'fromArgY')
-    .addArgument('number', 'fromArgZ')
-    .addArgument('string', 'actionArgTwo')
-    .addArgument('number', 'toArgX')
-    .addArgument('number', 'toArgY')
-    .addArgument('number', 'toArgZ')
-    .setCallback(distanceCommand)
-    .build()
+const cmd = new Command({
+    name: 'distance',
+    description: 'Calculates the distance between two locations.',
+    usage: `d to <x y z> from [x y z] OR ${Command.prefix}d target`,
+    args: [
+        { type: 'string', name: 'actionArgOne' },
+        { type: 'number', name: 'fromArgX' },
+        { type: 'number', name: 'fromArgY' },
+        { type: 'number', name: 'fromArgZ' },
+        { type: 'string', name: 'actionArgTwo' },
+        { type: 'number', name: 'toArgX' },
+        { type: 'number', name: 'toArgY' },
+        { type: 'number', name: 'toArgZ' }
+    ],
+    callback: distanceCommand
+});
 
-new Command()
-    .setName('d')
-    .addArgument('string', 'actionArgOne')
-    .addArgument('number', 'fromArgX')
-    .addArgument('number', 'fromArgY')
-    .addArgument('number', 'fromArgZ')
-    .addArgument('string', 'actionArgTwo')
-    .addArgument('number', 'toArgX')
-    .addArgument('number', 'toArgY')
-    .addArgument('number', 'toArgZ')
-    .setCallback(distanceCommand)
-    .build()
+new Command({
+    name: 'd',
+    description: 'Calculates the distance between two locations.',
+    args: [
+        { type: 'string', name: 'actionArgOne' },
+        { type: 'number', name: 'fromArgX' },
+        { type: 'number', name: 'fromArgY' },
+        { type: 'number', name: 'fromArgZ' },
+        { type: 'string', name: 'actionArgTwo' },
+        { type: 'number', name: 'toArgX' },
+        { type: 'number', name: 'toArgY' },
+        { type: 'number', name: 'toArgZ' }
+    ],
+    usage: `d to <x y z> from [x y z] OR ${Command.prefix}d target`,
+    callback: distanceCommand
+});
 
 function distanceCommand(sender, args) {
     const { actionArgOne, actionArgTwo } = args;
@@ -44,7 +52,7 @@ function distanceCommand(sender, args) {
     else if (actionArgOne === 'target')
         output = targetDistance(sender, args);
     else
-        output = '§cUsage: ./distance to <x y z> from [x y z] or ./distance target';
+        output = '§cUsage: ' + cmd.getUsage();
     
     sender.sendMessage(output);
 }

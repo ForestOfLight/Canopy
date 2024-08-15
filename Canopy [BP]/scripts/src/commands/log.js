@@ -1,5 +1,5 @@
 import { system, world } from '@minecraft/server'
-import Command from 'stickycore/command'
+import { Command } from 'lib/canopy/Canopy'
 import Data from 'stickycore/data'
 import Utils from 'stickycore/utils'
 
@@ -203,12 +203,16 @@ function getLogHeader(movingEntities) {
     return output;
 }
 
-new Command()
-    .setName('log')
-    .addArgument('string', 'type')
-    .addArgument('number', 'precision')
-    .setCallback(logCommand)
-    .build()
+const cmd = new Command({
+    name: 'log',
+    description: 'Log tnt, projectile, and falling block movement.',
+    usage: 'log <tnt/projectiles/falling_blocks> [precision]',
+    args: [
+        { type: 'string', name: 'type' },
+        { type: 'number', name: 'precision' }
+    ],
+    callback: logCommand
+});
 
 function logCommand(sender, args) {
     let { type, precision } = args;
@@ -219,7 +223,7 @@ function logCommand(sender, args) {
     if (['tnt', 'projectiles', 'falling_blocks'].includes(type))
         toggleLogging(sender, type);
     else
-        sender.sendMessage('§cUsage: ./log <tnt/projectiles/falling_blocks> [precision]');
+        cmd.sendUsage(sender);
 }
 
 function setLogPrecsion(sender, value) {

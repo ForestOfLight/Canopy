@@ -1,14 +1,19 @@
-import { system, world } from '@minecraft/server'
-import Command from 'stickycore/command'
-import Utils from 'stickycore/utils'
-import { DataTPS } from 'src/tps'
+import { system, world } from '@minecraft/server';
+import { Rule, Command } from 'lib/canopy/Canopy';
+import Utils from 'stickycore/utils';
+import { DataTPS } from 'src/tps';
+
+new Rule({
+    identifier: 'commandTick',
+    description: 'Allows the use of the tick command.'
+});
 
 let targetMSPT = 50.0;
 let shouldReset = false;
 let shouldStep = 0;
 
 system.beforeEvents.watchdogTerminate.subscribe((event) => {
-    if (!world.getDynamicProperty('commandTick')) return;
+    if (!Rule.getValue('commandTick')) return;
     if (event.terminateReason === 'Hang' && targetMSPT > 50.0) {
         console.warn(`[Watchdog] Terminate hang ignored.`);
         event.cancel = true;
@@ -24,27 +29,32 @@ system.runInterval(() => {
     tickSpeed(targetMSPT);
 });
 
-new Command()
-    .setName('tick')
-    .addArgument('string|number', 'arg')
-    .addArgument('number', 'steps')
-    .setCallback(tickCommand)
-    .build()
+const cmd = new Command({
+    name: 'tick',
+    description: 'Set and control the tick speed.',
+    usage: `tick <mspt> OR ${Command.prefix}tick step [steps] OR ${Command.prefix}tick reset`,
+    args: [
+        { type: 'string|number', name: 'arg' },
+        { type: 'number', name: 'steps' }
+    ],
+    callback: tickCommand,
+    contingentRules: ['commandTick']
+});
 
 function tickCommand(sender, args) {
     if (!world.getDynamicProperty('commandTick')) return sender.sendMessage('§cThe commandTick feature is disabled.');
     const { arg, steps } = args;
 
     if (arg === null)
-        return sender.sendMessage('§cUsage: ./tick <mspt> OR ./tick step [steps] OR ./tick reset');
+        return cmd.sendUsage(sender);
     else if (arg === 'reset')
         return tickReset(sender);
     else if (arg === 'step')
         return tickStep(sender, steps);
     else if (Utils.isNumeric(arg))
         return tickSlow(sender, arg);
-    els
-        return sender.sendMessage('§cUsage: ./tick <mspt> OR ./tick step [steps] OR ./tick reset');
+    else
+        return cmd.sendUsage(sender);
 }
 
 function tickSlow(sender, mspt) {

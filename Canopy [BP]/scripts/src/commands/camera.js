@@ -1,5 +1,13 @@
-import Command from 'stickycore/command'
+import { Rule, Command } from 'lib/canopy/Canopy';
 import { system, world } from '@minecraft/server'
+
+class CameraPlacement {
+    constructor(location, rotation, dimension) {
+        this.location = location;
+        this.rotation = rotation;
+        this.dimension = dimension;
+    }
+}
 
 class BeforeSpectatorPlayer {
     constructor(player) {
@@ -12,6 +20,46 @@ class BeforeSpectatorPlayer {
             this.effects.push({ typeId: effect.typeId, duration: effect.duration, amplifier: effect.amplifier });
     }
 }
+
+new Rule({
+    identifier: 'commandCamera',
+    description: 'Allow the use of the camera command.',
+});
+
+const cmd = new Command({
+    name: 'camera',
+    description: 'Place a camera, view it, or use a survival-friendly spectator mode.',
+    usage: 'camera <place/view/spectate>',
+    args: [
+        { type: 'string', name: 'action' }
+    ],
+    callback: cameraCommand,
+    contingentRules: ['commandCamera']
+});
+
+new Command({
+    name: 'cp',
+    description: 'Place a camera at your current location.',
+    usage: 'cp',
+    callback: (sender) => cameraCommand(sender, { action: 'place' }),
+    contingentRules: ['commandCamera']
+});
+
+new Command({
+    name: 'cv',
+    description: 'View the camera you placed.',
+    usage: 'cv',
+    callback: (sender) => cameraCommand(sender, { action: 'view' }),
+    contingentRules: ['commandCamera']
+});
+
+new Command({
+    name: 'cs',
+    description: 'Toggle a survival-friendly spectator mode.',
+    usage: 'cs',
+    callback: (sender) => cameraCommand(sender, { action: 'spectate' }),
+    contingentRules: ['commandCamera']
+});
 
 world.beforeEvents.playerGameModeChange.subscribe((ev) => {
     const player = ev.player;
@@ -34,39 +82,9 @@ world.afterEvents.playerDimensionChange.subscribe((ev) => {
     player.setDynamicProperty('isViewingCamera', false);
 });
 
-new Command()
-    .setName('camera')
-    .addArgument('string', 'action')
-    .setCallback(cameraCommand)
-    .build()
-
-new Command()
-    .setName('cp')
-    .setCallback((sender) => cameraCommand(sender, { action: 'place' }))
-    .build()
-
-new Command()
-    .setName('cv')
-    .setCallback((sender) => cameraCommand(sender, { action: 'view' }))
-    .build()
-
-new Command()
-    .setName('cs')
-    .setCallback((sender) => cameraCommand(sender, { action: 'spectate' }))
-    .build()
-
-class Camera {
-    constructor(location, rotation, dimension) {
-        this.location = location;
-        this.rotation = rotation;
-        this.dimension = dimension;
-    }
-}
-
 function cameraCommand(sender, args) {
-    if (!world.getDynamicProperty('commandCamera')) return sender.sendMessage('§cThe commandCamera feature is disabled.');
     const { action } = args;
-
+    
     switch (action) {
         case 'place':
             placeCameraAction(sender);
@@ -78,7 +96,7 @@ function cameraCommand(sender, args) {
             spectateAction(sender);
             break;
         default:
-            sender.sendMessage('§cUsage: ./camera <place/view/spectate>');
+            cmd.sendUsage(sender);
             break;
     }
 }
@@ -89,7 +107,7 @@ function placeCameraAction(sender) {
 
     if (sender.getDynamicProperty('isViewingCamera')) return sender.sendMessage('§cYou cannot place a camera while viewing one.');
 
-    camera = new Camera(
+    camera = new CameraPlacement(
         { x: sender.location.x, y: sender.location.y + eyeHeight, z: sender.location.z },
         sender.getRotation(),
         sender.dimension.id

@@ -1,4 +1,4 @@
-import Command from 'stickycore/command';
+import { Command } from 'lib/canopy/Canopy';
 import Utils from 'stickycore/utils';
 import { world } from '@minecraft/server';
 
@@ -12,18 +12,22 @@ const validDimensions = {
     'the_end': 'the_end',
 };
 
-new Command()
-    .setName('changedimension')
-    .addArgument('string', 'dimension')
-    .addArgument('number', 'x')
-    .addArgument('number', 'y')
-    .addArgument('number', 'z')
-    .setCallback(changedimensionCommand)
-    .build();
+const cmd = new Command({
+    name: 'changedimension',
+    description: 'Change dimension.',
+    usage: 'changedimension <dimension> [x y z]',
+    args: [
+        { type: 'string', name: 'dimension' },
+        { type: 'number', name: 'x' },
+        { type: 'number', name: 'y' },
+        { type: 'number', name: 'z' },
+    ],
+    callback: changedimensionCommand
+});
 
 function changedimensionCommand(player, args) {
     const { dimension, x, y, z } = args;
-    if (!dimension) return player.sendMessage('§cUsage: ./changedimension <dimension> [x y z]');
+    if (!dimension) return cmd.sendUsage(player);
     const validDimensionId = validDimensions[dimension.toLowerCase()];
     if (!validDimensionId) return player.sendMessage(`§cInvalid dimension. Please use one of these: ${Object.keys(validDimensions).join(', ')}`);
     

@@ -1,19 +1,25 @@
-import Command from 'stickycore/command'
+import { Command } from 'lib/canopy/Canopy';
 
-new Command()
-    .setName('s')
-    .setCallback((sender) => setPlayerGamemode(sender, 'survival'))
-    .build()
+new Command({
+    name: 's',
+    description: 'Set your gamemode to survival.',
+    usage: 's',
+    callback: (sender) => setPlayerGamemode(sender, 'survival')
+});
 
-new Command()
-    .setName('c')
-    .setCallback((sender) => setPlayerGamemode(sender, 'creative'))
-    .build()
+new Command({
+    name: 'c',
+    description: 'Set your gamemode to creative.',
+    usage: 'c',
+    callback: (sender) => setPlayerGamemode(sender, 'creative')
+});
 
-new Command()
-    .setName('sp')
-    .setCallback((sender) => setPlayerGamemode(sender, 'spectator'))
-    .build()
+new Command({
+    name: 'sp',
+    description: 'Set your gamemode to spectator.',
+    usage: 'sp',
+    callback: (sender) => setPlayerGamemode(sender, 'spectator')
+});
 
 function setPlayerGamemode(sender, gamemode) {
     let commandText = `gamemode ${gamemode}`;

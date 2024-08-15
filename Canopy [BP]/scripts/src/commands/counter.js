@@ -1,7 +1,12 @@
 import { system, world, ItemStack } from '@minecraft/server'
-import Command from 'stickycore/command'
+import { Rule, Command } from 'lib/canopy/Canopy'
 import Data from 'stickycore/data'
 import Utils from 'stickycore/utils'
+
+new Rule({
+    identifier: 'hopperCounters',
+    description: 'Enables hopper counter functionality.'
+})
 
 class HopperCounter {
     constructor(location, dimensionId) {
@@ -205,22 +210,31 @@ function updateCount(channel) {
     }
 }
 
-new Command()
-    .setName('counter')
-    .addArgument('string', 'argOne')
-    .addArgument('string', 'argTwo')
-    .setCallback(counterCommand)
-    .build()
+const cmd = new Command({
+    name: 'counter',
+    description: 'Manages hopper counters.',
+    usage: 'counter <color/all/reset/realtime> [add/remove/mode/realtime]',
+    args: [
+        { type: 'string', name: 'argOne' },
+        { type: 'string', name: 'argTwo' }
+    ],
+    callback: counterCommand,
+    contingentRules: ['hopperCounters']
+})
 
-new Command()
-    .setName('ct')
-    .addArgument('string', 'argOne')
-    .addArgument('string', 'argTwo')
-    .setCallback(counterCommand)
-    .build()
+new Command({
+    name: 'ct',
+    description: 'Manages hopper counters.',
+    usage: 'ct <color/all/reset/realtime> [add/remove/mode/realtime]',
+    args: [
+        { type: 'string', name: 'argOne' },
+        { type: 'string', name: 'argTwo' }
+    ],
+    callback: counterCommand,
+    contingentRules: ['hopperCounters']
+})
 
 function counterCommand(sender, args) {
-    if (!world.getDynamicProperty('hopperCounters')) return sender.sendMessage('§cThe hopperCounters feature is disabled.');
     const { argOne, argTwo } = args;
 
     if (!channelMap.colors.includes(argOne) && argOne !== 'reset' && argOne !== 'realtime' && argOne !== 'all' && validModes.includes(argTwo)) {
@@ -244,7 +258,7 @@ function counterCommand(sender, args) {
     else if (argOne === 'all' && argTwo)
         setAllMode(sender, argTwo);
     else
-        sender.sendMessage('§cUsage: ./counter <color/all/reset/realtime> [add/remove/mode/realtime]');
+        cmd.sendUsage(sender);
 }
 
 function reset(sender, color) {

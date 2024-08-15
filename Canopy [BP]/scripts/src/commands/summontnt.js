@@ -1,16 +1,25 @@
 import { world } from '@minecraft/server'
-import Command from 'stickycore/command'
+import { Rule, Command } from 'lib/canopy/Canopy'
 import Utils from 'stickycore/utils'
 
-new Command()
-    .setName('summontnt')
-    .addArgument('number', 'amount')
-    .setCallback(summonTntCommand)
-    .build()
+new Rule({
+    identifier: 'commandSummonTnt',
+    description: 'Allows the use of the summontnt command.'
+});
+
+new Command({
+    name: 'summontnt',
+    description: 'Summon TNT at your location.',
+    usage: 'summontnt <amount>',
+    args: [
+        { type: 'number', name: 'amount' }
+    ],
+    callback: summonTntCommand,
+    contingentRules: ['commandSummonTnt']
+});
 
 function summonTntCommand(sender, args) {
-    if (!world.getDynamicProperty('commandSummonTnt')) return sender.sendMessage('§cThe commandSummonTnt feature is disabled.');
-    if (sender.getGameMode() !== 'creative') return sender.sendMessage('§cThis command can only be used in creative mode.');
+    if (!['creative', 'spectator'].includes(sender.getGameMode())) return sender.sendMessage('§cThis command can only be used in creative mode or spectator mode.');
     let { amount } = args;
 
     amount = Math.max(0, Math.min(amount, 5000));

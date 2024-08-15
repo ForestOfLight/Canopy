@@ -1,5 +1,5 @@
 import { world, DimensionTypes } from '@minecraft/server'
-import Command from 'stickycore/command'
+import { Command } from 'lib/canopy/Canopy'
 import Utils from 'stickycore/utils'
 import WorldSpawns from 'src/classes/WorldSpawns'
 import { channelMap } from 'src/commands/counter';
@@ -22,18 +22,28 @@ world.afterEvents.entitySpawn.subscribe((event) => {
     if (shouldCancelSpawn) event.entity.remove();
 });
 
-new Command()
-    .setName('spawn')
-    .addArgument('string', 'action')
-    .addArgument('string|number|boolean', 'actionTwo')
-    .addArgument('number', 'x1')
-    .addArgument('number', 'y1')
-    .addArgument('number', 'z1')
-    .addArgument('number', 'x2')
-    .addArgument('number', 'y2')
-    .addArgument('number', 'z2')
-    .setCallback(spawnCommand)
-    .build()
+const cmd = new Command({
+    name: 'spawn',
+    description: 'Spawn command for tracking and mocking spawns.',
+    usage: 'spawn entities' +
+        `\n§c${Command.prefix}spawn recent [mobname]` +
+        `\n§c${Command.prefix}spawn tracking <start/mobname> [x1 y1 z1] [x2 y2 z2]` +
+        `\n§c${Command.prefix}spawn tracking stop` +
+        `\n§c${Command.prefix}spawn tracking` +
+        `\n§c${Command.prefix}spawn test` +
+        `\n§c${Command.prefix}spawn mocking <true/false>`,
+    args: [
+        { type: 'string', name: 'action' },
+        { type: 'string|number|boolean', name: 'actionTwo' },
+        { type: 'number', name: 'x1' },
+        { type: 'number', name: 'y1' },
+        { type: 'number', name: 'z1' },
+        { type: 'number', name: 'x2' },
+        { type: 'number', name: 'y2' },
+        { type: 'number', name: 'z2' }
+    ],
+    callback: spawnCommand
+});
 
 function spawnCommand(sender, args) {
     const { action, actionTwo, x1, y1, z1, x2, y2, z2 } = args;
@@ -49,16 +59,7 @@ function spawnCommand(sender, args) {
     else if (action === 'tracking' && actionTwo === 'start') startTracking(sender, posOne, posTwo);
     else if (action === 'tracking' && actionTwo === 'stop') stopTracking(sender);
     else if (action === 'tracking' && actionTwo !== null) trackMob(sender, actionTwo, posOne, posTwo);
-    else return sender.sendMessage(
-          '§cUsages for ./spawn:' +
-        '\n§c./spawn entities' +
-        '\n§c./spawn recent [mobname]' +
-        '\n§c./spawn tracking <start/mobname> [x1 y1 z1] [x2 y2 z2]' +
-        '\n§c./spawn tracking stop' +
-        '\n§c./spawn tracking' +
-        '\n§c./spawn test' +
-        '\n§c./spawn mocking <true/false>'
-    );
+    else return cmd.sendUsage(sender);
 }
 
 function printAllEntities(sender) {

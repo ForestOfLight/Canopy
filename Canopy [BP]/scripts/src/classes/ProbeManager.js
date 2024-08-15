@@ -116,7 +116,7 @@ class ProbeManager {
 
     removeProbe(player) {
         const probe = this.probeMap[player.id];
-        if (!probe) return;
+        if (!probe) return console.warn(`[Probe Manager] Error while removing: No probe found for player ${player?.name}`);
         probe.detachFromPlayer();
         if (probe.entity.isValid())
             probe.entity.remove();
@@ -189,13 +189,15 @@ class ProbeManager {
         world.beforeEvents.playerLeave.subscribe((event) => {
             const player = event.player;
             system.run(() => {
-                this.removeProbe(player);
+                if (player.getDynamicProperty('light') || player.getDynamicProperty('biome'))
+                    this.removeProbe(player);
             });
         });
 
         world.afterEvents.playerDimensionChange.subscribe((event) => {
             const player = event.player;
-            this.removeProbe(player);
+            if (player.getDynamicProperty('light') || player.getDynamicProperty('biome'))
+                this.removeProbe(player);
         });
 
         system.runInterval(() => {

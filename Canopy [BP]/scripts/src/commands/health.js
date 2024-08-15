@@ -1,14 +1,16 @@
 import { system } from '@minecraft/server'
-import Command from 'stickycore/command'
+import { Command } from 'lib/canopy/Canopy'
 import { DataTPS } from 'src/tps'
 import  { Entities } from 'src/entities'
 import Data from 'stickycore/data'
 import Utils from 'stickycore/utils'
 
-new Command()
-    .setName('health')
-    .setCallback(healthCommand)
-    .build()
+new Command({
+    name: 'health',
+    description: 'Prints TPS, MSPT, and entity count.',
+    usage: 'health',
+    callback: healthCommand
+})
 
 function healthCommand(sender) {
     system.runTimeout(() => {

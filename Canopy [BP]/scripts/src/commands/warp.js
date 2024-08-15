@@ -1,24 +1,10 @@
-import * as mc from '@minecraft/server'
-import Command from 'stickycore/command'
+import { world } from '@minecraft/server';
+import { Rule, Command } from 'lib/canopy/Canopy';
 
-new Command()
-    .setName('warp')
-    .addArgument('string|number', 'action')
-    .addArgument('string|number', 'name')
-    .setCallback(warpActionCommand)
-    .build()
-
-new Command()
-    .setName('w')
-    .addArgument('string|number', 'action')
-    .addArgument('string|number', 'name')
-    .setCallback(warpActionCommand)
-    .build()
-
-new Command()
-    .setName('warps')
-    .setCallback(warpListCommand)
-    .build()
+new Rule({
+    identifier: 'commandWarp',
+    description: 'Allows the use of the warp command.'
+});
 
 class Warp {
     constructor(name, location, dimension) {
@@ -34,10 +20,39 @@ class Warps {
     }
 }
 
+const cmd = new Command({
+    name: 'warp',
+    description: 'Teleport to and manage warps.',
+    usage: 'warp <name> or warp <add/remove> <name>',
+    args: [
+        { type: 'string|number', name: 'action' },
+        { type: 'string|number', name: 'name' }
+    ],
+    callback: warpActionCommand,
+    contingentRules: ['commandWarp']
+});
+
+new Command({
+    name: 'w',
+    description: 'Teleport to and manage warps.',
+    usage: 'w <name> or w <add/remove> <name>',
+    args: [
+        { type: 'string|number', name: 'action' },
+        { type: 'string|number', name: 'name' }
+    ],
+    callback: warpActionCommand,
+    contingentRules: ['commandWarp']
+});
+
+new Command({
+    name: 'warps',
+    description: 'List all available warps.',
+    callback: warpListCommand,
+    contingentRules: ['commandWarp']
+});
+
 function warpActionCommand(sender, args) {
-    if (!mc.world.getDynamicProperty('commandWarp'))
-        return sender.sendMessage('§cThe commandWarp feature is disabled.');
-    else if (!mc.world.getDynamicProperty('commandWarpSurvival') && sender.getGameMode() === 'survival')
+    if (!world.getDynamicProperty('commandWarpSurvival') && ['survival', 'adventure'].includes(sender.getGameMode()))
         return sender.sendMessage('§cThe commandWarpSurvival feature is disabled in survival mode.');
 
     let { action, name } = args;
@@ -55,7 +70,7 @@ function warpActionCommand(sender, args) {
     } else if (action !== null && !warpMap.has(action)) {
         sender.sendMessage(`§cWarp "${action}" not found. Use ./warps to see the list of warps.`);
     } else {
-        sender.sendMessage('§cUsage: ./warp <name> or ./warp <add/remove> <name>');
+        cmd.sendUsage(sender);
     }
 }
 
@@ -64,9 +79,9 @@ function addWarp(sender, name, warpMap) {
     
     const { location, dimension } = sender;
 
-    let warps = JSON.parse(mc.world.getDynamicProperty('warps'));
+    let warps = JSON.parse(world.getDynamicProperty('warps'));
     warps.warpList[name] = new Warp(name, location, dimension);
-    mc.world.setDynamicProperty(`warps`, JSON.stringify(warps));
+    world.setDynamicProperty(`warps`, JSON.stringify(warps));
     sender.sendMessage(`§7Warp "${name}" has been added.`);
 }
 
@@ -89,17 +104,17 @@ function warpTP(sender, name, warpMap) {
 }
 
 function getWarpMapCopy() {
-    let warps = mc.world.getDynamicProperty('warps');
+    let warps = world.getDynamicProperty('warps');
     if (warps === undefined || warps === false) {
         let initWarps = new Warps();
-        mc.world.setDynamicProperty(`warps`, JSON.stringify(initWarps));
-        warps = mc.world.getDynamicProperty('warps');
+        world.setDynamicProperty(`warps`, JSON.stringify(initWarps));
+        warps = world.getDynamicProperty('warps');
     }
     return new Map(Object.entries(JSON.parse(warps).warpList));
 }
 
 function setWarpMap(newWarpMap) {
-    let warps = JSON.parse(mc.world.getDynamicProperty('warps'));
+    let warps = JSON.parse(world.getDynamicProperty('warps'));
     let newWarpList = {};
 
     for (let [key, value] of Object.entries(warps.warpList)) {
@@ -107,13 +122,13 @@ function setWarpMap(newWarpMap) {
         newWarpList[key] = newWarpMap.get(key);
     }
     warps.warpList = newWarpList;
-    mc.world.setDynamicProperty(`warps`, JSON.stringify(warps));
+    world.setDynamicProperty(`warps`, JSON.stringify(warps));
 }
 
 function warpListCommand(sender) {
-    if (!mc.world.getDynamicProperty('warp'))
+    if (!world.getDynamicProperty('warp'))
         return sender.sendMessage('§cThis command is disabled.');
-    else if (!mc.world.getDynamicProperty('warpInSurvival') && sender.getGameMode() === 'survival')
+    else if (!world.getDynamicProperty('warpInSurvival') && sender.getGameMode() === 'survival')
         return sender.sendMessage('§cThis command cannot be used in survival mode.');
     
     let warpMap = getWarpMapCopy();
