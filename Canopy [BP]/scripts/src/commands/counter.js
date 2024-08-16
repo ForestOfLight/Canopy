@@ -4,8 +4,40 @@ import Data from 'stickycore/data'
 import Utils from 'stickycore/utils'
 
 new Rule({
+    category: 'Rules',
     identifier: 'hopperCounters',
-    description: 'Enables hopper counter functionality.'
+    description: 'Enables counter command & hopper counter functionality.'
+})
+
+const cmd = new Command({
+    name: 'counter',
+    description: 'Manages hopper counters. (Alias: ct)',
+    usage: 'counter <color/all/reset/realtime> [add/remove/mode/realtime]',
+    args: [
+        { type: 'string', name: 'argOne' },
+        { type: 'string', name: 'argTwo' }
+    ],
+    callback: counterCommand,
+    contingentRules: ['hopperCounters'],
+    helpEntries: [
+        { usage: 'counter <color>', description: 'Displays the count and rates of the hopper counter for the specified color.' },
+        { usage: 'counter <color> realtime', description: 'Displays count and rates, but uses real-world time instead of tick-based time.' },
+        { usage: 'counter <color/all> <mode>', description: 'Sets the mode of a hopper counter.' },
+        { usage: 'counter reset', description: 'Resets all hopper counters and restarts the timer.' }
+    ]
+})
+
+new Command({
+    name: 'ct',
+    description: 'Manages hopper counters.',
+    usage: 'ct <color/all/reset/realtime> [add/remove/mode/realtime]',
+    args: [
+        { type: 'string', name: 'argOne' },
+        { type: 'string', name: 'argTwo' }
+    ],
+    callback: counterCommand,
+    contingentRules: ['hopperCounters'],
+    helpHidden: true
 })
 
 class HopperCounter {
@@ -209,30 +241,6 @@ function updateCount(channel) {
         hopperContainer.setItem(0, new ItemStack('minecraft:air', 1));
     }
 }
-
-const cmd = new Command({
-    name: 'counter',
-    description: 'Manages hopper counters.',
-    usage: 'counter <color/all/reset/realtime> [add/remove/mode/realtime]',
-    args: [
-        { type: 'string', name: 'argOne' },
-        { type: 'string', name: 'argTwo' }
-    ],
-    callback: counterCommand,
-    contingentRules: ['hopperCounters']
-})
-
-new Command({
-    name: 'ct',
-    description: 'Manages hopper counters.',
-    usage: 'ct <color/all/reset/realtime> [add/remove/mode/realtime]',
-    args: [
-        { type: 'string', name: 'argOne' },
-        { type: 'string', name: 'argTwo' }
-    ],
-    callback: counterCommand,
-    contingentRules: ['hopperCounters']
-})
 
 function counterCommand(sender, args) {
     const { argOne, argTwo } = args;

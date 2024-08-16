@@ -4,13 +4,14 @@ import { Rule, Command } from 'lib/canopy/Canopy';
 const CLAIM_RADIUS = 10;
 
 new Rule({
+    category: 'Rules',
     identifier: 'commandClaimProjectiles',
-    description: 'Allow the use of the claimprojectiles command.',
+    description: 'Enables claimprojectiles command.',
 });
 
 new Command({
     name: 'claimprojectiles',
-    description: 'Change the owner of projectiles within a radius.',
+    description: `Changes the owner of all projectiles within a ${CLAIM_RADIUS} block radius.`,
     usage: 'claimprojectiles [playerName]',
     args: [
         { type: 'string', name: 'playerName' }

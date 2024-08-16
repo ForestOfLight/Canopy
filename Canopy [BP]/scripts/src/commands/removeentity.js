@@ -3,13 +3,14 @@ import { Rule, Command } from 'lib/canopy/Canopy';
 import Data from 'stickycore/data';
 
 new Rule({
+    category: 'Rules',
     identifier: 'commandRemoveEntity',
-    description: 'Allows the use of the removeentity command.',
+    description: 'Enables removeentity command.',
 });
 
 new Command({
     name: 'removeentity',
-    description: 'Instantly remove the entity you\'re looking at or by id.',
+    description: 'Instantly remove the entity you are looking at or by id.',
     usage: 'removeentity [id]',
     args: [
         { type: 'number', name: 'id' }

@@ -20,8 +20,8 @@ class DependantFeatures {
 
 const cmd = new Command({
     name: 'info',
-    description: 'Toggle InfoDisplay features.',
-    usage: 'info <feature/all> <true/false>',
+    description: 'Toggle InfoDisplay rules.',
+    usage: 'info <rule/all> <true/false>',
     args: [
         { type: 'string', name: 'feature' },
         { type: 'boolean', name: 'enable' }
@@ -31,13 +31,14 @@ const cmd = new Command({
 
 new Command({
     name: 'i',
-    description: 'Toggle InfoDisplay features.',
-    usage: 'i <feature/all> [true/false]',
+    description: 'Toggle InfoDisplay rules.',
+    usage: 'i <rule/all> [true/false]',
     args: [
         { type: 'string', name: 'feature' },
         { type: 'boolean', name: 'enable' }
     ],
-    callback: infoCommand
+    callback: infoCommand,
+    helpHidden: true
 });
 
 function infoCommand(sender, args) {

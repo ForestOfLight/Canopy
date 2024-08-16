@@ -155,18 +155,6 @@ class Data {
 		return output;
 	}
 
-	static updateFeature(sender, feature, enable, isGlobal = false) {
-		if (!sender || !feature || typeof enable !== 'boolean') return console.warn('[Data.updateFeature] Invalid arguments.');
-
-		if (isGlobal) { 
-			mc.world.setDynamicProperty(feature, enable);
-			Utils.broadcastActionBar(`${sender.name}: ${feature} has been ${enable ? '§l§aenabled' : '§l§cdisabled'}`, sender);
-		} else {
-			sender.setDynamicProperty(feature, enable);
-		}
-		sender.sendMessage(`§7${feature} has been ${enable ? '§l§aenabled' : '§l§cdisabled'}§r§7.`);
-	}
-
 	static getEntitiesByType(type) {
 		const dimensions = ['overworld', 'nether', 'the_end'];
 		let entities = [];

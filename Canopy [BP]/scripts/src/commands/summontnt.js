@@ -3,13 +3,14 @@ import { Rule, Command } from 'lib/canopy/Canopy'
 import Utils from 'stickycore/utils'
 
 new Rule({
+    category: 'Rules',
     identifier: 'commandSummonTnt',
-    description: 'Allows the use of the summontnt command.'
+    description: 'Enables summontnt command.'
 });
 
 new Command({
     name: 'summontnt',
-    description: 'Summon TNT at your location.',
+    description: 'Summons the specified amount of primed TNT entity at your location.',
     usage: 'summontnt <amount>',
     args: [
         { type: 'number', name: 'amount' }

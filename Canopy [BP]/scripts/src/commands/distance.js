@@ -7,8 +7,8 @@ const MAX_DISTANCE = 64*16;
 
 const cmd = new Command({
     name: 'distance',
-    description: 'Calculates the distance between two locations.',
-    usage: `d to <x y z> from [x y z] OR ${Command.prefix}d target`,
+    description: 'Calculates the distance between two locations. (Alias: d)',
+    usage: `distance to <x y z> from [x y z] OR ${Command.prefix}distance target`,
     args: [
         { type: 'string', name: 'actionArgOne' },
         { type: 'number', name: 'fromArgX' },
@@ -19,7 +19,13 @@ const cmd = new Command({
         { type: 'number', name: 'toArgY' },
         { type: 'number', name: 'toArgZ' }
     ],
-    callback: distanceCommand
+    callback: distanceCommand,
+    helpEntries: [
+        { usage: `distance target`, description: `Calculates distance between you and the block or entity you are looking at.` },
+        { usage: `distance to <x y z> from [x y z]`, description: `Calculates the distance between two locations.` },
+        { usage: `distance from [x y z]`, description: `Saves a location to calculate distance from.` },
+        { usage: `distance to [x y z]`, description: `Calculates the distance from the saved location to the specified location.` }
+    ]
 });
 
 new Command({
@@ -36,7 +42,8 @@ new Command({
         { type: 'number', name: 'toArgZ' }
     ],
     usage: `d to <x y z> from [x y z] OR ${Command.prefix}d target`,
-    callback: distanceCommand
+    callback: distanceCommand,
+    helpHidden: true
 });
 
 function distanceCommand(sender, args) {

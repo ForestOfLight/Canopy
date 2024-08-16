@@ -1,37 +1,20 @@
 import { world, DimensionTypes } from '@minecraft/server'
-import { Command } from 'lib/canopy/Canopy'
+import { Rule, Command } from 'lib/canopy/Canopy'
 import Utils from 'stickycore/utils'
 import WorldSpawns from 'src/classes/WorldSpawns'
 import { channelMap } from 'src/commands/counter';
 import { categoryToMobMap } from 'src/classes/SpawnTracker';
 
-let worldSpawns = null;
-let isMocking = false;
-let currMobIds = [];
-let currActiveArea = null;
-
-world.afterEvents.entitySpawn.subscribe((event) => {
-    const entity = event.entity;
-    if (worldSpawns && entity.typeId !== 'minecraft:item') worldSpawns.sendMobToTrackers(event.entity);
-
-    if (!isMocking || event.cause === 'Loaded' || !world.getDynamicProperty('commandSpawnMocking')) return;
-    let shouldCancelSpawn = false;
-    for (const category in categoryToMobMap) {
-        if (categoryToMobMap[category].includes(event.entity.typeId.replace('minecraft:', ''))) shouldCancelSpawn = true;
-    }
-    if (shouldCancelSpawn) event.entity.remove();
+new Rule({
+    category: 'Rules',
+    identifier: 'commandSpawnMocking',
+    description: 'Enables spawn mocking command.'
 });
 
 const cmd = new Command({
     name: 'spawn',
     description: 'Spawn command for tracking and mocking spawns.',
-    usage: 'spawn entities' +
-        `\n§c${Command.prefix}spawn recent [mobname]` +
-        `\n§c${Command.prefix}spawn tracking <start/mobname> [x1 y1 z1] [x2 y2 z2]` +
-        `\n§c${Command.prefix}spawn tracking stop` +
-        `\n§c${Command.prefix}spawn tracking` +
-        `\n§c${Command.prefix}spawn test` +
-        `\n§c${Command.prefix}spawn mocking <true/false>`,
+    usage: 'spawn [action1] [action2] [x1 y1 z1] [x2 y2 z2]',
     args: [
         { type: 'string', name: 'action' },
         { type: 'string|number|boolean', name: 'actionTwo' },
@@ -42,7 +25,33 @@ const cmd = new Command({
         { type: 'number', name: 'y2' },
         { type: 'number', name: 'z2' }
     ],
-    callback: spawnCommand
+    callback: spawnCommand,
+    helpEntries: [
+        { usage: 'spawn entities', description: 'Displays a list of all entities & their positions in the world.' },
+        { usage: 'spawn recent [mobName]', description: 'Displays all mob spawns from the last 30s. Specify a mob name to filter.' },
+        { usage: 'spawn tracking [x1 y1 z1] [x2 y2 z2]', description: 'Starts tracking mob spawns. Specify coords to track within an area.' },
+        { usage: 'spawn <mobName> [x1 y1 z1] [x2 y2 z2]', description: 'Starts tracking a specific mob spawn. Specify coords to track spawns within that area. Run again to add more mob types to track.' },
+        { usage: 'spawn tracking', description: 'Displays a summary of all spawns that have occurred since the start of your test.' },
+        { usage: 'spawn tracking stop', description: 'Stops tracking mob spawns.' },
+        { usage: 'spawn mocking <true/false>', description: 'Enables/disables mob spawning while allowing the spawning algorithm to run.' }
+    ]
+});
+
+let worldSpawns = null;
+let isMocking = false;
+let currMobIds = [];
+let currActiveArea = null;
+
+world.afterEvents.entitySpawn.subscribe((event) => {
+    const entity = event.entity;
+    if (worldSpawns && entity.typeId !== 'minecraft:item') worldSpawns.sendMobToTrackers(event.entity);
+
+    if (!isMocking || event.cause === 'Loaded' || !Rule.getValue('commandSpawnMocking')) return;
+    let shouldCancelSpawn = false;
+    for (const category in categoryToMobMap) {
+        if (categoryToMobMap[category].includes(event.entity.typeId.replace('minecraft:', ''))) shouldCancelSpawn = true;
+    }
+    if (shouldCancelSpawn) event.entity.remove();
 });
 
 function spawnCommand(sender, args) {
@@ -74,7 +83,7 @@ function printAllEntities(sender) {
 }
 
 function handleMockingCmd(sender, enable) {
-    if (!world.getDynamicProperty('commandSpawnMocking')) return sender.sendMessage('§cThe commandSpawnMocking feature is disabled.');
+    if (!Rule.getValue('commandSpawnMocking')) return sender.sendMessage('§cThe commandSpawnMocking rule is disabled.');
     if (enable === null) return sender.sendMessage('§cUsage: ./spawn mocking <true/false>');
     isMocking = enable;
     const messageColor = enable ? '§c' : '§a';

@@ -2,8 +2,53 @@ import { world } from '@minecraft/server';
 import { Rule, Command } from 'lib/canopy/Canopy';
 
 new Rule({
+    category: 'Rules',
     identifier: 'commandWarp',
-    description: 'Allows the use of the warp command.'
+    description: 'Enables warp & warps commands.'
+});
+
+new Rule({
+    category: 'Rules',
+    identifier: 'commandWarpSurvival',
+    description: 'Enables warp command in survival mode.',
+    contingentRules: ['commandWarp']
+})
+
+const cmd = new Command({
+    name: 'warp',
+    description: 'Teleport to and manage warps. (Alias: w)',
+    usage: 'warp <add/remove/name> [name]',
+    args: [
+        { type: 'string|number', name: 'action' },
+        { type: 'string|number', name: 'name' }
+    ],
+    callback: warpActionCommand,
+    contingentRules: ['commandWarp'],
+    helpEntries: [
+        { usage: 'warp <add/remove> <name>', description: 'Adds or removes a warp.' },
+        { usage: 'warp <name>', description: 'Teleports you to a warp.' }
+    ]
+});
+
+new Command({
+    name: 'w',
+    description: '',
+    usage: 'w',
+    args: [
+        { type: 'string|number', name: 'action' },
+        { type: 'string|number', name: 'name' }
+    ],
+    callback: warpActionCommand,
+    contingentRules: ['commandWarp'],
+    helpHidden: true
+});
+
+new Command({
+    name: 'warps',
+    description: 'List all available warps.',
+    usage: 'warps',
+    callback: warpListCommand,
+    contingentRules: ['commandWarp']
 });
 
 class Warp {
@@ -20,40 +65,9 @@ class Warps {
     }
 }
 
-const cmd = new Command({
-    name: 'warp',
-    description: 'Teleport to and manage warps.',
-    usage: 'warp <name> or warp <add/remove> <name>',
-    args: [
-        { type: 'string|number', name: 'action' },
-        { type: 'string|number', name: 'name' }
-    ],
-    callback: warpActionCommand,
-    contingentRules: ['commandWarp']
-});
-
-new Command({
-    name: 'w',
-    description: 'Teleport to and manage warps.',
-    usage: 'w <name> or w <add/remove> <name>',
-    args: [
-        { type: 'string|number', name: 'action' },
-        { type: 'string|number', name: 'name' }
-    ],
-    callback: warpActionCommand,
-    contingentRules: ['commandWarp']
-});
-
-new Command({
-    name: 'warps',
-    description: 'List all available warps.',
-    callback: warpListCommand,
-    contingentRules: ['commandWarp']
-});
-
 function warpActionCommand(sender, args) {
-    if (!world.getDynamicProperty('commandWarpSurvival') && ['survival', 'adventure'].includes(sender.getGameMode()))
-        return sender.sendMessage('§cThe commandWarpSurvival feature is disabled in survival mode.');
+    if (!Rule.getValue('commandWarpSurvival') && ['survival', 'adventure'].includes(sender.getGameMode()))
+        return sender.sendMessage('§cThe commandWarpSurvival rule is disabled.');
 
     let { action, name } = args;
     if (Number.isInteger(action)) action = action.toString();
@@ -126,10 +140,10 @@ function setWarpMap(newWarpMap) {
 }
 
 function warpListCommand(sender) {
-    if (!world.getDynamicProperty('warp'))
-        return sender.sendMessage('§cThis command is disabled.');
-    else if (!world.getDynamicProperty('warpInSurvival') && sender.getGameMode() === 'survival')
-        return sender.sendMessage('§cThis command cannot be used in survival mode.');
+    if (!Rule.getValue('commandWarp'))
+        return sender.sendMessage('§cThe commandWarp rule is disabled.');
+    else if (!Rule.getValue('commandWarpSurvival') && sender.getGameMode() === 'survival')
+        return sender.sendMessage('§cThe commandWarpSurvival rule is disabled.');
     
     let warpMap = getWarpMapCopy();
 

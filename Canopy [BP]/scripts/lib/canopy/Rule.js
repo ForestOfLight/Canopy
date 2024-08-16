@@ -1,22 +1,27 @@
-import { world } from '@minecraft/server';
+import { world, system } from '@minecraft/server';
 
 const rules = {};
+
 class Rule {
+    #category;
     #identifier;
     #description;
     #contingentRules;
     #independentRules;
+    #extensionName;
 
-    constructor({ identifier, description = '', contingentRules = [], independentRules = []}) {
+    constructor({ category, identifier, description = '', contingentRules = [], independentRules = [], extensionName = false }) {
+        this.#category = category;
         this.#identifier = identifier;
         this.#description = description;
         this.#contingentRules = [];
         this.#independentRules = [];
-        rules[this.#identifier] = this;
+        this.#extensionName = extensionName;
+        rules[identifier] = this;
     }
 
-    getRules() {
-        return rules;
+    getCategory() {
+        return this.#category;
     }
 
     getID() {
@@ -27,25 +32,86 @@ class Rule {
         return this.#description;
     }
 
-    getContigentRules() {
+    getContigentRuleIDs() {
         return this.#contingentRules;
     }
 
-    getIndependentRules() {
+    getIndependentRuleIDs() {
         return this.#independentRules;
     }
 
-    getValue() {
-        return world.getDynamicProperty(this.#identifier);
+    getExtensionName() {
+        return this.#extensionName;
     }
 
-    static getValue(identifier) {
-        // should also check if it is an invalid rule id, but it's fine until all of the rules are in the new format
-        return world.getDynamicProperty(identifier);
+    async getValue() {
+        if (this.#extensionName) {
+            try {
+                world.getDimension('overworld').runCommandAsync(`scriptevent canopyExtension:ruleValueRequest ${this.#extensionName} ${this.#identifier}`);
+                const result = await new Promise((resolve, reject) => {
+                    system.afterEvents.scriptEventReceive.subscribe((event) => this.recieveRuleValue(event, resolve), { namespaces: ['canopyExtension'] });
+                });
+                return JSON.parse(result);
+            } catch (error) {
+                console.error("Error running command or subscribing to event:", error);
+                throw error;
+            }
+        }
+        return JSON.parse(world.getDynamicProperty(this.#identifier));
+    }
+
+    async recieveRuleValue(scriptEventReceive, resolve) {
+        if (scriptEventReceive.id !== 'canopyExtension:ruleValueResponse' || scriptEventReceive.sourceType !== 'Server') return;
+        const splitMessage = scriptEventReceive.message.split(' ');
+        const extensionName = splitMessage[0];
+        if (extensionName !== this.#extensionName) return;
+        const ruleID = splitMessage[1];
+        if (ruleID !== this.#identifier) return;
+        const value = splitMessage[2];
+        // console.warn(`[Canopy] Received rule value: ${extensionName}:${ruleID} ${value}`);
+        resolve(value);
+    }
+
+    static async getValue(identifier) {
+        return await Rule.getRule(identifier).getValue();
+    }
+
+    setValue(value) {
+        if (this.#extensionName) {
+            world.getDimension('overworld').runCommandAsync(`scriptevent canopyExtension:ruleValueSet ${this.#extensionName} ${this.#identifier} ${value}`);
+        } else {
+            world.setDynamicProperty(this.#identifier, value);
+        }
+    }
+
+    static setValue(identifier, value) {
+        Rule.getRule(identifier).setValue(value);
+    }
+
+    static getRules() {
+        return rules;
+    }
+
+    static getCategories() {
+        return [...new Set(Object.values(rules).map(rule => rule.#category))];
+    }
+
+    static getRulesByCategory(category) {
+        let result = Object.values(rules).filter(rule => rule.#category === category);
+        result.sort((a, b) => a.#identifier.localeCompare(b.#identifier));
+        return result;
+    }
+
+    static getRulesByExtension(extensionName) {
+        return Object.values(rules).filter(rule => rule.#extensionName === extensionName);
     }
 
     static getRule(identifier) {
         return rules[identifier];
+    }
+
+    static getExtensionNames() {
+        return [...new Set(Object.values(rules).map(rule => rule.#extensionName))].filter(name => name !== false);
     }
 }
 

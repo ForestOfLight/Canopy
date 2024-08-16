@@ -6,7 +6,7 @@ const BLOCK_COMPONENTS = ['minecraft:inventory', 'minecraft:lavaContainer', 'min
 
 new Command({
     name: 'data',
-    description: 'Get data about the target block or entity you are looking at.',
+    description: 'Displays information about the block or entity you are looking at.',
     usage: 'data',
     callback: dataCommand
 });

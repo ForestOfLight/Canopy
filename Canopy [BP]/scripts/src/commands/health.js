@@ -7,7 +7,7 @@ import Utils from 'stickycore/utils'
 
 new Command({
     name: 'health',
-    description: 'Prints TPS, MSPT, and entity count.',
+    description: 'Displays the server\'s current TPS, MSPT, and entity counts.',
     usage: 'health',
     callback: healthCommand
 })

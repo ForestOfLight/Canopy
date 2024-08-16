@@ -7,8 +7,8 @@ const currentQuery = {};
 
 new Command({
     name: 'peek',
-    description: 'Peek into a target\'s inventory and optionally highlight a specific item.',
-    usage: 'peek [itemQuery]',
+    description: 'Peek into a target\'s inventory and optionally highlight a items that match a search term.',
+    usage: 'peek [seachTerm]',
     args: [
         { type: 'string', name: 'itemQuery' }
     ],

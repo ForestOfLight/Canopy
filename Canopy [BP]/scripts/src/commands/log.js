@@ -1,11 +1,22 @@
-import { system, world } from '@minecraft/server'
-import { Command } from 'lib/canopy/Canopy'
-import Data from 'stickycore/data'
-import Utils from 'stickycore/utils'
+import { system, world } from '@minecraft/server';
+import { Command } from 'lib/canopy/Canopy';
+import Data from 'stickycore/data';
+import Utils from 'stickycore/utils';
 
 const MAIN_COLOR = '§7';
 const SECONDARY_COLOR = '§c';
 const TERTIARY_COLOR = '§a';
+
+const cmd = new Command({
+    name: 'log',
+    description: 'Log tnt, projectile, and falling block movement.',
+    usage: 'log <tnt/projectiles/falling_blocks> [precision]',
+    args: [
+        { type: 'string', name: 'type' },
+        { type: 'number', name: 'precision' }
+    ],
+    callback: logCommand
+});
 
 class LoggingPlayer {
     constructor(player) {
@@ -202,17 +213,6 @@ function getLogHeader(movingEntities) {
     let output = `${TERTIARY_COLOR}----- Total: ${movingEntities.length}${MAIN_COLOR} (tick: ${absoluteTimeStr.slice(0, -2)}${SECONDARY_COLOR}${absoluteTimeStr.slice(-2)}${MAIN_COLOR})${TERTIARY_COLOR} -----`;
     return output;
 }
-
-const cmd = new Command({
-    name: 'log',
-    description: 'Log tnt, projectile, and falling block movement.',
-    usage: 'log <tnt/projectiles/falling_blocks> [precision]',
-    args: [
-        { type: 'string', name: 'type' },
-        { type: 'number', name: 'precision' }
-    ],
-    callback: logCommand
-});
 
 function logCommand(sender, args) {
     let { type, precision } = args;

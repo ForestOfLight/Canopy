@@ -1,134 +1,12 @@
-import { world } from '@minecraft/server'
-import { Command } from 'lib/canopy/Canopy'
-import { module } from 'stickycore/dynamic'
-import Utils from 'stickycore/utils'
+import { Command, Rule } from 'lib/canopy/Canopy';
+import { HelpBook, CommandHelpPage, RuleHelpPage } from 'lib/canopy/Canopy';
 
-class CommandItem {
-    constructor(name, syntax, description) {
-        this.name = name;
-        this.syntax = syntax;
-        this.description = description;
-    }
-}
-
-class DynamicItem {
-    constructor(name) {
-        this.name = name;
-    }
-}
-
-class HelpPage {
-    constructor(title, isDynamic = false) {
-        this.title = title;
-        this.description = '';
-        this.items = [];
-        this.isDynamic = isDynamic;
-    }
-
-    addItem(name, syntax, description) {
-        this.items.push(new CommandItem(name, syntax, description));
-    }
-
-    addDynamicItems(itemNames) {
-        for (let itemName of itemNames) {
-            this.items.push(new DynamicItem(itemName));
-        }
-    }
-
-    setDescription(description) {
-        this.description = description;
-    }
-}
-
-class HelpBook {
-    numDynamicPages = 0;
-
-    constructor() {
-        this.helpPages = {};
-    }
-
-    addPage(name, page) {
-        this.helpPages[name] = page;
-    }
-
-    getPageNames() {
-        return Object.keys(this.helpPages).map(pageName => {
-            if (Utils.isNumeric(pageName))
-                return parseInt(pageName);
-            return pageName;
-        });
-    }
-
-    addDynamicPages() {
-        const infoDisplayModule = module.exports['infoDisplay'];
-        const rulesModule = module.exports['rules'];
-        const dynamicPages = { 'infodisplay': infoDisplayModule, 'rules': rulesModule };
-    
-        for (let pageName of Object.keys(dynamicPages)) {
-            this.numDynamicPages++;
-            this.addPage(pageName, new HelpPage(pageName, true));
-            const dynamicNames = Object.values(dynamicPages[pageName]);
-            this.helpPages[pageName].addDynamicItems(dynamicNames);
-        }
-        this.helpPages['infodisplay'].setDescription('./info <feature/all> <true/false>');
-        this.helpPages['rules'].setDescription('./feature <feature> <true/false>');
-    }
-
-    addCommandPages() {
-        this.addPage(1, new HelpPage(1));
-        this.addPage(2, new HelpPage(2));
-        this.addPage(3, new HelpPage(3));
-        this.addPage(4, new HelpPage(4));
-    
-        this.helpPages[1].addItem('help', './help [infodisplay/features/page number]', 'Displays help pages.');
-        this.helpPages[1].addItem('camera', './camera place', 'Places a camera at your current location. (alias: ./cp)');
-        this.helpPages[1].addItem('camera', './camera view', 'Toggles viewing your latest camera placement. (alias: ./cv)');
-        this.helpPages[1].addItem('camera', './camera spectate', 'Survival-friendly spectator mode. Toggles freecam. (alias: ./cs)');
-        this.helpPages[1].addItem('change dimension', './changedimension <dimension> [x y z]', 'Teleports you to the specified dimension.');
-        this.helpPages[1].addItem('claim projectiles', './claimprojectiles [playerName]', 'Changes the owner of all projectiles within a 10 block radius.');
-        this.helpPages[1].addItem('hopper counters', './counter [color]', 'Displays the count and rates of the hopper counters. (alias: ./ct)');
-        this.helpPages[1].addItem('hopper counters', './counter <color/all> <mode>', 'Sets the mode of a hopper counter: countMode, perhourMode, perminuteMode, or persecondMode. (alias: ./ct)');
-        this.helpPages[1].addItem('hopper counters', './counter [color] realtime', 'Like ./counter [color], but uses real-world time instead of tick-based time to do rate calculations. (alias: ./ct)');
-        this.helpPages[1].addItem('data', './data', 'Displays information about the block or entity you are looking at.');
-
-        this.helpPages[2].addItem('distance', './distance target', 'Calculates the distance between you and the block or entity you are looking at. (alias: ./d)');
-        this.helpPages[2].addItem('distance', './distance from <x y z> to [x y z]', 'Calculates the distance between two points. (alias: ./d)');
-        this.helpPages[2].addItem('distance', './distance from [x y z]', 'Saves a location to calculate distance to later. (alias: ./d)');
-        this.helpPages[2].addItem('distance', './distance to [x y z]', 'Calculates the distance from the saved location to the specified location. (alias: ./d)');
-        this.helpPages[2].addItem('entity density', './entitydensity [dimension] <grid size>', 'Identifies dense areas of entities in the specified dimension.');
-        this.helpPages[2].addItem('gamemode', './s, ./c, ./sp', 'Easy gamemode switching.');
-        this.helpPages[2].addItem('health', './health', 'Displays the server\'s current TPS, MSPT, and entity counts.');
-        this.helpPages[2].addItem('jump', './jump', 'Teleports you to the block you\'re looking at. (alias: ./j)');
-        this.helpPages[2].addItem('log', './log <tnt/projectiles/falling_blocks> [precision]', 'Logs the location of the specified entity type in chat.');
-        this.helpPages[2].addItem('peek', './peek [search term]', 'Peeks at a block or entity\'s inventory. Use the search term to highlight items that include it. (alias: ./p)');
-        
-        this.helpPages[3].addItem('remove entity', './removeentity [id]', 'Removes the entity you are looking at. Specify an entity ID to remove a specific entity.');
-        this.helpPages[3].addItem('spawn', './spawn entities', 'Displays a list of all entities in the world.');
-        this.helpPages[3].addItem('spawn', './spawn recent [mobname]', 'Displays all mob spawns in the last 30s. Optionally specify a mob name to filter results.');
-        this.helpPages[3].addItem('spawn', './spawn tracking start [x1 y1 z1] [x2 y2 z2]', 'Starts tracking mob spawns. Specify coords to track spawns within that area.');
-        this.helpPages[3].addItem('spawn', './spawn tracking <mobname> [x1 y1 z1] [x2 y2 z2]', 'Starts tracking a specific mob spawn. Specify coords to track spawns within that area. Run this again to add more mob types to track.');
-        this.helpPages[3].addItem('spawn', './spawn tracking', 'Displays a summary of all spawns that have occurred since the start of your test.');
-        this.helpPages[3].addItem('spawn', './spawn tracking stop', 'Stops tracking mob spawns.');
-        this.helpPages[3].addItem('spawn', './spawn mocking <true/false>', 'Enables/disables mob spawning while allowing the spawning algorithm to run.');
-        this.helpPages[3].addItem('spawn', './spawn test', 'Resets spawn tracking data and all hopper counters.');
-        this.helpPages[3].addItem('summon tnt', './summontnt <amount>', 'Summons the specified amount of primed TNT entity at your location.');
-        
-        this.helpPages[4].addItem('tick', './tick <mspt>', 'Slows down the server tick speed to the specified mspt.');
-        this.helpPages[4].addItem('tick', './tick step [steps]', 'Allows the server to run at normal speed for the specified amount of steps.');
-        this.helpPages[4].addItem('tick', './tick reset', 'Resets the server tick speed to normal.');
-        this.helpPages[4].addItem('tnt fuse', './tntfuse <ticks/reset>', 'Sets the fuse time of primed TNT entities in ticks.');
-        this.helpPages[4].addItem('trackevent', './trackevent <eventName> [beforeEvent/afterEvent]', 'Toggles counting the specified event in the InfoDisplay.');
-        this.helpPages[4].addItem('warp', './warp <add/remove> <name>', 'Adds or removes a warp. (alias: ./w)');
-        this.helpPages[4].addItem('warp', './warp <name>', 'Teleports you to a warp. (alias: ./w)');
-        this.helpPages[4].addItem('warps', './warps', 'Lists all available warps.');
-        this.helpPages[4].addItem('reset all', './resetall', 'Resets all §l§aCanopy§r§7 features and data.');
-    }
-}
+const helpBook = new HelpBook();
 
 const cmd = new Command({
     name: 'help',
     description: 'Displays help pages.',
-    usage: 'help [infodisplay/rules/page number]',
+    usage: 'help [pageName]',
     args: [
         { type: 'string|number', name: 'pageName' }
     ],
@@ -136,47 +14,73 @@ const cmd = new Command({
 });
 
 function helpCommand(sender, args) {
-    const helpBook = new HelpBook();
-    helpBook.addDynamicPages(helpBook);
-    helpBook.addCommandPages(helpBook);
+    populateNativeCommandPages(helpBook);
+    populateNativeRulePages(helpBook);
+    populateExtensionPages(helpBook);
 
     const { pageName } = args;
     if (pageName === null)
-        printAllHelp(sender, helpBook);
+        helpBook.print(sender);
     else if (helpBook.getPageNames().includes(pageName))
-        printHelpPage(sender, helpBook, pageName)
-    else
+        helpBook.printPage(pageName, sender);
+    else {
+        cmd.setUsage(`help [${helpBook.getPageNames().join('/')}]`);
         cmd.sendUsage(sender);
-}
-
-function printAllHelp(sender, helpBook) {
-    for (let page of Object.values(helpBook.helpPages)) {
-        printHelpPage(sender, helpBook, page.title);
     }
 }
 
-function printHelpPage(sender, helpBook, pageName) {
-    if (!Utils.isNumeric(pageName))
-        pageName = pageName.toLowerCase();
-    const page = helpBook.helpPages[pageName];
-    const numCommandPages = Object.keys(helpBook.helpPages).length - helpBook.numDynamicPages;
-    let output;
+function populateNativeCommandPages(helpBook) {
+    let commands = Command.getNativeCommands();
+    commands = commands.filter(cmd => !cmd.isHelpHidden());
+    if (helpBook.numNativeCommandPages >= commands.length / 10)
+        return;
 
-    output = `§l§aCanopy§r §2Help Page:§r `;
-    if (Utils.isNumeric(pageName)) output += `${pageName} of ${numCommandPages}`;
-    else output += `${page.title}\n§2${page.description}`;
+    for (let i = 0; i < commands.length; i++) {;
+        if (i % 10 === 0) {
+            helpBook.numNativeCommandPages++;
+            helpBook.newPage(new CommandHelpPage(helpBook.numNativeCommandPages));
+        }
+        const command = commands[i];
+        helpBook.addEntry(helpBook.numNativeCommandPages, command);
+    }
+}
 
-    for (let item of page.items) {
-        if (page.isDynamic) {
-            let value;
-            if (pageName == 'infodisplay') value = sender.getDynamicProperty(item.name);
-            else if (pageName == 'rules') value = world.getDynamicProperty(item.name);
-            if (value === undefined) value = false;
-            value = value ? '§atrue' : '§cfalse';
-            output += `\n  §7- ${item.name}: ${value}`;
-        } else {
-            output += `\n  §2${item.syntax} §7- ${item.description}`;
+function populateNativeRulePages(helpBook) {
+    const infoDisplayPage = new RuleHelpPage('InfoDisplay', 'Togglable rules for your InfoDisplay.', Command.prefix + 'info <rule/all> <true/false>');
+    const infoDisplayRules = Rule.getRulesByCategory('InfoDisplay');
+    helpBook.newPage(infoDisplayPage);
+    for (let rule of infoDisplayRules) {
+        helpBook.addEntry(rule.getCategory(), rule);
+    }
+
+    const rulesPage = new RuleHelpPage('Rules', 'Togglable global rules.', Command.prefix + 'canopy <rule> <true/false>');
+    const globalRules = Rule.getRulesByCategory('Rules');
+    helpBook.newPage(rulesPage);
+    for (let rule of globalRules) {
+        helpBook.addEntry(rule.getCategory(), rule);
+    }
+}
+
+function populateExtensionPages(helpBook) {
+    const ruleExtensions = Rule.getExtensionNames();
+    const commandExtensions = Command.getExtensionNames();
+
+    for (const extensionName of ruleExtensions) {
+        const rulePage = new RuleHelpPage(`Rules`, `Togglable rules for ${extensionName}.`, Command.prefix + `canopy <rule> <true/false>`, extensionName);
+        const rules = Rule.getRulesByExtension(extensionName);
+        helpBook.newPage(rulePage);
+        for (let rule of rules) {
+            helpBook.addEntry(rulePage.title, rule);
         }
     }
-    sender.sendMessage(output);
+
+    for (const extensionName of commandExtensions) {
+        const commandPage = new CommandHelpPage(`Commands`, `Commands for ${extensionName}.`, extensionName);
+        let commands = Command.getCommandsByExtension(extensionName);
+        commands = commands.filter(cmd => !cmd.isHelpHidden());
+        helpBook.newPage(commandPage);
+        for (let command of commands) {
+            helpBook.addEntry(commandPage.title, command);
+        }
+    }
 }

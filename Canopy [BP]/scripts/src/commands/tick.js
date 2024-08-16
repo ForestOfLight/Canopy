@@ -4,8 +4,26 @@ import Utils from 'stickycore/utils';
 import { DataTPS } from 'src/tps';
 
 new Rule({
+    category: 'Rules',
     identifier: 'commandTick',
-    description: 'Allows the use of the tick command.'
+    description: 'Enables tick command.'
+});
+
+const cmd = new Command({
+    name: 'tick',
+    description: 'Set and control the tick speed.',
+    usage: `tick <mspt/step/reset> [steps]`,
+    args: [
+        { type: 'string|number', name: 'arg' },
+        { type: 'number', name: 'steps' }
+    ],
+    callback: tickCommand,
+    contingentRules: ['commandTick'],
+    helpEntries: [
+        { usage: 'tick <mspt>', description: 'Slows down the server tick speed to the specified mspt.' },
+        { usage: 'tick step [steps]', description: 'Allows the server to run at normal speed for the specified amount of steps.' },
+        { usage: 'tick reset', description: 'Resets the server tick speed to normal.' }
+    ]
 });
 
 let targetMSPT = 50.0;
@@ -27,18 +45,6 @@ system.runInterval(() => {
         return;
     }
     tickSpeed(targetMSPT);
-});
-
-const cmd = new Command({
-    name: 'tick',
-    description: 'Set and control the tick speed.',
-    usage: `tick <mspt> OR ${Command.prefix}tick step [steps] OR ${Command.prefix}tick reset`,
-    args: [
-        { type: 'string|number', name: 'arg' },
-        { type: 'number', name: 'steps' }
-    ],
-    callback: tickCommand,
-    contingentRules: ['commandTick']
 });
 
 function tickCommand(sender, args) {

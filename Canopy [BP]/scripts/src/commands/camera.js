@@ -1,6 +1,55 @@
 import { Rule, Command } from 'lib/canopy/Canopy';
 import { system, world } from '@minecraft/server'
 
+new Rule({
+    category: 'Rules',
+    identifier: 'commandCamera',
+    description: 'Enables camera command.',
+});
+
+const cmd = new Command({
+    name: 'camera',
+    description: 'Place a camera, view it, or use a survival-friendly spectator mode.',
+    usage: 'camera <action>',
+    args: [
+        { type: 'string', name: 'action' }
+    ],
+    callback: cameraCommand,
+    contingentRules: ['commandCamera'],
+    helpEntries: [
+        { usage: 'camera place', description: 'Places a camera at your current location. (Alias: cp)' },
+        { usage: 'camera view', description: 'Toggles viewing your latest camera placement. (Alias: cv)' },
+        { usage: 'camera spectate', description: 'Toggles a survival-friendly spectator mode. (Alias: cs)' }
+    ]
+});
+
+new Command({
+    name: 'cp',
+    description: 'Places a camera at your current location.',
+    usage: 'cp',
+    callback: (sender) => cameraCommand(sender, { action: 'place' }),
+    contingentRules: ['commandCamera'],
+    helpHidden: true
+});
+
+new Command({
+    name: 'cv',
+    description: 'Toggles viewing your latest camera placement.',
+    usage: 'cv',
+    callback: (sender) => cameraCommand(sender, { action: 'view' }),
+    contingentRules: ['commandCamera'],
+    helpHidden: true
+});
+
+new Command({
+    name: 'cs',
+    description: 'Toggle a survival-friendly spectator mode.',
+    usage: 'cs',
+    callback: (sender) => cameraCommand(sender, { action: 'spectate' }),
+    contingentRules: ['commandCamera'],
+    helpHidden: true
+});
+
 class CameraPlacement {
     constructor(location, rotation, dimension) {
         this.location = location;
@@ -20,46 +69,6 @@ class BeforeSpectatorPlayer {
             this.effects.push({ typeId: effect.typeId, duration: effect.duration, amplifier: effect.amplifier });
     }
 }
-
-new Rule({
-    identifier: 'commandCamera',
-    description: 'Allow the use of the camera command.',
-});
-
-const cmd = new Command({
-    name: 'camera',
-    description: 'Place a camera, view it, or use a survival-friendly spectator mode.',
-    usage: 'camera <place/view/spectate>',
-    args: [
-        { type: 'string', name: 'action' }
-    ],
-    callback: cameraCommand,
-    contingentRules: ['commandCamera']
-});
-
-new Command({
-    name: 'cp',
-    description: 'Place a camera at your current location.',
-    usage: 'cp',
-    callback: (sender) => cameraCommand(sender, { action: 'place' }),
-    contingentRules: ['commandCamera']
-});
-
-new Command({
-    name: 'cv',
-    description: 'View the camera you placed.',
-    usage: 'cv',
-    callback: (sender) => cameraCommand(sender, { action: 'view' }),
-    contingentRules: ['commandCamera']
-});
-
-new Command({
-    name: 'cs',
-    description: 'Toggle a survival-friendly spectator mode.',
-    usage: 'cs',
-    callback: (sender) => cameraCommand(sender, { action: 'spectate' }),
-    contingentRules: ['commandCamera']
-});
 
 world.beforeEvents.playerGameModeChange.subscribe((ev) => {
     const player = ev.player;

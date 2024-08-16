@@ -4,8 +4,20 @@ import { Rule, Command } from 'lib/canopy/Canopy'
 const MAX_FUSE_TICKS = 72000;
 
 new Rule({
+    category: 'Rules',
     identifier: 'commandTntFuse',
-    description: 'Allow the use of the fuse time for primed TNT.'
+    description: 'Enables tntfuse command & custom TNT fuse time functionality.'
+});
+
+const cmd = new Command({
+    name: 'tntfuse',
+    description: 'Sets the fuse time of primed TNT in ticks.',
+    usage: 'tntfuse <ticks/reset>',
+    args: [
+        { type: 'number|string', name: 'ticks' }
+    ],
+    callback: tntfuseCommand,
+    contingentRules: ['commandTntFuse']
 });
 
 world.afterEvents.entitySpawn.subscribe(event => {
@@ -23,17 +35,6 @@ world.afterEvents.entitySpawn.subscribe(event => {
             event.entity.triggerEvent('canopy:explode');
         }, fuseTime);
     }
-});
-
-const cmd = new Command({
-    name: 'tntfuse',
-    description: 'Set the fuse time for primed TNT.',
-    usage: 'tntfuse <ticks/reset>',
-    args: [
-        { type: 'number|string', name: 'ticks' }
-    ],
-    callback: tntfuseCommand,
-    contingentRules: ['commandTntFuse']
 });
 
 function tntfuseCommand(sender, args) {

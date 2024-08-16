@@ -3,7 +3,7 @@ import { Command } from 'lib/canopy/Canopy'
 
 new Command({
     name: 'resetall',
-    description: 'Reset all dynamic properties for the world and all online players.',
+    description: 'Resets all §l§aCanopy§r§8 features and data. Use with caution.',
     usage: 'resetall',
     callback: resetallCommand,
     adminOnly: true

@@ -3,6 +3,17 @@ import { Command } from 'lib/canopy/Canopy';
 import EventTracker from 'src/classes/EventTracker';
 import Utils from 'stickycore/utils';
 
+const cmd = new Command({
+    name: 'trackevent',
+    description: 'Count the number of times any event occurs. Displays the count in the InfoDisplay.',
+    usage: 'trackevent <eventName> [beforeEvent/afterEvent]',
+    args: [
+        { type: 'string', name: 'eventName' },
+        { type: 'string', name: 'isAfterEvent' }
+    ],
+    callback: trackCommand
+});
+
 const trackers = {
     before: {},
     after: {}
@@ -17,17 +28,6 @@ world.afterEvents.worldInitialize.subscribe(() => {
         tracker.setCount(savedTracker.count);
         trackers[savedTracker.isAfterEvent ? 'after' : 'before'][savedTracker.eventName] = tracker;
     }
-});
-
-const cmd = new Command({
-    name: 'trackevent',
-    description: 'Count the number of times any event occurs. Displays the count in the InfoDisplay.',
-    usage: 'trackevent <eventName> [beforeEvent/afterEvent]',
-    args: [
-        { type: 'string', name: 'eventName' },
-        { type: 'string', name: 'isAfterEvent' }
-    ],
-    callback: trackCommand,
 });
 
 function trackCommand(sender, args) {

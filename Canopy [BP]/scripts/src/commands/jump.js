@@ -1,26 +1,32 @@
-import { world } from '@minecraft/server'
-import { Command } from 'lib/canopy/Canopy'
-import Data from 'stickycore/data'
+import { Rule, Command } from 'lib/canopy/Canopy';
+import Data from 'stickycore/data';
+
+new Rule({
+    category: 'Rules',
+    identifier: 'commandJumpSurvival',
+    description: 'Enables jump command in survival mode.'
+});
 
 new Command({
     name: 'jump',
-    description: 'Teleport to the block you are looking at.',
+    description: 'Teleport to the block you are looking at. (Alias: j)',
     usage: 'jump',
     callback: jumpCommand
 });
 
 new Command({
     name: 'j',
-    description: 'Teleport to the block you are looking at.',
+    description: '',
     usage: 'j',
-    callback: jumpCommand
+    callback: jumpCommand,
+    helpHidden: true
 })
 
 function jumpCommand(sender) {
     let blockRayResult;
     let maxDistance = 64*16;
     let jumpLocation;
-    if (!world.getDynamicProperty('commandJumpSurvival') && sender.getGameMode() === 'survival')
+    if (!Rule.getValue('commandJumpSurvival') && sender.getGameMode() === 'survival')
         return sender.sendMessage('§cThe commandJumpSurvival feature is disabled.');
 
     blockRayResult = Data.getLookingAtBlock(sender, maxDistance);

@@ -14,7 +14,7 @@ const validDimensions = {
 
 const cmd = new Command({
     name: 'changedimension',
-    description: 'Change dimension.',
+    description: 'Teleports you to the specified dimension.',
     usage: 'changedimension <dimension> [x y z]',
     args: [
         { type: 'string', name: 'dimension' },
