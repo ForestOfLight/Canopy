@@ -162,6 +162,7 @@ world.beforeEvents.chatSend.subscribe((ev) => {
 				return sender.sendMessage(`§cThe ${ruleID} rule is disabled.`);
 			}
 		}
+
 		let parsedArgs = {};
 		command.getArgs().forEach((argData, index) => {
 			try {

@@ -14,10 +14,12 @@ class Rule {
         this.#category = category;
         this.#identifier = identifier;
         this.#description = description;
-        this.#contingentRules = [];
-        this.#independentRules = [];
+        this.#contingentRules = contingentRules;
+        this.#independentRules = independentRules;
         this.#extensionName = extensionName;
-        rules[identifier] = this;
+        if (Rule.exists(identifier)) {
+            throw new Error(`Rule with identifier '${identifier}' already exists.`);
+        } rules[identifier] = this;
     }
 
     getCategory() {
@@ -51,13 +53,21 @@ class Rule {
                 const result = await new Promise((resolve, reject) => {
                     system.afterEvents.scriptEventReceive.subscribe((event) => this.recieveRuleValue(event, resolve), { namespaces: ['canopyExtension'] });
                 });
-                return JSON.parse(result);
+                return this.parseString(result);
             } catch (error) {
-                console.error("Error running command or subscribing to event:", error);
-                throw error;
+                throw new Error(`[Canopy] [Rule] Error getting value for ${this.#identifier}: ${error}`);
             }
         }
-        return JSON.parse(world.getDynamicProperty(this.#identifier));
+        return this.parseString(world.getDynamicProperty(this.#identifier));
+    }
+
+    parseString(value) {
+        try {
+            return JSON.parse(value);
+        } catch (error) {
+            if (value === 'undefined') return undefined;
+            if (value === 'NaN') return NaN;
+        }
     }
 
     async recieveRuleValue(scriptEventReceive, resolve) {

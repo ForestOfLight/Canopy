@@ -1,6 +1,7 @@
-import { Command, Rule } from 'lib/canopy/Canopy';
-import { HelpBook, CommandHelpPage, RuleHelpPage } from 'lib/canopy/Canopy';
+import { Command, Rule, InfoDisplayRule } from 'lib/canopy/Canopy';
+import { HelpBook, CommandHelpPage, RuleHelpPage, InfoDisplayRuleHelpPage } from 'lib/canopy/Canopy';
 
+const COMMANDS_PER_PAGE = 7;
 const helpBook = new HelpBook();
 
 const cmd = new Command({
@@ -15,7 +16,7 @@ const cmd = new Command({
 
 function helpCommand(sender, args) {
     populateNativeCommandPages(helpBook);
-    populateNativeRulePages(helpBook);
+    populateNativeRulePages(helpBook, sender);
     populateExtensionPages(helpBook);
 
     const { pageName } = args;
@@ -32,11 +33,11 @@ function helpCommand(sender, args) {
 function populateNativeCommandPages(helpBook) {
     let commands = Command.getNativeCommands();
     commands = commands.filter(cmd => !cmd.isHelpHidden());
-    if (helpBook.numNativeCommandPages >= commands.length / 10)
+    if (helpBook.numNativeCommandPages >= commands.length / COMMANDS_PER_PAGE)
         return;
 
     for (let i = 0; i < commands.length; i++) {;
-        if (i % 10 === 0) {
+        if (i % COMMANDS_PER_PAGE === 0) {
             helpBook.numNativeCommandPages++;
             helpBook.newPage(new CommandHelpPage(helpBook.numNativeCommandPages));
         }
@@ -45,12 +46,12 @@ function populateNativeCommandPages(helpBook) {
     }
 }
 
-function populateNativeRulePages(helpBook) {
-    const infoDisplayPage = new RuleHelpPage('InfoDisplay', 'Togglable rules for your InfoDisplay.', Command.prefix + 'info <rule/all> <true/false>');
-    const infoDisplayRules = Rule.getRulesByCategory('InfoDisplay');
+function populateNativeRulePages(helpBook, player) {
+    const infoDisplayPage = new InfoDisplayRuleHelpPage('InfoDisplay', 'Togglable rules for your InfoDisplay.', Command.prefix + 'info <rule/all> <true/false>');
+    const infoDisplayRules = InfoDisplayRule.getRules();
     helpBook.newPage(infoDisplayPage);
-    for (let rule of infoDisplayRules) {
-        helpBook.addEntry(rule.getCategory(), rule);
+    for (let infoDisplayRule of infoDisplayRules) {
+        helpBook.addEntry(infoDisplayRule.getCategory(), infoDisplayRule, player);
     }
 
     const rulesPage = new RuleHelpPage('Rules', 'Togglable global rules.', Command.prefix + 'canopy <rule> <true/false>');

@@ -1,5 +1,6 @@
-import { HelpEntry, RuleHelpEntry, CommandHelpEntry } from './HelpEntry.js';
+import { RuleHelpEntry, CommandHelpEntry, InfoDisplayRuleHelpEntry } from './HelpEntry.js';
 import Rule from '../Rule.js';
+import InfoDisplayRule from '../InfoDisplayRule.js';
 import Command from '../Command.js';
 
 class HelpPage {
@@ -88,4 +89,29 @@ class CommandHelpPage extends HelpPage {
     }
 }
 
-export { HelpPage, RuleHelpPage, CommandHelpPage };
+class InfoDisplayRuleHelpPage extends RuleHelpPage {
+    constructor(title, description, usage, extensionName = false) {
+        super(title, description, usage, extensionName);
+    }
+
+    addEntry(rule, player) {
+        if (!(rule instanceof InfoDisplayRule)) {
+            throw new Error('[HelpPage] Entry must be an instance of InfoDisplayRule');
+        }
+        if (this.hasEntry(rule))
+            return;
+        this.entries.push(new InfoDisplayRuleHelpEntry(rule, player));
+    }
+
+    async toString() {
+        let output = this.getHeader()
+                + '\n§2' + this.usage + ' - ' + this.description;
+        for (let entry of this.entries) {
+            output += '\n  ';
+            output += await entry.toString();
+        }
+        return output;
+    }
+}
+
+export { HelpPage, RuleHelpPage, CommandHelpPage, InfoDisplayRuleHelpPage };

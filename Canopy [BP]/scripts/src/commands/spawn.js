@@ -30,7 +30,7 @@ const cmd = new Command({
         { usage: 'spawn entities', description: 'Displays a list of all entities & their positions in the world.' },
         { usage: 'spawn recent [mobName]', description: 'Displays all mob spawns from the last 30s. Specify a mob name to filter.' },
         { usage: 'spawn tracking [x1 y1 z1] [x2 y2 z2]', description: 'Starts tracking mob spawns. Specify coords to track within an area.' },
-        { usage: 'spawn <mobName> [x1 y1 z1] [x2 y2 z2]', description: 'Starts tracking a specific mob spawn. Specify coords to track spawns within that area. Run again to add more mob types to track.' },
+        { usage: 'spawn <mobName> [x1 y1 z1] [x2 y2 z2]', description: 'Starts tracking a specific mob spawn. Specify coords to track within an area. Run again to add more mob types to track.' },
         { usage: 'spawn tracking', description: 'Displays a summary of all spawns that have occurred since the start of your test.' },
         { usage: 'spawn tracking stop', description: 'Stops tracking mob spawns.' },
         { usage: 'spawn mocking <true/false>', description: 'Enables/disables mob spawning while allowing the spawning algorithm to run.' }

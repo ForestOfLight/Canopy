@@ -39,4 +39,22 @@ class CommandHelpEntry extends HelpEntry {
     }
 }
 
-export { HelpEntry, RuleHelpEntry, CommandHelpEntry };
+class InfoDisplayRuleHelpEntry extends RuleHelpEntry {
+    constructor(infoDisplayRule, player) {
+        super(infoDisplayRule);
+        this.player = player;
+    }
+
+    async fetchColoredValue() {
+        const value = await this.rule.getValue(this.player);
+        return value ? '§atrue§r' : '§cfalse§r';
+    }
+
+    async toString() {
+        const coloredValue = await this.fetchColoredValue().then(value => value);
+        return `§7${this.title}: ${coloredValue}§8 - ${this.description}`;
+    }
+}
+
+
+export { HelpEntry, RuleHelpEntry, CommandHelpEntry, InfoDisplayRuleHelpEntry };

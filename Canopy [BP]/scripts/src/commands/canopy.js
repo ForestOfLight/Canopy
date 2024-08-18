@@ -15,13 +15,15 @@ const cmd = new Command({
 
 async function canopyCommand(sender, args) {
     const { ruleID, enable } = args;
-    if (ruleID === null || enable === null)
+    if (ruleID === null && enable === null)
         return cmd.sendUsage(sender);
     if (!Rule.exists(ruleID)) 
         return sender.sendMessage(`§cInvalid rule: ${ruleID}`);
 
     const rule = Rule.getRule(ruleID);
     const ruleValue = await rule.getValue();
+    if (enable === null)
+        return sender.sendMessage(`§7${rule.getID()} is currently ${ruleValue ? '§l§aenabled' : '§l§cdisabled'}§r§7.`);
     if (ruleValue === enable)
         return sender.sendMessage(`§7${rule.getID()} is already ${enable ? '§l§aenabled' : '§l§cdisabled'}§r§7.`);
 

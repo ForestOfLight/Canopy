@@ -1,5 +1,4 @@
 import { HelpPage } from "./HelpPage";
-import { HelpEntry } from "./HelpEntry";
 
 class HelpBook {
     constructor() {
@@ -21,11 +20,14 @@ class HelpBook {
         return this.helpPages[pageName];
     }
 
-    addEntry(pageName, entry) {
+    addEntry(pageName, entry, player = false) {
         if (!this.helpPages[pageName]) {
             throw new Error('[HelpBook] Page does not exist');
         }
-        this.helpPages[pageName].addEntry(entry);
+        if (pageName === 'InfoDisplay')
+            this.helpPages[pageName].addEntry(entry, player);
+        else
+            this.helpPages[pageName].addEntry(entry);
     }
 
     getPages() {
