@@ -71,17 +71,21 @@ class Rule {
         // console.warn(`[Canopy] Received rule value: ${extensionName}:${ruleID} ${value}`);
         resolve(value);
     }
-
-    static async getValue(identifier) {
-        return await Rule.getRule(identifier).getValue();
-    }
-
+    
     setValue(value) {
         if (this.#extensionName) {
             world.getDimension('overworld').runCommandAsync(`scriptevent canopyExtension:ruleValueSet ${this.#extensionName} ${this.#identifier} ${value}`);
         } else {
             world.setDynamicProperty(this.#identifier, value);
         }
+    }
+
+    static exists(identifier) {
+        return rules[identifier] !== undefined;
+    }
+    
+    static async getValue(identifier) {
+        return await Rule.getRule(identifier).getValue();
     }
 
     static setValue(identifier, value) {

@@ -11,7 +11,7 @@ new Command({
 
 function resetallCommand(sender) {
     world.clearDynamicProperties();
-    const players = mc.world.getAllPlayers();
+    const players = world.getAllPlayers();
     players.forEach(player => {
         player.clearDynamicProperties();
     });

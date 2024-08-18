@@ -1,29 +1,12 @@
-import { Command } from 'lib/canopy/Canopy'
-import { module } from 'stickycore/dynamic'
-import Data from 'stickycore/data'
+import { Command, InfoDisplayRule } from 'lib/canopy/Canopy';
 import ProbeManager from 'src/classes/ProbeManager';
-
-class DependantFeature {
-    constructor(validFeature, dependantFeature) {
-        this.validFeature = validFeature;
-        this.dependantFeature = dependantFeature;
-    }
-}
-
-class DependantFeatures {
-    constructor() {
-        this.dependantFeatures = [
-            new DependantFeature('peekInventory', 'lookingAt'),
-        ];
-    }
-}
 
 const cmd = new Command({
     name: 'info',
     description: 'Toggle InfoDisplay rules.',
     usage: 'info <rule/all> <true/false>',
     args: [
-        { type: 'string', name: 'feature' },
+        { type: 'string', name: 'ruleID' },
         { type: 'boolean', name: 'enable' }
     ],
     callback: infoCommand
@@ -32,9 +15,9 @@ const cmd = new Command({
 new Command({
     name: 'i',
     description: 'Toggle InfoDisplay rules.',
-    usage: 'i <rule/all> [true/false]',
+    usage: 'i',
     args: [
-        { type: 'string', name: 'feature' },
+        { type: 'string', name: 'ruleID' },
         { type: 'boolean', name: 'enable' }
     ],
     callback: infoCommand,
@@ -42,54 +25,51 @@ new Command({
 });
 
 function infoCommand(sender, args) {
-    const features = module.exports['infoDisplay'];
-    const { feature, enable } = args;
-    if (feature === null && enable === null) return cmd.sendUsage(sender);
+    const { ruleID, enable } = args;
+    if (ruleID === null && enable === null) return cmd.sendUsage(sender);
+    if (!InfoDisplayRule.exists(ruleID)) return sender.sendMessage(`§cInvalid rule: ${ruleID}.`);
+    if (enable === null) return sender.sendMessage(`§7${ruleID} is currently ${InfoDisplayRule.getValue(ruleID) ? '§l§aenabled' : '§l§cdisabled'}.`);
 
-    if (enable === null) return sender.sendMessage(`§7${feature} is currently ${sender.getDynamicProperty(features[feature.toLowerCase()]) ? '§l§aenabled' : '§l§cdisabled'}.`);
-
-    if (feature.toLowerCase() === 'all') {
-        for (let entry of Object.values(features)) {
-            sender.setDynamicProperty(entry, enable);
-        }
-        if (!enable) clearInfoDisplay(sender);
-        return sender.sendMessage(`${enable ? '§l§aEnabled' : '§l§cDisabled'}§r§7 all InfoDisplay features.`);
+    if (ruleID === 'all') {
+        changeAll(sender, enable);
+        return;
     }
     
-    const validFeature = features[feature.toLowerCase()];
-    if (!validFeature) return sender.sendMessage(`§c${feature} not found.`);
-    if (enable === sender.getDynamicProperty(validFeature)) return sender.sendMessage(`§7${feature} is already ${enable ? '§l§aenabled' : '§l§cdisabled'}.`);
+    if (enable === InfoDisplayRule.getValue(ruleID)) return sender.sendMessage(`§7${ruleID} is already ${enable ? '§l§aenabled' : '§l§cdisabled'}.`);
 
-    if (validFeature === 'light' && !enable) 
+    if (ruleID === 'light' && !enable) 
         ProbeManager.removeProbe(sender);
-    if (validFeature === 'showDisplay' && !enable)
+    if (ruleID === 'showDisplay' && !enable)
         clearInfoDisplay(sender);
-    updateDependantFeatures(sender, validFeature, enable);
+    
+    const rule = InfoDisplayRule.getRule(ruleID);
+    updateRules(sender, rule.getContigentRuleIDs(), enable);
+    updateRules(sender, rule.getIndependentRuleIDs(), !enable);
 
-    Data.updateFeature(sender, validFeature, enable);
+    updateRule(sender, ruleID, InfoDisplayRule.getValue(ruleID), enable);
+}
+
+function changeAll(sender, enable) {
+    for (let entry of InfoDisplayRule.getRules()) {
+        InfoDisplayRule.setValue(entry, enable);
+    }
+    if (!enable) clearInfoDisplay(sender);
+    sender.sendMessage(`${enable ? '§l§aEnabled' : '§l§cDisabled'}§r§7 all InfoDisplay features.`);
 }
 
 function clearInfoDisplay(sender) {
     sender.onScreenDisplay.setTitle('');
 }
 
-function updateDependantFeatures(sender, validFeature, enable) {
-    for (const dependantFeature of new DependantFeatures().dependantFeatures) {
-        let targetFeature = null;
-        if (shouldEnableDependantFeature(sender, validFeature, dependantFeature, enable))
-            targetFeature = dependantFeature.dependantFeature;
-        else if (shouldDisableDependantFeature(sender, validFeature, dependantFeature, enable))
-            targetFeature = dependantFeature.validFeature;
-        else continue;
+function updateRule(sender, ruleID, ruleValue, enable) {
+    if (ruleValue === enable) return;
+    InfoDisplayRule.setValue(ruleID, enable);
+    sender.sendMessage(`§7${ruleID} is now ${enable ? '§l§aenabled' : '§l§cdisabled'}§r§7.`);
+}
 
-        Data.updateFeature(sender, targetFeature, enable);
+function updateRules(sender, ruleIDs, enable) {
+    for (const ruleID of ruleIDs) {
+        const rule = InfoDisplayRule.getRule(ruleID);
+        updateRule(sender, rule, enable);
     }
-}
-
-function shouldEnableDependantFeature(sender, validFeature, dependantFeature, enable) {
-    return enable && validFeature === dependantFeature.validFeature && !sender.getDynamicProperty(dependantFeature.dependantFeature);
-}
-
-function shouldDisableDependantFeature(sender, validFeature, dependantFeature, enable) {
-    return !enable && validFeature === dependantFeature.dependantFeature && sender.getDynamicProperty(dependantFeature.validFeature);
 }

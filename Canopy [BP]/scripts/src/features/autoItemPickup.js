@@ -1,5 +1,12 @@
-import { system, world } from '@minecraft/server'
-import Utils from 'stickycore/utils'
+import { Rule } from 'lib/canopy/Canopy';
+import { system, world } from '@minecraft/server';
+import Utils from 'stickycore/utils';
+
+new Rule({
+    category: 'Rules',
+    identifier: 'autoItemPickup',
+    description: 'Automatically picks up items when breaking blocks.',
+});
 
 let brokenBlockEventsThisTick = [];
 
@@ -8,15 +15,14 @@ system.runInterval(() => {
 });
 
 world.afterEvents.playerBreakBlock.subscribe(blockEvent => {
-    if (!world.getDynamicProperty('autoItemPickup')) return;
-    if (!blockEvent.player.getDynamicProperty('autoItemPickup')) return;
+    if (!Rule.getValue('autoItemPickup')) return;
     if (blockEvent.player.getGameMode() === 'creative') return;
     brokenBlockEventsThisTick.push(blockEvent);
 });
 
 world.afterEvents.entitySpawn.subscribe(entityEvent => {
     if (entityEvent.cause !== 'Spawned' || entityEvent.entity.typeId !== 'minecraft:item') return;
-    if (!world.getDynamicProperty('autoItemPickup')) return;
+    if (!Rule.getValue('autoItemPickup')) return;
 
     const item = entityEvent.entity;
     let brokenBlockEvent;

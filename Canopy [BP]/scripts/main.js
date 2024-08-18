@@ -1,6 +1,3 @@
-// Config
-import 'src/config/database'
-
 // Commands
 import 'src/commands/info'
 import 'src/commands/help'
@@ -30,7 +27,7 @@ import 'src/commands/removeentity'
 import 'src/commands/scriptevents/counter'
 import 'src/commands/scriptevents/spawn'
 
-// Features
+// Rules
 import 'src/features/InfoDisplay'
 import 'src/features/explosionNoBlockDamage'
 import 'src/features/autoItemPickup'
@@ -53,14 +50,11 @@ import 'src/features/renewableElytra'
 // Misc Processes
 import 'src/validWorld'
 
-// Data & Utils
-import Data from 'stickycore/data'
-import Utils from 'stickycore/utils'
-
 // Reload message
-import { world } from '@minecraft/server'
-import ProbeManager from 'src/classes/ProbeManager'
-import { Command } from 'lib/canopy/Canopy'
+import { world } from '@minecraft/server';
+import Utils from 'stickycore/utils';
+import ProbeManager from 'src/classes/ProbeManager';
+import { Command } from 'lib/canopy/Canopy';
 
 const players = world.getAllPlayers();
 if (players[0] !== undefined && players[0].isValid()) {

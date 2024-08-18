@@ -1,11 +1,19 @@
-import { world, system } from '@minecraft/server'
+import { Rule } from "lib/canopy/Canopy";
+import { world, system } from '@minecraft/server';
+
+new Rule({
+    category: 'Rules',
+    identifier: 'tntPrimeMaxMomentum',
+    description: 'TNT always recieves its maximum momentum in a random direction when primed.',
+    independentRules: ['tntPrimeNoMomentum'],
+});
 
 const MAX_VELOCITY = 0.019600000232548116; // From vanilla TNT: 49/2500 with some floating point error
 
 world.afterEvents.entitySpawn.subscribe((event) => {
-    if (event.entity.typeId !== 'minecraft:tnt' || !world.getDynamicProperty('tntPrimeMaxMomentum')) return;
+    if (event.entity.typeId !== 'minecraft:tnt' || !Rule.getValue('tntPrimeMaxMomentum')) return;
     const entity = event.entity;
-    if (world.getDynamicProperty('dupeTnt')) {
+    if (Rule.getValue('dupeTnt')) {
         system.runTimeout(() => {
             correctErrorAndNegateXZVelocity(entity);
             applyHardcodedImpulse(entity);

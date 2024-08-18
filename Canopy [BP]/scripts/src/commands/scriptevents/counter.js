@@ -1,10 +1,11 @@
 import { system, world } from '@minecraft/server';
+import { Rule } from 'lib/canopy/Canopy';
 import { channelMap, formatColor, query, queryAll } from 'src/commands/counter';
 import Utils from 'stickycore/utils';
 
 system.afterEvents.scriptEventReceive.subscribe((event) => {
     if (event.id !== 'canopy:counter') return;
-    if (!world.getDynamicProperty('hopperCounters')) return Utils.broadcastActionBar('§cThe hopperCounters feature is disabled.');
+    if (!Rule.getValue('hopperCounters')) return Utils.broadcastActionBar('§cThe hopperCounters feature is disabled.');
     const sourceName = Utils.getScriptEventSourceName(event);
     const message = event.message;
     

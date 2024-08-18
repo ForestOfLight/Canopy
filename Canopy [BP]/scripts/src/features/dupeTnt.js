@@ -1,4 +1,11 @@
+import { Rule } from 'lib/canopy/Canopy';
 import { system, world } from '@minecraft/server';
+
+new Rule({
+    category: 'Rules',
+    identifier: 'dupeTnt',
+    description: 'TNT can be duplicated when moved by a piston and powered next to a note blocks.',
+});
 
 let spawnedEntitiesThisTick = [];
 
@@ -9,13 +16,13 @@ system.runInterval(() => {
 }, 1);
 
 world.afterEvents.entitySpawn.subscribe((event) => {
-	if (event.entity.typeId !== 'minecraft:tnt' || !world.getDynamicProperty('dupeTnt')) return;
+	if (event.entity.typeId !== 'minecraft:tnt' || !Rule.getValue('dupeTnt')) return;
     const entity = event.entity;
     spawnedEntitiesThisTick.push(entity);
 });
 
 world.afterEvents.pistonActivate.subscribe((event) => {
-    if (!world.getDynamicProperty('dupeTnt')) return;
+    if (!Rule.getValue('dupeTnt')) return;
     const block = event.block;
     const direction = block.permutation.getState('facing_direction');
     let pistonState;

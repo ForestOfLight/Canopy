@@ -17,7 +17,7 @@ async function canopyCommand(sender, args) {
     const { ruleID, enable } = args;
     if (ruleID === null || enable === null)
         return cmd.sendUsage(sender);
-    if (!isValidRule(ruleID)) 
+    if (!Rule.exists(ruleID)) 
         return sender.sendMessage(`§cInvalid rule: ${ruleID}`);
 
     const rule = Rule.getRule(ruleID);
@@ -32,10 +32,6 @@ async function canopyCommand(sender, args) {
     updateRules(sender, rule.getIndependentRuleIDs(), !enable);
     
     updateRule(sender, ruleID, ruleValue, enable);
-}
-
-function isValidRule(rule) {
-    return Rule.getRule(rule) !== undefined;
 }
 
 function updateRule(sender, ruleID, ruleValue, enable) {

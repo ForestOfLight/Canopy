@@ -1,7 +1,14 @@
+import { Rule } from "lib/canopy/Canopy";
 import { world } from "@minecraft/server";
 
+new Rule({
+    category: 'Rules',
+    identifier: 'armorStandRespawning',
+    description: 'Armor stands respawn when hit by a projectile, dropping their items.',
+});
+
 world.afterEvents.projectileHitEntity.subscribe((event) => {
-    if (!world.getDynamicProperty('armorStandRespawning') || event.projectile.typeId === "minecraft:fishing_hook") return;
+    if (!Rule.getValue('armorStandRespawning') || event.projectile.typeId === "minecraft:fishing_hook") return;
     const entity = event.getEntityHit().entity;
     if (entity?.typeId === "minecraft:armor_stand") {
         const hasCleanedItem = cleanDroppedItem(event);

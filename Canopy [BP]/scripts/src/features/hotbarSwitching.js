@@ -1,5 +1,19 @@
+import { Rule } from "lib/canopy/Canopy";
 import { system, world } from '@minecraft/server';
 import HotbarManager from 'src/classes/HotbarManager';
+
+new Rule({
+    category: 'Rules',
+    identifier: 'hotbarSwitching',
+    description: 'Allows for quick switching between multiple hotbars. Put an arrow in the top right of your inventory, then sneak and scroll to switch.',
+});
+
+new Rule({
+    category: 'Rules',
+    identifier: 'hotbarSwitchingSurvival',
+    description: 'Enables hotbarSwitching for survival mode.',
+    contingentRules: ['hotbarSwitching'],
+});
 
 const ARROW_SLOT = 17;
 const lastSelectedSlots = {};
@@ -7,7 +21,7 @@ const lastLoadedSlots = {};
 const hotbarManagers = {};
 
 system.runInterval(() => {
-    if (!world.getDynamicProperty('hotbarSwitching')) return;
+    if (!Rule.getValue('hotbarSwitching')) return;
     const players = world.getAllPlayers();
     for (const player of players) {
         if (!hasAppropriateGameMode(player)) continue;
@@ -18,7 +32,7 @@ system.runInterval(() => {
 });
 
 function hasAppropriateGameMode(player) {
-    return world.getDynamicProperty('hotbarSwitchingSurvival') || player.getGameMode() === 'creative';
+    return Rule.getValue('hotbarSwitchingSurvival') || player.getGameMode() === 'creative';
 }
 
 function processHotbarSwitching(player) {

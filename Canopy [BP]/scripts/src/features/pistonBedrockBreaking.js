@@ -1,10 +1,17 @@
-import { BlockPermutation, ItemStack, world } from '@minecraft/server'
-import DirectionStateFinder from 'src/classes/DirectionState'
+import { Rule } from 'lib/canopy/Canopy';
+import { BlockPermutation, ItemStack, world } from '@minecraft/server';
+import DirectionStateFinder from 'src/classes/DirectionState';
+
+new Rule({
+    category: 'Rules',
+    identifier: 'pistonBedrockBreaking',
+    description: 'Allows pistons to break bedrock when facing away from a bedrock block and expanding.',
+});
 
 const insideBedrockPistonList = [];
 
 world.afterEvents.pistonActivate.subscribe(event => {
-    if (!world.getDynamicProperty('pistonBedrockBreaking' || !['expanding', 'retracting'].includes(event.piston.state))) return;
+    if (!Rule.getValue('pistonBedrockBreaking') || !['expanding', 'retracting'].includes(event.piston.state)) return;
     const piston = event.piston;
     const block = event.block;
     let directionState = DirectionStateFinder.getDirectionState(block.permutation);

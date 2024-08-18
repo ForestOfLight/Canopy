@@ -1,6 +1,13 @@
+import { Rule } from "lib/canopy/Canopy";
 import { system, world, StructureMirrorAxis, BlockPistonState } from "@minecraft/server";
 import BlockRotator from 'src/classes/BlockRotator';
 import DirectionStateFinder from 'src/classes/DirectionState';
+
+new Rule({
+    category: 'Rules',
+    identifier: 'flippinArrows',
+    description: 'Using an arrow on blocks will flip, rotate, or open them. Putting it in your offhand will flip blocks when placed.',
+});
 
 const WAIT_TIME_BETWEEN_USE = 5; // in ticks
 
@@ -20,7 +27,7 @@ system.runInterval(() => {
 });
 
 world.beforeEvents.playerPlaceBlock.subscribe(event => {
-    if (!world.getDynamicProperty('flippinArrows')) return;
+    if (!Rule.getValue('flippinArrows')) return;
     const player = event.player;
     const offhandStack = player.getComponent('equippable').getEquipment("Offhand");
     if (offhandStack?.typeId !== 'minecraft:arrow') return;
@@ -34,7 +41,7 @@ world.beforeEvents.playerPlaceBlock.subscribe(event => {
 });
 
 world.beforeEvents.itemUseOn.subscribe(event => {
-    if (!world.getDynamicProperty('flippinArrows')) return;
+    if (!Rule.getValue('flippinArrows')) return;
     if (event.itemStack.typeId !== 'minecraft:arrow') return;
     const block = event.block;
     if (needsCooldown(block)) return;

@@ -1,55 +1,7 @@
-import { system, world } from '@minecraft/server'
-import Utils from 'stickycore/utils'
-
-const UPDATE_INTERVAL = 100; // 100 ticks = 5 seconds
-
-// system.runInterval(() => {
-//     const shouldUpdate = world.getAllPlayers().some(player => player.getDynamicProperty('entities'));
-    
-//     if (!shouldUpdate) return;
-
-//     Entities.owEntities = world.getDimension('overworld').getEntities();
-//     Entities.netherEntities = world.getDimension('nether').getEntities();
-//     Entities.endEntities = world.getDimension('the_end').getEntities();
-//     Entities.owEntityCount = countEntities(Entities.owEntities, true);
-//     Entities.netherEntityCount = countEntities(Entities.netherEntities, true);
-//     Entities.endEntityCount = countEntities(Entities.endEntities, true);
-// }, UPDATE_INTERVAL);
+import { world } from '@minecraft/server';
+import Utils from 'stickycore/utils';
 
 const Entities = {
-	owEntities: [],
-    netherEntities: [],
-    endEntities: [],
-    owEntityCount: 0,
-    netherEntityCount: 0,
-    endEntityCount: 0,
-
-    getWorldEntities() {
-        return this.owEntities.concat(this.netherEntities, this.endEntities);
-    },
-    
-    getWorldEntityCount() {
-        return this.owEntityCount + this.netherEntityCount + this.endEntityCount;
-    },
-
-    getDimensionEntities(dimensionId) {
-        switch (dimensionId) {
-            case 'minecraft:overworld': return this.owEntities;
-            case 'minecraft:nether': return this.netherEntities;
-            case 'minecraft:the_end': return this.endEntities;
-            default: return 'NA';
-        }
-    },
-
-    getDimensionEntityCount(dimensionId) {
-        switch (dimensionId) {
-            case 'minecraft:overworld': return this.owEntityCount;
-            case 'minecraft:nether': return this.netherEntityCount;
-            case 'minecraft:the_end': return this.endEntityCount;
-            default: return 'NA';
-        }
-    },
-
     getPlayerRadiusEntityCount(player, radius) {
         const { x, z } = player.location;
         const dimensionEntities = player.dimension.getEntities();
