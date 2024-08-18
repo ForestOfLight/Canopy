@@ -14,15 +14,15 @@ system.runInterval(() => {
     brokenBlockEventsThisTick = [];
 });
 
-world.afterEvents.playerBreakBlock.subscribe(blockEvent => {
-    if (!Rule.getValue('autoItemPickup')) return;
+world.afterEvents.playerBreakBlock.subscribe(async (blockEvent) => {
+    if (!await Rule.getValue('autoItemPickup')) return;
     if (blockEvent.player.getGameMode() === 'creative') return;
     brokenBlockEventsThisTick.push(blockEvent);
 });
 
-world.afterEvents.entitySpawn.subscribe(entityEvent => {
+world.afterEvents.entitySpawn.subscribe(async (entityEvent) => {
     if (entityEvent.cause !== 'Spawned' || entityEvent.entity.typeId !== 'minecraft:item') return;
-    if (!Rule.getValue('autoItemPickup')) return;
+    if (!await Rule.getValue('autoItemPickup')) return;
 
     const item = entityEvent.entity;
     let brokenBlockEvent;

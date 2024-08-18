@@ -5,9 +5,10 @@ new Rule({
     category: 'Rules',
     identifier: 'explosionOff',
     description: 'Disables explosions entirely.',
+    independentRules: ['explosionChainReactionOnly', 'explosionNoBlockDamage']
 });
 
 world.beforeEvents.explosion.subscribe((event) => {
-    if (!Rule.getValue('explosionOff')) return;
+    if (!Rule.getNativeValue('explosionOff')) return;
     event.cancel = true;
 });

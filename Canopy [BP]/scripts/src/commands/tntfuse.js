@@ -20,11 +20,11 @@ const cmd = new Command({
     contingentRules: ['commandTntFuse']
 });
 
-world.afterEvents.entitySpawn.subscribe(event => {
+world.afterEvents.entitySpawn.subscribe(async (event) => {
     if (event.entity.typeId !== 'minecraft:tnt') return;
     const fuseTimeProperty = world.getDynamicProperty('tntFuseTime');
     let fuseTime = 80;
-    if (fuseTimeProperty !== undefined && Rule.getValue('commandTntFuse'))
+    if (fuseTimeProperty !== undefined && await Rule.getValue('commandTntFuse'))
         fuseTime = fuseTimeProperty;
     
     if (fuseTime === 80) {

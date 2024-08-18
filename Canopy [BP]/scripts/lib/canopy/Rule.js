@@ -90,12 +90,20 @@ class Rule {
         }
     }
 
+    getDependentRuleIDs() {
+        return Object.values(rules).filter(rule => rule.#contingentRules.includes(this.#identifier)).map(rule => rule.#identifier);
+    }
+
     static exists(identifier) {
         return rules[identifier] !== undefined;
     }
     
     static async getValue(identifier) {
         return await Rule.getRule(identifier).getValue();
+    }
+
+    static getNativeValue(identifier) {
+        return Rule.getRule(identifier).parseString(world.getDynamicProperty(identifier));
     }
 
     static setValue(identifier, value) {

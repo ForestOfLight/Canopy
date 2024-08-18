@@ -70,22 +70,22 @@ class BeforeSpectatorPlayer {
     }
 }
 
-world.beforeEvents.playerGameModeChange.subscribe((ev) => {
-    const player = ev.player;
-    if (player.getDynamicProperty('isSpectating') && ev.fromGameMode === 'spectator' && ev.toGameMode !== 'spectator') {
+world.beforeEvents.playerGameModeChange.subscribe((event) => {
+    const player = event.player;
+    if (player.getDynamicProperty('isSpectating') && event.fromGameMode === 'spectator' && event.toGameMode !== 'spectator') {
         system.run(() => {
-            player.setGameMode(ev.fromGameMode);
+            player.setGameMode(event.fromGameMode);
             player.onScreenDisplay.setActionBar('§cYou cannot change your gamemode while spectating.');
         });
     }
 });
 
-world.beforeEvents.playerLeave.subscribe((ev) => {
-    ev.player.setDynamicProperty('isViewingCamera', false);
+world.beforeEvents.playerLeave.subscribe((event) => {
+    event.player.setDynamicProperty('isViewingCamera', false);
 });
 
-world.afterEvents.playerDimensionChange.subscribe((ev) => {
-    const player = ev.player;
+world.afterEvents.playerDimensionChange.subscribe((event) => {
+    const player = event.player;
     if (!player.getDynamicProperty('isViewingCamera')) return;
     player.camera.clear();
     player.setDynamicProperty('isViewingCamera', false);

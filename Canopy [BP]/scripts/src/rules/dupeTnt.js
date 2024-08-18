@@ -16,13 +16,13 @@ system.runInterval(() => {
 }, 1);
 
 world.afterEvents.entitySpawn.subscribe((event) => {
-	if (event.entity.typeId !== 'minecraft:tnt' || !Rule.getValue('dupeTnt')) return;
+	if (event.entity.typeId !== 'minecraft:tnt' || !Rule.getNativeValue('dupeTnt')) return;
     const entity = event.entity;
     spawnedEntitiesThisTick.push(entity);
 });
 
 world.afterEvents.pistonActivate.subscribe((event) => {
-    if (!Rule.getValue('dupeTnt')) return;
+    if (!Rule.getNativeValue('dupeTnt')) return;
     const block = event.block;
     const direction = block.permutation.getState('facing_direction');
     let pistonState;

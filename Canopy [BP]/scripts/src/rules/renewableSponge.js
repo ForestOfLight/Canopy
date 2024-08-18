@@ -7,8 +7,8 @@ new Rule({
     description: 'Guardians transform into elder guardians when hurt by lightning.',
 });
 
-world.afterEvents.entityHurt.subscribe(event => {
-    if (event.hurtEntity.typeId !== 'minecraft:guardian' || !Rule.getValue('renewableSponge') || event.damageSource.cause !== 'lightning') 
+world.afterEvents.entityHurt.subscribe(async (event) => {
+    if (event.hurtEntity.typeId !== 'minecraft:guardian' || !await Rule.getValue('renewableSponge') || event.damageSource.cause !== 'lightning') 
         return;
 
     const guardian = event.hurtEntity;

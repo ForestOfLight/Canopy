@@ -5,10 +5,10 @@ new Rule({
     category: 'Rules',
     identifier: 'explosionNoBlockDamage',
     description: 'Makes explosions not affect blocks.',
-    independantRules: ['explosionChainReactionOnly']
+    independentRules: ['explosionChainReactionOnly', 'explosionOff']
 });
 
-world.beforeEvents.explosion.subscribe(ev => {
-    if (!Rule.getValue('explosionNoBlockDamage')) return;
-    ev.setImpactedBlocks([]);
+world.beforeEvents.explosion.subscribe((event) => {
+    if (!Rule.getNativeValue('explosionNoBlockDamage')) return;
+    event.setImpactedBlocks([]);
 });

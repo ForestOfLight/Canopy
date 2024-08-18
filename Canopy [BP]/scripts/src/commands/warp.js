@@ -65,8 +65,8 @@ class Warps {
     }
 }
 
-function warpActionCommand(sender, args) {
-    if (!Rule.getValue('commandWarpSurvival') && ['survival', 'adventure'].includes(sender.getGameMode()))
+async function warpActionCommand(sender, args) {
+    if (!await Rule.getValue('commandWarpSurvival') && ['survival', 'adventure'].includes(sender.getGameMode()))
         return sender.sendMessage('§cThe commandWarpSurvival rule is disabled.');
 
     let { action, name } = args;
@@ -139,10 +139,8 @@ function setWarpMap(newWarpMap) {
     world.setDynamicProperty(`warps`, JSON.stringify(warps));
 }
 
-function warpListCommand(sender) {
-    if (!Rule.getValue('commandWarp'))
-        return sender.sendMessage('§cThe commandWarp rule is disabled.');
-    else if (!Rule.getValue('commandWarpSurvival') && sender.getGameMode() === 'survival')
+async function warpListCommand(sender) {
+    if (!await Rule.getValue('commandWarpSurvival') && sender.getGameMode() === 'survival')
         return sender.sendMessage('§cThe commandWarpSurvival rule is disabled.');
     
     let warpMap = getWarpMapCopy();

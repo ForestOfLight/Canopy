@@ -10,8 +10,8 @@ new Rule({
 
 const insideBedrockPistonList = [];
 
-world.afterEvents.pistonActivate.subscribe(event => {
-    if (!Rule.getValue('pistonBedrockBreaking') || !['expanding', 'retracting'].includes(event.piston.state)) return;
+world.afterEvents.pistonActivate.subscribe(async (event) => {
+    if (!await Rule.getNativeValue('pistonBedrockBreaking') || !['Expanding', 'Retracting'].includes(event.piston.state)) return;
     const piston = event.piston;
     const block = event.block;
     let directionState = DirectionStateFinder.getDirectionState(block.permutation);

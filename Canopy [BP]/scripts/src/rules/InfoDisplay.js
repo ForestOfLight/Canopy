@@ -115,6 +115,7 @@ function InfoDisplay(player) {
 function parseCoordsAndFacing(player) {
 	const showCoords = InfoDisplayRule.getValue(player, 'coords');
 	const showFacing = InfoDisplayRule.getValue(player, 'facing');
+	if (!showCoords && !showFacing) return '';
 	let coords = player.location;
 	let facing;
 	let output = '';
@@ -131,6 +132,7 @@ function parseCoordsAndFacing(player) {
 function parseTPSAndEntities(player) {
 	const showTPS = InfoDisplayRule.getValue(player, 'tps');
 	const showEntities = InfoDisplayRule.getValue(player, 'entities');
+	if (!showTPS && !showEntities) return '';
 	let tpsData;
 	let tps;
 	let fovEntities;
@@ -151,6 +153,7 @@ function parseTPSAndEntities(player) {
 function parseLightAndBiome(player) {
 	const showLight = InfoDisplayRule.getValue(player, 'light');
 	const showBiome = InfoDisplayRule.getValue(player, 'biome');
+	if (!showLight && !showBiome) return '';
 	let lightLevel;
 	let biome;
 	let output = '';
@@ -167,6 +170,7 @@ function parseLightAndBiome(player) {
 function parseDayAndTime(player) {
 	const showDay = InfoDisplayRule.getValue(player, 'worldDay');
 	const showTimeOfDay = InfoDisplayRule.getValue(player, 'timeOfDay');
+	if (!showDay && !showTimeOfDay) return '';
 	let day;
 	let dayTime;
 	let output = '';
@@ -196,13 +200,17 @@ function parseSessionTime(player) {
 function parseMoonPhaseAndSlimeChunk(player) {
 	const showMoonPhase = InfoDisplayRule.getValue(player, 'moonPhase');
 	const showSlimeChunk = InfoDisplayRule.getValue(player, 'slimeChunk');
-	const isSlime = player.dimension.id === "minecraft:overworld" && Data.isSlime(player.location.x, player.location.z);
+	if (!showMoonPhase && !showSlimeChunk) return '';
+	let isSlime = false;
 	let moonPhase;
 	let slimeChunk;
 	let output = '';
 
 	if (showMoonPhase) moonPhase = Data.getMoonPhase();
-	if (showSlimeChunk) slimeChunk = isSlime ? '§7(§aSlime Chunk§7)§r' : '';
+	if (showSlimeChunk) {
+		isSlime = player.dimension.id === "minecraft:overworld" && Data.isSlime(player.location.x, player.location.z);
+		slimeChunk = isSlime ? '§7(§aSlime Chunk§7)§r' : '';
+	} 
 	if (showMoonPhase && showSlimeChunk) output += `§rMoon: §7${moonPhase}§r ${slimeChunk}\n`;
 	else if (showMoonPhase) output += `§rMoon: §7${moonPhase}§r\n`;
 	else if (showSlimeChunk && isSlime) output += `§r${slimeChunk}\n`;
@@ -225,6 +233,7 @@ function parseHopperCounters(player) {
 function parseLookingAtAndPeek(player) {
 	const showLookingAt = InfoDisplayRule.getValue(player, 'lookingAt');
 	const showPeekInventory = InfoDisplayRule.getValue(player, 'peekInventory');
+	// if (!showLookingAt && !showPeekInventory) return '';
 	let blockRayResult;
 	let entityRayResult;
 	let lookingAtName;

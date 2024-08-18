@@ -116,7 +116,7 @@ class ProbeManager {
 
     removeProbe(player) {
         const probe = this.probeMap[player.id];
-        if (!probe) return console.warn(`[Probe Manager] Error while removing: No probe found for player ${player?.name}`);
+        if (!probe) return;
         probe.detachFromPlayer();
         if (probe.entity.isValid())
             probe.entity.remove();

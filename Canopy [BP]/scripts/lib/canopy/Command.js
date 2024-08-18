@@ -143,10 +143,10 @@ class Command {
 }
 
 world.beforeEvents.chatSend.subscribe((ev) => {
-	const { message, sender } = ev;
+	const { sender, message } = ev;
 	
 	let [name, ...args] = ArgumentParser.parseArgs(message);
-	if (!name.startsWith(Command.prefix)) 
+	if (!String(name).startsWith(Command.prefix))
 		return;
 	ev.cancel = true;
 	if (!commands[name])

@@ -20,26 +20,26 @@ const lastSelectedSlots = {};
 const lastLoadedSlots = {};
 const hotbarManagers = {};
 
-system.runInterval(() => {
-    if (!Rule.getValue('hotbarSwitching')) return;
+system.runInterval(async () => {
+    if (!await Rule.getValue('hotbarSwitching')) return;
     const players = world.getAllPlayers();
     for (const player of players) {
-        if (!hasAppropriateGameMode(player)) continue;
+        if (!await hasAppropriateGameMode(player)) continue;
         if (hotbarManagers[player.id] === undefined) 
             hotbarManagers[player.id] = new HotbarManager(player);
         processHotbarSwitching(player);
     }
 });
 
-function hasAppropriateGameMode(player) {
-    return Rule.getValue('hotbarSwitchingSurvival') || player.getGameMode() === 'creative';
+async function hasAppropriateGameMode(player) {
+    return await Rule.getValue('hotbarSwitchingSurvival') || player.getGameMode() === 'creative';
 }
 
-function processHotbarSwitching(player) {
-    if (lastSelectedSlots[player.id] !== undefined && (!hasArrowInCorrectSlot(player) || !isInAppropriateGameMode(player))) {
+async function processHotbarSwitching(player) {
+    if (lastSelectedSlots[player.id] !== undefined && (!hasArrowInCorrectSlot(player) || !await hasAppropriateGameMode(player))) {
         delete lastSelectedSlots[player.id];
         return;
-    } else if (lastSelectedSlots[player.id] === undefined && (!hasArrowInCorrectSlot(player) || !isInAppropriateGameMode(player))) {
+    } else if (lastSelectedSlots[player.id] === undefined && (!hasArrowInCorrectSlot(player) || !await hasAppropriateGameMode(player))) {
         return;
     }
     if (hasScrolled(player) && player.isSneaking) {
@@ -61,10 +61,6 @@ function switchToHotbar(player, index) {
 function hasArrowInCorrectSlot(player) {
     const container = player.getComponent('inventory')?.container;
     return container?.getItem(ARROW_SLOT)?.typeId === 'minecraft:arrow';
-}
-
-function isInAppropriateGameMode(player) {
-    return world.getDynamicProperty('hotbarSwitchingInSurvival') || player.getGameMode() === 'creative';
 }
 
 function hasScrolled(player) {

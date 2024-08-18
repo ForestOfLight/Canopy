@@ -30,8 +30,11 @@ async function canopyCommand(sender, args) {
     if (ruleID === 'hopperCounters' && !enable)
         resetCounterMap();
 
-    updateRules(sender, rule.getContigentRuleIDs(), enable);
-    updateRules(sender, rule.getIndependentRuleIDs(), !enable);
+    if (!enable)
+        await updateRules(sender, rule.getDependentRuleIDs(), enable);
+    else
+        await updateRules(sender, rule.getContigentRuleIDs(), enable);
+    await updateRules(sender, rule.getIndependentRuleIDs(), false);
     
     updateRule(sender, ruleID, ruleValue, enable);
 }
@@ -42,9 +45,8 @@ function updateRule(sender, ruleID, ruleValue, enable) {
     sender.sendMessage(`§7${ruleID} is now ${enable ? '§l§aenabled' : '§l§cdisabled'}§r§7.`);
 }
 
-function updateRules(sender, ruleIDs, enable) {
+async function updateRules(sender, ruleIDs, enable) {
     for (const ruleID of ruleIDs) {
-        const rule = Rule.getRule(ruleID);
-        updateRule(sender, rule, enable);
+        updateRule(sender, ruleID, await Rule.getValue(ruleID), enable);
     }
 }

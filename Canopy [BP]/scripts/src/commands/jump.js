@@ -22,11 +22,11 @@ new Command({
     helpHidden: true
 })
 
-function jumpCommand(sender) {
+async function jumpCommand(sender) {
     let blockRayResult;
     let maxDistance = 64*16;
     let jumpLocation;
-    if (!Rule.getValue('commandJumpSurvival') && sender.getGameMode() === 'survival')
+    if (!await Rule.getValue('commandJumpSurvival') && sender.getGameMode() === 'survival')
         return sender.sendMessage('§cThe commandJumpSurvival feature is disabled.');
 
     blockRayResult = Data.getLookingAtBlock(sender, maxDistance);

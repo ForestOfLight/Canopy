@@ -30,8 +30,8 @@ let targetMSPT = 50.0;
 let shouldReset = false;
 let shouldStep = 0;
 
-system.beforeEvents.watchdogTerminate.subscribe((event) => {
-    if (!Rule.getValue('commandTick')) return;
+system.beforeEvents.watchdogTerminate.subscribe(async (event) => {
+    if (!await Rule.getValue('commandTick')) return;
     if (event.terminateReason === 'Hang' && targetMSPT > 50.0) {
         console.warn(`[Watchdog] Terminate hang ignored.`);
         event.cancel = true;

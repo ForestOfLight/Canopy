@@ -42,11 +42,11 @@ let isMocking = false;
 let currMobIds = [];
 let currActiveArea = null;
 
-world.afterEvents.entitySpawn.subscribe((event) => {
+world.afterEvents.entitySpawn.subscribe(async (event) => {
     const entity = event.entity;
     if (worldSpawns && entity.typeId !== 'minecraft:item') worldSpawns.sendMobToTrackers(event.entity);
 
-    if (!isMocking || event.cause === 'Loaded' || !Rule.getValue('commandSpawnMocking')) return;
+    if (!isMocking || event.cause === 'Loaded' || !await Rule.getValue('commandSpawnMocking')) return;
     let shouldCancelSpawn = false;
     for (const category in categoryToMobMap) {
         if (categoryToMobMap[category].includes(event.entity.typeId.replace('minecraft:', ''))) shouldCancelSpawn = true;
@@ -82,8 +82,8 @@ function printAllEntities(sender) {
     });
 }
 
-function handleMockingCmd(sender, enable) {
-    if (!Rule.getValue('commandSpawnMocking')) return sender.sendMessage('§cThe commandSpawnMocking rule is disabled.');
+async function handleMockingCmd(sender, enable) {
+    if (!await Rule.getValue('commandSpawnMocking')) return sender.sendMessage('§cThe commandSpawnMocking rule is disabled.');
     if (enable === null) return sender.sendMessage('§cUsage: ./spawn mocking <true/false>');
     isMocking = enable;
     const messageColor = enable ? '§c' : '§a';

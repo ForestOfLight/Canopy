@@ -7,8 +7,8 @@ new Rule({
     description: 'Armor stands respawn when hit by a projectile, dropping their items.',
 });
 
-world.afterEvents.projectileHitEntity.subscribe((event) => {
-    if (!Rule.getValue('armorStandRespawning') || event.projectile.typeId === "minecraft:fishing_hook") return;
+world.afterEvents.projectileHitEntity.subscribe(async (event) => {
+    if (!await Rule.getValue('armorStandRespawning') || event.projectile.typeId === "minecraft:fishing_hook") return;
     const entity = event.getEntityHit().entity;
     if (entity?.typeId === "minecraft:armor_stand") {
         const hasCleanedItem = cleanDroppedItem(event);

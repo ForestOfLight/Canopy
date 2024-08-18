@@ -5,11 +5,11 @@ new Rule({
     category: 'Rules',
     identifier: 'explosionChainReactionOnly',
     description: 'Makes explosion only affect TNT blocks.',
-    independentRules: ['explosionNoBlockDamage']
+    independentRules: ['explosionNoBlockDamage', 'explosionOff']
 });
 
 world.beforeEvents.explosion.subscribe((event) => {
-    if (!Rule.getValue('explosionChainReactionOnly')) return;
+    if (!Rule.getNativeValue('explosionChainReactionOnly')) return;
     const explodedTntBlocks = event.getImpactedBlocks().filter(block => block.typeId === 'minecraft:tnt');
     event.setImpactedBlocks(explodedTntBlocks);
 });

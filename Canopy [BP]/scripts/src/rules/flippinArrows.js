@@ -26,8 +26,8 @@ system.runInterval(() => {
     }
 });
 
-world.beforeEvents.playerPlaceBlock.subscribe(event => {
-    if (!Rule.getValue('flippinArrows')) return;
+world.beforeEvents.playerPlaceBlock.subscribe(async (event) => {
+    if (!await Rule.getValue('flippinArrows')) return;
     const player = event.player;
     const offhandStack = player.getComponent('equippable').getEquipment("Offhand");
     if (offhandStack?.typeId !== 'minecraft:arrow') return;
@@ -40,8 +40,8 @@ world.beforeEvents.playerPlaceBlock.subscribe(event => {
     }
 });
 
-world.beforeEvents.itemUseOn.subscribe(event => {
-    if (!Rule.getValue('flippinArrows')) return;
+world.beforeEvents.itemUseOn.subscribe(async (event) => {
+    if (!await Rule.getValue('flippinArrows')) return;
     if (event.itemStack.typeId !== 'minecraft:arrow') return;
     const block = event.block;
     if (needsCooldown(block)) return;

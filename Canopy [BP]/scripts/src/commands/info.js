@@ -43,7 +43,10 @@ function infoCommand(sender, args) {
         clearInfoDisplay(sender);
     
     const rule = InfoDisplayRule.getRule(ruleID);
-    updateRules(sender, rule.getContigentRuleIDs(), enable);
+    if (!enable)
+        updateRules(sender, rule.getDependentRuleIDs(), enable);
+    else
+        updateRules(sender, rule.getContigentRuleIDs(), enable);
     updateRules(sender, rule.getIndependentRuleIDs(), !enable);
 
     updateRule(sender, ruleID, InfoDisplayRule.getValue(sender, ruleID), enable);
@@ -70,6 +73,6 @@ function updateRule(sender, ruleID, ruleValue, enable) {
 function updateRules(sender, ruleIDs, enable) {
     for (const ruleID of ruleIDs) {
         const rule = InfoDisplayRule.getRule(ruleID);
-        updateRule(sender, rule, enable);
+        updateRule(sender, ruleID, InfoDisplayRule.getValue(sender, ruleID), enable);
     }
 }

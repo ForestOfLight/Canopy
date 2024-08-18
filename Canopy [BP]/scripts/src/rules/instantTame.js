@@ -14,12 +14,11 @@ new Rule({
     contingentRules: ['instantTame'],
 });
 
-world.beforeEvents.playerInteractWithEntity.subscribe(event => {
-    if (!Rule.getValue('instantTame')) return;
-    if (!Rule.getValue('instantTameSurvival') && event.player.getGameMode() === 'survival') return;
+world.beforeEvents.playerInteractWithEntity.subscribe(async (event) => {
+    if (!await Rule.getValue('instantTame')) return;
+    if (!await Rule.getValue('instantTameSurvival') && event.player.getGameMode() === 'survival') return;
     const tameable = event.target.getComponent('tameable');
     if (tameable && isUsingTameItem(tameable.getTameItems, event.itemStack)) {
-        console.warn('taming', event.target.typeId)
         system.run(() => {
             try {
                 tameable.tame(event.player);

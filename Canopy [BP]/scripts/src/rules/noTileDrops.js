@@ -16,16 +16,16 @@ system.runInterval(() => {
     brokenBlockEventsThisTick = [];
 });
 
-world.afterEvents.playerBreakBlock.subscribe(blockEvent => {
+world.afterEvents.playerBreakBlock.subscribe(async (blockEvent) => {
     if (blockEvent.player.getGameMode() !== 'creative' 
-        || !Rule.getValue('noTileDrops')) 
+        || !await Rule.getValue('noTileDrops')) 
         return;
     brokenBlockEventsThisTick.push(blockEvent);
 });
 
-world.afterEvents.entitySpawn.subscribe(entityEvent => {
+world.afterEvents.entitySpawn.subscribe(async (entityEvent) => {
     if (entityEvent.cause !== 'Spawned' || entityEvent.entity.typeId !== 'minecraft:item') return;
-    if (!Rule.getValue('noTileDrops')) return;
+    if (!await Rule.getValue('noTileDrops')) return;
 
     const item = entityEvent.entity;
     const brokenBlockEvents = brokenBlockEventsThisTick.concat(brokenBlockEventsLastTick);
