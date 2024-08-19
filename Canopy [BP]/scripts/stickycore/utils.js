@@ -210,7 +210,7 @@ class Utils {
 		let players;
 		if (sender) players = world.getPlayers({ excludeNames: [sender.name] });
 		else players = world.getAllPlayers();
-		players.forEach(player => player.onScreenDisplay.setActionBar(message));
+		players.forEach(player => player?.onScreenDisplay.setActionBar(message));
 	}
 
 	static locationInArea(area, position) {

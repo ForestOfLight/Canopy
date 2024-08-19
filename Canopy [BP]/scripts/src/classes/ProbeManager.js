@@ -189,14 +189,14 @@ class ProbeManager {
         world.beforeEvents.playerLeave.subscribe((event) => {
             const player = event.player;
             system.run(() => {
-                if (player.getDynamicProperty('light') || player.getDynamicProperty('biome'))
+                if (player?.getDynamicProperty('light') || player?.getDynamicProperty('biome'))
                     this.removeProbe(player);
             });
         });
 
         world.afterEvents.playerDimensionChange.subscribe((event) => {
             const player = event.player;
-            if (player.getDynamicProperty('light') || player.getDynamicProperty('biome'))
+            if (player?.getDynamicProperty('light') || player?.getDynamicProperty('biome'))
                 this.removeProbe(player);
         });
 

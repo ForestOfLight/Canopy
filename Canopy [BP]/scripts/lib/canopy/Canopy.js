@@ -8,5 +8,11 @@ import { RuleHelpEntry, CommandHelpEntry, InfoDisplayRuleHelpEntry } from './hel
 import { RuleHelpPage, CommandHelpPage, InfoDisplayRuleHelpPage } from './help/HelpPage';
 import HelpBook from './help/HelpBook';
 
+function getLoadedExtensions() {
+    const ruleExtensions = Rule.getExtensionNames();
+    const commandExtensions = Command.getExtensionNames();
+    return [...new Set([...ruleExtensions, ...commandExtensions])];
+}
+
 export { Command, Rule, InfoDisplayRule, RuleHelpEntry, CommandHelpEntry, InfoDisplayRuleHelpEntry, 
-    RuleHelpPage, CommandHelpPage, InfoDisplayRuleHelpPage, HelpBook };
+    RuleHelpPage, CommandHelpPage, InfoDisplayRuleHelpPage, HelpBook, getLoadedExtensions };

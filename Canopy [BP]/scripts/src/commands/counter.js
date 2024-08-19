@@ -295,7 +295,7 @@ function realtimeQueryAll(sender) {
 
 function query(sender, color) {
     const channel = channelMap.getChannel(color);
-    sender.sendMessage(channelMap.getQueryOutput(channel));
+    sender?.sendMessage(channelMap.getQueryOutput(channel));
 }
 
 function queryAll(sender) {
@@ -306,7 +306,7 @@ function queryAll(sender) {
     });
     
     if (output === '') output = '§7There are no hopper counters in use.';
-    sender.sendMessage(output);
+    sender?.sendMessage(output);
 }
 
 function setMode(sender, color, mode) {

@@ -24,6 +24,7 @@ system.runInterval(async () => {
     if (!await Rule.getValue('hotbarSwitching')) return;
     const players = world.getAllPlayers();
     for (const player of players) {
+        if (!player) continue;
         if (!await hasAppropriateGameMode(player)) continue;
         if (hotbarManagers[player.id] === undefined) 
             hotbarManagers[player.id] = new HotbarManager(player);

@@ -13,5 +13,5 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
     }
     if (!cmdData) return;
     new Command(cmdData);
-    console.warn(`[Canopy] Registered command: ${cmdData.extensionName}:${cmdData.name}`);
+    // console.warn(`[Canopy] Registered command: ${cmdData.extensionName}:${cmdData.name}`);
 }, { namespaces: ['canopyExtension']});

@@ -1,6 +1,7 @@
 import { world, system } from '@minecraft/server';
 import Data from 'stickycore/data';
 import ProbeManager from 'src/classes/ProbeManager';
+import { getLoadedExtensions } from 'lib/canopy/Canopy';
 
 let hasShownWelcome = false;
 
@@ -8,7 +9,7 @@ world.afterEvents.playerJoin.subscribe((event) => {
     let runner = system.runInterval(() => {
         const players = world.getPlayers({ name: event.playerName });
         players.forEach(player => {
-            if (!hasShownWelcome && player.isValid()) {
+            if (!hasShownWelcome && player?.isValid()) {
                 system.clearRun(runner);
                 hasShownWelcome = true;
                 onValidWorld(player);
@@ -33,4 +34,8 @@ function displayWelcome(player) {
     output += `§a+ ----- +\n`;
     output += `§7This server is running §l§aCanopy§r§7. Type ./help to get started.§r\n`;
     player.sendMessage(output);
+    const extensions = getLoadedExtensions();
+    if (extensions.length > 0) {
+        player.sendMessage(`§7Loaded extensions: §a${extensions.join('§7, §a')}`);
+    }
 }

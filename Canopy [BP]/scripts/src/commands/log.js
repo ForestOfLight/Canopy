@@ -158,7 +158,7 @@ world.afterEvents.entitySpawn.subscribe((event) => {
 
 world.beforeEvents.entityRemove.subscribe((event) => {
     const removedEntity = event.removedEntity;
-    if (removedEntity.typeId === 'minecraft:tnt') {
+    if (removedEntity?.typeId === 'minecraft:tnt') {
         loggingPlayers.forEach(loggingPlayer => {
             if (loggingPlayer.types.includes('tnt')) {
                 printTntLog(loggingPlayer.player, removedEntity);

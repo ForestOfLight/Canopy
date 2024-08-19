@@ -90,8 +90,9 @@ new InfoDisplayRule({
 });
 
 system.runInterval(() => {
-	const Players = world.getAllPlayers();
-	for (const player of Players) {
+	const players = world.getAllPlayers();
+	for (const player of players) {
+		if (!player) continue;
 		if (InfoDisplayRule.getValue(player, 'showDisplay')) InfoDisplay(player);
 	}
 });

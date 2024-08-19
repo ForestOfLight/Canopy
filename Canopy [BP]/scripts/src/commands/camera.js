@@ -72,7 +72,7 @@ class BeforeSpectatorPlayer {
 
 world.beforeEvents.playerGameModeChange.subscribe((event) => {
     const player = event.player;
-    if (player.getDynamicProperty('isSpectating') && event.fromGameMode === 'spectator' && event.toGameMode !== 'spectator') {
+    if (player?.getDynamicProperty('isSpectating') && event.fromGameMode === 'spectator' && event.toGameMode !== 'spectator') {
         system.run(() => {
             player.setGameMode(event.fromGameMode);
             player.onScreenDisplay.setActionBar('§cYou cannot change your gamemode while spectating.');
@@ -81,7 +81,7 @@ world.beforeEvents.playerGameModeChange.subscribe((event) => {
 });
 
 world.beforeEvents.playerLeave.subscribe((event) => {
-    event.player.setDynamicProperty('isViewingCamera', false);
+    event.player?.setDynamicProperty('isViewingCamera', false);
 });
 
 world.afterEvents.playerDimensionChange.subscribe((event) => {

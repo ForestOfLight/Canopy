@@ -117,6 +117,7 @@ class Data {
 
 		if (!blockRayResult && !entityRayResult) return '';
 		target = Utils.getClosestTarget(sender, blockRayResult, entityRayResult);
+		if (!target) return '';
 		try {
 			inventory = target.getComponent('inventory');
 		} catch(error) {

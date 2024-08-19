@@ -13,5 +13,5 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
     }
     if (!ruleData) return;
     new Rule(ruleData);
-    console.warn(`[Canopy] Registered rule: ${ruleData.extensionName}:${ruleData.identifier}`);
+    // console.warn(`[Canopy] Registered rule: ${ruleData.extensionName}:${ruleData.identifier}`);
 }, { namespaces: ['canopyExtension']});

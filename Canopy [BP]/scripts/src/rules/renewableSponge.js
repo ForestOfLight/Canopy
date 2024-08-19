@@ -8,7 +8,7 @@ new Rule({
 });
 
 world.afterEvents.entityHurt.subscribe(async (event) => {
-    if (event.hurtEntity.typeId !== 'minecraft:guardian' || !await Rule.getValue('renewableSponge') || event.damageSource.cause !== 'lightning') 
+    if (event.hurtEntity?.typeId !== 'minecraft:guardian' || !await Rule.getValue('renewableSponge') || event.damageSource.cause !== 'lightning') 
         return;
 
     const guardian = event.hurtEntity;

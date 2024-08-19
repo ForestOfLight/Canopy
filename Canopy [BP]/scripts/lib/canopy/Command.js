@@ -106,15 +106,15 @@ class Command {
 		result.sort((a, b) => a.getName().localeCompare(b.getName()));
 		return result;
 	}
-
-	static getExtensionNames() {
-		return Object.values(commands).map(cmd => cmd.getExtensionName()).filter(name => name);
-	}
-
+	
 	static getCommandsByExtension(extensionName) {
 		let result = Object.values(commands).filter(cmd => cmd.getExtensionName() === extensionName);
 		result.sort((a, b) => a.getName().localeCompare(b.getName()));
 		return result;
+	}
+	
+	static getExtensionNames() {
+		return Object.values(commands).map(cmd => cmd.getExtensionName()).filter(name => name);
 	}
 	
     static checkArg(value, type) {

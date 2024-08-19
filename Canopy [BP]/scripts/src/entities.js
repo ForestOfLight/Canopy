@@ -28,6 +28,7 @@ const Entities = {
 
         let count = 0;
         for (const entity of entities) {
+            if (!entity) continue;
             try{
                 const toEntity = Utils.normalizeVector(subtractVectors(entity.location, player.location));
                 const dotProduct = Utils.dotProduct(viewDirection, toEntity);

@@ -13,7 +13,7 @@ function resetallCommand(sender) {
     world.clearDynamicProperties();
     const players = world.getAllPlayers();
     players.forEach(player => {
-        player.clearDynamicProperties();
+        player?.clearDynamicProperties();
     });
     world.sendMessage('§cPlayer and world dynamic properties have been reset.');
 }
