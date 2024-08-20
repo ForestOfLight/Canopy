@@ -67,7 +67,7 @@ function populateExtensionPages(helpBook) {
     const commandExtensions = Command.getExtensionNames();
 
     for (const extensionName of ruleExtensions) {
-        const rulePage = new RuleHelpPage(`Rules`, `Togglable rules for ${extensionName}.`, Command.prefix + `canopy <rule> <true/false>`, extensionName);
+        const rulePage = new RuleHelpPage(`Rules`, `Togglable rules for §a${extensionName}§2.`, Command.prefix + `canopy <rule> <true/false>`, extensionName);
         const rules = Rule.getRulesByExtension(extensionName);
         helpBook.newPage(rulePage);
         for (let rule of rules) {
@@ -76,7 +76,7 @@ function populateExtensionPages(helpBook) {
     }
 
     for (const extensionName of commandExtensions) {
-        const commandPage = new CommandHelpPage(`Commands`, `Commands for ${extensionName}.`, extensionName);
+        const commandPage = new CommandHelpPage(`Commands`, `Commands for §a${extensionName}§2.`, extensionName);
         let commands = Command.getCommandsByExtension(extensionName);
         commands = commands.filter(cmd => !cmd.isHelpHidden());
         helpBook.newPage(commandPage);

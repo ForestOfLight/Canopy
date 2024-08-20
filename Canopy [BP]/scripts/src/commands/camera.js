@@ -86,7 +86,7 @@ world.beforeEvents.playerLeave.subscribe((event) => {
 
 world.afterEvents.playerDimensionChange.subscribe((event) => {
     const player = event.player;
-    if (!player.getDynamicProperty('isViewingCamera')) return;
+    if (!player?.getDynamicProperty('isViewingCamera')) return;
     player.camera.clear();
     player.setDynamicProperty('isViewingCamera', false);
 });
@@ -112,7 +112,7 @@ function cameraCommand(sender, args) {
 
 function placeCameraAction(sender) {
     let camera;
-    let eyeHeight = 1.62001002;
+    const eyeHeight = 1.62001002;
 
     if (sender.getDynamicProperty('isViewingCamera')) return sender.sendMessage('§cYou cannot place a camera while viewing one.');
 

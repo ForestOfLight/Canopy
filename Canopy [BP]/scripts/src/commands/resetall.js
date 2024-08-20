@@ -3,7 +3,7 @@ import { Command } from 'lib/canopy/Canopy'
 
 new Command({
     name: 'resetall',
-    description: 'Resets all §l§aCanopy§r§8 features and data. Use with caution.',
+    description: 'Resets all §lCanopy§r§8 features and data. Use with caution.',
     usage: 'resetall',
     callback: resetallCommand,
     adminOnly: true
