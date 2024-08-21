@@ -8,7 +8,7 @@ This pack brings technical informatics, new features, and quality-of-life change
 
 # What is Canopy?
 
-Canopy is an addon for vanilla Minecraft Bedrock Edition that allows more control over what matters from a technical perspective of the game. With it, you can:
+**Canopy** is an addon for vanilla Minecraft Bedrock Edition that allows more control over what matters from a technical perspective of the game. With it, you can:
 
 - View useful information in the top right of your screen, including light level, TPS, biome, the number of entities in view, the name of the block in front of you, its inventory, and more.
 - Receive a detailed breakdown of the items your farms and machines produce using hopper counters.
