@@ -41,7 +41,7 @@ world.beforeEvents.playerPlaceBlock.subscribe(async (event) => {
 });
 
 world.beforeEvents.itemUseOn.subscribe(async (event) => {
-    if (!await Rule.getValue('flippinArrows')) return;
+    if (event.source === undefined || !await Rule.getValue('flippinArrows')) return;
     if (event.itemStack.typeId !== 'minecraft:arrow') return;
     const block = event.block;
     if (needsCooldown(block)) return;

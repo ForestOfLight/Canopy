@@ -16,9 +16,9 @@ new Rule({
 
 world.beforeEvents.playerInteractWithEntity.subscribe(async (event) => {
     if (!await Rule.getValue('instantTame')) return;
-    if (!await Rule.getValue('instantTameSurvival') && event.player.getGameMode() === 'survival') return;
-    const tameable = event.target.getComponent('tameable');
-    if (tameable && isUsingTameItem(tameable.getTameItems, event.itemStack)) {
+    if (!await Rule.getValue('instantTameSurvival') && event.player?.getGameMode() === 'survival') return;
+    const tameable = event.target?.getComponent('tameable');
+    if (tameable !== undefined && isUsingTameItem(tameable.getTameItems, event.itemStack)) {
         system.run(() => {
             try {
                 tameable.tame(event.player);
