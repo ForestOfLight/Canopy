@@ -100,7 +100,7 @@ class Utils {
 	}
 
 	static parseName(target, includePrefix = true) {
-		return target.typeId === 'player' ? `§o${target.name}§r` : (includePrefix ? target.typeId : target.typeId.replace('minecraft:', ''));
+		return target.typeId.replace('minecraft:', '') === 'player' ? `§o${target.name}§r` : (includePrefix ? target.typeId : target.typeId.replace('minecraft:', ''));
 	}
 
 	static stringifyLocation(location, precision = 0) {

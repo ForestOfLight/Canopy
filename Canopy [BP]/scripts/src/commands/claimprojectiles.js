@@ -1,7 +1,7 @@
 import { world } from '@minecraft/server';
 import { Rule, Command } from 'lib/canopy/Canopy';
 
-const CLAIM_RADIUS = 10;
+const CLAIM_RADIUS = 25;
 
 new Rule({
     category: 'Rules',
@@ -48,7 +48,7 @@ function getProjectilesInRange(sender, radius) {
     const radiusProjectiles = new Array();
     const radiusEntities = sender.dimension.getEntities({ location: sender.location, maxDistance: radius });
     for (const entity of radiusEntities) {
-        if (entity.hasComponent('minecraft:projectile'))
+        if (entity?.hasComponent('minecraft:projectile'))
             radiusProjectiles.push(entity);
     }
     return radiusProjectiles;
@@ -56,6 +56,8 @@ function getProjectilesInRange(sender, radius) {
 
 function changeOwner(projectiles, targetPlayer) {
     for (const projectile of projectiles) {
+        if (!projectile)
+            continue;
         projectile.getComponent('minecraft:projectile').owner = targetPlayer;
     }
     return projectiles.length;

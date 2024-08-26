@@ -32,9 +32,9 @@ function dataCommand(sender) {
 function formatBlockOutput(block) {
     let output = '';
     let dimensionId = block.dimension.id.replace('minecraft:', '');
-    let properties = `isAir=${block.isAir}, isLiquid=${block.isLiquid}, isSolid=${block.isSolid}, isWaterlogged=${block.isWaterlogged}, canBeWaterlogged=${block.type.canBeWaterlogged}`;
+    let properties = formatProperties(block);
     let states = JSON.stringify(block.permutation.getAllStates());
-    let components = tryGetComponents(block, BLOCK_COMPONENTS);
+    let components = formatComponents(block, tryGetBlockComponents(block));
     let tags = JSON.stringify(block.getTags());
 
     output += `§l§a${Utils.parseName(block)}§r: ${Utils.stringifyLocation(block.location, 0)}, ${dimensionId}\n`;
@@ -46,29 +46,11 @@ function formatBlockOutput(block) {
     return output;
 }
 
-function tryGetComponents(target, componentList) {
-    let components = [];
-    let component;
-    let output = '';
-
-    for (let i = 0; i < componentList.length; i++) {
-        try {
-            component = target.getComponent(componentList[i]);
-            if (component) components.push(componentList[i]);
-        } catch(error) {
-            console.warn(error.message);
-        }
-    }
-    output = JSON.stringify(components);
-    if (output === '') output = '[]';
-    return output;
-}
-
 function formatEntityOutput(entity) {
     let output = '';
     let nameTag = entity.nameTag ? `(${entity.nameTag})` : '';
     let dimensionId = entity.dimension.id.replace('minecraft:', '');
-    let properties = `isClimbing=${entity.isClimbing}, isFalling=${entity.isFalling}, isInWater=${entity.isInWater}, isOnGround=${entity.isOnGround}, isSleeping=${entity.isSleeping}, isSneaking=${entity.isSneaking}, isSprinting=${entity.isSprinting}, isSwimming=${entity.isSwimming}, target=${entity.target?.id || 'none'}`;
+    let properties = formatProperties(entity);
     let rotation = entity.getRotation();
     let headLocationStr = entity.getHeadLocation() ? Utils.stringifyLocation(entity.getHeadLocation(), 2) : 'none';
     let velocityStr = entity.getVelocity() ? Utils.stringifyLocation(entity.getVelocity(), 3) : 'none';
@@ -76,11 +58,86 @@ function formatEntityOutput(entity) {
 
     output += `§l§a${Utils.parseName(entity)}${nameTag}§r: §2id:${entity.id}§r, ${Utils.stringifyLocation(entity.location, 2)}, ${dimensionId}\n`;
     output += `§aProperties:§r ${properties}\n`;
-    output += `§aComponents:§r ${JSON.stringify(entity.getComponents())}\n`;
+    output += `§aComponents:§r ${formatComponents(entity, entity.getComponents())}\n`;
     output += `§aDynamicProperties:§r ${JSON.stringify(entity.getDynamicPropertyIds())} total byte count: ${entity.getDynamicPropertyTotalByteCount()}\n`;
     output += `§aEffects:§r ${JSON.stringify(entity.getEffects())}\n`;
     output += `§aTags:§r ${JSON.stringify(entity.getTags())}\n`;
     output += `§aOther:§r head location: ${headLocationStr} rotation: [${rotation.x.toFixed(2)}, ${rotation.y.toFixed(2)}], velocity: ${velocityStr}, view direction: ${viewDirectionStr}\n`;
     
     return output;
+}
+
+function formatProperties(target) {
+    let output = '';
+
+    for (let key in target) {
+        let value = target[key];
+        if (typeof value === 'function') 
+            continue;
+        else if (target === value)
+            value = 'this';
+        else if (typeof value === 'object')
+            value = formatObject(value);
+        else 
+            value = JSON.stringify(value);
+        output += `§7${key}=§b${value}§7, `;
+    }
+
+    return output.slice(0, -2);
+}
+
+function tryGetBlockComponents(target) {
+    let components = [];
+    
+    for (let i = 0; i < BLOCK_COMPONENTS.length; i++) {
+        try {
+            const component = target.getComponent(BLOCK_COMPONENTS[i]);
+            if (component) components.push(BLOCK_COMPONENTS[i]);
+        } catch(error) {
+            console.warn(error.message);
+        }
+    }
+
+    return components;
+}
+
+function formatComponents(target, components) {
+    if (components.length === 0) 
+        return 'none';
+    let output = '';
+    for (let i = 0; i < components.length; i++) {
+        output += formatComponent(target, components[i]);
+    }
+    return output;
+}
+
+function formatComponent(target, component) {
+    let output = '';
+    
+    for (let key in component) {
+        let value = component[key];
+        if (typeof value === 'function')
+            continue;
+        else if (target === value) 
+            value = 'this';
+        else if (typeof value === 'object')
+            value = formatObject(value);
+        output += `${key}=§b${value}§7, `;
+    }
+    output = output.slice(0, -2);
+    return `\n  §7>§f ${component.typeId}§7 - {${output}}`;
+}
+
+function formatObject(object) {
+    let output = '';
+    for (let key in object) {
+        if (typeof object[key] === 'function') continue;
+        let value = object[key];
+        if (typeof value === 'object') {
+            formatObject(value);
+        }
+        output += `${key}=${JSON.stringify(value)}, `;
+    }
+    output = output.slice(0, -2);
+    return `{${output}}`;
 }
