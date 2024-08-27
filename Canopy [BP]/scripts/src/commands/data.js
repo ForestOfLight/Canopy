@@ -51,6 +51,7 @@ function formatEntityOutput(entity) {
     let nameTag = entity.nameTag ? `(${entity.nameTag})` : '';
     let dimensionId = entity.dimension.id.replace('minecraft:', '');
     let properties = formatProperties(entity);
+    let components = formatComponents(entity, entity.getComponents());
     let rotation = entity.getRotation();
     let headLocationStr = entity.getHeadLocation() ? Utils.stringifyLocation(entity.getHeadLocation(), 2) : 'none';
     let velocityStr = entity.getVelocity() ? Utils.stringifyLocation(entity.getVelocity(), 3) : 'none';
@@ -58,7 +59,7 @@ function formatEntityOutput(entity) {
 
     output += `§l§a${Utils.parseName(entity)}${nameTag}§r: §2id:${entity.id}§r, ${Utils.stringifyLocation(entity.location, 2)}, ${dimensionId}\n`;
     output += `§aProperties:§r ${properties}\n`;
-    output += `§aComponents:§r ${formatComponents(entity, entity.getComponents())}\n`;
+    output += `§aComponents:§r ${components}\n`;
     output += `§aDynamicProperties:§r ${JSON.stringify(entity.getDynamicPropertyIds())} total byte count: ${entity.getDynamicPropertyTotalByteCount()}\n`;
     output += `§aEffects:§r ${JSON.stringify(entity.getEffects())}\n`;
     output += `§aTags:§r ${JSON.stringify(entity.getTags())}\n`;
@@ -77,7 +78,7 @@ function formatProperties(target) {
         else if (target === value)
             value = 'this';
         else if (typeof value === 'object')
-            value = formatObject(value);
+            value = formatObject(target, value);
         else 
             value = JSON.stringify(value);
         output += `§7${key}=§b${value}§7, `;
@@ -89,10 +90,10 @@ function formatProperties(target) {
 function tryGetBlockComponents(target) {
     let components = [];
     
-    for (let i = 0; i < BLOCK_COMPONENTS.length; i++) {
+    for (const componentType of BLOCK_COMPONENTS) {
         try {
-            const component = target.getComponent(BLOCK_COMPONENTS[i]);
-            if (component) components.push(BLOCK_COMPONENTS[i]);
+            const component = target.getComponent(componentType);
+            if (component) components.push(component);
         } catch(error) {
             console.warn(error.message);
         }
@@ -105,15 +106,14 @@ function formatComponents(target, components) {
     if (components.length === 0) 
         return 'none';
     let output = '';
-    for (let i = 0; i < components.length; i++) {
-        output += formatComponent(target, components[i]);
+    for (const component of components) {
+        output += formatComponent(target, component);
     }
     return output;
 }
 
 function formatComponent(target, component) {
     let output = '';
-    
     for (let key in component) {
         let value = component[key];
         if (typeof value === 'function')
@@ -121,20 +121,22 @@ function formatComponent(target, component) {
         else if (target === value) 
             value = 'this';
         else if (typeof value === 'object')
-            value = formatObject(value);
+            value = formatObject(target, value);
+        else 
+            value = JSON.stringify(value);
         output += `${key}=§b${value}§7, `;
     }
     output = output.slice(0, -2);
     return `\n  §7>§f ${component.typeId}§7 - {${output}}`;
 }
 
-function formatObject(object) {
+function formatObject(target, object) {
     let output = '';
     for (let key in object) {
         if (typeof object[key] === 'function') continue;
         let value = object[key];
         if (typeof value === 'object') {
-            formatObject(value);
+            formatObject(target, value);
         }
         output += `${key}=${JSON.stringify(value)}, `;
     }
