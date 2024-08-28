@@ -23,7 +23,7 @@ class HelpPage {
         let extensionFormat = '';
         let titleFormat = this.title;
         if (this.extensionName) {
-            extensionFormat = '§f(§a' + this.extensionName + '§f) ';
+            extensionFormat = '§a' + this.extensionName + '§f:';
             titleFormat = this.title.split(':')[1];
         }
         return '§l§aCanopy§r§2 Help Page: §f' + extensionFormat + titleFormat;
