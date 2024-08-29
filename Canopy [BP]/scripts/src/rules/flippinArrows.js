@@ -29,6 +29,7 @@ system.runInterval(() => {
 world.beforeEvents.playerPlaceBlock.subscribe(async (event) => {
     if (!await Rule.getValue('flippinArrows')) return;
     const player = event.player;
+    if (!player) return;
     const offhandStack = player.getComponent('equippable').getEquipment("Offhand");
     if (offhandStack?.typeId !== 'minecraft:arrow') return;
 

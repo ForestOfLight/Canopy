@@ -142,13 +142,13 @@ class Command {
 	}
 }
 
-world.beforeEvents.chatSend.subscribe((ev) => {
-	const { sender, message } = ev;
+world.beforeEvents.chatSend.subscribe((event) => {
+	const { sender, message } = event;
 	
 	let [name, ...args] = ArgumentParser.parseArgs(message);
 	if (!String(name).startsWith(Command.prefix))
 		return;
-	ev.cancel = true;
+	event.cancel = true;
 	if (!commands[name])
 		return sender.sendMessage(`§cInvalid command: '${name.replace(Command.prefix,'')}'. Use ${Command.prefix}help for more information.`);
 	const command = commands[name];

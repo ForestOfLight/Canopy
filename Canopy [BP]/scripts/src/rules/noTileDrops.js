@@ -17,7 +17,7 @@ system.runInterval(() => {
 });
 
 world.afterEvents.playerBreakBlock.subscribe(async (blockEvent) => {
-    if (blockEvent.player.getGameMode() !== 'creative' 
+    if (blockEvent.player?.getGameMode() !== 'creative' 
         || !await Rule.getValue('noTileDrops')) 
         return;
     brokenBlockEventsThisTick.push(blockEvent);

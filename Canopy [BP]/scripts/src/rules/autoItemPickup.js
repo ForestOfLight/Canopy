@@ -16,12 +16,12 @@ system.runInterval(() => {
 
 world.afterEvents.playerBreakBlock.subscribe(async (blockEvent) => {
     if (!await Rule.getValue('autoItemPickup')) return;
-    if (blockEvent.player.getGameMode() === 'creative') return;
+    if (blockEvent.player?.getGameMode() === 'creative') return;
     brokenBlockEventsThisTick.push(blockEvent);
 });
 
 world.afterEvents.entitySpawn.subscribe(async (entityEvent) => {
-    if (entityEvent.cause !== 'Spawned' || entityEvent.entity.typeId !== 'minecraft:item') return;
+    if (entityEvent.cause !== 'Spawned' || entityEvent.entity?.typeId !== 'minecraft:item') return;
     if (!await Rule.getValue('autoItemPickup')) return;
 
     const item = entityEvent.entity;
@@ -32,7 +32,9 @@ world.afterEvents.entitySpawn.subscribe(async (entityEvent) => {
     if (!brokenBlockEvent) return;
 
     const itemStack = item.getComponent('minecraft:item').itemStack;
-    const inventory = brokenBlockEvent.player.getComponent('minecraft:inventory').container;
+    const inventory = brokenBlockEvent.player?.getComponent('minecraft:inventory').container;
+    if (!itemStack || !inventory)
+        return;
     if (canAdd(inventory, itemStack)) {
         inventory.addItem(itemStack) // doesnt always put things in the right slot 🎉
         item.remove();
