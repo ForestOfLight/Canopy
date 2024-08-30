@@ -83,7 +83,7 @@ class Command {
 	runCallback(sender, args) {
 		if (this.#extensionName) {
 			// console.warn(`[Canopy] Sending ${this.#extensionName} command callback: '${this.#name} ${JSON.stringify(args)}'`);
-			world.getDimension('overworld').runCommandAsync(`scriptevent canopyExtension:commandCallbackRequest ${this.#extensionName} ${sender?.name} ${this.#name} ${JSON.stringify(args)}`);
+			world.getDimension('overworld').runCommandAsync(`scriptevent canopyExtension:commandCallbackRequest ${this.#extensionName} "${sender?.name}" ${this.#name} ${JSON.stringify(args)}`);
 			return;
 		}
 		this.#callback(sender, args);
