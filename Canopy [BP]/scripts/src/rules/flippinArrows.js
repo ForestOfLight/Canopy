@@ -33,8 +33,8 @@ world.beforeEvents.playerPlaceBlock.subscribe(async (event) => {
     const offhandStack = player.getComponent('equippable').getEquipment("Offhand");
     if (offhandStack?.typeId !== 'minecraft:arrow') return;
 
-    const mainhandStackId = player.getComponent('equippable').getEquipment("Mainhand").typeId.replace('minecraft:', '');
-    if (flipOnPlaceIds.includes(mainhandStackId)) {
+    const block = event.block;
+    if (flipOnPlaceIds.includes(block.typeId.replace('minecraft:', ''))) {
         system.runTimeout(() => {
             flip(event.block);
         }, 0);
