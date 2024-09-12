@@ -20,7 +20,12 @@ new InfoDisplayRule({
 
 new InfoDisplayRule({
 	identifier: 'facing',
-	description: 'Shows which direction you is facing using N, S, E, W & the coordinate direction (ex. N (-z)).',
+	description: 'Shows your facing direction using yaw and pitch.',
+})
+
+new InfoDisplayRule({
+	identifier: 'cardinalFacing',
+	description: 'Shows which direction you are facing using N, S, E, W & the coordinate direction (ex. N (-z)).',
 });
 
 new InfoDisplayRule({
@@ -100,7 +105,8 @@ system.runInterval(() => {
 function InfoDisplay(player) {
 	let InfoText = '';
 
-	InfoText += parseCoordsAndFacing(player);
+	InfoText += parseCoordsAndCardinalFacing(player);
+	InfoText += parseFacing(player);
 	InfoText += parseTPSAndEntities(player);
 	InfoText += parseLightAndBiome(player);
 	InfoText += parseDayAndTime(player);
@@ -113,21 +119,30 @@ function InfoDisplay(player) {
 	player.onScreenDisplay.setTitle(InfoText.trim());
 }
 
-function parseCoordsAndFacing(player) {
+function parseCoordsAndCardinalFacing(player) {
 	const showCoords = InfoDisplayRule.getValue(player, 'coords');
-	const showFacing = InfoDisplayRule.getValue(player, 'facing');
-	if (!showCoords && !showFacing) return '';
+	const showCardinal = InfoDisplayRule.getValue(player, 'cardinalFacing');
+	if (!showCoords && !showCardinal) return '';
 	let coords = player.location;
 	let facing;
 	let output = '';
 
 	if (showCoords) [ coords.x, coords.y, coords.z ] = [ coords.x.toFixed(2), coords.y.toFixed(2), coords.z.toFixed(2) ];
-	if (showFacing) facing = Data.getPlayerDirection(player);
-	if (showCoords && showFacing) output += `§r${coords.x} ${coords.y} ${coords.z}§r §7${facing}§r\n`;
+	if (showCardinal) facing = Data.getPlayerDirection(player);
+	if (showCoords && showCardinal) output += `§r${coords.x} ${coords.y} ${coords.z}§r §7${facing}§r\n`;
 	else if (showCoords) output += `§r${coords.x} ${coords.y} ${coords.z}§r\n`;
-	else if (showFacing) output += `§rFacing: §7${facing}§r\n`;
+	else if (showCardinal) output += `§rFacing: §7${facing}§r\n`;
 
 	return output;
+}
+
+function parseFacing(player) {
+	const showFacing = InfoDisplayRule.getValue(player, 'facing');
+	if (!showFacing) return '';
+	let rotation = player.getRotation();
+
+	[ rotation.x, rotation.y ] = [ rotation.x.toFixed(2), rotation.y.toFixed(2) ];
+	return `§rPitch: §7${rotation.x}§r Yaw: §7${rotation.y}§r\n`;
 }
 
 function parseTPSAndEntities(player) {

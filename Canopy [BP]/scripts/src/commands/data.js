@@ -72,16 +72,20 @@ function formatProperties(target) {
     let output = '';
 
     for (let key in target) {
-        let value = target[key];
-        if (typeof value === 'function') 
-            continue;
-        else if (target === value)
-            value = 'this';
-        else if (typeof value === 'object')
-            value = formatObject(target, value);
-        else 
-            value = JSON.stringify(value);
-        output += `§7${key}=§b${value}§7, `;
+        try {
+            let value = target[key];
+            if (typeof value === 'function') 
+                continue;
+            else if (target === value)
+                value = 'this';
+            else if (typeof value === 'object')
+                value = formatObject(target, value);
+            else 
+                value = JSON.stringify(value);
+            output += `§7${key}=§b${value}§7, `;
+        } catch(error) {
+            console.warn(error);
+        }
     }
 
     return output.slice(0, -2);
@@ -95,7 +99,7 @@ function tryGetBlockComponents(target) {
             const component = target.getComponent(componentType);
             if (component) components.push(component);
         } catch(error) {
-            console.warn(error.message);
+            console.warn(error);
         }
     }
 
@@ -115,16 +119,20 @@ function formatComponents(target, components) {
 function formatComponent(target, component) {
     let output = '';
     for (let key in component) {
-        let value = component[key];
-        if (typeof value === 'function')
-            continue;
-        else if (target === value) 
-            value = 'this';
-        else if (typeof value === 'object')
-            value = formatObject(target, value);
-        else 
-            value = JSON.stringify(value);
-        output += `${key}=§b${value}§7, `;
+        try {
+            let value = component[key];
+            if (typeof value === 'function')
+                continue;
+            else if (target === value) 
+                value = 'this';
+            else if (typeof value === 'object')
+                value = formatObject(target, value);
+            else 
+                value = JSON.stringify(value);
+            output += `${key}=§b${value}§7, `;
+        } catch(error) {
+            console.warn(error);
+        }
     }
     output = output.slice(0, -2);
     return `\n  §7>§f ${component.typeId}§7 - {${output}}`;
@@ -133,12 +141,16 @@ function formatComponent(target, component) {
 function formatObject(target, object) {
     let output = '';
     for (let key in object) {
-        if (typeof object[key] === 'function') continue;
-        let value = object[key];
-        if (typeof value === 'object') {
-            formatObject(target, value);
+        try {
+            if (typeof object[key] === 'function') continue;
+            let value = object[key];
+            if (typeof value === 'object') {
+                formatObject(target, value);
+            }
+            output += `${key}=${JSON.stringify(value)}, `;
+        } catch(error) {
+            console.warn(error);
         }
-        output += `${key}=${JSON.stringify(value)}, `;
     }
     output = output.slice(0, -2);
     return `{${output}}`;
