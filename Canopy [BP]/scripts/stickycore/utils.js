@@ -256,6 +256,40 @@ class Utils {
 				return 'Unknown';
 		}
 	}
+
+	static recolor(text, term, colorCode = '§f') {
+		const lowerText = text.toLowerCase();
+		const lowerTerm = term.toLowerCase();
+		const index = lowerText.indexOf(lowerTerm);
+		if (index === -1) return text;
+		const splitText = lowerText.split(lowerTerm);
+		let newText = '';
+		let lastColorCode = '';
+		let currentIndex = 0;
+	
+		for (let i = 0; i < splitText.length; i++) {
+			let splice = splitText[i];
+			let originalSplice = text.slice(currentIndex, currentIndex + splice.length);
+			currentIndex += splice.length;
+	
+			if (i === splitText.length - 1) {
+				newText += originalSplice;
+				continue;
+			}
+	
+			let colorCodeIndex = originalSplice.lastIndexOf('§');
+			if (colorCodeIndex === -1) {
+				newText += originalSplice + colorCode + text.slice(currentIndex, currentIndex + term.length) + lastColorCode;
+			} else {
+				lastColorCode = originalSplice.slice(colorCodeIndex, colorCodeIndex + 2);
+				newText += originalSplice + colorCode + text.slice(currentIndex, currentIndex + term.length) + lastColorCode;
+			}
+	
+			currentIndex += term.length;
+		}
+	
+		return newText;
+	}
 }
 
 export default Utils;

@@ -205,11 +205,11 @@ function tryCreateCounter(block) {
             channelMap.addCounter(color, block);
         }
     } else if (block.typeId.slice(-4) === 'wool') {
-        const adjacentBlocks = [block.above(), block.north(), block.south(), block.west(), block.east()];
-        for (const adjacentBlock of adjacentBlocks) {
-            if (adjacentBlock?.typeId === 'minecraft:hopper' && getHopperFacingBlock(adjacentBlock)?.typeId === block.typeId) {
+        const potentialHoppers = [block.above(), block.north(), block.south(), block.west(), block.east()];
+        for (const potentialHopper of potentialHoppers) {
+            if (potentialHopper?.typeId === 'minecraft:hopper' && getHopperFacingBlock(potentialHopper)?.typeId === block.typeId) {
                 const color = block.typeId.replace('minecraft:', '').replace('_wool', '');
-                channelMap.addCounter(color, adjacentBlock);
+                channelMap.addCounter(color, potentialHopper);
             }
         }
     }
