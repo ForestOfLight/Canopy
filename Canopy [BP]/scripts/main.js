@@ -46,6 +46,7 @@ import 'src/rules/explosionChainReactionOnly'
 import 'src/rules/instantTame'
 import 'src/rules/entityInstantDeath'
 import 'src/rules/renewableElytra'
+import 'src/rules/beeHealing'
 
 // Misc Processes
 import 'src/validWorld'
