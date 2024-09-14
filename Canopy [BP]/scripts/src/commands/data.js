@@ -1,5 +1,6 @@
 import { Command } from 'lib/canopy/Canopy'
 import Utils from 'stickycore/utils'
+import { world } from '@minecraft/server'
 
 const BLOCK_COMPONENTS = ['minecraft:inventory', 'minecraft:lavaContainer', 'minecraft:piston', 'minecraft:potionContainer', 'minecraft:record_player',
     'minecraft:sign', 'minecraft:snowContainer', 'minecraft:waterContainer'];
@@ -7,26 +8,31 @@ const BLOCK_COMPONENTS = ['minecraft:inventory', 'minecraft:lavaContainer', 'min
 new Command({
     name: 'data',
     description: 'Displays information about the block or entity you are looking at.',
-    usage: 'data',
+    usage: 'data [id]',
+    args: [
+        { type: 'number', name: 'id' }
+    ],
     callback: dataCommand
 });
 
-function dataCommand(sender) {
-    let blockRayResult;
-    let entityRayResult
-    let block;
-    let entity;
-    let output;
+function dataCommand(sender, args) {
+    const targetId = args.id;
+    if (targetId !== null) {
+        const entity = world.getEntity(String(targetId));
+        if (entity)
+            sender.sendMessage(formatEntityOutput(entity));
+    } else {
+        const blockRayResult = sender.getBlockFromViewDirection({ includeLiquidBlocks: true, includePassableBlocks: true, maxDistance: 7 });
+        const entityRayResult = sender.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: 7 });
+        const block = blockRayResult?.block;
+        const entity = entityRayResult[0]?.entity;
+        if (!block && !entity) return sender.sendMessage('§cNo target found.');
 
-    blockRayResult = sender.getBlockFromViewDirection({ includeLiquidBlocks: true, includePassableBlocks: true, maxDistance: 7 });
-    entityRayResult = sender.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: 7 });
-    block = blockRayResult?.block;
-    entity = entityRayResult[0]?.entity;
-    if (!block && !entity) return sender.sendMessage('§cNo target found.');
-
-    if (entity) output = formatEntityOutput(entity);
-    else if (block) output = formatBlockOutput(block);
-    sender.sendMessage(output);
+        let output;
+        if (entity) output = formatEntityOutput(entity);
+        else if (block) output = formatBlockOutput(block);
+        sender.sendMessage(output);
+    }
 }
 
 function formatBlockOutput(block) {
