@@ -20,6 +20,10 @@ This pack brings technical informatics, new features, and quality-of-life change
 
 Learn about how to install and use **Canopy** in the [Wiki](https://github.com/ForestOfLight/Canopy/wiki).
 
+## Looking for Simulated Players?
+
+Check out **[Understudy](https://github.com/ForestOfLight/Understudy)**, a **Canopy** extension addon that gives you full control over simulated players in your world.
+
 ## More Help
 
 1. [**Canopy** Discord server](https://discord.gg/9KGche8fxm)
