@@ -26,6 +26,7 @@ import 'src/commands/removeentity'
 // Script Events
 import 'src/commands/scriptevents/counter'
 import 'src/commands/scriptevents/spawn'
+import 'src/commands/scriptevents/tick'
 
 // Rules
 import 'src/rules/InfoDisplay'

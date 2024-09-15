@@ -12,7 +12,7 @@ new Rule({
 const cmd = new Command({
     name: 'tick',
     description: 'Set and control the tick speed.',
-    usage: `tick <mspt/step/reset> [steps]`,
+    usage: `tick <mspt/step/reset/sleep> [steps/milliseconds]`,
     args: [
         { type: 'string|number', name: 'arg' },
         { type: 'number', name: 'steps' }
@@ -22,12 +22,12 @@ const cmd = new Command({
     helpEntries: [
         { usage: 'tick <mspt>', description: 'Slows down the server tick speed to the specified mspt.' },
         { usage: 'tick step [steps]', description: 'Allows the server to run at normal speed for the specified amount of steps.' },
-        { usage: 'tick reset', description: 'Resets the server tick speed to normal.' }
+        { usage: 'tick reset', description: 'Resets the server tick speed to normal.' },
+        { usage: 'tick sleep [milliseconds]', description: 'Pauses the server for the desired milliseconds.' }
     ]
 });
 
 let targetMSPT = 50.0;
-let shouldReset = false;
 let shouldStep = 0;
 
 system.beforeEvents.watchdogTerminate.subscribe(async (event) => {
@@ -57,6 +57,8 @@ function tickCommand(sender, args) {
         return tickReset(sender);
     else if (arg === 'step')
         return tickStep(sender, steps);
+    else if (arg === 'sleep')
+        return tickSleep(sender, steps);
     else if (Utils.isNumeric(arg))
         return tickSlow(sender, arg);
     else
@@ -85,6 +87,17 @@ function tickStep(sender, steps) {
     else
         shouldStep = steps;
     world.sendMessage(`§7${sender.name} stepping ${shouldStep} tick(s)...`);
+}
+
+function tickSleep(sender, milliseconds) {
+    if (milliseconds === null || milliseconds < 1)
+        return sender.sendMessage('§cInvalid sleep time.');
+    world.sendMessage(`§7${sender.name} pausing the server for ${milliseconds} ms.`);
+    let startTime = Date.now();
+    let waitTime = 0;
+    while (waitTime < milliseconds) {
+        waitTime = Date.now() - startTime;
+    }
 }
 
 function tickSpeed(desiredMspt) {

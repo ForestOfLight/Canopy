@@ -242,7 +242,7 @@ class Utils {
 	static getScriptEventSourceName(event) {
 		switch (event.sourceType) {
 			case 'Block':
-				if (event.sourceBlock.typeId === 'minecraft:command_block')
+				if (event.sourceBlock.typeId.includes('command_block'))
 					return '!';
 				return event.sourceBlock.typeId;
 			case 'Entity':
