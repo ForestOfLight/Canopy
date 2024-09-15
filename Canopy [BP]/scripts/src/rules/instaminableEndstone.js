@@ -8,7 +8,7 @@ const instamineableEndstoneRule = new Rule({
 });
 
 function isEndStone(value) {
-    return value === 'minecraft:end_stone'
+    return value.includes('end_stone');
 }
 
 new Instaminable(isEndStone, instamineableEndstoneRule.getID());
