@@ -50,6 +50,7 @@ import 'src/rules/renewableElytra'
 import 'src/rules/beeHealing'
 import 'src/rules/instaminableDeepslate'
 import 'src/rules/instaminableEndstone'
+import 'src/rules/quickFillContainer'
 
 // Misc Processes
 import 'src/validWorld'
