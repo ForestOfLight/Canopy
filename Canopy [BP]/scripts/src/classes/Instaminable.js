@@ -29,7 +29,6 @@ class Instaminable {
                 let duration = refreshOffset > currentOffset ? refreshOffset - currentOffset : BEACON_REFRESH_RATE - currentOffset + refreshOffset;
                 if (isNaN(duration))
                     duration = player.getEffect('haste')?.duration;
-                console.warn(`Instaminable: ${duration}`);
                 if (duration > 0)
                     player.addEffect('haste', duration, { amplifier: 2 });
             }
