@@ -1,11 +1,10 @@
-// quickFillContainer - when right clicking on a container with an item in hand, deposit all of that item into the container
 import { system, world } from "@minecraft/server";
 import { Rule } from "lib/canopy/Canopy";
 
 new Rule({
     category: 'Rules',
     identifier: 'quickFillContainer',
-    description: 'Using an item on a container while an arrow in the top left slot of your inventory will deposit all of that item into the container.'
+    description: 'Using an item on a container with an arrow in the top left of your inventory will deposit all of that item into the container.'
 });
 
 const ARROW_SLOT = 9;
@@ -21,11 +20,15 @@ world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
     if (!playerInv || playerInv.getItem(ARROW_SLOT)?.typeId !== 'minecraft:arrow') return;
     const handItemStack = event.itemStack;
     if (!handItemStack) return;
+    if (block.typeId.includes('shulker_box') && handItemStack.typeId.includes('shulker_box')) return;
     event.cancel = true;
 
     system.run(() => {
         const successfulTransfers = transferAllItemType(playerInv, blockInv, handItemStack.typeId);
-        const feedback = `§7Filled ${block.typeId.replace('minecraft:', '')} with all ${handItemStack.typeId.replace('minecraft:', '')} (§a${successfulTransfers}§7/§a${blockInv.emptySlotsCount}§7)`
+        if (successfulTransfers === 0) 
+            return;
+        let feedback = `§7Filled ${block.typeId.replace('minecraft:', '')} with all ${handItemStack.typeId.replace('minecraft:', '')}`
+        feedback += ` (§a${blockInv.size - blockInv.emptySlotsCount}§7/§a${blockInv.size}§7)`
         player.onScreenDisplay.setActionBar(feedback);
     });
 });
