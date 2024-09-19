@@ -8,10 +8,12 @@ new Rule({
 });
 
 const ARROW_SLOT = 9;
+const BANNED_CONTAINERS = ['minecraft:beacon', 'minecraft:jukebox', 'minecraft:lectern'];
 
 world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
     if (!Rule.getValue('quickFillContainer')) return;
     const block = event.block;
+    if (BANNED_CONTAINERS.includes(block?.typeId)) return;
     const blockInv = block.getComponent('inventory')?.container;
     if (!blockInv) return;
     const player = event.player;
@@ -27,8 +29,8 @@ world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
         const successfulTransfers = transferAllItemType(playerInv, blockInv, handItemStack.typeId);
         if (successfulTransfers === 0) 
             return;
-        let feedback = `§7Filled ${block.typeId.replace('minecraft:', '')} with all ${handItemStack.typeId.replace('minecraft:', '')}`
-        feedback += ` (§a${blockInv.size - blockInv.emptySlotsCount}§7/§a${blockInv.size}§7)`
+        let feedback = `§7Filled ${block.typeId.replace('minecraft:', '')} with all ${handItemStack.typeId.replace('minecraft:', '')}`;
+        feedback += ` (§a${blockInv.size - blockInv.emptySlotsCount}§7/§a${blockInv.size}§7)`;
         player.onScreenDisplay.setActionBar(feedback);
     });
 });
