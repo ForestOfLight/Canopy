@@ -15,6 +15,7 @@ world.afterEvents.entitySpawn.subscribe(async (event) => {
     const entity = event.entity;
     if (await Rule.getValue('dupeTnt')) {
         system.runTimeout(() => {
+            if (!entity.isValid()) return;
             correctErrorAndNegateXZVelocity(entity);
             applyHardcodedImpulse(entity);
         }, 1);
