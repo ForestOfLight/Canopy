@@ -30,14 +30,6 @@ const cmd = new Command({
 let targetMSPT = 50.0;
 let shouldStep = 0;
 
-system.beforeEvents.watchdogTerminate.subscribe(async (event) => {
-    if (!await Rule.getValue('commandTick')) return;
-    if (event.terminateReason === 'Hang' && targetMSPT > 50.0) {
-        console.warn(`[Watchdog] Terminate hang ignored.`);
-        event.cancel = true;
-    }
-});
-
 system.runInterval(() => {
     if (shouldStep > 0) {
         shouldStep--;
@@ -74,7 +66,6 @@ function tickSlow(sender, mspt) {
 }
 
 function tickReset(sender) {
-    shouldReset = true;
     targetMSPT = 50.0;
     world.sendMessage(`§7${sender.name} reset the tick speed.`);
 }

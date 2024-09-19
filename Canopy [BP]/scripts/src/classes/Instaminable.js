@@ -1,4 +1,4 @@
-import { EquipmentSlot, system, world } from "@minecraft/server";
+import { system, world } from "@minecraft/server";
 import { Rule } from "lib/canopy/Canopy";
 
 const beaconRefreshOffset = new Map();
@@ -10,29 +10,36 @@ world.afterEvents.effectAdd.subscribe(event => {
 });
 
 class Instaminable {
-    constructor(litmusCallback, ruleId = null) {
+    constructor(litmusCallback, ruleId) {
         this.litmusCallback = litmusCallback;
         this.ruleId = ruleId;
         this.init();
     }
 
     init() {
-        world.afterEvents.entityHitBlock.subscribe(async event => {
-            if (this.ruleId !== null && await Rule.getValue(this.ruleId) === false) return;
-            if (event.damagingEntity.typeId !== 'minecraft:player') return;
-            if (this.litmusCallback(event.hitBlock.typeId)) return;
-            const player = event.damagingEntity;
-            const itemStack = player.getComponent('minecraft:equippable').getEquipment(EquipmentSlot.Mainhand);
-            if (this.isEfficiencyFiveNetheritePick(itemStack) && this.hasHasteTwo(player)) {
-                const refreshOffset = beaconRefreshOffset[player.id];
-                const currentOffset = system.currentTick % BEACON_REFRESH_RATE;
-                let duration = refreshOffset > currentOffset ? refreshOffset - currentOffset : BEACON_REFRESH_RATE - currentOffset + refreshOffset;
-                if (isNaN(duration))
-                    duration = player.getEffect('haste')?.duration;
+        system.runInterval(() => {
+            for (const player of world.getPlayers()) {
+                if (player.getEffect('haste')?.amplifier == 2 && isTickBeforeRefresh(player)) {
+                    player.removeEffect('haste');
+                }
+            }
+        });
+
+        world.beforeEvents.playerBreakBlock.subscribe(async event => {
+            const blockId = event.block.typeId;
+            if (await Rule.getValue(this.ruleId) !== true) return;
+            if (!this.litmusCallback(blockId)) return;
+            const player = event.player;
+            if (this.isEfficiencyFiveNetheritePick(event.itemStack) && this.hasHasteTwo(player)) {
+                let duration = player.getEffect('haste')?.duration;
                 if (duration > 0)
                     player.addEffect('haste', duration, { amplifier: 2 });
             }
         });
+    }
+
+    isTickBeforeRefresh(player) {
+        return beaconRefreshOffset[player.id] === (system.currentTick + 1) % BEACON_REFRESH_RATE;
     }
 
     isEfficiencyFiveNetheritePick(itemStack) {
