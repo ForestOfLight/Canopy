@@ -3,19 +3,23 @@ import Data from 'stickycore/data';
 import ProbeManager from 'src/classes/ProbeManager';
 import { getLoadedExtensions } from 'lib/canopy/Canopy';
 
-let hasShownWelcome = false;
+let hasShownWelcome = {};
 
 world.afterEvents.playerJoin.subscribe((event) => {
     let runner = system.runInterval(() => {
         const players = world.getPlayers({ name: event.playerName });
         players.forEach(player => {
-            if (!hasShownWelcome && player?.isValid()) {
+            if (!hasShownWelcome[player.id] && player?.isValid()) {
                 system.clearRun(runner);
-                hasShownWelcome = true;
+                hasShownWelcome[player.id] = true;
                 onValidWorld(player);
             }
         });
     });
+});
+
+world.afterEvents.playerLeave.subscribe((event) => {
+    hasShownWelcome[event.playerId] = false;
 });
 
 function onValidWorld(player) {
