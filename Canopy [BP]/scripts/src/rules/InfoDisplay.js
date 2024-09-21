@@ -89,6 +89,12 @@ new InfoDisplayRule({
 });
 
 new InfoDisplayRule({
+	identifier: 'signalStrength',
+	description: 'Shows the signal strength of the block you are looking at.',
+	contingentRules: ['lookingAt'],
+});
+
+new InfoDisplayRule({
 	identifier: 'peekInventory',
 	description: 'Shows the inventory of the block or entity you are looking at.',
 	contingentRules: ['lookingAt'],
@@ -114,7 +120,8 @@ function InfoDisplay(player) {
 	InfoText += parseMoonPhaseAndSlimeChunk(player);
 	InfoText += parseEventTrackerInfo(player);
 	InfoText += parseHopperCounters(player);
-	InfoText += parseLookingAtAndPeek(player);
+	InfoText += parseLookingAtAndSignalStrength(player);
+	InfoText += parsePeek(player);
 	
 	player.onScreenDisplay.setTitle(InfoText.trim());
 }
@@ -246,26 +253,39 @@ function parseHopperCounters(player) {
 	return getInfoDisplayOutput();
 }
 
-function parseLookingAtAndPeek(player) {
+function parseLookingAtAndSignalStrength(player) {
 	const showLookingAt = InfoDisplayRule.getValue(player, 'lookingAt');
-	const showPeekInventory = InfoDisplayRule.getValue(player, 'peekInventory');
-	// if (!showLookingAt && !showPeekInventory) return '';
+	const showSignalStrength = InfoDisplayRule.getValue(player, 'signalStrength');
 	let blockRayResult;
 	let entityRayResult;
 	let lookingAtName;
-	let peekInventory;
+	let signalStrength;
 	let output = '';
 
-	if (!showLookingAt && !showPeekInventory) return '';
+	if (!showLookingAt && !showSignalStrength) return '';
 	({ blockRayResult, entityRayResult } = Data.getRaycastResults(player, 7));
 	if (showLookingAt) {
 		lookingAtName = Utils.parseLookingAtEntity(entityRayResult).LookingAtName || Utils.parseLookingAtBlock(blockRayResult).LookingAtName;
 		output += `${lookingAtName}`;
 	}
-	if (showPeekInventory) {
-		peekInventory = Data.peekInventory(player, blockRayResult, entityRayResult);
-		output += `${peekInventory}`;
+	if (showSignalStrength) {
+		signalStrength = blockRayResult?.block?.getRedstonePower();
+		if (signalStrength) output += `§7: §c${signalStrength}§r\n`;
 	}
 
+	return output;
+}
+
+function parsePeek(player) {
+	const showPeekInventory = InfoDisplayRule.getValue(player, 'peekInventory');
+	let peekInventory;
+	let blockRayResult;
+	let entityRayResult;
+	let output = '';
+	
+	if (!showPeekInventory) return '';
+	({ blockRayResult, entityRayResult } = Data.getRaycastResults(player, 7));
+	peekInventory = Data.peekInventory(player, blockRayResult, entityRayResult);
+	output += `${peekInventory}`;
 	return output;
 }

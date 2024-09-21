@@ -53,7 +53,6 @@ class Utils {
 					blockName = '§7Undefined';
 				}
 			}
-			if (blockName === `§aminecraft:redstone_wire`) blockName += `§7: §c` + block.permutation.getState('redstone_signal');
 		}
 
 		return { LookingAtName: blockName, LookingAtFace: raycastHitFace, LookingAtLocation: block?.location, LookingAtBlock: block };

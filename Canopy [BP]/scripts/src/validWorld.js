@@ -9,6 +9,7 @@ world.afterEvents.playerJoin.subscribe((event) => {
     let runner = system.runInterval(() => {
         const players = world.getPlayers({ name: event.playerName });
         players.forEach(player => {
+            if (!player) return;
             if (!hasShownWelcome[player.id] && player?.isValid()) {
                 system.clearRun(runner);
                 hasShownWelcome[player.id] = true;
