@@ -199,8 +199,9 @@ function endSpectate(sender) {
         for (let effect of sender.getEffects())
             sender.removeEffect(effect.typeId);
         sender.teleport(beforeSpectatorPlayer.location, { dimension: world.getDimension(beforeSpectatorPlayer.dimensionId), rotation: beforeSpectatorPlayer.rotation });
-        for (const effect of beforeSpectatorPlayer.effects)
-            sender.addEffect(effect.typeId, effect.duration, { amplifier: effect.amplifier });
+        for (const effect of beforeSpectatorPlayer.effects) {
+            sender.addEffect(effect.typeId, min(20000000, effect.duration), { amplifier: effect.amplifier });
+        }
         sender.setGameMode(beforeSpectatorPlayer.gamemode);
         sender.onScreenDisplay.setActionBar('§7Spectating ended');
     }, 8);
