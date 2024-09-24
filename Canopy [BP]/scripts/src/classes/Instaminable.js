@@ -21,7 +21,7 @@ class Instaminable {
             for (const player of world.getPlayers()) {
                 if (!player)
                     continue;
-                if (player.getEffect('haste')?.amplifier == 2 && isTickBeforeRefresh(player)) {
+                if (player.getEffect('haste')?.amplifier == 2 && this.isTickBeforeRefresh(player)) {
                     player.removeEffect('haste');
                 }
             }
