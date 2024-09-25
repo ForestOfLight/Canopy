@@ -5,7 +5,7 @@ const beaconRefreshOffset = new Map();
 const BEACON_REFRESH_RATE = 80;
 
 world.afterEvents.effectAdd.subscribe(event => {
-    if (event.effect.typeId !== 'haste' || event.entity.typeId !== 'minecraft:player') return;
+    if (event.effect.typeId !== 'haste' || event.entity?.typeId !== 'minecraft:player') return;
     beaconRefreshOffset[event.entity.id] = system.currentTick % BEACON_REFRESH_RATE;
 });
 
