@@ -270,7 +270,7 @@ function parseLookingAtAndSignalStrength(player) {
 	}
 	if (showSignalStrength) {
 		signalStrength = blockRayResult?.block?.getRedstonePower();
-		if (signalStrength) output += `§7: §c${signalStrength}§r\n`;
+		if (signalStrength) output += `§7: §c${signalStrength}§r`;
 	}
 
 	return output;
