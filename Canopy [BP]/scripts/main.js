@@ -52,6 +52,8 @@ import 'src/rules/beeHealing'
 import 'src/rules/instaminableDeepslate'
 import 'src/rules/instaminableEndstone'
 import 'src/rules/quickFillContainer'
+import 'src/rules/durabilityNotifier'
+import 'src/rules/allowBubbleColumnPlacement'
 
 // Misc Processes
 import 'src/validWorld'
