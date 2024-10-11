@@ -1,4 +1,4 @@
-import { Command } from 'lib/canopy/Canopy';
+import { Rule, Command } from 'lib/canopy/Canopy';
 import Utils from 'stickycore/utils';
 import { world } from '@minecraft/server';
 
@@ -12,6 +12,12 @@ const validDimensions = {
     'the_end': 'the_end',
 };
 
+new Rule({
+    category: 'Rules',
+    identifier: 'commandChangeDimension',
+    description: 'Enables changedimension command.'
+});
+
 const cmd = new Command({
     name: 'changedimension',
     description: 'Teleports you to the specified dimension.',
@@ -22,7 +28,8 @@ const cmd = new Command({
         { type: 'number', name: 'y' },
         { type: 'number', name: 'z' },
     ],
-    callback: changedimensionCommand
+    callback: changedimensionCommand,
+    contingentRules: ['commandChangeDimension']
 });
 
 function changedimensionCommand(player, args) {

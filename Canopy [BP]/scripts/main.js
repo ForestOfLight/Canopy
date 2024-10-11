@@ -22,6 +22,7 @@ import 'src/commands/claimprojectiles'
 import 'src/commands/trackevent'
 import 'src/commands/tntfuse'
 import 'src/commands/removeentity'
+import 'src/commands/pos'
 
 // Script Events
 import 'src/commands/scriptevents/counter'
