@@ -21,6 +21,8 @@ function dataCommand(sender, args) {
         const entity = world.getEntity(String(targetId));
         if (entity)
             sender.sendMessage(formatEntityOutput(entity));
+        else
+            sender.sendMessage(`§cNo entity found with id ${targetId}.`);
     } else {
         const blockRayResult = sender.getBlockFromViewDirection({ includeLiquidBlocks: true, includePassableBlocks: true, maxDistance: 7 });
         const entityRayResult = sender.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: 7 });

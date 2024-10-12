@@ -11,10 +11,16 @@ new Rule({
 });
 
 world.afterEvents.entitySpawn.subscribe((event) => {
-    if (!Rule.getNativeValue('cauldronConcreteConversion') || event.entity?.typeId !== "minecraft:item") return;
+    if (!Rule.getNativeValue('cauldronConcreteConversion') || event.entity?.typeId !== "minecraft:item" || !event.entity.hasComponent('item')) return;
     const itemStack = event.entity.getComponent('item').itemStack;
-    if (itemStack.typeId.includes('concrete_powder')) {
+    if (itemStack && itemStack.typeId.includes('concrete_powder')) {
         event.entity.addTag('concrete_powder');
+    }
+});
+
+world.afterEvents.entityRemove.subscribe((event) => {
+    if (CURRENT_CONVERSIONS[event.removedEntityId] !== undefined) {
+        delete CURRENT_CONVERSIONS[event.removedEntityId];
     }
 });
 
@@ -36,7 +42,7 @@ function isInWaterCauldron(dimension, itemEntity) {
     if (block?.typeId !== 'minecraft:cauldron') 
         return false;
     const waterContainerComponent = block.getComponent('minecraft:waterContainer');
-    if (waterContainerComponent?.fillLevel > 0)
+    if (waterContainerComponent?.fillLevel === 6)
         return true;
 }
 
@@ -47,10 +53,10 @@ function isDoneConverting(itemEntity) {
     else if (CURRENT_CONVERSIONS[entityId] < CONVERSION_TIME)
         CURRENT_CONVERSIONS[entityId]++;
     else if (CURRENT_CONVERSIONS[entityId] >= CONVERSION_TIME) {
-        delete CURRENT_CONVERSIONS[entityId];
         return true;
+    } else {
+        return false;
     }
-    return false;
 }
 
 function convertToConcrete(dimension, itemEntity) {
@@ -65,4 +71,5 @@ function convertToConcrete(dimension, itemEntity) {
     newItemEntity.clearVelocity();
     newItemEntity.applyImpulse(velocity);
     dimension.spawnParticle('minecraft:cauldron_explosion_emitter', location);
+    dimension.playSound('brush.generic', location);
 }
