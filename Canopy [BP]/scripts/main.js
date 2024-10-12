@@ -23,6 +23,7 @@ import 'src/commands/trackevent'
 import 'src/commands/tntfuse'
 import 'src/commands/removeentity'
 import 'src/commands/pos'
+import 'src/commands/cleanup'
 
 // Script Events
 import 'src/commands/scriptevents/counter'
@@ -54,6 +55,7 @@ import 'src/rules/instaminableEndstone'
 import 'src/rules/quickFillContainer'
 import 'src/rules/durabilityNotifier'
 import 'src/rules/allowBubbleColumnPlacement'
+import 'src/rules/cauldronConcreteConversion'
 
 // Misc Processes
 import 'src/validWorld'
