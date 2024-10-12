@@ -203,7 +203,6 @@ MersenneTwister.prototype.next = function() {
 /**
  * export as default (added by obscraft)
  */
-
 function MTgen(seed) {
 	return new MersenneTwister(seed);
 }

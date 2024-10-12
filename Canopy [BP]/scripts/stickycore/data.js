@@ -1,5 +1,5 @@
 import * as mc from '@minecraft/server'
-import MT from './src/mt.js'
+import MT from 'lib/mt.js'
 import Utils from 'stickycore/utils'
 import { currentQuery } from 'src/commands/peek'
 
