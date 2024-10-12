@@ -42,5 +42,5 @@ function cleanupCommand(sender, args) {
     for (const entity of entities) {
         entity.remove();
     }
-    sender.sendMessage(`§7Cleaned up ${entities.length} items & xp.`);
+    sender.sendMessage(`§7Cleaned up ${entities.length} entities.`);
 }

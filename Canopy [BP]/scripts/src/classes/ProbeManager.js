@@ -215,7 +215,7 @@ class ProbeManager {
                     }
                 }
             }
-            if (count > 20) console.warn(`[Probe Manager] Large number of unused probes found! Removed ${count} unused probes.`);
+            if (count > 100) console.warn(`[Probe Manager] Large number of unused probes found! Removed ${count} unused probes.`);
         }, CLEANUP_INTERVAL);
     }
 }
