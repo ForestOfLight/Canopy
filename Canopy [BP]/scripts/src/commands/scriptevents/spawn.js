@@ -13,13 +13,15 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
 });
 
 function resetSpawnsAndCounters(sourceName) {
-    if (worldSpawns === null) return Utils.broadcastActionBar('§cCould not reset. Spawns are not currently being tracked.');
+    if (worldSpawns === null)
+        return Utils.broadcastActionBar({ translate: 'scriptevent.spawn.notracking' });
     worldSpawns.reset();
     channelMap.resetAll();
-    Utils.broadcastActionBar(`§7[${sourceName}] Reset all spawn and hopper counters.`);
+    Utils.broadcastActionBar({ translate: 'scriptevent.spawn.reset.all', with: [sourceName] });
 }
 
 function printTrackingStatus() {
-    if (worldSpawns === null) return Utils.broadcastActionBar('§cSpawns are not currently being tracked.');
+    if (worldSpawns === null)
+        return Utils.broadcastActionBar({ translate: 'scriptevent.spawn.notracking' });
     world.sendMessage(worldSpawns.getOutput());
 }

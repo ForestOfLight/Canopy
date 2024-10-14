@@ -19,14 +19,14 @@ class HelpPage {
         return this.entries;
     }
 
-    getHeader() {
+    getPrintStarter() {
         let extensionFormat = '';
         let titleFormat = this.title;
         if (this.extensionName) {
             extensionFormat = '§a' + this.extensionName + '§f:';
             titleFormat = this.title.split(':')[1];
         }
-        return '§l§aCanopy§r§2 Help Page: §f' + extensionFormat + titleFormat;
+        return { rawtext: [{ translate: 'commands.help.page.header', with: [extensionFormat+titleFormat] }] };
     }
 }
 
@@ -49,19 +49,18 @@ class RuleHelpPage extends HelpPage {
         return this.entries.some(entry => entry.rule.getID() === rule.getID());
     }
 
-    async toString() {
-        let output = this.getHeader()
-                + '\n§2' + this.usage + ' - ' + this.description;
+    async toRawMessage() {
+        let message = this.getPrintStarter();
+        message.rawtext.push({ rawtext: [ { text: `\n§2${this.usage}§8 - ` }, this.description ] });
         for (let entry of this.entries) {
-            output += '\n  ';
-            output += await entry.toString();
+            message.rawtext.push({ rawtext: [ { text: '\n  ' }, await entry.toRawMessage() ] });
         }
-        return output;
+        return message;
     }
 }
 
 class CommandHelpPage extends HelpPage {
-    constructor(title, description = '', extensionName = false) {
+    constructor(title, description = null, extensionName = false) {
         super(title, description, extensionName);
     }
 
@@ -78,14 +77,14 @@ class CommandHelpPage extends HelpPage {
         return this.entries.some(entry => entry.command.getName() === command.getName());
     }
 
-    toString() {
-        let output = this.getHeader();
-        if (this.description !== '')
-            output += '\n§2' + this.description;
+    toRawMessage() {
+        let message = this.getPrintStarter();
+        if (this.description !== null)
+            message.rawtext.push({ rawtext: [ { text: `\n§2` }, this.description ] });
         for (let entry of this.entries) {
-            output += '\n  ' + entry.toString();
+            message.rawtext.push({ rawtext: [ { text: '\n  ' }, entry.toRawMessage() ] });
         }
-        return output;
+        return message;
     }
 }
 
@@ -101,16 +100,6 @@ class InfoDisplayRuleHelpPage extends RuleHelpPage {
         if (this.hasEntry(rule))
             return;
         this.entries.push(new InfoDisplayRuleHelpEntry(rule, player));
-    }
-
-    async toString() {
-        let output = this.getHeader()
-                + '\n§2' + this.usage + ' - ' + this.description;
-        for (let entry of this.entries) {
-            output += '\n  ';
-            output += await entry.toString();
-        }
-        return output;
     }
 }
 

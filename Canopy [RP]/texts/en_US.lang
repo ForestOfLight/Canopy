@@ -1,0 +1,168 @@
+## vanilla
+entity.canopy:probe.name=Canopy Probe
+entity.canopy:rideable.name=Canopy Rideable
+action.hint.exit.canopy:rideable=Sneak to stand
+
+## generic
+generic.welcome.start=§7This server is running §l§aCanopy§r§7. Type ./help to get started.§r
+generic.welcome.extensions=§7Loaded extensions: §a%s
+generic.player.notfound=§cPlayer '%s' not found.
+generic.target.notfound=§cTarget not found.
+generic.entity.notfound=§cEntity not found.
+generic.total='Total'
+
+## commands
+commands.generic.unknown=§cInvalid command: '%1'. Use %2help for more information.
+commands.generic.nopermission=§cYou do not have permission to run this command.
+commands.generic.usage=§cUsage: %s
+
+commands.help.description=Displays help pages.
+commands.help.search.noresult=§cNo results found for "%s"
+commands.help.search.results=§l§aCanopy§r §2Help search results for "§r%1§2":%2
+commands.help.page.header=§l§aCanopy§r§2 Help Page: §f%1
+commands.help.infodisplay.description=Togglable rules for your InfoDisplay.
+commands.help.rules.description=Togglable global rules.
+commands.help.extension.rules.description=Togglable rules for §a%s§2.
+commands.help.extension.commands.description=Commands for §a%s§2.
+
+commands.camera.description=Place a camera, view it, or use a survival-friendly spectator mode.
+commands.camera.place.description=Places a camera at your current location. (Alias: cp)
+commands.camera.view.description=Toggles viewing your latest camera placement. (Alias: cv)
+commands.camera.spectate.description=Toggles a survival-friendly spectator mode. (Alias: cs)
+commands.camera.place.viewing=§cYou cannot place a camera while viewing one.
+commands.camera.place.success=§7Camera placed at %s.
+commands.camera.view.spectating=§cYou cannot view a camera while spectating.
+commands.camera.view.fail=§cYou have not placed a camera yet.
+commands.camera.view.dimension=§cPlease go to %s to view this camera.
+commands.camera.view.started=§aViewing camera
+commands.camera.view.ended=§7Camera view ended
+commands.camera.spectate.viewing=§cYou cannot spectate while viewing a camera.
+commands.camera.spectate.gamemode=§cYou cannot change your gamemode while spectating.
+commands.camera.spectate.started=§aSpectating
+commands.camera.spectate.ended=§7Spectating ended
+
+commands.canopy.description=Enable or disable a rule.
+
+commands.changedimension.description=Teleports you to the specified dimension.
+commands.changedimension.notfound=§cInvalid dimension. Please use one of these: %s
+commands.changedimension.success.coords=§7Teleported to %1 in %2 dimension.
+commands.changedimension.success=§7Changed to %s dimension.
+commands.changedimension.fail.coords=§cInvalid coordinates. Please provide all x, y, z numeric values or none.
+
+commands.claimprojectiles.description=Changes the owner of all projectiles within a radius.
+commands.claimprojectiles.fail.nonefound=§7No projectiles found in range (%s blocks).
+commands.claimprojectiles.success.self=§7Successfully became the owner of %1 projectiles within %2 blocks of you.
+commands.claimprojectiles.success.other=§7Successfully changed the owner of %1 projectiles within %2 blocks of %3.
+
+commands.cleanup.description=Removes all items and experience orbs within a radius. (Alias: k)
+commands.cleanup.success=§7Cleaned up %s entities.
+
+commands.counter.description=Manages hopper counters. (Alias: ct)
+commands.counter.channel.notfound=§cInvalid color: %s. Please use one of the wool block colors.
+commands.counter.query.description=Displays the count and rates of the hopper counter for the specified color.
+commands.counter.query.empty=§7There are no hopper counters in use.
+commands.counter.query.channel=§7Items for %1§7 (%2%3 min.), total: §f%4§7, (§f%5§7):
+commands.counter.realtime.description=Displays count and rates, but uses real-world time instead of tick-based time.
+commands.counter.mode.description=Sets the mode of a hopper counter.
+commands.counter.mode.notfound=§cInvalid mode: '%1'. Please use one of the following modes: %2
+commands.counter.mode.single.success=§7Hopper Counter %1§7 mode: %2
+commands.counter.mode.single.success.actionbar=[%1] Set %2 hopper counter mode to %3
+commands.counter.mode.all.success=§7All Hopper Counters mode: %s
+commands.counter.mode.all.success.actionbar=[%1] Set all hopper counters mode to %2
+commands.counter.reset.description=Resets all hopper counters and restarts the timer.
+commands.counter.reset.single=§7Reset and time restarted: %s
+commands.counter.reset.single.actionbar=[%1] Reset %2 hopper counter.
+commands.counter.reset.all=§7All channels have been reset and hopper counter timer started.
+commands.counter.reset.all.actionbar=[%s] Reset all hopper counters.
+
+commands.data.description=Displays information about the block or entity you are looking at.
+commands.data.notarget.id=§cNo entity found with id '%2'.
+commands.data.properties=§aProperties:§r %s
+commands.data.states=§aStates:§r %s
+commands.data.components=§aComponents:§r %s
+commands.data.tags=§aTags:§r %s
+commands.data.dynamicProperties=§aDynamicProperties:§r %1 total byte count: %2
+commands.data.effects=§aEffects:§r %s
+commands.data.other=§aOther:§r head location: %1 rotation: [%2, %3], velocity: %4, view direction: %5
+
+commands.distance.description=Calculates the distance between two locations. (Alias: d)
+commands.distance.target.description=Calculates distance between you and the block or entity you are looking at.
+commands.distance.fromto.description=Calculates the distance between two locations.
+commands.distance.from.description=Saves a location to calculate distance from.
+commands.distance.from.success=§7Saved location: %s
+commands.distance.to.description=Calculates the distance from the saved location to the specified location.
+commands.distance.to.fail.nosave=§cNo saved location found. Save a location with: %sdistance from [x y z]
+commands.distance.target.notfound=§cNo block or entity found to calculate distance from.
+commands.distance.cartesian=§7Cartesian: §r§l%s§r
+commands.distance.cylindrical=§7Cartesian(XZ): §r§l%s§r
+commands.distance.manhattan=§7§7Manhattan: §r§l%s§r
+
+commands.entitydensity.description=Find entity-dense areas in a dimension.
+commands.entitydensity.fail.noentities=§7No dense areas found in %s. No entities in the dimension?
+commands.entitydensity.fail.dimension=§cInvalid dimension. Please use one of these: %s
+commands.entitydensity.fail.gridsize=§cInvalid grid size. Please use a value between 1 and 2048. Recommended: 100-1024.
+commands.entitydensity.success.header=§7Entity-dense areas in %1 (grid size %2x%3):
+commands.entitydensity.success.area=§7- %1 entities at %2, %3
+
+commands.gamemode.s.description=Set your gamemode to survival.
+commands.gamemode.c.description=Set your gamemode to creative.
+commands.gamemode.sp.description=Set your gamemode to spectator.
+
+commands.health.description=Displays the server's current TPS, MSPT, and entity counts.
+commands.health.fail.mspt=§cCould not compute MSPT. Please report this error.
+
+commands.info.description=Toggle InfoDisplay rules. (Alias: i)
+commands.info.allupdated=%s§r§7 all InfoDisplay rules.
+
+commands.jump.description=Teleport to the block you are looking at. (Alias: j)
+commands.jump.fail.noblock=§cNo block found to jump to.
+
+commands.log.description=Log tnt, projectile, and falling block movement.
+commands.log.precision=§7Log precision set to %s.
+commands.log.started=§7Started logging %s.
+commands.log.stopped=§7Stopped logging %s.
+
+commands.peek.description=Peek into a target's inventory and optionally highlight items that match a query.
+commands.peek.fail.unloaded=§cTarget at %s is unloaded.
+commands.peek.fail.noinventory=§cNo inventory found in %1 at %2.
+commands.peek.fail.noitems=§cNo items found in %1 at %2.
+commands.peek.query.cleared=§7Peek query cleared.
+commands.peek.query.set=§7Peek query set to '%s'.
+
+commands.pos.description=Shows your current position, or the position of another player.
+commands.pos.self=§aYour position: §f%s
+commands.pos.other=§a%1's position: §f%2
+commands.pos.dimension=§7Dimension: §7%s
+commands.pos.relative.overworld=§7Relative Overworld position: §a%s
+commands.pos.relative.nether=§7Relative Nether position: §c%s
+
+commands.removeentity.description=Instantly remove the entity you are looking at or by id.
+commands.removeentity.fail.player=§cCannot remove players.
+commands.removeentity.fail.noid=§cNo entity found with id '%s'.
+commands.removeentity.success=§7Removed %1 with id '%2'.
+
+commands.resetall.description=Resets all §lCanopy§r§8 rules and data. Use with caution.
+commands.resetall.success=§7All §lCanopy§r§8 player and world dynamic properties have been reset.
+
+## scriptevents
+scriptevent.spawn.reset.all=[%s] Reset all spawn and hopper counters.
+scriptevent.spawn.notracking=§7Spawns are not currently being tracked.
+
+scriptevent.tick.sleep=§7[%1] Pausing the server for %2 ms.
+
+## rules
+rules.generic.unknown=§cInvalid rule: %s. Use %2help for more information.
+rules.generic.blocked=§cThe %s rule is disabled.
+rules.generic.status=§7%1 is currently %2§r§7.
+rules.generic.nochange=§7%1 is already %2§r§7.
+rules.generic.updated=§7%1 is now %2§r§7.
+
+rules.commandCamera.description=Enables camera command.
+rules.commandChangeDimension.description=Enables changedimension command.
+rules.commandClaimProjectiles.description=Enables claimprojectiles command.
+rules.commandCleanup.description=Enables cleanup command.
+rules.hopperCounters.description=Enables counter command & hopper counter functionality.
+rules.commandGamemode.description=Enables shortened gamemode commands (e.g. `./s` for survival), including without OP.
+rules.commandJumpSurvival.description=Enables jump command in survival mode.
+rules.commandPos.description=Enables pos command.
+rules.commandRemoveEntity=Enables removeentity command.

@@ -3,7 +3,7 @@ import { Command } from 'lib/canopy/Canopy'
 
 new Command({
     name: 'resetall',
-    description: 'Resets all §lCanopy§r§8 features and data. Use with caution.',
+    description: { translate: 'commands.resetall.description' },
     usage: 'resetall',
     callback: resetallCommand,
     adminOnly: true
@@ -15,5 +15,5 @@ function resetallCommand(sender) {
     players.forEach(player => {
         player?.clearDynamicProperties();
     });
-    world.sendMessage('§cPlayer and world dynamic properties have been reset.');
+    world.sendMessage({ translate: 'commands.resetall.success' });
 }

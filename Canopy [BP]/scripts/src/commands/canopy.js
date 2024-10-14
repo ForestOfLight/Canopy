@@ -3,7 +3,7 @@ import { resetCounterMap } from 'src/commands/counter';
 
 const cmd = new Command({
     name: 'canopy',
-    description: 'Enable or disable a rule.',
+    description: { translate: 'commands.canopy.description' },
     usage: 'canopy <rule> <true/false>',
     args: [
         { type: 'string', name: 'ruleID' },
@@ -18,14 +18,15 @@ async function canopyCommand(sender, args) {
     if (ruleID === null && enable === null)
         return cmd.sendUsage(sender);
     if (!Rule.exists(ruleID)) 
-        return sender.sendMessage(`§cInvalid rule: ${ruleID}`);
+        return sender.sendMessage({ translate: 'rules.generic.unknown', with: [ruleID, Command.prefix] });
 
     const rule = Rule.getRule(ruleID);
     const ruleValue = await rule.getValue();
+    const enabledFormat = ruleValue ? '§l§aenabled' : '§l§cdisabled';
     if (enable === null)
-        return sender.sendMessage(`§7${rule.getID()} is currently ${ruleValue ? '§l§aenabled' : '§l§cdisabled'}§r§7.`);
+        return sender.sendMessage({ translate: 'rules.generic.status', with: [rule.getID(), enabledFormat] });
     if (ruleValue === enable)
-        return sender.sendMessage(`§7${rule.getID()} is already ${enable ? '§l§aenabled' : '§l§cdisabled'}§r§7.`);
+        return sender.sendMessage({ translate: 'rules.generic.nochange', with: [rule.getID(), enabledFormat] });
 
     if (ruleID === 'hopperCounters' && !enable)
         resetCounterMap();
@@ -42,7 +43,7 @@ async function canopyCommand(sender, args) {
 function updateRule(sender, ruleID, ruleValue, enable) {
     if (ruleValue === enable) return;
     Rule.getRule(ruleID).setValue(enable);
-    sender.sendMessage(`§7${ruleID} is now ${enable ? '§l§aenabled' : '§l§cdisabled'}§r§7.`);
+    sender.sendMessage({ translate: 'rules.generic.updated', with: [ruleID, enable ? '§l§aenabled' : '§l§cdisabled'] });
 }
 
 async function updateRules(sender, ruleIDs, enable) {

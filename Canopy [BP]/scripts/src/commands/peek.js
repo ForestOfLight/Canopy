@@ -7,8 +7,8 @@ const currentQuery = {};
 
 new Command({
     name: 'peek',
-    description: 'Peek into a target\'s inventory and optionally highlight a items that match a search term.',
-    usage: 'peek [seachTerm]',
+    description: { translate: 'commands.peek.description' },
+    usage: 'peek [query]',
     args: [
         { type: 'string', name: 'itemQuery' }
     ],
@@ -23,39 +23,38 @@ function peekCommand(sender, args) {
     let inventory;
     let items = {};
     let targetName;
-    let output;
 
     updateQueryMap(sender, itemQuery);
     ({blockRayResult, entityRayResult} = Data.getRaycastResults(sender, MAX_DISTANCE));
-    if (!blockRayResult && !entityRayResult[0]) return sender.sendMessage('§cNo target found.');
+    if (!blockRayResult && !entityRayResult[0])
+        return sender.sendMessage({ translate: 'generic.target.notfound' });
     target = Utils.getClosestTarget(sender, blockRayResult, entityRayResult);
     targetName = Utils.parseName(target);
     try {
         inventory = target.getComponent('inventory');
     } catch(error) {
-        return sender.sendMessage(`§cTarget at ${Utils.stringifyLocation(target.location, 0)} is unloaded.`);
+        return sender.sendMessage({ translate: 'commands.peek.fail.unloaded', with: [Utils.stringifyLocation(target.location, 0)] });
     }
-    if (!inventory) return sender.sendMessage(`§cNo inventory found in ${targetName} at ${Utils.stringifyLocation(target.location, 0)}.`);
+    if (!inventory)
+        return sender.sendMessage({ translate: 'commands.peek.fail.noinventory', with: [targetName, Utils.stringifyLocation(target.location, 0)] });
 
     items = Utils.populateItems(inventory);
-    output = formatOutput(targetName, target.location, items, itemQuery);
-    sender.sendMessage(output);
+    sender.sendMessage(formatOutput(targetName, target.location, items, itemQuery));
 }
 
 function formatOutput(targetName, targetLocation, items, itemQuery) {
-    let output = '';
-    
-    output += '§g-------------\n';
+    if (Object.keys(items).length === 0)
+        return { translate: 'commands.peek.fail.noitems', with: [targetName, Utils.stringifyLocation(targetLocation, 0)] };
+
+    let output = '§g-------------\n';
     output += `§l§e${targetName}§r: ${Utils.stringifyLocation(targetLocation, 0)}`;
-    if (Object.keys(items).length === 0) output += '\n§eEmpty';
-    else for (let itemName in items) {
+    for (let itemName in items) {
         if (itemQuery && itemName.includes(itemQuery))
             output += `\n§c${itemName}§r: ${items[itemName]}`;
         else
             output += `\n§e${itemName}§r: ${items[itemName]}`;
     }
     output += '\n§g-------------';
-
     return output;
 }
 
@@ -64,10 +63,10 @@ function updateQueryMap(sender, itemQuery) {
     if ([null, undefined].includes(oldQuery) && itemQuery === null) return;
     else if (itemQuery === null && ![null, undefined].includes(oldQuery)) {
         currentQuery[sender.name] = null;
-        return sender.sendMessage('§7Peek query cleared.');
+        return sender.sendMessage({ translate: 'commands.peek.query.cleared' });
     } else {
         currentQuery[sender.name] = itemQuery;
-        sender.sendMessage(`§7Peek query set to "${itemQuery}".`);
+        sender.sendMessage({ translate: 'commands.peek.query.set', with: [itemQuery] });
     }
 }
 

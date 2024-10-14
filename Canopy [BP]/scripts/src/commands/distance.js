@@ -7,8 +7,8 @@ const MAX_DISTANCE = 64*16;
 
 const cmd = new Command({
     name: 'distance',
-    description: 'Calculates the distance between two locations. (Alias: d)',
-    usage: `distance to <x y z> from [x y z] OR ${Command.prefix}distance target`,
+    description: { translate: 'commands.distance.description' },
+    usage: `distance [from [x y z]] [to [x y z]] OR ${Command.prefix}distance target`,
     args: [
         { type: 'string', name: 'actionArgOne' },
         { type: 'number', name: 'fromArgX' },
@@ -21,16 +21,16 @@ const cmd = new Command({
     ],
     callback: distanceCommand,
     helpEntries: [
-        { usage: `distance target`, description: `Calculates distance between you and the block or entity you are looking at.` },
-        { usage: `distance to <x y z> from [x y z]`, description: `Calculates the distance between two locations.` },
-        { usage: `distance from [x y z]`, description: `Saves a location to calculate distance from.` },
-        { usage: `distance to [x y z]`, description: `Calculates the distance from the saved location to the specified location.` }
+        { usage: `distance target`, description: { translate: 'commands.distance.target.description' } },
+        { usage: `distance from <x y z> to [x y z]`, description: { translate: 'commands.distance.fromto.description' } },
+        { usage: `distance from [x y z]`, description: { translate: 'commands.distance.from.description' } },
+        { usage: `distance to [x y z]`, description: { translate: 'commands.distance.to.description' } }
     ]
 });
 
 new Command({
     name: 'd',
-    description: 'Calculates the distance between two locations.',
+    description: { translate: 'commands.distance.description' },
     args: [
         { type: 'string', name: 'actionArgOne' },
         { type: 'number', name: 'fromArgX' },
@@ -41,7 +41,7 @@ new Command({
         { type: 'number', name: 'toArgY' },
         { type: 'number', name: 'toArgZ' }
     ],
-    usage: `d to <x y z> from [x y z] OR ${Command.prefix}d target`,
+    usage: `d to [from [x y z]] [to [x y z]] OR ${Command.prefix}d target`,
     callback: distanceCommand,
     helpHidden: true
 });
@@ -59,7 +59,7 @@ function distanceCommand(sender, args) {
     else if (actionArgOne === 'target')
         output = targetDistance(sender, args);
     else
-        output = '§cUsage: ' + cmd.getUsage();
+        output = { translate: 'commands.generic.usage', with: [cmd.getUsage()] };
     
     sender.sendMessage(output);
 }
@@ -71,9 +71,9 @@ function trySaveLocation(sender, args) {
     else if (areDefined(fromArgX, fromArgY, fromArgZ))
         savedLocation = { x: fromArgX, y: fromArgY, z: fromArgZ };
     else
-        return '§cUsage: ./distance from [x y z]';
+        return { translate: 'commands.generic.usage', with: [`${Command.prefix}distance from [x y z]`] }
 
-    return `§7Saved location: ${Utils.stringifyLocation(savedLocation)}`;
+    return { translate: 'commands.distance.from.success', with: [Utils.stringifyLocation(savedLocation)] };
 }
 
 function tryCalculateDistanceFromSave(sender, args) {
@@ -82,7 +82,7 @@ function tryCalculateDistanceFromSave(sender, args) {
     let toLocation;
 
     if (!hasSavedLocation() || (savedLocation.x === null && savedLocation.y === null && savedLocation.z === null))
-        return '§cNo saved location found. Save a location with: ./distance from [x y z]';
+        return { translate: 'commands.distance.to.fail.nosave', with: [Command.prefix] };
     fromLocation = savedLocation;
 
     if (areDefined(fromArgX, fromArgY, fromArgZ))
@@ -90,8 +90,8 @@ function tryCalculateDistanceFromSave(sender, args) {
     else if (areUndefined(fromArgX, fromArgY, fromArgZ))
         toLocation = sender.location;
     else
-        return '§cUsage: ./distance to [x y z]';
-    
+        return { translate: 'commands.generic.usage', with: [`${Command.prefix}distance to [x y z]`] };
+
     return getCompleteOutput(fromLocation, toLocation);
 }
 
@@ -108,7 +108,7 @@ function tryCalculateDistance(sender, args) {
         fromLocation = { x: fromArgX, y: fromArgY, z: fromArgZ };
         toLocation = { x: toArgX, y: toArgY, z: toArgZ };
     } else {
-        return '§cUsage: ./distance from <x y z> to [x y z]';
+        return { translate: 'commands.generic.usage', with: [`${Command.prefix}distance from <x y z> to [x y z]`] };
     }
 
     return getCompleteOutput(fromLocation, toLocation);
@@ -119,13 +119,14 @@ function targetDistance(sender) {
     let targetLocation;
 
     const { blockRayResult, entityRayResult } = Data.getRaycastResults(sender, MAX_DISTANCE);
-    if (!blockRayResult && !entityRayResult[0]) return '§cNo block or entity found to calculate distance from.';
+    if (!blockRayResult && !entityRayResult[0])
+        return { translate: 'commands.distance.target.notfound' };
     const target = Utils.getClosestTarget(sender, blockRayResult, entityRayResult);
 
     try {
         targetLocation = target.location;
     } catch(error) {
-        return '§cUnable to get block or entity location.';
+        return { translate: 'commands.distance.target.notfound' };
     }
 
     return getCompleteOutput(playerLocation, targetLocation);
@@ -152,11 +153,16 @@ function calculateDistances(locationOne, locationTwo) {
 }
 
 function getCompleteOutput(locationOne, locationTwo) {
-    let output = '';
     const { cartesianDistance, cylindricalDistance, manhattanDistance } = calculateDistances(locationOne, locationTwo);
-    output += `§7Distance from §a${Utils.stringifyLocation(locationOne)}§7 to §a${Utils.stringifyLocation(locationTwo)}§7:\n`;
-    output += `§7Cartesian: §r§l${cartesianDistance.toFixed(3)}§r\n`;
-    output += `§7Cartesian(XZ): §r§l${cylindricalDistance.toFixed(3)}§r\n`;
-    output += `§7Manhattan: §r§l${manhattanDistance.toFixed(3)}§r\n`;
-    return output;
+    const message = {
+        rawtext: [
+            { text: `§7Distance from §a${Utils.stringifyLocation(locationOne)}§7 to §a${Utils.stringifyLocation(locationTwo)}§7:\n` },
+            { rawtext: [
+                { translate: 'commands.distance.cartesian', with: [cartesianDistance.toFixed(3)] }, { text: '\n' },
+                { translate: 'commands.distance.cylindrical', with: [cylindricalDistance.toFixed(3)] }, { text: '\n' },
+                { translate: 'commands.distance.manhattan', with: [manhattanDistance.toFixed(3)] }, { text: '\n' }
+            ]}
+        ]
+    }
+    return message;
 }

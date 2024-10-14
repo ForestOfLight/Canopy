@@ -7,7 +7,7 @@ const BLOCK_COMPONENTS = ['minecraft:inventory', 'minecraft:lavaContainer', 'min
 
 new Command({
     name: 'data',
-    description: 'Displays information about the block or entity you are looking at.',
+    description: { translate: 'commands.data.description' },
     usage: 'data [id]',
     args: [
         { type: 'number', name: 'id' }
@@ -22,58 +22,73 @@ function dataCommand(sender, args) {
         if (entity)
             sender.sendMessage(formatEntityOutput(entity));
         else
-            sender.sendMessage(`§cNo entity found with id ${targetId}.`);
+            sender.sendMessage({ translate: 'commands.data.notarget.id', with: [targetId] });
     } else {
         const blockRayResult = sender.getBlockFromViewDirection({ includeLiquidBlocks: true, includePassableBlocks: true, maxDistance: 7 });
         const entityRayResult = sender.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: 7 });
         const block = blockRayResult?.block;
         const entity = entityRayResult[0]?.entity;
-        if (!block && !entity) return sender.sendMessage('§cNo target found.');
+        if (!block && !entity)
+            return sender.sendMessage({ translate: 'generic.target.notfound' });
 
         let output;
-        if (entity) output = formatEntityOutput(entity);
-        else if (block) output = formatBlockOutput(block);
+        if (entity)
+            output = formatEntityOutput(entity);
+        else if (block)
+            output = formatBlockOutput(block);
         sender.sendMessage(output);
     }
 }
 
 function formatBlockOutput(block) {
-    let output = '';
-    let dimensionId = block.dimension.id.replace('minecraft:', '');
-    let properties = formatProperties(block);
-    let states = JSON.stringify(block.permutation.getAllStates());
-    let components = formatComponents(block, tryGetBlockComponents(block));
-    let tags = JSON.stringify(block.getTags());
+    const dimensionId = block.dimension.id.replace('minecraft:', '');
+    const properties = formatProperties(block);
+    const states = JSON.stringify(block.permutation.getAllStates());
+    const components = formatComponents(block, tryGetBlockComponents(block));
+    const tags = JSON.stringify(block.getTags());
 
-    output += `§l§a${Utils.parseName(block)}§r: ${Utils.stringifyLocation(block.location, 0)}, ${dimensionId}\n`;
-    output += `§aProperties:§r ${properties}\n`;
-    output += `§aStates:§r ${states}\n`;
-    output += `§aComponents:§r ${components}\n`;
-    output += `§aTags:§r ${tags}\n`;
+    const message = {
+        rawtext: [
+            { text: `§l§a${Utils.parseName(block)}§r: ${Utils.stringifyLocation(block.location, 0)}, ${dimensionId}\n` },
+            { rawtext: [
+                { translate: 'commands.data.properties', with: [properties] }, { text: '\n' },
+                { translate: 'commands.data.states', with: [states] }, { text: '\n' },
+                { translate: 'commands.data.components', with: [components] }, { text: '\n' },
+                { translate: 'commands.data.tags', with: [tags] }, { text: '\n' }
+            ]}
+        ]
+    };
 
-    return output;
+    return message;
 }
 
 function formatEntityOutput(entity) {
-    let output = '';
-    let nameTag = entity.nameTag ? `(${entity.nameTag})` : '';
-    let dimensionId = entity.dimension.id.replace('minecraft:', '');
-    let properties = formatProperties(entity);
-    let components = formatComponents(entity, entity.getComponents());
-    let rotation = entity.getRotation();
-    let headLocationStr = entity.getHeadLocation() ? Utils.stringifyLocation(entity.getHeadLocation(), 2) : 'none';
-    let velocityStr = entity.getVelocity() ? Utils.stringifyLocation(entity.getVelocity(), 3) : 'none';
-    let viewDirectionStr = entity.getViewDirection() ? Utils.stringifyLocation(entity.getViewDirection(), 2) : 'none';
-
-    output += `§l§a${Utils.parseName(entity)}${nameTag}§r: §2id:${entity.id}§r, ${Utils.stringifyLocation(entity.location, 2)}, ${dimensionId}\n`;
-    output += `§aProperties:§r ${properties}\n`;
-    output += `§aComponents:§r ${components}\n`;
-    output += `§aDynamicProperties:§r ${JSON.stringify(entity.getDynamicPropertyIds())} total byte count: ${entity.getDynamicPropertyTotalByteCount()}\n`;
-    output += `§aEffects:§r ${JSON.stringify(entity.getEffects())}\n`;
-    output += `§aTags:§r ${JSON.stringify(entity.getTags())}\n`;
-    output += `§aOther:§r head location: ${headLocationStr} rotation: [${rotation.x.toFixed(2)}, ${rotation.y.toFixed(2)}], velocity: ${velocityStr}, view direction: ${viewDirectionStr}\n`;
+    const nameTag = entity.nameTag ? `(${entity.nameTag})` : '';
+    const dimensionId = entity.dimension.id.replace('minecraft:', '');
+    const properties = formatProperties(entity);
+    const components = formatComponents(entity, entity.getComponents());
+    const dynamicProperties = JSON.stringify(entity.getDynamicPropertyIds());
+    const effects = JSON.stringify(entity.getEffects());
+    const tags = JSON.stringify(entity.getTags());
+    const headLocationStr = entity.getHeadLocation() ? Utils.stringifyLocation(entity.getHeadLocation(), 2) : 'none';
+    const rotation = entity.getRotation();
+    const velocityStr = entity.getVelocity() ? Utils.stringifyLocation(entity.getVelocity(), 3) : 'none';
+    const viewDirectionStr = entity.getViewDirection() ? Utils.stringifyLocation(entity.getViewDirection(), 2) : 'none';
     
-    return output;
+    const message = {
+        rawtext: [
+            { text: `§l§a${Utils.parseName(entity)}${nameTag}§r: §2id:${entity.id}§r, ${Utils.stringifyLocation(entity.location, 2)}, ${dimensionId}\n` },
+            { rawtext: [
+                { translate: 'commands.data.properties', with: [properties] }, { text: '\n' },
+                { translate: 'commands.data.components', with: [components] }, { text: '\n' },
+                { translate: 'commands.data.dynamicProperties', with: [dynamicProperties, entity.getDynamicPropertyTotalByteCount().toString()] }, { text: '\n' },
+                { translate: 'commands.data.effects', with: [effects] }, { text: '\n' },
+                { translate: 'commands.data.tags', with: [tags] }, { text: '\n' },
+                { translate: 'commands.data.other', with: [headLocationStr, rotation.x.toFixed(2), rotation.y.toFixed(2), velocityStr, viewDirectionStr] }, { text: '\n' }
+            ]}
+        ]
+    }
+    return message;
 }
 
 function formatProperties(target) {

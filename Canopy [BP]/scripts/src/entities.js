@@ -70,13 +70,12 @@ const Entities = {
         let dimensionColors = ['§a', '§c', '§d'];
         let dimensionEntities = {};
         let totalEntities;
-        let output = '';
         for (let dimensionId of dimensionIds) {
             dimensionEntities[dimensionId] = world.getDimension(dimensionId).getEntities();
         }
     
         totalEntities = dimensionEntities.overworld.length + dimensionEntities.nether.length + dimensionEntities.the_end.length;
-        output = '§7Dimension entities: '
+        let output = '§7Dimension entities: '
         for (let i = 0; i < dimensionIds.length; i++) {
             let dimensionId = dimensionIds[i];
             let count = dimensionEntities[dimensionId].length;

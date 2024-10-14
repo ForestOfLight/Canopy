@@ -3,12 +3,12 @@ import { Rule, Command } from 'lib/canopy/Canopy';
 new Rule({
     category: 'Rules',
     identifier: 'commandCleanup',
-    description: 'Enables cleanup command.'
+    description: { translate: 'rules.commandCleanup.description' }
 });
 
 new Command({
     name: 'cleanup',
-    description: 'Removes all items and experience orbs. (Alias: k)',
+    description: { translate: 'commands.cleanup.description' },
     usage: 'cleanup [distance]',
     args: [
         { type: 'number', name: 'distance' },
@@ -19,7 +19,7 @@ new Command({
 
 new Command({
     name: 'k',
-    description: 'Removes all items and experience orbs.',
+    description: { translate: 'commands.cleanup.description' },
     usage: 'k [distance]',
     args: [
         { type: 'number', name: 'distance' },
@@ -42,5 +42,5 @@ function cleanupCommand(sender, args) {
     for (const entity of entities) {
         entity.remove();
     }
-    sender.sendMessage(`§7Cleaned up ${entities.length} entities.`);
+    sender.sendMessage({ translate: 'commands.cleanup.success', with: [entities.length.toString()] });
 }

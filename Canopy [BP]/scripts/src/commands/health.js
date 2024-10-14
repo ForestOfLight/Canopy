@@ -7,7 +7,7 @@ import Utils from 'stickycore/utils'
 
 new Command({
     name: 'health',
-    description: 'Displays the server\'s current TPS, MSPT, and entity counts.',
+    description: { translate: 'commands.health.description' },
     usage: 'health',
     callback: healthCommand
 })
@@ -30,7 +30,8 @@ function printRealMspt(sender) {
     lastTick = Data.getAbsoluteTime();
     ({ startTime, endTime } = Utils.wait(50));
     system.runTimeout(() => {
-        if (Data.getAbsoluteTime() - lastTick != 1) return sender.sendMessage(`§cCould not compute MSPT. Please report this error.`);
+        if (Data.getAbsoluteTime() - lastTick != 1)
+            return sender.sendMessage({ translate: 'commands.health.fail.mspt' });
         
         realMspt = Date.now() - startTime - (endTime - startTime);
         const realMsptFormatted = realMspt > 50.0 ? `§c${realMspt}` : `§a${realMspt}`;

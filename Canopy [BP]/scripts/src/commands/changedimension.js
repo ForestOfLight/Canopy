@@ -15,12 +15,12 @@ const validDimensions = {
 new Rule({
     category: 'Rules',
     identifier: 'commandChangeDimension',
-    description: 'Enables changedimension command.'
+    description: { translate: 'rules.commandChangeDimension.description' }
 });
 
 const cmd = new Command({
     name: 'changedimension',
-    description: 'Teleports you to the specified dimension.',
+    description: { translate: 'commands.changedimension.description' },
     usage: 'changedimension <dimension> [x y z]',
     args: [
         { type: 'string', name: 'dimension' },
@@ -34,18 +34,21 @@ const cmd = new Command({
 
 function changedimensionCommand(player, args) {
     const { dimension, x, y, z } = args;
-    if (!dimension) return cmd.sendUsage(player);
+    if (!dimension)
+        return cmd.sendUsage(player);
     const validDimensionId = validDimensions[dimension.toLowerCase()];
-    if (!validDimensionId) return player.sendMessage(`§cInvalid dimension. Please use one of these: ${Object.keys(validDimensions).join(', ')}`);
+    if (!validDimensionId)
+        return player.sendMessage({ translate: 'commands.changedimension.notfound', with: Object.keys(validDimensions).join(', ')});
     
     const validDimension = world.getDimension(validDimensionId);
     if ((x !== null && y !== null && z !== null) && (Utils.isNumeric(x) && Utils.isNumeric(y) && Utils.isNumeric(z))) {
-        player.teleport({ x, y, z }, { dimension: validDimension } );
-        player.sendMessage(`§7Teleported to ${x}, ${y}, ${z} in the ${validDimensionId} dimension.`);
+        const location = { x, y, z };
+        player.teleport(location, { dimension: validDimension } );
+        player.sendMessage({ translate: 'commands.changedimension.success.coords', with: [Utils.stringifyLocation(location), validDimensionId] });
     } else if (x === null && y === null && z === null) {
         player.teleport(player.location, { dimension: validDimension });
-        player.sendMessage(`§7Changed to ${validDimensionId} dimension.`);
+        player.sendMessage({ translate: 'commands.changedimension.success', with: [validDimensionId] });
     } else {
-        player.sendMessage('§cInvalid coordinates. Please provide all x, y, z numeric values or none.');
+        player.sendMessage({ translate: 'commands.changedimension.fail.coords' });
     }
 }

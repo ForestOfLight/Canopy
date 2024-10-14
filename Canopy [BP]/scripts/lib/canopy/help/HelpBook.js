@@ -45,14 +45,15 @@ class HelpBook {
 
     async print(player) {
         for (let page of Object.values(this.helpPages)) {
-            player.sendMessage( await page.toString());
+            player.sendMessage( await page.toRawMessage());
         }
     }
 
     async printPage(pageName, player) {
         for (let page of Object.values(this.helpPages)) {
             if (String(page.title).toLowerCase() === String(pageName).toLowerCase()) {
-                player.sendMessage( await page.toString());
+                const message = await page.toRawMessage();
+                player.sendMessage(message);
                 return;
             }
         }
@@ -70,15 +71,14 @@ class HelpBook {
         }
 
         if (results.length === 0) {
-            player.sendMessage(`§cNo results found for "${searchTerm}"`);
+            player.sendMessage({ translate: 'commands.help.search.noresult', with: [searchTerm] });
         } else {
             let output = '';
             for (let entry of results) {
                 output += '\n  ' + await entry.toString();
             }
             output = Utils.recolor(output, searchTerm, '§a');
-            output = `§l§aCanopy§r §2Help search results for "§r${searchTerm}§2":` + output;
-            player.sendMessage(output);
+            player.sendMessage({ translate: 'commands.help.search.results', with: [searchTerm, output] });
         }
     }
 }

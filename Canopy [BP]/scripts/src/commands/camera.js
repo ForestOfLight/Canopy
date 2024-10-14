@@ -1,15 +1,16 @@
 import { Rule, Command } from 'lib/canopy/Canopy';
-import { system, world } from '@minecraft/server'
+import { system, world } from '@minecraft/server';
+import Utils from 'stickycore/utils';
 
 new Rule({
     category: 'Rules',
     identifier: 'commandCamera',
-    description: 'Enables camera command.',
+    description: { translate: 'rules.commandCamera.description' },
 });
 
 const cmd = new Command({
     name: 'camera',
-    description: 'Place a camera, view it, or use a survival-friendly spectator mode.',
+    description: { translate: 'commands.camera.description' },
     usage: 'camera <action>',
     args: [
         { type: 'string', name: 'action' }
@@ -17,15 +18,15 @@ const cmd = new Command({
     callback: cameraCommand,
     contingentRules: ['commandCamera'],
     helpEntries: [
-        { usage: 'camera place', description: 'Places a camera at your current location. (Alias: cp)' },
-        { usage: 'camera view', description: 'Toggles viewing your latest camera placement. (Alias: cv)' },
-        { usage: 'camera spectate', description: 'Toggles a survival-friendly spectator mode. (Alias: cs)' }
+        { usage: 'camera place', description: { translate: 'commands.camera.place.description' } },
+        { usage: 'camera view', description: { translate: 'commands.camera.view.description' } },
+        { usage: 'camera spectate', description: { translate: 'commands.camera.spectate.description' } }
     ]
 });
 
 new Command({
     name: 'cp',
-    description: 'Places a camera at your current location.',
+    description: { translate: 'commands.camera.place.description' },
     usage: 'cp',
     callback: (sender) => cameraCommand(sender, { action: 'place' }),
     contingentRules: ['commandCamera'],
@@ -34,7 +35,7 @@ new Command({
 
 new Command({
     name: 'cv',
-    description: 'Toggles viewing your latest camera placement.',
+    description: { translate: 'commands.camera.view.description' },
     usage: 'cv',
     callback: (sender) => cameraCommand(sender, { action: 'view' }),
     contingentRules: ['commandCamera'],
@@ -43,7 +44,7 @@ new Command({
 
 new Command({
     name: 'cs',
-    description: 'Toggle a survival-friendly spectator mode.',
+    description: { translate: 'commands.camera.spectate.description' },
     usage: 'cs',
     callback: (sender) => cameraCommand(sender, { action: 'spectate' }),
     contingentRules: ['commandCamera'],
@@ -75,7 +76,7 @@ world.beforeEvents.playerGameModeChange.subscribe((event) => {
     if (player?.getDynamicProperty('isSpectating') && event.fromGameMode === 'spectator' && event.toGameMode !== 'spectator') {
         system.run(() => {
             player.setGameMode(event.fromGameMode);
-            player.onScreenDisplay.setActionBar('§cYou cannot change your gamemode while spectating.');
+            player.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.gamemode'});
         });
     }
 });
@@ -114,7 +115,8 @@ function placeCameraAction(sender) {
     let camera;
     const eyeHeight = 1.62001002;
 
-    if (sender.getDynamicProperty('isViewingCamera')) return sender.sendMessage('§cYou cannot place a camera while viewing one.');
+    if (sender.getDynamicProperty('isViewingCamera'))
+        return sender.sendMessage({ translate: 'commands.camera.place.viewing' });
 
     camera = new CameraPlacement(
         { x: sender.location.x, y: sender.location.y + eyeHeight, z: sender.location.z },
@@ -126,14 +128,16 @@ function placeCameraAction(sender) {
 
 function placeCamera(sender, camera) {
     sender.setDynamicProperty('placedCamera', JSON.stringify(camera));
-    sender.sendMessage(`§7Camera placed at [${camera.location.x.toFixed(0)}, ${camera.location.y.toFixed(0)}, ${camera.location.z.toFixed(0)}].`);
+    sender.sendMessage({ translate: 'commands.camera.place.success', with: [Utils.stringifyLocation(camera.location, 0)] });
 }
 
 function viewCameraAction(sender) {
     let placedCamera;
 
-    if (sender.getDynamicProperty('isSpectating')) return sender.sendMessage('§cYou cannot view a camera while spectating.');
-    if (!sender.getDynamicProperty('placedCamera')) return sender.sendMessage('§cYou have not placed a camera yet.');
+    if (sender.getDynamicProperty('isSpectating')) 
+        return sender.sendMessage({ translate: 'commands.camera.view.spectating' });
+    if (!sender.getDynamicProperty('placedCamera'))
+        return sender.sendMessage({ translate: 'commands.camera.view.fail' });
 
     placedCamera = JSON.parse(sender.getDynamicProperty('placedCamera'));
     toggleCameraView(sender, placedCamera);
@@ -141,7 +145,8 @@ function viewCameraAction(sender) {
 
 function toggleCameraView(sender, placedCamera) {
     if (!sender.getDynamicProperty('isViewingCamera')) {
-        if (placedCamera.dimension !== sender.dimension.id) return sender.sendMessage(`§cPlease go to ${placedCamera.dimension} to view this camera.`);
+        if (placedCamera.dimension !== sender.dimension.id)
+            return sender.sendMessage({ translate: 'commands.camera.view.dimension', with: [placedCamera.dimension] });
         startCameraView(sender, placedCamera);
     } else {
         endCameraView(sender);
@@ -155,7 +160,7 @@ function startCameraView(sender, placedCamera) {
         rotation: placedCamera.rotation
     });
     sender.setDynamicProperty('isViewingCamera', true);
-    sender.onScreenDisplay.setActionBar('§aViewing camera');
+    sender.onScreenDisplay.setActionBar({ translate: 'commands.camera.view.started' });
 }
 
 function endCameraView(sender) {
@@ -164,11 +169,12 @@ function endCameraView(sender) {
         sender.camera.clear();
     }, 8);
     sender.setDynamicProperty('isViewingCamera', false);
-    sender.onScreenDisplay.setActionBar('§7Camera view ended');
+    sender.onScreenDisplay.setActionBar({ translate: 'commands.camera.view.ended' });
 }
 
 function spectateAction(sender) {
-    if (sender.getDynamicProperty('isViewingCamera')) return sender.sendMessage('§cYou cannot spectate while viewing a camera.');
+    if (sender.getDynamicProperty('isViewingCamera'))
+        return sender.sendMessage({ translate: 'commands.camera.spectate.viewing' });
     if (!sender.getDynamicProperty('isSpectating'))
         startSpectate(sender);
     else
@@ -187,7 +193,7 @@ function startSpectate(sender) {
             sender.removeEffect(effect.typeId);
         sender.addEffect('night_vision', 999999, { amplifier: 0, showParticles: false });
         sender.addEffect('conduit_power', 999999, { amplifier: 0, showParticles: false });
-        sender.onScreenDisplay.setActionBar('§aSpectating');
+        sender.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.started' });
     }, 8);
 }
 
@@ -203,7 +209,7 @@ function endSpectate(sender) {
             sender.addEffect(effect.typeId, Math.min(20000000, effect.duration), { amplifier: effect.amplifier });
         }
         sender.setGameMode(beforeSpectatorPlayer.gamemode);
-        sender.onScreenDisplay.setActionBar('§7Spectating ended');
+        sender.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.ended' });
     }, 8);
 }
 

@@ -13,10 +13,10 @@ world.afterEvents.entityHitEntity.subscribe((event) => {
     if (player.getGameMode() === 'creative') {
         if (player.isSneaking) {
             player.dimension.getEntities({ location: event.hitEntity.location, maxDistance: 3 }).forEach(entity => {
-                entity.kill();
+                entity?.kill();
             });
         } else {
-            event.hitEntity.kill();
+            event.hitEntity?.kill();
         }
     }
 });

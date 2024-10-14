@@ -6,13 +6,13 @@ import Utils from 'stickycore/utils'
 new Rule({
     category: 'Rules',
     identifier: 'hopperCounters',
-    description: 'Enables counter command & hopper counter functionality.'
+    description: { translate: 'rules.hopperCounters.description' }
 })
 
 const cmd = new Command({
     name: 'counter',
-    description: 'Manages hopper counters. (Alias: ct)',
-    usage: 'counter <color/all/reset/realtime> [add/remove/mode/realtime]',
+    description: { translate: 'commands.counter.description' },
+    usage: 'counter <color/all/reset/realtime> [mode/reset/realtime]',
     args: [
         { type: 'string', name: 'argOne' },
         { type: 'string', name: 'argTwo' }
@@ -20,17 +20,17 @@ const cmd = new Command({
     callback: counterCommand,
     contingentRules: ['hopperCounters'],
     helpEntries: [
-        { usage: 'counter <color>', description: 'Displays the count and rates of the hopper counter for the specified color.' },
-        { usage: 'counter <color> realtime', description: 'Displays count and rates, but uses real-world time instead of tick-based time.' },
-        { usage: 'counter <color/all> <mode>', description: 'Sets the mode of a hopper counter.' },
-        { usage: 'counter reset', description: 'Resets all hopper counters and restarts the timer.' }
+        { usage: 'counter <color>', description: { translate: 'commands.counter.query.description' } },
+        { usage: 'counter [color] realtime', description: { translate: 'commands.counter.realtime.description' } },
+        { usage: 'counter <color/all> <mode>', description: { translate: 'commands.counter.mode.description' } },
+        { usage: 'counter [color] reset', description: { translate: 'commands.counter.reset.description' } }
     ]
 })
 
 new Command({
     name: 'ct',
-    description: 'Manages hopper counters.',
-    usage: 'ct <color/all/reset/realtime> [add/remove/mode/realtime]',
+    description: { translate: 'commands.counter.description' },
+    usage: 'ct <color/all/reset/realtime> [mode/reset/realtime]',
     args: [
         { type: 'string', name: 'argOne' },
         { type: 'string', name: 'argTwo' }
@@ -160,12 +160,11 @@ class CounterChannelMap {
 
     getQueryOutput(channel) {
         let realtimeText = this.realtime ? 'realtime: ' : '';
-        let output = `§7Items for ${formatColor(channel.color)}§7 (${realtimeText}${this.getMinutesSinceStart(channel)} min.), total: §f${channel.totalCount}§7, (§f${Utils.calculatePerTime(channel.totalCount, this.getDeltaTime(channel), channel.mode)}§7):`;
+        let message = { rawtext: [{ translate: 'commands.counter.query.channel', with: [formatColor(channel.color), realtimeText, this.getMinutesSinceStart(channel), channel.totalCount, Utils.calculatePerTime(channel.totalCount, this.getDeltaTime(channel), channel.mode)] }] };
         for (const item of Object.keys(channel.itemMap)) {
-            const count = channel.itemMap[item];
-            output += `\n §7- ${item}: ${getAllModeOutput(channel, item)}`;
+            message.rawtext.push({ text: `\n §7- ${item}: ${getAllModeOutput(channel, item)}` });
         }
-        return output;
+        return message;
     }
 
     getDeltaTime(channel) {
@@ -228,7 +227,7 @@ function updateCount(channel) {
     for (const hopperCounter of channel.hopperList) {
         const hopper = world.getDimension(hopperCounter.dimensionId).getBlock(hopperCounter.location);
 
-        if (!hopper) return; // hopper is unloaded
+        if (!hopper) return;
         if (hopper.typeId !== 'minecraft:hopper' || getHopperFacingBlock(hopper)?.typeId !== `minecraft:${channel.color}_wool`)
             return channelMap.removeCounter(channel.color, hopper);
 
@@ -246,7 +245,7 @@ function counterCommand(sender, args) {
     const { argOne, argTwo } = args;
 
     if (!channelMap.colors.includes(argOne) && argOne !== 'reset' && argOne !== 'realtime' && argOne !== 'all' && validModes.includes(argTwo)) {
-        return sender.sendMessage(`§cInvalid color: ${argOne}. Please use one of the wool block colors.`);
+        return sender.sendMessage({ translate: 'commands.counter.channel.notfound', with: [argOne] });
     }
 
     if (argOne === 'reset')
@@ -271,14 +270,14 @@ function counterCommand(sender, args) {
 
 function reset(sender, color) {
     channelMap.reset(color);
-    sender.sendMessage(`§7Reset and time restarted: ${formatColor(color)}`);
-    Utils.broadcastActionBar(`${sender.name}: reset ${formatColor(color)} hopper counter`, sender);
+    sender.sendMessage({ translate: 'commands.counter.reset.single', with: [formatColor(color)] });
+    Utils.broadcastActionBar({ translate: 'commands.counter.reset.single.actionbar', with: [sender.name, formatColor(color)]}, sender);
 }
 
 function resetAll(sender) {
     channelMap.resetAll();
-    sender.sendMessage(`§7All channels have been reset and hopper counter timer started.`);
-    Utils.broadcastActionBar(`${sender.name}: reset all hopper counters`, sender);
+    sender.sendMessage({ translate: 'commands.counter.reset.all' });
+    Utils.broadcastActionBar({ translate: 'commands.counter.reset.all.actionbar', with: [sender.name] }, sender);
 }
 
 function realtimeQuery(sender, color) {
@@ -299,37 +298,37 @@ function query(sender, color) {
 }
 
 function queryAll(sender) {
-    let output = '';
+    let message = { rawtext: [] };
     channelMap.forEach(channel => {
         if (channel.hopperList.length === 0) return;
-        output += channelMap.getQueryOutput(channel) + '\n';
+        message.rawtext.push({ rawtext: [channelMap.getQueryOutput(channel), { text: '\n' }] });
     });
     
-    if (output === '') output = '§7There are no hopper counters in use.';
+    if (output === '') output = { translate: 'commands.counter.query.empty' };
     sender?.sendMessage(output);
 }
 
 function setMode(sender, color, mode) {
     if (!validModes.includes(mode))
-        return sender.sendMessage(`§cInvalid mode. Please use one of the following modes: ${validModes.join(', ')}`);
+        return sender.sendMessage({ translate: 'commands.counter.mode.notfound', with: [mode, validModes.join(', ')] });
 
     if (!channelMap.colors.includes(color))
-        return sender.sendMessage(`§cInvalid color: ${color}. Please use one of the wool block colors.`);
+        return sender.sendMessage({ translate: 'commands.counter.channel.notfound', with: [color] });
 
     channelMap.setMode(color, mode);
-    sender.sendMessage(`§7Hopper Counter ${formatColor(color)}§7 mode: ${mode}`);
-    Utils.broadcastActionBar(`${sender.name}: set ${formatColor(color)} hopper counter mode to ${mode}`, sender);
+    sender.sendMessage({ translate: 'commands.counter.mode.single.success', with: [formatColor(color), mode] });
+    Utils.broadcastActionBar({ translate: 'commands.counter.mode.single.success.actionbar', with: [sender.name, formatColor(color), mode] }, sender);
 }
 
 function setAllMode(sender, mode) {
     if (!validModes.includes(mode))
-        return sender.sendMessage(`§cInvalid mode. Please use one of the following modes: ${validModes.join(', ')}`);
+        return sender.sendMessage({ translate: 'commands.counter.mode.notfound', with: [mode, validModes.join(', ')] });
     
     channelMap.forEach(channel => {
         channelMap.setMode(channel.color, mode);
     });
-    sender.sendMessage(`§7All Hopper Counters mode: ${mode}`);
-    Utils.broadcastActionBar(`${sender.name}: set all hopper counters mode to ${mode}`, sender);
+    sender.sendMessage({ translate: 'commands.counter.mode.all.success', with: [mode] });
+    Utils.broadcastActionBar({ translate: 'commands.counter.mode.all.success.actionbar', with: [sender.name, mode] }, sender);
 }
 
 function getHopperFacingBlock(hopper) {
@@ -356,7 +355,8 @@ function formatColor(color) {
 }
 
 function getModeOutput(channel) {
-    if (channel.mode !== 'countMode') return Utils.calculatePerTime(channel.totalCount, channelMap.getDeltaTime(channel), channel.mode);
+    if (channel.mode !== 'countMode')
+        return Utils.calculatePerTime(channel.totalCount, channelMap.getDeltaTime(channel), channel.mode);
     return channel.totalCount;
 }
 
@@ -391,7 +391,8 @@ export function getInfoDisplayOutput() {
 	}
 	for (let i = 0; i < activeChannels.length; i++) {
 		const color = activeChannels[i];
-		if (i != 0 && (i % 4) == 0) output += '\n';
+		if (i != 0 && (i % 4) == 0)
+            output += '\n';
 		const channel = channelMap.getChannel(color);
 		if (channel.hopperList.length === 0) {
 			output += `${Utils.getColorCode(color)}N/A§r `;

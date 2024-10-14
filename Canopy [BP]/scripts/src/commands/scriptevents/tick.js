@@ -12,7 +12,7 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
 
 function tickSleep(sourceName, milliseconds) {
     if (milliseconds === null || milliseconds < 1) return;
-    world.sendMessage(`§7[${sourceName}] Pausing the server for ${milliseconds} ms.`);
+    world.sendMessage({ translate: 'scriptevent.tick.sleep', with: [sourceName, String(milliseconds)] });
     let startTime = Date.now();
     let waitTime = 0;
     while (waitTime < milliseconds) {

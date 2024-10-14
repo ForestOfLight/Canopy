@@ -3,7 +3,7 @@ import ProbeManager from 'src/classes/ProbeManager';
 
 const cmd = new Command({
     name: 'info',
-    description: 'Toggle InfoDisplay rules. (Alias: i)',
+    description: { translate: 'commands.info.description' },
     usage: 'info <rule/all> <true/false>',
     args: [
         { type: 'string', name: 'ruleID' },
@@ -14,7 +14,7 @@ const cmd = new Command({
 
 new Command({
     name: 'i',
-    description: 'Toggle InfoDisplay rules.',
+    description: { translate: 'commands.info.description' },
     usage: 'i',
     args: [
         { type: 'string', name: 'ruleID' },
@@ -33,9 +33,13 @@ function infoCommand(sender, args) {
         return;
     }
     
-    if (!InfoDisplayRule.exists(ruleID)) return sender.sendMessage(`§cInvalid rule: ${ruleID}.`);
-    if (enable === null) return sender.sendMessage(`§7${ruleID} is currently ${InfoDisplayRule.getValue(sender, ruleID) ? '§l§aenabled' : '§l§cdisabled'}.`);
-    if (enable === InfoDisplayRule.getValue(sender, ruleID)) return sender.sendMessage(`§7${ruleID} is already ${enable ? '§l§aenabled' : '§l§cdisabled'}.`);
+    if (!InfoDisplayRule.exists(ruleID))
+        return sender.sendMessage({ translate: 'rules.generic.unknown', with: [ruleID, Command.prefix] });
+    const ruleValue = InfoDisplayRule.getValue(sender, ruleID);
+    if (enable === null)
+        return sender.sendMessage({ translate: 'rules.generic.status', with: [ruleID, ruleValue ? '§l§aenabled' : '§l§cdisabled'] });
+    if (enable === ruleValue)
+        return sender.sendMessage({ tramslate: 'rules.generic.nochange', with: [ruleID, enable ? '§l§aenabled' : '§l§cdisabled'] });
 
     if (['showDisplay', 'light', 'biome'].includes(ruleID))
         ProbeManager.removeProbe(sender);
@@ -49,7 +53,7 @@ function infoCommand(sender, args) {
         updateRules(sender, rule.getContigentRuleIDs(), enable);
     updateRules(sender, rule.getIndependentRuleIDs(), !enable);
 
-    updateRule(sender, ruleID, InfoDisplayRule.getValue(sender, ruleID), enable);
+    updateRule(sender, ruleID, ruleValue, enable);
 }
 
 function changeAll(sender, enable) {
@@ -57,7 +61,7 @@ function changeAll(sender, enable) {
         entry.setValue(sender, enable);
     }
     if (!enable) clearInfoDisplay(sender);
-    sender.sendMessage(`${enable ? '§l§aEnabled' : '§l§cDisabled'}§r§7 all InfoDisplay features.`);
+    sender.sendMessage({ translate: 'commands.info.allupdated', with: [enable ? '§l§aEnabled' : '§l§cDisabled'] });
 }
 
 function clearInfoDisplay(sender) {
@@ -67,12 +71,11 @@ function clearInfoDisplay(sender) {
 function updateRule(sender, ruleID, ruleValue, enable) {
     if (ruleValue === enable) return;
     InfoDisplayRule.setValue(sender, ruleID, enable);
-    sender.sendMessage(`§7${ruleID} is now ${enable ? '§l§aenabled' : '§l§cdisabled'}§r§7.`);
+    sender.sendMessage({ translate: 'rules.generic.updated', with: [ruleID, enable ? '§l§aenabled' : '§l§cdisabled'] });
 }
 
 function updateRules(sender, ruleIDs, enable) {
     for (const ruleID of ruleIDs) {
-        const rule = InfoDisplayRule.getRule(ruleID);
         updateRule(sender, ruleID, InfoDisplayRule.getValue(sender, ruleID), enable);
     }
 }

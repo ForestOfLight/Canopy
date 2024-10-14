@@ -9,7 +9,7 @@ const TERTIARY_COLOR = '§a';
 
 const cmd = new Command({
     name: 'log',
-    description: 'Log tnt, projectile, and falling block movement.',
+    description: { translate: 'commands.log.description' },
     usage: 'log <tnt/projectiles/falling_blocks> [precision]',
     args: [
         { type: 'string', name: 'type' },
@@ -210,8 +210,11 @@ function logUpdate(loggingPlayer) {
 
 function getLogHeader(movingEntities) {
     const absoluteTimeStr = (Data.getAbsoluteTime() - logStartTick).toString().padStart(2, '0');
-    let output = `${TERTIARY_COLOR}----- Total: ${movingEntities.length}${MAIN_COLOR} (tick: ${absoluteTimeStr.slice(0, -2)}${SECONDARY_COLOR}${absoluteTimeStr.slice(-2)}${MAIN_COLOR})${TERTIARY_COLOR} -----`;
-    return output;
+    return { rawtext: [
+        { text: `${TERTIARY_COLOR}----- ` },
+        { translate: 'generic.total' },
+        { text: `: ${movingEntities.length}${MAIN_COLOR} (tick: ${absoluteTimeStr.slice(0, -2)}${SECONDARY_COLOR}${absoluteTimeStr.slice(-2)}${MAIN_COLOR})${TERTIARY_COLOR} -----`}
+    ]};
 }
 
 function logCommand(sender, args) {
@@ -229,7 +232,7 @@ function logCommand(sender, args) {
 function setLogPrecsion(sender, value) {
     const precision = Math.max(0, Math.min(parseInt(value, 10), 15));
     sender.setDynamicProperty('logPrecision', precision);
-    sender.sendMessage(`§7Logging precision set to ${precision}.`);
+    sender.sendMessage({ translate: 'commands.log.precision', with: [String(precision)] });
 }
 
 function toggleLogging(sender, type) {
@@ -239,10 +242,10 @@ function toggleLogging(sender, type) {
     let output = '';
     if (loggingPlayer.types.includes(type)) {
         loggingPlayer.removeType(type);
-        output = `§7Stopped logging ${type}.`;
+        output = { translate: 'commands.log.stopped', with: [type] };
     } else {
         loggingPlayer.addType(type);
-        output = `§7Started logging ${type}.`;
+        output = { translate: 'commands.log.started', with: [type] };
     }
     sender.sendMessage(output);
 }

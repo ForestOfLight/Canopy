@@ -94,7 +94,7 @@ class Command {
 	}
 	
 	sendUsage(sender) {
-		sender.sendMessage(`§cUsage: ${Command.prefix}${this.#usage}`);
+		sender.sendMessage({ translate: 'commands.generic.usage', with: [Command.prefix + this.#usage] });
 	}
 	
 	static getCommands() {
@@ -150,16 +150,16 @@ world.beforeEvents.chatSend.subscribe((event) => {
 		return;
 	event.cancel = true;
 	if (!commands[name])
-		return sender.sendMessage(`§cInvalid command: '${name.replace(Command.prefix,'')}'. Use ${Command.prefix}help for more information.`);
+		return sender.sendMessage({ translate: 'commands.generic.unknown', with: [name.replace(Command.prefix,''), Command.prefix] });
 	const command = commands[name];
 	if (command.isAdminOnly() && !sender.hasTag('CanopyAdmin')) 
-		return sender.sendMessage(`§cYou do not have permission to use this command.`);
+		return sender.sendMessage({ translate: 'commands.generic.nopermission' });
 	
 	system.run( async () => {
 		for (let ruleID of command.getContingentRules()) {
 			const ruleValue = await Rule.getValue(ruleID);
 			if (!ruleValue) {
-				return sender.sendMessage(`§cThe ${ruleID} rule is disabled.`);
+				return sender.sendMessage({ translate: 'rules.generic.blocked', with: [ruleID] });
 			}
 		}
 

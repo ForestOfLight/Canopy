@@ -4,19 +4,19 @@ import Data from 'stickycore/data';
 new Rule({
     category: 'Rules',
     identifier: 'commandJumpSurvival',
-    description: 'Enables jump command in survival mode.'
+    description: { translate: 'rules.commandJumpSurvival.description' },
 });
 
 new Command({
     name: 'jump',
-    description: 'Teleport to the block you are looking at. (Alias: j)',
+    description: { translate: 'commands.jump.description' },
     usage: 'jump',
     callback: jumpCommand
 });
 
 new Command({
     name: 'j',
-    description: '',
+    description: { translate: 'commands.jump.description' },
     usage: 'j',
     callback: jumpCommand,
     helpHidden: true
@@ -27,10 +27,11 @@ async function jumpCommand(sender) {
     let maxDistance = 64*16;
     let jumpLocation;
     if (!await Rule.getValue('commandJumpSurvival') && sender.getGameMode() === 'survival')
-        return sender.sendMessage('§cThe commandJumpSurvival feature is disabled.');
+        return sender.sendMessage({ translate: 'rules.generic.blocked', with: ['commandJumpSurvival'] });
 
     blockRayResult = Data.getLookingAtBlock(sender, maxDistance);
-    if (!blockRayResult?.block) return sender.sendMessage('§cNo block found.');
+    if (!blockRayResult?.block)
+        return sender.sendMessage({ translate: 'commands.jump.fail.noblock' });
     jumpLocation = getBlockLocationFromFace(blockRayResult.block, blockRayResult.face);
     sender.teleport(jumpLocation);
 }

@@ -7,12 +7,12 @@ const CLAIM_RADIUS = 25;
 new Rule({
     category: 'Rules',
     identifier: 'commandClaimProjectiles',
-    description: 'Enables claimprojectiles command.',
+    description: { translate: 'rules.commandClaimProjectiles.description' },
 });
 
 new Command({
     name: 'claimprojectiles',
-    description: `Changes the owner of all projectiles within a radius.`,
+    description: { translate: 'commands.claimprojectiles.description' },
     usage: 'claimprojectiles [playerName/radius] [radius]',
     args: [
         { type: 'string|number', name: 'playerName' },
@@ -30,7 +30,7 @@ function claimProjectilesCommand(sender, args) {
     else
         targetPlayer = getTargetPlayer(sender, String(playerName));
     if (!targetPlayer)
-        return sender.sendMessage(`§cPlayer "${playerName}" was not found.`)
+        return sender.sendMessage({ translate: 'generic.player.notfound', with: [String(playerName)] });
     if (Utils.isNumeric(playerName)) {
         radius = playerName;
         targetPlayer = sender;
@@ -40,12 +40,12 @@ function claimProjectilesCommand(sender, args) {
     
     const projectiles = getProjectilesInRange(targetPlayer, radius);
     if (projectiles.length === 0)
-        return sender.sendMessage(`§7No projectiles found in range (${radius} blocks).`);
+        return sender.sendMessage({ translate: 'commands.claimprojectiles.fail.nonefound', with: [String(radius)] });
     
     const numChanged = changeOwner(projectiles, targetPlayer);
-    targetPlayer.sendMessage(`§7Successfully became the owner of ${numChanged} projectiles within ${radius} blocks of you.`);
+    targetPlayer.sendMessage({ translate: 'commands.claimprojectiles.success.self', with: [String(numChanged), String(radius)] });
     if (sender !== targetPlayer)
-        sender.sendMessage(`§7Successfully changed the owner of ${numChanged} projectiles within ${radius} blocks of ${targetPlayer.name}.`)
+        sender.sendMessage({ translate: 'commands.claimprojectiles.success.other', with: [String(numChanged), String(radius), targetPlayer.name] });
 }
 
 function getTargetPlayer(sender, playerName) {

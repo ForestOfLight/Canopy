@@ -18,9 +18,9 @@ class RuleHelpEntry extends HelpEntry {
         return value ? '§atrue§r' : '§cfalse§r';
     }
     
-    async toString() {
+    async toRawMessage() {
         const coloredValue = await this.fetchColoredValue().then(value => value);
-        return `§7${this.title}: ${coloredValue}§8 - ${this.description}`;
+        return { rawtext: [ { text: `§7${this.title}: ${coloredValue}§8 - ` }, this.description ] };
     }
 }
 
@@ -30,12 +30,12 @@ class CommandHelpEntry extends HelpEntry {
         this.command = command;
     }
 
-    toString() {
-        let output = `§2${this.command.getUsage()}§8 - ${this.description}`;
+    toRawMessage() {
+        const message = { rawtext: [{ text: `§2${this.command.getUsage()}§8 - ` }, this.description] };
         for (let helpEntry of this.command.getHelpEntries()) {
-            output += `\n  §7> §2${Command.prefix}${helpEntry.usage} §8- ${helpEntry.description}`;
+            message.rawtext.push({ rawtext: [{ text: `\n  §7> §2${Command.prefix}${helpEntry.usage}§8 - ` }, helpEntry.description] });
         }
-        return output;
+        return message;
     }
 }
 
@@ -48,11 +48,6 @@ class InfoDisplayRuleHelpEntry extends RuleHelpEntry {
     async fetchColoredValue() {
         const value = await this.rule.getValue(this.player);
         return value ? '§atrue§r' : '§cfalse§r';
-    }
-
-    async toString() {
-        const coloredValue = await this.fetchColoredValue().then(value => value);
-        return `§7${this.title}: ${coloredValue}§8 - ${this.description}`;
     }
 }
 

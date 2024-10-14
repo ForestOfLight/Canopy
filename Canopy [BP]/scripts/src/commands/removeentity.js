@@ -5,12 +5,12 @@ import Data from 'stickycore/data';
 new Rule({
     category: 'Rules',
     identifier: 'commandRemoveEntity',
-    description: 'Enables removeentity command.',
+    description: { translate: 'rules.commandRemoveEntity.description' },
 });
 
 new Command({
     name: 'removeentity',
-    description: 'Instantly remove the entity you are looking at or by id.',
+    description: { translate: 'commands.removeentity.description' },
     usage: 'removeentity [id]',
     args: [
         { type: 'number', name: 'id' }
@@ -23,14 +23,14 @@ function removeEntityCommand(sender, args) {
     const { id } = args;
     const target = getTargetEntity(sender, id);
     if (target instanceof Player) {
-        sender.sendMessage('§cCannot remove players.');
+        sender.sendMessage({ translate: 'commands.removeentity.fail.player' });
     } else if (target) {
         target.remove();
-        sender.sendMessage(`§7Removed entity with id ${target.id}.`);
+        sender.sendMessage({ translate: 'commands.removeentity.success', with: [target.typeId.replace('minecraft:', ''), target.id] });
     } else if (id !== null) {
-        sender.sendMessage(`§cNo entity found with id ${id}.`);
+        sender.sendMessage({ translate: 'commands.removeentity.fail.noid', with: [id] });
     } else {
-        sender.sendMessage(`§cNo entity found.`);
+        sender.sendMessage({ translate: 'generic.entity.notfound' });
     }
 }
 

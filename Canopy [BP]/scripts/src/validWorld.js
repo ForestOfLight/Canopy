@@ -30,17 +30,16 @@ function onValidWorld(player) {
 }
 
 function displayWelcome(player) {
-    let output = '';
-    output += `§a   + ----- +\n`;
-    output += `§a /          / |\n`;
-    output += `§a+ ----- +  |\n`;
-    output += `§a |          |  +\n`;
-    output += `§a |          | /\n`;
-    output += `§a+ ----- +\n`;
-    output += `§7This server is running §l§aCanopy§r§7. Type ./help to get started.§r\n`;
-    player.sendMessage(output);
+    let graphic = '';
+    graphic += `§a   + ----- +\n`;
+    graphic += `§a /          / |\n`;
+    graphic += `§a+ ----- +  |\n`;
+    graphic += `§a |          |  +\n`;
+    graphic += `§a |          | /\n`;
+    graphic += `§a+ ----- +\n`;
+    player.sendMessage({ rawtext: [{ text: graphic }, { translate: 'generic.welcome.start' }] });
     const extensions = getLoadedExtensions();
     if (extensions.length > 0) {
-        player.sendMessage(`§7Loaded extensions: §a${extensions.join('§7, §a')}`);
+        player.sendMessage({ translate: 'generic.welcome.extensions', with: [extensions.join('§7, §a')] });
     }
 }
