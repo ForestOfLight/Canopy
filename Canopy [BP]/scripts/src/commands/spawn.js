@@ -5,15 +5,15 @@ import WorldSpawns from 'src/classes/WorldSpawns'
 import { channelMap } from 'src/commands/counter';
 import { categoryToMobMap } from 'src/classes/SpawnTracker';
 
-new Rule({
+const thisRule = new Rule({
     category: 'Rules',
     identifier: 'commandSpawnMocking',
-    description: 'Enables spawn mocking command.'
+    description: { translate: 'rules.commandSpawnMocking.description' }
 });
 
 const cmd = new Command({
     name: 'spawn',
-    description: 'Spawn command for tracking and mocking spawns.',
+    description: { translate: 'commands.spawn.description' },
     usage: 'spawn [action1] [action2] [x1 y1 z1] [x2 y2 z2]',
     args: [
         { type: 'string', name: 'action' },
@@ -27,13 +27,13 @@ const cmd = new Command({
     ],
     callback: spawnCommand,
     helpEntries: [
-        { usage: 'spawn entities', description: 'Displays a list of all entities & their positions in the world.' },
-        { usage: 'spawn recent [mobName]', description: 'Displays all mob spawns from the last 30s. Specify a mob name to filter.' },
-        { usage: 'spawn tracking [x1 y1 z1] [x2 y2 z2]', description: 'Starts tracking mob spawns. Specify coords to track within an area.' },
-        { usage: 'spawn <mobName> [x1 y1 z1] [x2 y2 z2]', description: 'Starts tracking a specific mob spawn. Specify coords to track within an area. Run again to add more mob types to track.' },
-        { usage: 'spawn tracking', description: 'Displays a summary of all spawns that have occurred since the start of your test.' },
-        { usage: 'spawn tracking stop', description: 'Stops tracking mob spawns.' },
-        { usage: 'spawn mocking <true/false>', description: 'Enables/disables mob spawning while allowing the spawning algorithm to run.' }
+        { usage: 'spawn entities', description: { translate: 'commands.spawn.entities.description' } },
+        { usage: 'spawn recent [mobName]', description: { translate: 'commands.spawn.recent.description' } },
+        { usage: 'spawn tracking [x1 y1 z1] [x2 y2 z2]', description: { translate: 'commands.spawn.tracking.start.description' } },
+        { usage: 'spawn <mobName> [x1 y1 z1] [x2 y2 z2]', description: { translate: 'commands.spawn.tracking.mob.description' } },
+        { usage: 'spawn tracking', description: { translate: 'commands.spawn.tracking.query.description' } },
+        { usage: 'spawn tracking stop', description: { translate: 'commands.spawn.tracking.stop.description' } },
+        { usage: 'spawn mocking <true/false>', description: { translate: 'commands.spawn.mocking.description' } }
     ]
 });
 
@@ -64,7 +64,7 @@ function spawnCommand(sender, args) {
     else if (action === 'test') resetSpawnsAndCounters(sender);
     else if (action === 'recent') recentSpawns(sender, actionTwo);
     else if (action === 'tracking' && actionTwo === null) printTrackingStatus(sender);
-    else if (action === 'tracking' && actionTwo !== null && x1 !== null && z2 === null) sender.sendMessage('§cUsage: ./spawn tracking <start/stop/mobname> [x1 y1 z1] [x2 y2 z2]');
+    else if (action === 'tracking' && actionTwo !== null && x1 !== null && z2 === null) sender.sendMessage({ translate: 'commands.generic.usage', with: [`${Command.prefix}spawn tracking <start/stop/mobname> [x1 y1 z1] [x2 y2 z2]`] });
     else if (action === 'tracking' && actionTwo === 'start') startTracking(sender, posOne, posTwo);
     else if (action === 'tracking' && actionTwo === 'stop') stopTracking(sender);
     else if (action === 'tracking' && actionTwo !== null) trackMob(sender, actionTwo, posOne, posTwo);
@@ -74,7 +74,7 @@ function spawnCommand(sender, args) {
 function printAllEntities(sender) {
     DimensionTypes.getAll().forEach(dimension => {
         const dimensionId = dimension.typeId;
-        sender.sendMessage(`§7Dimension ${Utils.getColoredDimensionName(dimensionId)}§r:`);
+        sender.sendMessage({ translate: 'commands.spawn.tracking.query.dimension', with: [Utils.getColoredDimensionName(dimensionId)] });
         const entities = world.getDimension(dimensionId).getEntities();
         entities.forEach(entity => {
             sender.sendMessage(`§7-${Utils.stringifyLocation(entity.location)}: ${entity.typeId.replace('minecraft:', '')}`);
@@ -83,28 +83,32 @@ function printAllEntities(sender) {
 }
 
 async function handleMockingCmd(sender, enable) {
-    if (!await Rule.getValue('commandSpawnMocking')) return sender.sendMessage('§cThe commandSpawnMocking rule is disabled.');
-    if (enable === null) return sender.sendMessage('§cUsage: ./spawn mocking <true/false>');
+    if (!await Rule.getValue('commandSpawnMocking'))
+        return sender.sendMessage({ translate: 'rules.generic.blocked', with: [thisRule.getID()] });
+    if (enable === null)
+        return sender.sendMessage({ translate: 'commands.generic.usage', with: [`${Command.prefix}spawn mocking <true/false>`] });
     isMocking = enable;
-    const messageColor = enable ? '§c' : '§a';
-    const actionText = enable ? 'enabled' : 'disabled';
-    let output = `${messageColor}Spawn mocking set to ${enable}.`;
-    if (enable) output += ' The spawn algorithm is running but mobs will not spawn.';
-    else output += ' Mobs will spawn as normal.';
-    sender.sendMessage(output);
-    Utils.broadcastActionBar(`${messageColor}${sender.name} ${actionText} spawn mocking`, sender);
+    if (enable) {
+        sender.sendMessage({ translate: 'commands.spawn.mocking.enable' });
+        Utils.broadcastActionBar({ translate: 'commands.spawn.mocking.enable.actionbar', with: [sender.name] }, sender);
+    } else {
+        sender.sendMessage({ translate: 'commands.spawn.mocking.disable' });
+        Utils.broadcastActionBar({ translate: 'commands.spawn.mocking.disable.actionbar', with: [sender.name] }, sender);
+    }
 }
 
 function resetSpawnsAndCounters(sender) {
-    if (worldSpawns === null) return sender.sendMessage('§cSpawns are not currently being tracked.');
+    if (worldSpawns === null)
+        return sender.sendMessage({ translate: 'commands.spawn.tracking.no' });
     worldSpawns.reset();
     channelMap.resetAll();
-    sender.sendMessage('§7Spawn counters and hopper counters reset.');
-    Utils.broadcastActionBar(`§7${sender.name} reset spawn and hopper counters`, sender);
+    sender.sendMessage({ translate: 'commands.spawn.tracking.reset.success' });
+    Utils.broadcastActionBar({ translate: 'commands.spawn.tracking.reset.success.actionbar', with: [sender.name] }, sender);
 }
 
 function recentSpawns(sender, actionTwo) {
-    if (worldSpawns === null) return sender.sendMessage('§cSpawns must be tracked to use this command.');
+    if (worldSpawns === null)
+        return sender.sendMessage({ translate: 'commands.spawn.tracking.no' });
     let output
     if (actionTwo === null)
         output = worldSpawns.getRecentsOutput();
@@ -114,30 +118,36 @@ function recentSpawns(sender, actionTwo) {
 }
 
 function printTrackingStatus(sender) {
-    if (worldSpawns === null) return sender.sendMessage('§cSpawns are not currently being tracked.');
+    if (worldSpawns === null)
+        return sender.sendMessage({ translate: 'commands.spawn.tracking.no' });
     sender.sendMessage(worldSpawns.getOutput());
 }
 
 function startTracking(sender, posOne, posTwo) {
-    if (worldSpawns !== null) return sender.sendMessage('§cSpawns are already being tracked.');
-    if (!isLocationNull(posOne) && !isLocationNull(posTwo)) currActiveArea = { posOne, posTwo, dimensionId: sender.dimension.id };
+    if (worldSpawns !== null)
+        return sender.sendMessage({ translate: 'commands.spawn.tracking.already' });
+    if (!isLocationNull(posOne) && !isLocationNull(posTwo))
+        currActiveArea = { posOne, posTwo, dimensionId: sender.dimension.id };
     worldSpawns = new WorldSpawns([], currActiveArea);
-    let output = '§7Spawns are now being tracked.';
-    if (currActiveArea) output += ` Area: ${Utils.stringifyLocation(posOne)} to ${Utils.stringifyLocation(posTwo)}.`;
-    if (isMocking) output += ' Since spawn mocking is enabled, mobs will not spawn but they will be tracked.';
-    sender.sendMessage(output);
-    Utils.broadcastActionBar(`§a${sender.name} started tracking spawns`, sender);
+    const message = { rawtext: [{ translate: 'commands.spawn.tracking.start' }] }
+    if (currActiveArea)
+        message.rawtext.push({ translate: 'commands.spawn.tracking.start.area', with: [Utils.stringifyLocation(posOne), Utils.stringifyLocation(posTwo)] })
+    if (isMocking)
+        message.rawtext.push({ translate: 'commands.spawn.tracking.start.mocking' });
+    sender.sendMessage(message);
+    Utils.broadcastActionBar({ translate: 'commands.spawn.tracking.start.actionbar', with: [sender.name] }, sender);
 }
 
 function stopTracking(sender) {
-    if (worldSpawns === null) return sender.sendMessage('§cSpawns are not currently being tracked.');
+    if (worldSpawns === null)
+        return sender.sendMessage({ translate: 'commands.spawn.tracking.no' });
     printTrackingStatus(sender);
     worldSpawns.destruct();
     worldSpawns = null;
     currMobIds = [];
     currActiveArea = null;
-    sender.sendMessage('§7Spawns are no longer being tracked.');
-    Utils.broadcastActionBar(`§c${sender.name} stopped tracking spawns`, sender);
+    sender.sendMessage({ translate: 'commands.spawn.tracking.stop' });
+    Utils.broadcastActionBar({ translate: 'commands.spawn.tracking.stop.actionbar', with: [sender.name] }, sender);
 }
 
 function trackMob(sender, mobName, posOne, posTwo) {
@@ -145,15 +155,20 @@ function trackMob(sender, mobName, posOne, posTwo) {
     for (const category in categoryToMobMap) {
         if (categoryToMobMap[category].includes(mobName)) isTrackable = true;
     }
-    if (!isTrackable) return sender.sendMessage('§cInvalid mob name. Usage: ./spawn tracking <start/stop/mobname> [x1 y1 z1] [x2 y2 z2]');
-    if (!currMobIds.includes(mobName)) currMobIds.push(mobName);
-    if (worldSpawns) worldSpawns.destruct();
-    if (!isLocationNull(posOne) && !isLocationNull(posTwo)) currActiveArea = { posOne, posTwo, dimensionId: sender.dimension.id };
+    if (!isTrackable)
+        return sender.sendMessage({ translate: 'commands.spawn.tracking.mob.invalid', with: [String(mobName)] });
+    if (!currMobIds.includes(mobName))
+        currMobIds.push(mobName);
+    if (worldSpawns)
+        worldSpawns.destruct();
+    if (!isLocationNull(posOne) && !isLocationNull(posTwo))
+        currActiveArea = { posOne, posTwo, dimensionId: sender.dimension.id };
     worldSpawns = new WorldSpawns(currMobIds, currActiveArea);
-    let output = '§7Spawns are now being tracked for: ' + currMobIds.join(', ');
-    if (currActiveArea) output += `. Area: ${Utils.stringifyLocation(posOne)} to ${Utils.stringifyLocation(posTwo)}.`;
-    sender.sendMessage(output);
-    Utils.broadcastActionBar(`§a${sender.name} added ${mobName} to spawn tracking and reset`, sender);
+    const message = { rawtext: [{ translate: 'commands.spawn.tracking.start.mob', with: [currMobIds.join(', ')] }] }
+    if (currActiveArea)
+        message.rawtext.push({ translate: 'commands.spawn.tracking.start.area', with: [Utils.stringifyLocation(posOne), Utils.stringifyLocation(posTwo)] })
+    sender.sendMessage(message);
+    Utils.broadcastActionBar({ translate: 'commands.spawn.tracking.start.mob.actionbar', with: [sender.name, mobName]}, sender);
 }
 
 function isLocationNull(location) {

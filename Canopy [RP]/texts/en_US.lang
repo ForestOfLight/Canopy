@@ -15,6 +15,7 @@ generic.total='Total'
 commands.generic.unknown=§cInvalid command: '%1'. Use %2help for more information.
 commands.generic.nopermission=§cYou do not have permission to run this command.
 commands.generic.usage=§cUsage: %s
+commands.generic.blocked.survival=§cThis command can only be used in creative mode or spectator mode.
 
 commands.help.description=Displays help pages.
 commands.help.search.noresult=§cNo results found for "%s"
@@ -144,6 +145,37 @@ commands.removeentity.success=§7Removed %1 with id '%2'.
 commands.resetall.description=Resets all §lCanopy§r§8 rules and data. Use with caution.
 commands.resetall.success=§7All §lCanopy§r§8 player and world dynamic properties have been reset.
 
+commands.spawn.description=Spawn command for tracking and mocking spawns.
+commands.spawn.entities.description=Displays a list of all entities & their positions in the world.
+commands.spawn.recent.description=Displays all mob spawns from the last 30s. Specify a mob name to filter.
+commands.spawn.tracking.start.description=Starts tracking mob spawns. Specify coords to track within an area.
+commands.spawn.tracking.start=§7Spawns are now being tracked.
+commands.spawn.tracking.start.mob=§7Spawns are now being tracked for: %s.
+commands.spawn.tracking.start.mob.actionbar=[%1] §aAdded %2 to spawn tracking and reset.
+commands.spawn.tracking.start.area= Area: %1 to %2.
+commands.spawn.tracking.start.mocking= Since spawn mocking is enabled, mobs will not spawn but they will be tracked.
+commands.spawn.tracking.start.actionbar=[%s] §7Started tracking spawns.
+commands.spawn.tracking.mob.description=Starts tracking a specific mob spawn. Specify coords to track within an area. Run again to add more mob types to track.
+commands.spawn.tracking.mob.invalid=§cInvalid mob name: %s
+commands.spawn.tracking.query.description=Displays a summary of all spawns that have occurred since the start of your test.
+commands.spawn.tracking.query.dimension=§7Dimension %s§r:
+commands.spawn.tracking.no=§cSpawns are not currently being tracked.
+commands.spawn.tracking.already=§cSpawns are already being tracked.
+commands.spawn.tracking.reset.success=§7Spawn counters and hopper counters reset.
+commands.spawn.tracking.reset.success.actionbar=[%s] §7Reset spawn counters and hopper counters.
+commands.spawn.tracking.stop.description=Stops tracking mob spawns.
+commands.spawn.tracking.stop=§7Spawns are no longer being tracked.
+commands.spawn.tracking.stop.actionbar=[%s] §7Stopped tracking spawns.
+commands.spawn.mocking.description=Enables/disables mob spawning while allowing the spawning algorithm to run.
+commands.spawn.mocking.enable=§aSpawn mocking is now enabled. Mobs will no longer spawn, but the spawning algorithm will continue.
+commands.spawn.mocking.disable=§cSpawn mocking is now disabled. Mobs will spawn as normal.
+commands.spawn.mocking.enable.actionbar=[%s] §aSpawn mocking enabled.
+commands.spawn.mocking.disable.actionbar=[%s] §cSpawn mocking disabled.
+
+commands.summontnt.description=Summons the specified amount of primed TNT at your location.
+commands.summontnt.fail.none=§cNo TNT summoned.
+commands.summontnt.success=§7Summoned §c%s TNT§7.
+
 ## scriptevents
 scriptevent.spawn.reset.all=[%s] Reset all spawn and hopper counters.
 scriptevent.spawn.notracking=§7Spawns are not currently being tracked.
@@ -166,3 +198,5 @@ rules.commandGamemode.description=Enables shortened gamemode commands (e.g. `./s
 rules.commandJumpSurvival.description=Enables jump command in survival mode.
 rules.commandPos.description=Enables pos command.
 rules.commandRemoveEntity=Enables removeentity command.
+rules.commandSpawnMocking.description=Enables spawn mocking command.
+rules.commandSummonTnt.description=Enables summontnt command.
