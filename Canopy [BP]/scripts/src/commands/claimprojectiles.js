@@ -7,12 +7,12 @@ const CLAIM_RADIUS = 25;
 new Rule({
     category: 'Rules',
     identifier: 'commandClaimProjectiles',
-    description: { translate: 'rules.commandClaimProjectiles.description' },
+    description: { translate: 'rules.commandClaimProjectiles' },
 });
 
 new Command({
     name: 'claimprojectiles',
-    description: { translate: 'commands.claimprojectiles.description' },
+    description: { translate: 'commands.claimprojectiles' },
     usage: 'claimprojectiles [playerName/radius] [radius]',
     args: [
         { type: 'string|number', name: 'playerName' },

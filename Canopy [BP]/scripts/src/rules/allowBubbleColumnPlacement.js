@@ -4,7 +4,7 @@ import { world, system } from '@minecraft/server';
 new Rule({
     category: 'Rules',
     identifier: 'allowBubbleColumnPlacement',
-    description: 'Removes the restriction on placing bubble columns.'
+    description: { translate: 'rules.allowBubbleColumnPlacement' }
 });
 
 world.beforeEvents.playerPlaceBlock.subscribe((event) => {

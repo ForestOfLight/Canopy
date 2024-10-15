@@ -6,7 +6,7 @@ import DirectionStateFinder from 'src/classes/DirectionState';
 new Rule({
     category: 'Rules',
     identifier: 'flippinArrows',
-    description: 'Using an arrow on blocks will flip, rotate, or open them. Putting it in your offhand will flip blocks when placed.',
+    description: { translate: 'rules.flippinArrows' },
 });
 
 const WAIT_TIME_BETWEEN_USE = 5; // in ticks

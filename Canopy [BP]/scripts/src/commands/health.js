@@ -7,7 +7,7 @@ import Utils from 'stickycore/utils'
 
 new Command({
     name: 'health',
-    description: { translate: 'commands.health.description' },
+    description: { translate: 'commands.health' },
     usage: 'health',
     callback: healthCommand
 })

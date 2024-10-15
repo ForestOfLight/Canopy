@@ -5,12 +5,12 @@ import Data from 'stickycore/data';
 new Rule({
     category: 'Rules',
     identifier: 'commandRemoveEntity',
-    description: { translate: 'rules.commandRemoveEntity.description' },
+    description: { translate: 'rules.commandRemoveEntity' },
 });
 
 new Command({
     name: 'removeentity',
-    description: { translate: 'commands.removeentity.description' },
+    description: { translate: 'commands.removeentity' },
     usage: 'removeentity [id]',
     args: [
         { type: 'number', name: 'id' }

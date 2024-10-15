@@ -6,12 +6,12 @@ const MAX_FUSE_TICKS = 72000;
 new Rule({
     category: 'Rules',
     identifier: 'commandTntFuse',
-    description: 'Enables tntfuse command & custom TNT fuse time functionality.'
+    description: { translate: 'rules.commandTntFuse' }
 });
 
 const cmd = new Command({
     name: 'tntfuse',
-    description: 'Sets the fuse time of primed TNT in ticks.',
+    description: { translate: 'commands.tntfuse' },
     usage: 'tntfuse <ticks/reset>',
     args: [
         { type: 'number|string', name: 'ticks' }
@@ -43,11 +43,11 @@ function tntfuseCommand(sender, args) {
         return cmd.sendUsage(sender);
     } else if (ticks === 'reset') {
         ticks = 80;
-        sender.sendMessage('§7Reset TNT fuse time to §a80§7 ticks.');
+        sender.sendMessage({ translate: 'commands.tntfuse.reset.success' });
     } else if (ticks < 0 || ticks > MAX_FUSE_TICKS)
-        return sender.sendMessage(`§cInvalid fuse time: ${ticks} ticks. Must be between 0 and ${MAX_FUSE_TICKS} seconds.`);
+        return sender.sendMessage({ translate: 'commands.tntfuse.set.fail' });
     else {
-        sender.sendMessage(`§7TNT fuse time set to §a${ticks}§7 ticks.`);
+        sender.sendMessage({ translate: 'commands.tntfuse.set.success', with: [ticks] });
     }
     world.setDynamicProperty('tntFuseTime', ticks);
 }

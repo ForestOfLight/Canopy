@@ -4,19 +4,19 @@ import { Rule, Command } from 'lib/canopy/Canopy';
 new Rule({
     category: 'Rules',
     identifier: 'commandWarp',
-    description: 'Enables warp & warps commands.'
+    description: { translate: 'rules.commandWarp' }
 });
 
 new Rule({
     category: 'Rules',
     identifier: 'commandWarpSurvival',
-    description: 'Enables warp command in survival mode.',
+    description: { translate: 'rules.commandWarpSurvival' },
     contingentRules: ['commandWarp']
 })
 
 const cmd = new Command({
     name: 'warp',
-    description: 'Teleport to and manage warps. (Alias: w)',
+    description: { translate: 'commands.warp' },
     usage: 'warp <add/remove/name> [name]',
     args: [
         { type: 'string|number', name: 'action' },
@@ -25,14 +25,14 @@ const cmd = new Command({
     callback: warpActionCommand,
     contingentRules: ['commandWarp'],
     helpEntries: [
-        { usage: 'warp <add/remove> <name>', description: 'Adds or removes a warp.' },
-        { usage: 'warp <name>', description: 'Teleports you to a warp.' }
+        { usage: 'warp <add/remove> <name>', description: { translate: 'commands.warp.edit' } },
+        { usage: 'warp <name>', description: { translate: 'commands.warp.tp' } }
     ]
 });
 
 new Command({
     name: 'w',
-    description: '',
+    description: { translate: 'commands.warp' },
     usage: 'w',
     args: [
         { type: 'string|number', name: 'action' },
@@ -45,7 +45,7 @@ new Command({
 
 new Command({
     name: 'warps',
-    description: 'List all available warps.',
+    description: { translate: 'commands.warps' },
     usage: 'warps',
     callback: warpListCommand,
     contingentRules: ['commandWarp']
@@ -67,7 +67,7 @@ class Warps {
 
 async function warpActionCommand(sender, args) {
     if (!await Rule.getValue('commandWarpSurvival') && ['survival', 'adventure'].includes(sender.getGameMode()))
-        return sender.sendMessage('§cThe commandWarpSurvival rule is disabled.');
+        return sender.sendMessage({ translate: 'commands.generic.blocked.survival' });
 
     let { action, name } = args;
     if (Number.isInteger(action)) action = action.toString();
@@ -82,15 +82,14 @@ async function warpActionCommand(sender, args) {
         name = action;
         warpTP(sender, name, warpMap);
     } else if (action !== null && !warpMap.has(action)) {
-        sender.sendMessage(`§cWarp "${action}" not found. Use ./warps to see the list of warps.`);
+        sender.sendMessage({ translate: 'commands.warp.noexist', with: [action] });
     } else {
         cmd.sendUsage(sender);
     }
 }
 
 function addWarp(sender, name, warpMap) {
-    if (warpMap.has(name)) return sender.sendMessage(`§cWarp "${name}" already exists. Use ./warps to see the list of warps.`);
-    
+    if (warpMap.has(name)) return sender.sendMessage({ translate: 'commands.warp.exists', with: [name] });
     const { location, dimension } = sender;
 
     let warps = JSON.parse(world.getDynamicProperty('warps'));
@@ -100,7 +99,8 @@ function addWarp(sender, name, warpMap) {
 }
 
 function removeWarp(sender, name, warpMap) {
-    if (!warpMap.has(name)) return sender.sendMessage(`§cWarp "${name}" not found. Use ./warps to see the list of warps.`);
+    if (!warpMap.has(name))
+        return sender.sendMessage({ translate: 'commands.warp.noexist', with: [name] });
 
     warpMap.delete(name);
     setWarpMap(warpMap);
@@ -110,11 +110,13 @@ function removeWarp(sender, name, warpMap) {
 function warpTP(sender, name, warpMap) {
     const warp = warpMap.get(name);
 
-    if (warp === undefined) return sender.sendMessage(`§cWarp "${name}" not found. Use ./warps to see the list of warps.`);
-    else if (warp.dimension.id !== sender.dimension.id) return sender.sendMessage(`§cPlease go to ${warp.dimension.id} to teleport to "${name}".`);
+    if (warp === undefined)
+        return sender.sendMessage({ translate: 'commands.warp.noexist', with: [name] });
+    else if (warp.dimension.id !== sender.dimension.id)
+        return sender.sendMessage({ translate: 'commands.warp.tp.fail.dimension', with: [warp.dimension.id, name] });
 
     sender.teleport({ x: warp.location.x, y: warp.location.y, z: warp.location.z });
-    sender.sendMessage(`§7Teleported to warp "${name}".`);
+    sender.sendMessage({ translate: 'commands.warp.tp.success', with: [name] });
 }
 
 function getWarpMapCopy() {
@@ -141,15 +143,16 @@ function setWarpMap(newWarpMap) {
 
 async function warpListCommand(sender) {
     if (!await Rule.getValue('commandWarpSurvival') && sender.getGameMode() === 'survival')
-        return sender.sendMessage('§cThe commandWarpSurvival rule is disabled.');
+        return sender.sendMessage({ translate: 'commands.generic.blocked.survival' });
     
     let warpMap = getWarpMapCopy();
 
-    if (warpMap.size === 0) return sender.sendMessage('§7There are no warps.');
-    let output = '§2Available Warps:§r';
+    if (warpMap.size === 0)
+        return sender.sendMessage({ translate: 'commands.warps.list.empty' });
+    const message = { rawtext: [{ translate: 'commands.warps.list.header' }] };
     warpMap.forEach((currWarp) => {
-        output += `\n§7- ${currWarp.name}§r`;
+        message.rawtext.push({ text: `\n§7- ${currWarp.name}` });
     });
 
-    sender.sendMessage(output);
+    sender.sendMessage(message);
 }

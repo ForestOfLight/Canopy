@@ -10,94 +10,94 @@ import { getAllTrackerInfoString } from 'src/commands/trackevent';
 
 new InfoDisplayRule({
 	identifier: 'showDisplay',
-	description: 'Toggles whether the InfoDisplay is shown.',
+	description: { translate: 'rules.infoDisplay.showDisplay' }
 });
 
 new InfoDisplayRule({
 	identifier: 'coords',
-	description: 'Shows the coordinates of you truncated at 2 decimal places.',
+	description: { translate: 'rules.infoDisplay.coords' }
 });
 
 new InfoDisplayRule({
 	identifier: 'facing',
-	description: 'Shows your facing direction using yaw and pitch.',
+	description: { translate: 'rules.infoDisplay.facing' }
 })
 
 new InfoDisplayRule({
 	identifier: 'cardinalFacing',
-	description: 'Shows which direction you are facing using N, S, E, W & the coordinate direction (ex. N (-z)).',
+	description: { translate: 'rules.infoDisplay.cardinalFacing' }
 });
 
 new InfoDisplayRule({
 	identifier: 'tps',
-	description: 'Shows the server\'s ticks per second (TPS).',
+	description: { translate: 'rules.infoDisplay.tps' }
 });
 
 new InfoDisplayRule({
 	identifier: 'entities',
-	description: 'Shows the number of entities in front of you.',
+	description: { translate: 'rules.infoDisplay.entities' }
 });
 
 new InfoDisplayRule({
 	identifier: 'light',
-	description: 'Shows the light level of the block where your foot is.',
+	description: { translate: 'rules.infoDisplay.light' }
 });
 
 new InfoDisplayRule({
 	identifier: 'biome',
-	description: 'Shows the biome you are in.',
+	description: { translate: 'rules.infoDisplay.biome' }
 });
 
 new InfoDisplayRule({
 	identifier: 'worldDay',
-	description: 'Shows the count of Minecraft days since the world began.',
+	description: { translate: 'rules.infoDisplay.worldDay' }
 });
 
 new InfoDisplayRule({
 	identifier: 'timeOfDay',
-	description: 'Shows the Minecraft day-cycle time as a 12-hour digital clock time.',
+	description: { translate: 'rules.infoDisplay.timeOfDay' }
 });
 
 new InfoDisplayRule({
 	identifier: 'sessionTime',
-	description: 'Shows the time since you joined the world.',
+	description: { translate: 'rules.infoDisplay.sessionTime' }
 });
 
 new InfoDisplayRule({
 	identifier: 'moonPhase',
-	description: 'Shows the phase of the moon.',
+	description: { translate: 'rules.infoDisplay.moonPhase' }
 });
 
 new InfoDisplayRule({
 	identifier: 'slimeChunk',
-	description: 'Shows whether the chunk you are in is a slime chunk (only displays when in a slime chunk).',
+	description: { translate: 'rules.infoDisplay.slimeChunk' }
 });
 
 new InfoDisplayRule({
 	identifier: 'eventTrackers',
-	description: 'Shows the counts of tracked events.',
+	description: { translate: 'rules.infoDisplay.eventTrackers' }
 });
 
 new InfoDisplayRule({
 	identifier: 'hopperCounterCounts',
-	description: 'Shows all active hopper counter\'s counts in their respective colors. Hopper counter mode controls this info.',
+	description: { translate: 'rules.infoDisplay.hopperCounterCounts' }
 });
 
 new InfoDisplayRule({
 	identifier: 'lookingAt',
-	description: 'Shows the identifier of the block or entity you are looking at. Redstone dust shows signal strength.',
+	description: { translate: 'rules.infoDisplay.lookingAt' }
 });
 
 new InfoDisplayRule({
 	identifier: 'signalStrength',
-	description: 'Shows the signal strength of the block you are looking at.',
-	contingentRules: ['lookingAt'],
+	description: { translate: 'rules.infoDisplay.signalStrength' },
+	contingentRules: ['lookingAt']
 });
 
 new InfoDisplayRule({
 	identifier: 'peekInventory',
-	description: 'Shows the inventory of the block or entity you are looking at.',
-	contingentRules: ['lookingAt'],
+	description: { translate: 'rules.infoDisplay.peekInventory' },
+	contingentRules: ['lookingAt']
 });
 
 system.runInterval(() => {
@@ -122,6 +122,17 @@ function InfoDisplay(player) {
 	InfoText += parseHopperCounters(player);
 	InfoText += parseLookingAtAndSignalStrength(player);
 	InfoText += parsePeek(player);
+
+	const infoMessage = { rawtext: [] };
+	infoMessage.rawtext.push(parseCoordsAndCardinalFacing(player));
+	infoMessage.rawtext.push(parseFacing(player));
+	infoMessage.rawtext.push(parseTPSAndEntities(player));
+	infoMessage.rawtext.push(parseLightAndBiome(player));
+	infoMessage.rawtext.push(parseDayAndTime(player));
+	infoMessage.rawtext.push(parseSessionTime(player));
+
+	if (infoMessage.rawtext[infoMessage.rawtext.length - 1].text === '\n')
+		infoMessage.rawtext[infoMessage.rawtext.length - 1].text = '';
 	
 	player.onScreenDisplay.setTitle(InfoText.trim());
 }
@@ -129,128 +140,150 @@ function InfoDisplay(player) {
 function parseCoordsAndCardinalFacing(player) {
 	const showCoords = InfoDisplayRule.getValue(player, 'coords');
 	const showCardinal = InfoDisplayRule.getValue(player, 'cardinalFacing');
-	if (!showCoords && !showCardinal) return '';
+	if (!showCoords && !showCardinal) return { text: '' };
 	let coords = player.location;
 	let facing;
-	let output = '';
+	const message = { rawtext: [] };
 
-	if (showCoords) [ coords.x, coords.y, coords.z ] = [ coords.x.toFixed(2), coords.y.toFixed(2), coords.z.toFixed(2) ];
-	if (showCardinal) facing = Data.getPlayerDirection(player);
-	if (showCoords && showCardinal) output += `§r${coords.x} ${coords.y} ${coords.z}§r §7${facing}§r\n`;
-	else if (showCoords) output += `§r${coords.x} ${coords.y} ${coords.z}§r\n`;
-	else if (showCardinal) output += `§rFacing: §7${facing}§r\n`;
+	if (showCoords)
+		[coords.x, coords.y, coords.z] = [coords.x.toFixed(2), coords.y.toFixed(2), coords.z.toFixed(2)];
+	if (showCardinal)
+		facing = Data.getPlayerDirection(player);
+	if (showCoords && showCardinal)
+		message.rawtext.push({ text: `§r${coords.x} ${coords.y} ${coords.z}§r §7${facing}§r\n` });
+	else if (showCoords)
+		message.rawtext.push({ text: `§r${coords.x} ${coords.y} ${coords.z}§r\n` });
+	else if (showCardinal)
+		message.rawtext.push({ rawtext: [{translate: 'rules.infoDisplay.facing.display'},{ text: `\n` }]});
 
-	return output;
+	return message;
 }
 
 function parseFacing(player) {
 	const showFacing = InfoDisplayRule.getValue(player, 'facing');
-	if (!showFacing) return '';
+	if (!showFacing) return { text: '' };
 	let rotation = player.getRotation();
 
 	[ rotation.x, rotation.y ] = [ rotation.x.toFixed(2), rotation.y.toFixed(2) ];
-	return `§rPitch: §7${rotation.x}§r Yaw: §7${rotation.y}§r\n`;
+	return { rawtext: [{ translate: 'rules.infoDisplay.facing.display', with: [rotation.x, rotation.y] },{ text: '\n' }] };
 }
 
 function parseTPSAndEntities(player) {
 	const showTPS = InfoDisplayRule.getValue(player, 'tps');
 	const showEntities = InfoDisplayRule.getValue(player, 'entities');
-	if (!showTPS && !showEntities) return '';
+	if (!showTPS && !showEntities) return { text: '' };
 	let tpsData;
 	let tps;
 	let fovEntities;
-	let output = '';
+	const message = { rawtext: [] };
 
 	if (showEntities) fovEntities = Entities.getEntitiesOnScreenCount(player);
 	if (showTPS) {
 		tpsData = DataTPS.tps.toFixed(1);
 		tps = tpsData >= 20 ? `§a20.0` : `§c${tpsData}`;	
 	}
-	if (showTPS && showEntities) output += `§rTPS: ${tps}§r Entities: §7${fovEntities}§r\n`;
-	else if (showTPS) output += `§rTPS: ${tps}§r\n`;
-	else if (showEntities) output += `§rEntities: §7${fovEntities}§r\n`;
+	if (showTPS && showEntities)
+		message.rawtext.push({ rawtext: [{ translate: 'rules.infoDisplay.tpsAndEntities.display', with: [tps, String(fovEntities)] },{ text: '\n' }] });
+	else if (showTPS)
+		message.rawtext.push({ rawtext: [{ translate: 'rules.infoDisplay.tps.display', with: [tps] },{ text: '\n' }] });
+	else if (showEntities)
+		message.rawtext.push({ rawtext: [{ translate: 'rules.infoDisplay.entities.display', with: [String(fovEntities)] },{ text: '\n' }] });
 
-	return output;
+	return message;
 }
 
 function parseLightAndBiome(player) {
 	const showLight = InfoDisplayRule.getValue(player, 'light');
 	const showBiome = InfoDisplayRule.getValue(player, 'biome');
-	if (!showLight && !showBiome) return '';
+	if (!showLight && !showBiome) return { text: '' };
 	let lightLevel;
 	let biome;
-	let output = '';
+	const message = { rawtext: [] };
 
-	if (showLight) lightLevel = ProbeManager.getLightLevel(player);
-	if (showBiome) biome = ProbeManager.getBiome(player);
-	if (showLight && showBiome) output += `§rLight: §e${lightLevel} §rBiome: §a${biome}§r\n`;
-	else if (showLight) output += `§rLight: §e${lightLevel}§r\n`;
-	else if (showBiome) output += `§rBiome: §a${biome}§r\n`;
+	if (showLight)
+		lightLevel = ProbeManager.getLightLevel(player);
+	if (showBiome)
+		biome = ProbeManager.getBiome(player);
+	if (showLight && showBiome)
+		message.rawtext.push({ rawtext: [{ translate: 'rules.infoDisplay.lightAndBiome.display', with: [String(lightLevel), biome] },{ text: '\n' }] });
+	else if (showLight)
+		message.rawtext.push({ rawtext: [{ translate: 'rules.infoDisplay.light.display', with: [String(lightLevel)] },{ text: '\n' }] });
+	else if (showBiome)
+		message.rawtext.push({ rawtext: [{ translate: 'rules.infoDisplay.biome.display', with: [biome] },{ text: '\n' }] });
 
-	return output;
+	return message;
 }
 
 function parseDayAndTime(player) {
 	const showDay = InfoDisplayRule.getValue(player, 'worldDay');
 	const showTimeOfDay = InfoDisplayRule.getValue(player, 'timeOfDay');
-	if (!showDay && !showTimeOfDay) return '';
+	if (!showDay && !showTimeOfDay) return { text: '' };
 	let day;
 	let dayTime;
-	let output = '';
+	const message = { rawtext: [] };
 
-	if (showDay) day = Data.getDay();
-	if (showTimeOfDay) dayTime = Utils.ticksToTime(Data.getTimeOfDay());
-	if (showDay && showTimeOfDay) output += `Day: §7${day}§r §7${dayTime}§r\n`;
-	else if (showDay) output += `§rDay: §7${day}§r\n`;
-	else if (showTimeOfDay) output += `§rTime: §7${dayTime}§r\n`;
+	if (showDay)
+		day = Data.getDay();
+	if (showTimeOfDay)
+		dayTime = Utils.ticksToTime(Data.getTimeOfDay());
+	if (showDay && showTimeOfDay)
+		message.rawtext.push({ rawtext: [{ translate: 'rules.infoDisplay.worldDayAndTimeOfDay.display', with: [String(day), dayTime] },{ text: '\n' }] });
+	else if (showDay)
+		message.rawtext.push({ rawtext: [{ translate: 'rules.infoDisplay.worldDay.display', with: [String(day)] },{ text: '\n' }] });
+	else if (showTimeOfDay)
+		message.rawtext.push({ rawtext: [{ translate: 'rules.infoDisplay.timeOfDay.display', with: [dayTime] },{ text: '\n' }] });
 
-	return output;
+	return message;
 }
 
 function parseSessionTime(player) {
 	const showSessionTime = InfoDisplayRule.getValue(player, 'sessionTime');
-	let sessionTime;
-	let output = '';
+	const message = { rawtext: [] };
 
 	if (showSessionTime) {
-		sessionTime = Data.getSessionTime(player);
-		output += `§rSession: §7${sessionTime}§r\n`;
+		const sessionTime = Data.getSessionTime(player);
+		message.rawtext.push({ rawtext: [{ translate: 'rules.infoDisplay.sessionTime.display', with: [sessionTime] },{ text: '\n' }] });
 	}
 
-	return output;
+	return message;
 }
 
 function parseMoonPhaseAndSlimeChunk(player) {
 	const showMoonPhase = InfoDisplayRule.getValue(player, 'moonPhase');
 	const showSlimeChunk = InfoDisplayRule.getValue(player, 'slimeChunk');
-	if (!showMoonPhase && !showSlimeChunk) return '';
+	if (!showMoonPhase && !showSlimeChunk) return { text: '' };
 	let isSlime = false;
 	let moonPhase;
 	let slimeChunk;
-	let output = '';
+	const message = { rawtext: [] };
 
-	if (showMoonPhase) moonPhase = Data.getMoonPhase();
+	if (showMoonPhase)
+		moonPhase = Data.getMoonPhase();
 	if (showSlimeChunk) {
 		isSlime = player.dimension.id === "minecraft:overworld" && Data.isSlime(player.location.x, player.location.z);
-		slimeChunk = isSlime ? '§7(§aSlime Chunk§7)§r' : '';
+		slimeChunk = isSlime ? { translate: 'rules.infoDisplay.slimeChunk.display' } : { text: '' };
 	} 
-	if (showMoonPhase && showSlimeChunk) output += `§rMoon: §7${moonPhase}§r ${slimeChunk}\n`;
-	else if (showMoonPhase) output += `§rMoon: §7${moonPhase}§r\n`;
-	else if (showSlimeChunk && isSlime) output += `§r${slimeChunk}\n`;
+	if (showMoonPhase && showSlimeChunk)
+		message.rawtext.push({ rawtext: [{ translate: 'rules.infoDisplay.moonPhaseAndSlimeChunk.display', with: [moonPhase] },slimeChunk,{ text: '\n' }] });
+	else if (showMoonPhase)
+		message.rawtext.push({ rawtext: [{ translate: 'rules.infoDisplay.moonPhase.display', with: [moonPhase] },{ text: '\n' }] });
+	else if (showSlimeChunk && isSlime)
+		message.rawtext.push({ rawtext: [slimeChunk,{ text: '\n' }] });
 
 	return output;
 }
 
 function parseEventTrackerInfo(player) {
-	if (!InfoDisplayRule.getValue(player, 'eventTrackers')) return '';
+	if (!InfoDisplayRule.getValue(player, 'eventTrackers')) return { text: '' };
 	let output = getAllTrackerInfoString().join('\n');
-	if (output !== '') output += '\n';
-	return output;
+	const message = { rawtext: [{ text: output }] };
+	if (output !== '') message.rawtext.push({ text: '\n' });
+	return message;
 }
 
 function parseHopperCounters(player) {
-	if (!InfoDisplayRule.getValue(player, 'hopperCounterCounts')) return '';
-	return getInfoDisplayOutput();
+	if (!InfoDisplayRule.getValue(player, 'hopperCounterCounts')) return { text: '' };
+	return { text: getInfoDisplayOutput() };
 }
 
 function parseLookingAtAndSignalStrength(player) {
@@ -260,20 +293,21 @@ function parseLookingAtAndSignalStrength(player) {
 	let entityRayResult;
 	let lookingAtName;
 	let signalStrength;
-	let output = '';
+	const message = { rawtext: [] };
 
-	if (!showLookingAt && !showSignalStrength) return '';
+	if (!showLookingAt && !showSignalStrength) return { text: '' };
 	({ blockRayResult, entityRayResult } = Data.getRaycastResults(player, 7));
 	if (showLookingAt) {
 		lookingAtName = Utils.parseLookingAtEntity(entityRayResult).LookingAtName || Utils.parseLookingAtBlock(blockRayResult).LookingAtName;
-		output += `${lookingAtName}`;
+		message.rawtext.push({ text: String(lookingAtName) });
 	}
 	if (showSignalStrength) {
 		signalStrength = blockRayResult?.block?.getRedstonePower();
-		if (signalStrength) output += `§7: §c${signalStrength}§r`;
+		if (signalStrength)
+			message.rawtext.push({ text: `§7: §c${signalStrength}§r` });
 	}
 
-	return output;
+	return message;
 }
 
 function parsePeek(player) {
@@ -281,11 +315,9 @@ function parsePeek(player) {
 	let peekInventory;
 	let blockRayResult;
 	let entityRayResult;
-	let output = '';
 	
-	if (!showPeekInventory) return '';
+	if (!showPeekInventory) return { text: '' };
 	({ blockRayResult, entityRayResult } = Data.getRaycastResults(player, 7));
 	peekInventory = Data.peekInventory(player, blockRayResult, entityRayResult);
-	output += `${peekInventory}`;
-	return output;
+	return { text: `${peekInventory}` };
 }

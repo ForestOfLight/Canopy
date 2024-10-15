@@ -6,12 +6,12 @@ import { DataTPS } from 'src/tps';
 new Rule({
     category: 'Rules',
     identifier: 'commandTick',
-    description: 'Enables tick command.'
+    description: { translate: 'rules.commandTick' },
 });
 
 const cmd = new Command({
     name: 'tick',
-    description: 'Set and control the tick speed.',
+    description: { translate: 'commands.tick' },
     usage: `tick <mspt/step/reset/sleep> [steps/milliseconds]`,
     args: [
         { type: 'string|number', name: 'arg' },
@@ -20,10 +20,10 @@ const cmd = new Command({
     callback: tickCommand,
     contingentRules: ['commandTick'],
     helpEntries: [
-        { usage: 'tick <mspt>', description: 'Slows down the server tick speed to the specified mspt.' },
-        { usage: 'tick step [steps]', description: 'Allows the server to run at normal speed for the specified amount of steps.' },
-        { usage: 'tick reset', description: 'Resets the server tick speed to normal.' },
-        { usage: 'tick sleep [milliseconds]', description: 'Pauses the server for the desired milliseconds.' }
+        { usage: 'tick <mspt>', description: { translate: 'commands.tick.mspt' } },
+        { usage: 'tick step [steps]', description: { translate: 'commands.tick.step' } },
+        { usage: 'tick reset', description: { translate: 'commands.tick.reset' } },
+        { usage: 'tick sleep [milliseconds]', description: { translate: 'commands.tick.sleep' } }
     ]
 });
 
@@ -33,14 +33,14 @@ let shouldStep = 0;
 system.runInterval(() => {
     if (shouldStep > 0) {
         shouldStep--;
-        if (shouldStep == 0) world.sendMessage('§7Tick step complete.');
+        if (shouldStep == 0) 
+            world.sendMessage({ translate: 'commands.tick.done.success' });
         return;
     }
     tickSpeed(targetMSPT);
 });
 
 function tickCommand(sender, args) {
-    if (!world.getDynamicProperty('commandTick')) return sender.sendMessage('§cThe commandTick feature is disabled.');
     const { arg, steps } = args;
 
     if (arg === null)
@@ -59,31 +59,31 @@ function tickCommand(sender, args) {
 
 function tickSlow(sender, mspt) {
     if (mspt < 50.0)
-        return sender.sendMessage('§cMSPT cannot be less than 50.0.');
+        return sender.sendMessage({ translate: 'commands.tick.mspt.fail' });
     targetMSPT = mspt;
-    world.sendMessage(`§7${sender.name} set the tick speed to ${mspt} mspt.`);
+    world.sendMessage({ translate: 'commands.tick.mspt.success', with: [sender.name, String(mspt)] });
     tickSpeed(mspt);
 }
 
 function tickReset(sender) {
     targetMSPT = 50.0;
-    world.sendMessage(`§7${sender.name} reset the tick speed.`);
+    world.sendMessage({ translate: 'commands.tick.reset.success', with: [sender.name] });
 }
 
 function tickStep(sender, steps) {
     if (targetMSPT === 50.0)
-        return sender.sendMessage('§cCannot step ticks without setting a tick speed.');
+        return sender.sendMessage({ translate: 'commands.tick.step.fail' });
     if (steps === null || steps < 1)
         shouldStep = 1;
     else
         shouldStep = steps;
-    world.sendMessage(`§7${sender.name} stepping ${shouldStep} tick(s)...`);
+    world.sendMessage(``);
 }
 
 function tickSleep(sender, milliseconds) {
     if (milliseconds === null || milliseconds < 1)
-        return sender.sendMessage('§cInvalid sleep time.');
-    world.sendMessage(`§7${sender.name} pausing the server for ${milliseconds} ms.`);
+        return sender.sendMessage({ translate: 'commands.tick.sleep.fail' });
+    world.sendMessage({ translate: 'commands.tick.sleep.success', with: [sender.name, String(milliseconds)] });
     let startTime = Date.now();
     let waitTime = 0;
     while (waitTime < milliseconds) {

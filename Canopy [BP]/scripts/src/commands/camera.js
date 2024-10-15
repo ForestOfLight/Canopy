@@ -5,12 +5,12 @@ import Utils from 'stickycore/utils';
 new Rule({
     category: 'Rules',
     identifier: 'commandCamera',
-    description: { translate: 'rules.commandCamera.description' },
+    description: { translate: 'rules.commandCamera' },
 });
 
 const cmd = new Command({
     name: 'camera',
-    description: { translate: 'commands.camera.description' },
+    description: { translate: 'commands.camera' },
     usage: 'camera <action>',
     args: [
         { type: 'string', name: 'action' }
@@ -18,15 +18,15 @@ const cmd = new Command({
     callback: cameraCommand,
     contingentRules: ['commandCamera'],
     helpEntries: [
-        { usage: 'camera place', description: { translate: 'commands.camera.place.description' } },
-        { usage: 'camera view', description: { translate: 'commands.camera.view.description' } },
-        { usage: 'camera spectate', description: { translate: 'commands.camera.spectate.description' } }
+        { usage: 'camera place', description: { translate: 'commands.camera.place' } },
+        { usage: 'camera view', description: { translate: 'commands.camera.view' } },
+        { usage: 'camera spectate', description: { translate: 'commands.camera.spectate' } }
     ]
 });
 
 new Command({
     name: 'cp',
-    description: { translate: 'commands.camera.place.description' },
+    description: { translate: 'commands.camera.place' },
     usage: 'cp',
     callback: (sender) => cameraCommand(sender, { action: 'place' }),
     contingentRules: ['commandCamera'],
@@ -35,7 +35,7 @@ new Command({
 
 new Command({
     name: 'cv',
-    description: { translate: 'commands.camera.view.description' },
+    description: { translate: 'commands.camera.view' },
     usage: 'cv',
     callback: (sender) => cameraCommand(sender, { action: 'view' }),
     contingentRules: ['commandCamera'],
@@ -44,7 +44,7 @@ new Command({
 
 new Command({
     name: 'cs',
-    description: { translate: 'commands.camera.spectate.description' },
+    description: { translate: 'commands.camera.spectate' },
     usage: 'cs',
     callback: (sender) => cameraCommand(sender, { action: 'spectate' }),
     contingentRules: ['commandCamera'],

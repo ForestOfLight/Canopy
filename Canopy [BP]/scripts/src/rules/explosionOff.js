@@ -4,7 +4,7 @@ import { world } from "@minecraft/server";
 new Rule({
     category: 'Rules',
     identifier: 'explosionOff',
-    description: 'Disables explosions entirely.',
+    description: { translate: 'rules.explosionOff' },
     independentRules: ['explosionChainReactionOnly', 'explosionNoBlockDamage']
 });
 

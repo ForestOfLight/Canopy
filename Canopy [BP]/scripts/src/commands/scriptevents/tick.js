@@ -3,6 +3,8 @@ import Utils from "stickycore/utils";
 
 system.afterEvents.scriptEventReceive.subscribe((event) => {
     if (event.id !== "canopy:tick") return;
+    if (!Rule.getNativeValue('commandTick')) 
+        return Utils.broadcastActionBar({ translate: 'rules.generic.blocked', with: ['commandTick'] });
     const message = event.message;
     const args = message.split(' ');
     const sourceName = Utils.getScriptEventSourceName(event);
@@ -12,7 +14,7 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
 
 function tickSleep(sourceName, milliseconds) {
     if (milliseconds === null || milliseconds < 1) return;
-    world.sendMessage({ translate: 'scriptevent.tick.sleep', with: [sourceName, String(milliseconds)] });
+    world.sendMessage({ translate: 'command.tick.sleep.success', with: [sourceName, String(milliseconds)] });
     let startTime = Date.now();
     let waitTime = 0;
     while (waitTime < milliseconds) {

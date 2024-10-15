@@ -4,7 +4,7 @@ import { Rule } from "lib/canopy/Canopy";
 new Rule({
     category: 'Rules',
     identifier: 'creativeOneHitKill',
-    description: 'Akkiws creative players to one hit kill any entity. If sneaking, it will also kill nearby entities.',
+    description: { translate: 'rules.creativeOneHitKill' },
 });
 
 world.afterEvents.entityHitEntity.subscribe((event) => {

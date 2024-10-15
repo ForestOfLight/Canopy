@@ -7,7 +7,7 @@ const MAX_DISTANCE = 64*16;
 
 const cmd = new Command({
     name: 'distance',
-    description: { translate: 'commands.distance.description' },
+    description: { translate: 'commands.distance' },
     usage: `distance [from [x y z]] [to [x y z]] OR ${Command.prefix}distance target`,
     args: [
         { type: 'string', name: 'actionArgOne' },
@@ -21,16 +21,16 @@ const cmd = new Command({
     ],
     callback: distanceCommand,
     helpEntries: [
-        { usage: `distance target`, description: { translate: 'commands.distance.target.description' } },
-        { usage: `distance from <x y z> to [x y z]`, description: { translate: 'commands.distance.fromto.description' } },
-        { usage: `distance from [x y z]`, description: { translate: 'commands.distance.from.description' } },
-        { usage: `distance to [x y z]`, description: { translate: 'commands.distance.to.description' } }
+        { usage: `distance target`, description: { translate: 'commands.distance.target' } },
+        { usage: `distance from <x y z> to [x y z]`, description: { translate: 'commands.distance.fromto' } },
+        { usage: `distance from [x y z]`, description: { translate: 'commands.distance.from' } },
+        { usage: `distance to [x y z]`, description: { translate: 'commands.distance.to' } }
     ]
 });
 
 new Command({
     name: 'd',
-    description: { translate: 'commands.distance.description' },
+    description: { translate: 'commands.distance' },
     args: [
         { type: 'string', name: 'actionArgOne' },
         { type: 'number', name: 'fromArgX' },

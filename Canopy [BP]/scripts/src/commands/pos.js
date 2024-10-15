@@ -7,12 +7,12 @@ const NETHER_SCALE_FACTOR = 8;
 new Rule({
     category: 'Rules',
     identifier: 'commandPos',
-    description: { translate: 'rules.commandPos.description' },
+    description: { translate: 'rules.commandPos' },
 });
 
 new Command({
     name: 'pos',
-    description: { translate: 'commands.pos.description' },
+    description: { translate: 'commands.pos' },
     usage: 'pos [player]',
     args: [
         { type: 'string|number', name: 'player' },

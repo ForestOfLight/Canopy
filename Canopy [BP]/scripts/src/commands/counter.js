@@ -6,12 +6,12 @@ import Utils from 'stickycore/utils'
 new Rule({
     category: 'Rules',
     identifier: 'hopperCounters',
-    description: { translate: 'rules.hopperCounters.description' }
+    description: { translate: 'rules.hopperCounters' }
 })
 
 const cmd = new Command({
     name: 'counter',
-    description: { translate: 'commands.counter.description' },
+    description: { translate: 'commands.counter' },
     usage: 'counter <color/all/reset/realtime> [mode/reset/realtime]',
     args: [
         { type: 'string', name: 'argOne' },
@@ -20,16 +20,16 @@ const cmd = new Command({
     callback: counterCommand,
     contingentRules: ['hopperCounters'],
     helpEntries: [
-        { usage: 'counter <color>', description: { translate: 'commands.counter.query.description' } },
-        { usage: 'counter [color] realtime', description: { translate: 'commands.counter.realtime.description' } },
-        { usage: 'counter <color/all> <mode>', description: { translate: 'commands.counter.mode.description' } },
-        { usage: 'counter [color] reset', description: { translate: 'commands.counter.reset.description' } }
+        { usage: 'counter <color>', description: { translate: 'commands.counter.query' } },
+        { usage: 'counter [color] realtime', description: { translate: 'commands.counter.realtime' } },
+        { usage: 'counter <color/all> <mode>', description: { translate: 'commands.counter.mode' } },
+        { usage: 'counter [color] reset', description: { translate: 'commands.counter.reset' } }
     ]
 })
 
 new Command({
     name: 'ct',
-    description: { translate: 'commands.counter.description' },
+    description: { translate: 'commands.counter' },
     usage: 'ct <color/all/reset/realtime> [mode/reset/realtime]',
     args: [
         { type: 'string', name: 'argOne' },

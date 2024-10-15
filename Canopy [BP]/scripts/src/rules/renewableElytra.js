@@ -4,7 +4,7 @@ import { ItemStack, world } from "@minecraft/server";
 new Rule({
     category: 'Rules',
     identifier: 'renewableElytra',
-    description: 'Phantoms have a 1%% chance to drop an elytra when killed by a shulker bullet.',
+    description: { translate: 'rules.renewableElytra' },
 });
 
 world.afterEvents.entityDie.subscribe((event) => {

@@ -4,7 +4,7 @@ import { world } from "@minecraft/server";
 new Rule({
     category: 'Rules',
     identifier: 'explosionNoBlockDamage',
-    description: 'Makes explosions not affect blocks.',
+    description: { translate: 'rules.explosionNoBlockDamage' },
     independentRules: ['explosionChainReactionOnly', 'explosionOff']
 });
 

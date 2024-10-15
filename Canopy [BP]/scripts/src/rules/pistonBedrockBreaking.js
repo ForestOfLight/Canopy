@@ -5,7 +5,7 @@ import DirectionStateFinder from 'src/classes/DirectionState';
 new Rule({
     category: 'Rules',
     identifier: 'pistonBedrockBreaking',
-    description: 'Allows pistons to break bedrock when facing away from a bedrock block and expanding.',
+    description: { translate: 'rules.pistonBedrockBreaking' },
 });
 
 const insideBedrockPistonList = [];

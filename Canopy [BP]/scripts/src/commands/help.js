@@ -45,14 +45,14 @@ function populateNativeCommandPages(helpBook) {
 }
 
 function populateNativeRulePages(helpBook, player) {
-    const infoDisplayPage = new InfoDisplayRuleHelpPage('InfoDisplay', { translate: 'commands.help.infodisplay.description' }, Command.prefix + 'info <rule/all> <true/false>');
+    const infoDisplayPage = new InfoDisplayRuleHelpPage('InfoDisplay', { translate: 'commands.help.infodisplay' }, Command.prefix + 'info <rule/all> <true/false>');
     const infoDisplayRules = InfoDisplayRule.getRules();
     helpBook.newPage(infoDisplayPage);
     for (let infoDisplayRule of infoDisplayRules) {
         helpBook.addEntry(infoDisplayRule.getCategory(), infoDisplayRule, player);
     }
 
-    const rulesPage = new RuleHelpPage('Rules', { translate: 'commands.help.rules.description' }, Command.prefix + 'canopy <rule> <true/false>');
+    const rulesPage = new RuleHelpPage('Rules', { translate: 'commands.help.rules' }, Command.prefix + 'canopy <rule> <true/false>');
     const globalRules = Rule.getRulesByCategory('Rules');
     helpBook.newPage(rulesPage);
     for (let rule of globalRules) {
@@ -65,7 +65,7 @@ function populateExtensionPages(helpBook) {
     const commandExtensions = Command.getExtensionNames();
 
     for (const extensionName of ruleExtensions) {
-        const rulePage = new RuleHelpPage(`Rules`, { translate: 'commands.help.extension.rules.description', with: [extensionName] }, Command.prefix + `canopy <rule> <true/false>`, extensionName);
+        const rulePage = new RuleHelpPage(`Rules`, { translate: 'commands.help.extension.rules', with: [extensionName] }, Command.prefix + `canopy <rule> <true/false>`, extensionName);
         const rules = Rule.getRulesByExtension(extensionName);
         helpBook.newPage(rulePage);
         for (let rule of rules) {
@@ -74,7 +74,7 @@ function populateExtensionPages(helpBook) {
     }
 
     for (const extensionName of commandExtensions) {
-        const commandPage = new CommandHelpPage(`Commands`, { translate: 'commands.help.extension.commands.description', with: [extensionName] }, extensionName);
+        const commandPage = new CommandHelpPage(`Commands`, { translate: 'commands.help.extension.commands', with: [extensionName] }, extensionName);
         let commands = Command.getCommandsByExtension(extensionName);
         commands = commands.filter(cmd => !cmd.isHelpHidden());
         helpBook.newPage(commandPage);

@@ -5,7 +5,7 @@ import Utils from 'stickycore/utils';
 new Rule({
     category: 'Rules',
     identifier: 'noTileDrops',
-    description: 'Prevents items dropping from blocks broken in creative mode.',
+    description: { translate: 'rules.noTileDrops' },
 });
 
 let brokenBlockEventsThisTick = [];

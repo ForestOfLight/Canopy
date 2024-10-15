@@ -4,7 +4,7 @@ import { system, world } from '@minecraft/server';
 new Rule({
     category: 'Rules',
     identifier: 'dupeTnt',
-    description: 'TNT can be duplicated when moved by a piston and powered next to a note blocks.',
+    description: { translate: 'rules.dupeTnt' },
 });
 
 let spawnedEntitiesThisTick = [];

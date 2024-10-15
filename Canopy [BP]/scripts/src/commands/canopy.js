@@ -3,7 +3,7 @@ import { resetCounterMap } from 'src/commands/counter';
 
 const cmd = new Command({
     name: 'canopy',
-    description: { translate: 'commands.canopy.description' },
+    description: { translate: 'commands.canopy' },
     usage: 'canopy <rule> <true/false>',
     args: [
         { type: 'string', name: 'ruleID' },

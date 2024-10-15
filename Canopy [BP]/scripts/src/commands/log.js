@@ -9,7 +9,7 @@ const TERTIARY_COLOR = '§a';
 
 const cmd = new Command({
     name: 'log',
-    description: { translate: 'commands.log.description' },
+    description: { translate: 'commands.log' },
     usage: 'log <tnt/projectiles/falling_blocks> [precision]',
     args: [
         { type: 'string', name: 'type' },

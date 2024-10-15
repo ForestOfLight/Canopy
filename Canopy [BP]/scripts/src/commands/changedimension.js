@@ -15,12 +15,12 @@ const validDimensions = {
 new Rule({
     category: 'Rules',
     identifier: 'commandChangeDimension',
-    description: { translate: 'rules.commandChangeDimension.description' }
+    description: { translate: 'rules.commandChangeDimension' }
 });
 
 const cmd = new Command({
     name: 'changedimension',
-    description: { translate: 'commands.changedimension.description' },
+    description: { translate: 'commands.changedimension' },
     usage: 'changedimension <dimension> [x y z]',
     args: [
         { type: 'string', name: 'dimension' },

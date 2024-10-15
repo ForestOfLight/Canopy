@@ -8,12 +8,12 @@ import { categoryToMobMap } from 'src/classes/SpawnTracker';
 const thisRule = new Rule({
     category: 'Rules',
     identifier: 'commandSpawnMocking',
-    description: { translate: 'rules.commandSpawnMocking.description' }
+    description: { translate: 'rules.commandSpawnMocking' }
 });
 
 const cmd = new Command({
     name: 'spawn',
-    description: { translate: 'commands.spawn.description' },
+    description: { translate: 'commands.spawn' },
     usage: 'spawn [action1] [action2] [x1 y1 z1] [x2 y2 z2]',
     args: [
         { type: 'string', name: 'action' },
@@ -27,13 +27,13 @@ const cmd = new Command({
     ],
     callback: spawnCommand,
     helpEntries: [
-        { usage: 'spawn entities', description: { translate: 'commands.spawn.entities.description' } },
-        { usage: 'spawn recent [mobName]', description: { translate: 'commands.spawn.recent.description' } },
-        { usage: 'spawn tracking [x1 y1 z1] [x2 y2 z2]', description: { translate: 'commands.spawn.tracking.start.description' } },
-        { usage: 'spawn <mobName> [x1 y1 z1] [x2 y2 z2]', description: { translate: 'commands.spawn.tracking.mob.description' } },
-        { usage: 'spawn tracking', description: { translate: 'commands.spawn.tracking.query.description' } },
-        { usage: 'spawn tracking stop', description: { translate: 'commands.spawn.tracking.stop.description' } },
-        { usage: 'spawn mocking <true/false>', description: { translate: 'commands.spawn.mocking.description' } }
+        { usage: 'spawn entities', description: { translate: 'commands.spawn.entities' } },
+        { usage: 'spawn recent [mobName]', description: { translate: 'commands.spawn.recent' } },
+        { usage: 'spawn tracking [x1 y1 z1] [x2 y2 z2]', description: { translate: 'commands.spawn.tracking.start' } },
+        { usage: 'spawn <mobName> [x1 y1 z1] [x2 y2 z2]', description: { translate: 'commands.spawn.tracking.mob' } },
+        { usage: 'spawn tracking', description: { translate: 'commands.spawn.tracking.query' } },
+        { usage: 'spawn tracking stop', description: { translate: 'commands.spawn.tracking.stop' } },
+        { usage: 'spawn mocking <true/false>', description: { translate: 'commands.spawn.mocking' } }
     ]
 });
 
@@ -129,7 +129,7 @@ function startTracking(sender, posOne, posTwo) {
     if (!isLocationNull(posOne) && !isLocationNull(posTwo))
         currActiveArea = { posOne, posTwo, dimensionId: sender.dimension.id };
     worldSpawns = new WorldSpawns([], currActiveArea);
-    const message = { rawtext: [{ translate: 'commands.spawn.tracking.start' }] }
+    const message = { rawtext: [{ translate: 'commands.spawn.tracking.start.success' }] }
     if (currActiveArea)
         message.rawtext.push({ translate: 'commands.spawn.tracking.start.area', with: [Utils.stringifyLocation(posOne), Utils.stringifyLocation(posTwo)] })
     if (isMocking)
@@ -146,7 +146,7 @@ function stopTracking(sender) {
     worldSpawns = null;
     currMobIds = [];
     currActiveArea = null;
-    sender.sendMessage({ translate: 'commands.spawn.tracking.stop' });
+    sender.sendMessage({ translate: 'commands.spawn.tracking.stop.success' });
     Utils.broadcastActionBar({ translate: 'commands.spawn.tracking.stop.actionbar', with: [sender.name] }, sender);
 }
 

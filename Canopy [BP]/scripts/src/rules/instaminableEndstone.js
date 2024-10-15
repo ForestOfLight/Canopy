@@ -4,7 +4,7 @@ import Instaminable from 'src/classes/Instaminable';
 const instamineableEndstoneRule = new Rule({
     category: 'Rules',
     identifier: 'instaminableEndstone',
-    description: 'Makes endstone instaminable. Use netherite and haste 2.'
+    description: { translate: 'rules.instaminableEndstone' }
 });
 
 function isEndStone(value) {

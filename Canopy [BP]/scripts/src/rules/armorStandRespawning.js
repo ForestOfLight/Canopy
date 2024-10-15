@@ -4,7 +4,7 @@ import { world } from "@minecraft/server";
 new Rule({
     category: 'Rules',
     identifier: 'armorStandRespawning',
-    description: 'Armor stands respawn when hit by a projectile, dropping their items.',
+    description: { translate: 'rules.armorStandRespawning' },
 });
 
 world.afterEvents.projectileHitEntity.subscribe(async (event) => {

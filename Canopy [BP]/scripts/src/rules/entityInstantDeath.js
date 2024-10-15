@@ -4,7 +4,7 @@ import { world } from "@minecraft/server";
 new Rule({
     category: 'Rules',
     identifier: 'entityInstantDeath',
-    description: 'Removes the 20gt death animation. Entities will also not drop xp.',
+    description: { translate: 'rules.entityInstantDeath' },
 });
 
 world.afterEvents.entityDie.subscribe(async (event) => {

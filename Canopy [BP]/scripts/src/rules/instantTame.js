@@ -4,13 +4,13 @@ import { system, world } from "@minecraft/server";
 new Rule({
     category: 'Rules',
     identifier: 'instantTame',
-    description: 'Instantly tames animals with their respective food. Does not work in survival mode.',
+    description: { translate: 'rules.instantTame' },
 });
 
 new Rule({
     category: 'Rules',
     identifier: 'instantTameSurvival',
-    description: 'Enables instantTame for survival mode.',
+    description: { translate: 'rules.instantTameSurvival' },
     contingentRules: ['instantTame'],
 });
 

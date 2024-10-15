@@ -14,14 +14,14 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
 
 function resetSpawnsAndCounters(sourceName) {
     if (worldSpawns === null)
-        return Utils.broadcastActionBar({ translate: 'scriptevent.spawn.notracking' });
+        return Utils.broadcastActionBar({ translate: 'commands.spawn.tracking.no' });
     worldSpawns.reset();
     channelMap.resetAll();
-    Utils.broadcastActionBar({ translate: 'scriptevent.spawn.reset.all', with: [sourceName] });
+    Utils.broadcastActionBar({ translate: 'commands.spawn.tracking.reset.success.actionbar', with: [sourceName] });
 }
 
 function printTrackingStatus() {
     if (worldSpawns === null)
-        return Utils.broadcastActionBar({ translate: 'scriptevent.spawn.notracking' });
+        return Utils.broadcastActionBar({ translate: 'commands.spawn.tracking.no' });
     world.sendMessage(worldSpawns.getOutput());
 }

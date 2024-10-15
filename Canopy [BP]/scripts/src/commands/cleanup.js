@@ -3,12 +3,12 @@ import { Rule, Command } from 'lib/canopy/Canopy';
 new Rule({
     category: 'Rules',
     identifier: 'commandCleanup',
-    description: { translate: 'rules.commandCleanup.description' }
+    description: { translate: 'rules.commandCleanup' }
 });
 
 new Command({
     name: 'cleanup',
-    description: { translate: 'commands.cleanup.description' },
+    description: { translate: 'commands.cleanup' },
     usage: 'cleanup [distance]',
     args: [
         { type: 'number', name: 'distance' },
@@ -19,7 +19,7 @@ new Command({
 
 new Command({
     name: 'k',
-    description: { translate: 'commands.cleanup.description' },
+    description: { translate: 'commands.cleanup' },
     usage: 'k [distance]',
     args: [
         { type: 'number', name: 'distance' },

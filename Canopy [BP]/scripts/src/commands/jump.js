@@ -4,19 +4,19 @@ import Data from 'stickycore/data';
 new Rule({
     category: 'Rules',
     identifier: 'commandJumpSurvival',
-    description: { translate: 'rules.commandJumpSurvival.description' },
+    description: { translate: 'rules.commandJumpSurvival' },
 });
 
 new Command({
     name: 'jump',
-    description: { translate: 'commands.jump.description' },
+    description: { translate: 'commands.jump' },
     usage: 'jump',
     callback: jumpCommand
 });
 
 new Command({
     name: 'j',
-    description: { translate: 'commands.jump.description' },
+    description: { translate: 'commands.jump' },
     usage: 'j',
     callback: jumpCommand,
     helpHidden: true

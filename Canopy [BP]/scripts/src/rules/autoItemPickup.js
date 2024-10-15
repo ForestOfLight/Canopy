@@ -5,7 +5,7 @@ import Utils from 'stickycore/utils';
 new Rule({
     category: 'Rules',
     identifier: 'autoItemPickup',
-    description: 'Automatically picks up items when breaking blocks.',
+    description: { translate: 'rules.autoItemPickup' },
 });
 
 let brokenBlockEventsThisTick = [];

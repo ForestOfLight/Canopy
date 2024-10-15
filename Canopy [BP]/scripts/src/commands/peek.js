@@ -7,7 +7,7 @@ const currentQuery = {};
 
 new Command({
     name: 'peek',
-    description: { translate: 'commands.peek.description' },
+    description: { translate: 'commands.peek' },
     usage: 'peek [query]',
     args: [
         { type: 'string', name: 'itemQuery' }

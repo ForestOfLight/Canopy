@@ -5,7 +5,7 @@ import { negateXZVelocity, correctErrorAndNegateXZVelocity } from './tntPrimeMax
 new Rule({
     category: 'Rules',
     identifier: 'tntPrimeNoMomentum',
-    description: 'TNT does not recieve any momentum when primed.',
+    description: { translate: 'rules.tntPrimeNoMomentum' },
     independentRules: ['tntPrimeMaxMomentum'],
 });
 

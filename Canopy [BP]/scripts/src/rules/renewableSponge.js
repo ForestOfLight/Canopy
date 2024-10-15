@@ -4,7 +4,7 @@ import { Rule } from 'lib/canopy/Canopy';
 new Rule({
     category: 'Rules',
     identifier: 'renewableSponge',
-    description: 'Guardians transform into elder guardians when hurt by lightning.',
+    description: { translate: 'rules.renewableSponge' },
 });
 
 world.afterEvents.entityHurt.subscribe(async (event) => {

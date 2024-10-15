@@ -3,7 +3,7 @@ import { Command } from 'lib/canopy/Canopy'
 
 new Command({
     name: 'resetall',
-    description: { translate: 'commands.resetall.description' },
+    description: { translate: 'commands.resetall' },
     usage: 'resetall',
     callback: resetallCommand,
     adminOnly: true

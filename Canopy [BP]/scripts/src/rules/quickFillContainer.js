@@ -4,7 +4,7 @@ import { Rule } from "lib/canopy/Canopy";
 new Rule({
     category: 'Rules',
     identifier: 'quickFillContainer',
-    description: 'Using an item on a container with an arrow in the top left of your inventory will deposit all of that item into the container.'
+    description: { translate: 'rules.quickFillContainer' },
 });
 
 const ARROW_SLOT = 9;
@@ -29,8 +29,8 @@ world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
         const successfulTransfers = transferAllItemType(playerInv, blockInv, handItemStack.typeId);
         if (successfulTransfers === 0) 
             return;
-        let feedback = `§7Filled ${block.typeId.replace('minecraft:', '')} with all ${handItemStack.typeId.replace('minecraft:', '')}`;
-        feedback += ` (§a${blockInv.size - blockInv.emptySlotsCount}§7/§a${blockInv.size}§7)`;
+        const feedback = { rawtext: [{ translate: 'rules.quickFillContainer.filled', with: [block.typeId.replace('minecraft:', ''), handItemStack.typeId.replace('minecraft:', '')] }] };
+        feedback.rawtext.push({ text: ` (§a${blockInv.size - blockInv.emptySlotsCount}§7/§a${blockInv.size}§7)` });
         player.onScreenDisplay.setActionBar(feedback);
     });
 });

@@ -4,7 +4,7 @@ import { world, system } from '@minecraft/server';
 new Rule({
     category: 'Rules',
     identifier: 'tntPrimeMaxMomentum',
-    description: 'TNT always recieves its maximum momentum in a random direction when primed.',
+    description: { translate: 'rules.tntPrimeMaxMomentum' },
     independentRules: ['tntPrimeNoMomentum'],
 });
 

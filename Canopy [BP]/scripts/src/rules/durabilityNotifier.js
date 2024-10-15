@@ -6,7 +6,7 @@ const ACTIVE_DURABILITY = 2;
 const rule = new Rule({
     category: 'Rules',
     identifier: 'durabilityNotifier',
-    description: `Enables a clink sound when your tool has ${ACTIVE_DURABILITY} durability left.`
+    description: { translate: 'rules.durabilityNotifier', with: [String(ACTIVE_DURABILITY)] },
 });
 
 world.afterEvents.playerBreakBlock.subscribe((event) => {
@@ -30,7 +30,7 @@ function durabilityClink(player, beforeItemStack, itemStack) {
     if (durability <= ACTIVE_DURABILITY) {
         const pitch = 1 - (durability/5);
         player.playSound('note.xylophone', { pitch });
-        player.onScreenDisplay.setActionBar(`§cDurability remaining: ${durability}`);
+        player.onScreenDisplay.setActionBar({ translate: 'rules.durabilityNotifier.alert', with: [String(durability)] });
     }
 }
 

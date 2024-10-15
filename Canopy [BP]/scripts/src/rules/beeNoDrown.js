@@ -4,7 +4,7 @@ import { Rule } from 'lib/canopy/Canopy';
 new Rule({
     category: 'Rules',
     identifier: 'beeNoDrown',
-    description: 'Enables bees healing from drowning damage.'
+    description: { translate: 'rules.beeNoDrown' }
 });
 
 world.afterEvents.entityHurt.subscribe(event => {

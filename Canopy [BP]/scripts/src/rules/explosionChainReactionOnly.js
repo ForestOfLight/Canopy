@@ -4,7 +4,7 @@ import { world } from "@minecraft/server";
 new Rule({
     category: 'Rules',
     identifier: 'explosionChainReactionOnly',
-    description: 'Makes explosion only affect TNT blocks.',
+    description: { translate: 'rules.explosionChainReactionOnly' },
     independentRules: ['explosionNoBlockDamage', 'explosionOff']
 });
 

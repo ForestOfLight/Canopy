@@ -3,7 +3,7 @@ import { Rule, Command } from 'lib/canopy/Canopy';
 new Rule({
     category: 'Rules',
     identifier: 'commandGamemode',
-    description: { translate: 'rules.commandGamemode.description' },
+    description: { translate: 'rules.commandGamemode' },
 });
 
 const gamemodeMap = {

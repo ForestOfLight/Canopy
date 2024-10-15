@@ -7,7 +7,7 @@ const BLOCK_COMPONENTS = ['minecraft:inventory', 'minecraft:lavaContainer', 'min
 
 new Command({
     name: 'data',
-    description: { translate: 'commands.data.description' },
+    description: { translate: 'commands.data' },
     usage: 'data [id]',
     args: [
         { type: 'number', name: 'id' }

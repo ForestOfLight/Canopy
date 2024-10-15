@@ -7,7 +7,7 @@ const CURRENT_CONVERSIONS = {};
 new Rule({
     category: 'Rules',
     identifier: 'cauldronConcreteConversion',
-    description: 'Concrete powder items inside a cauldron filled with water will convert to concrete items.',
+    description: { translate: 'rules.cauldronConcreteConversion' },
 });
 
 world.afterEvents.entitySpawn.subscribe((event) => {

@@ -6,7 +6,7 @@ const NUM_RESULTS = 10;
 
 const cmd = new Command({
     name: 'entitydensity',
-    description: { translate: 'commands.entitydensity.description' },
+    description: { translate: 'commands.entitydensity' },
     usage: 'entitydensity [dimension] <gridSize>',
     args: [
         { type: 'string|number', name: 'firstArg' },

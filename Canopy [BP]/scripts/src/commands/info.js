@@ -3,7 +3,7 @@ import ProbeManager from 'src/classes/ProbeManager';
 
 const cmd = new Command({
     name: 'info',
-    description: { translate: 'commands.info.description' },
+    description: { translate: 'commands.info' },
     usage: 'info <rule/all> <true/false>',
     args: [
         { type: 'string', name: 'ruleID' },
@@ -14,7 +14,7 @@ const cmd = new Command({
 
 new Command({
     name: 'i',
-    description: { translate: 'commands.info.description' },
+    description: { translate: 'commands.info' },
     usage: 'i',
     args: [
         { type: 'string', name: 'ruleID' },

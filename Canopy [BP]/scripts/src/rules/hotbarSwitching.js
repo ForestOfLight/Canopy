@@ -5,7 +5,7 @@ import HotbarManager from 'src/classes/HotbarManager';
 new Rule({
     category: 'Rules',
     identifier: 'hotbarSwitching',
-    description: 'Allows for quick switching between multiple hotbars. Put an arrow in the top right of your inventory, then sneak and scroll to switch.',
+    description: { translate: 'rules.hotbarSwitching' },
 });
 
 new Rule({

@@ -7,7 +7,7 @@ const SNEAK_SPEED = 6;
 new Rule({
     category: 'Rules',
     identifier: 'playerSit',
-    description: `Allows players to sit down after ${SNEAK_COUNT} quick sneaks.`,
+    description: { translate: 'rules.playerSit', with: [String(SNEAK_COUNT)] },
 });
 
 const playerSneaks = {};
