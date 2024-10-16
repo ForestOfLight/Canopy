@@ -98,25 +98,26 @@ class WorldSpawns {
         for (const dimensionId in recents) {
             output += `\n${Utils.getColoredDimensionName(dimensionId)}§7:`;
             for (const category in recents[dimensionId]) {
-                if (Object.keys(recents[dimensionId][category]).length === 0) continue;
+                if (!recents[dimensionId][category] || Object.keys(recents[dimensionId][category])?.length === 0) continue;
                 output += `\n§7 > ${category.toUpperCase()}:`;
-                for (const mobname in recents[dimensionId][category]) {
-                    const recentLocations = recents[dimensionId][category][mobname].map(location => Utils.stringifyLocation(location)).join(', ')
-                    output += `\n§7  - ${mobname}: ${recentLocations}`;
+                for (const mobType in recents[dimensionId][category]) {
+                    const recentLocations = recents[dimensionId][category][mobType].map(location => Utils.stringifyLocation(location)).join(', ')
+                    output += `\n§7  - ${mobType}: ${recentLocations}`;
                 }
             }
         }
         return output;
     }
 
-    getRecents(mobname) {
+    getRecents(mobname = null) {
         let recents = {};
         for (const dimensionId in this.trackers) {
             recents[dimensionId] = {};
             for (const category in this.trackers[dimensionId]) {
-                const tracker = this.trackers[dimensionId][category];
-                if (mobname) recents[dimensionId][category] = tracker.getRecents()[mobname];
-                else recents[dimensionId][category] = tracker.getRecents();
+                recents[dimensionId][category] = {};
+                const trackerRecents = this.trackers[dimensionId][category].getRecents();
+                if (mobname !== null && trackerRecents[mobname]) recents[dimensionId][category][mobname] = trackerRecents[mobname];
+                else if (mobname === null) recents[dimensionId][category] = trackerRecents;
             }
         }
         return recents;

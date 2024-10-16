@@ -45,9 +45,9 @@ function tntfuseCommand(sender, args) {
         ticks = 80;
         sender.sendMessage({ translate: 'commands.tntfuse.reset.success' });
     } else if (ticks < 0 || ticks > MAX_FUSE_TICKS)
-        return sender.sendMessage({ translate: 'commands.tntfuse.set.fail' });
+        return sender.sendMessage({ translate: 'commands.tntfuse.set.fail', with: [String(ticks), String(MAX_FUSE_TICKS)] });
     else {
-        sender.sendMessage({ translate: 'commands.tntfuse.set.success', with: [ticks] });
+        sender.sendMessage({ translate: 'commands.tntfuse.set.success', with: [String(ticks)] });
     }
     world.setDynamicProperty('tntFuseTime', ticks);
 }

@@ -1,7 +1,7 @@
 import { Command, Rule, InfoDisplayRule } from 'lib/canopy/Canopy';
 import { HelpBook, CommandHelpPage, RuleHelpPage, InfoDisplayRuleHelpPage } from 'lib/canopy/Canopy';
 
-const COMMANDS_PER_PAGE = 7;
+const COMMANDS_PER_PAGE = 8;
 const helpBook = new HelpBook();
 
 const cmd = new Command({

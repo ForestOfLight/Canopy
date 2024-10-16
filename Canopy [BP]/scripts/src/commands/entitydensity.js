@@ -30,7 +30,7 @@ function entityDensityCommand(sender, args) {
     if (denseAreas.length === 0)
         return sender.sendMessage({ translate: 'commands.entitydensity.fail.noentities', with: [validDimensionId] });
 
-    const message = { rawtext: [{ translate: 'commands.entitydensity.success.header', with: [validDimensionId, gridSize.toString()] }] };
+    const message = { rawtext: [{ translate: 'commands.entitydensity.success.header', with: [validDimensionId, String(gridSize), String(gridSize)] }] };
     denseAreas.forEach(area => {
         message.rawtext.push({ text: '\n' });
         message.rawtext.push(formatAreaMessage(area))

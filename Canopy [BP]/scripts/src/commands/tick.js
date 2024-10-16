@@ -34,7 +34,7 @@ system.runInterval(() => {
     if (shouldStep > 0) {
         shouldStep--;
         if (shouldStep == 0) 
-            world.sendMessage({ translate: 'commands.tick.done.success' });
+            world.sendMessage({ translate: 'commands.tick.step.done' });
         return;
     }
     tickSpeed(targetMSPT);
@@ -77,7 +77,7 @@ function tickStep(sender, steps) {
         shouldStep = 1;
     else
         shouldStep = steps;
-    world.sendMessage(``);
+    world.sendMessage({ translate: 'commands.tick.step.start', with: [sender.name, String(shouldStep)] });
 }
 
 function tickSleep(sender, milliseconds) {

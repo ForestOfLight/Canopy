@@ -1,6 +1,5 @@
 import { HelpPage } from "./HelpPage";
 import Utils from "stickycore/utils";
-import { CommandHelpEntry } from "./HelpEntry";
 
 class HelpBook {
     constructor() {

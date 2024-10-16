@@ -28,7 +28,7 @@ function removeEntityCommand(sender, args) {
         target.remove();
         sender.sendMessage({ translate: 'commands.removeentity.success', with: [target.typeId.replace('minecraft:', ''), target.id] });
     } else if (id !== null) {
-        sender.sendMessage({ translate: 'commands.removeentity.fail.noid', with: [id] });
+        sender.sendMessage({ translate: 'commands.removeentity.fail.noid', with: [String(id)] });
     } else {
         sender.sendMessage({ translate: 'generic.entity.notfound' });
     }

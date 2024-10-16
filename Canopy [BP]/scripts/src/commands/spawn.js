@@ -33,6 +33,7 @@ const cmd = new Command({
         { usage: 'spawn <mobName> [x1 y1 z1] [x2 y2 z2]', description: { translate: 'commands.spawn.tracking.mob' } },
         { usage: 'spawn tracking', description: { translate: 'commands.spawn.tracking.query' } },
         { usage: 'spawn tracking stop', description: { translate: 'commands.spawn.tracking.stop' } },
+        { usage: 'spawn test', description: { translate: 'commands.spawn.test' } },
         { usage: 'spawn mocking <true/false>', description: { translate: 'commands.spawn.mocking' } }
     ]
 });
@@ -44,14 +45,15 @@ let currActiveArea = null;
 
 world.afterEvents.entitySpawn.subscribe(async (event) => {
     const entity = event.entity;
-    if (worldSpawns && entity.typeId !== 'minecraft:item') worldSpawns.sendMobToTrackers(event.entity);
+    if (worldSpawns && entity.typeId !== 'minecraft:item')
+        worldSpawns.sendMobToTrackers(event.entity);
 
     if (!isMocking || event.cause === 'Loaded' || !await Rule.getValue('commandSpawnMocking')) return;
     let shouldCancelSpawn = false;
     for (const category in categoryToMobMap) {
         if (categoryToMobMap[category].includes(event.entity.typeId.replace('minecraft:', ''))) shouldCancelSpawn = true;
     }
-    if (shouldCancelSpawn) event.entity.remove();
+    if (shouldCancelSpawn && event.entity) event.entity.remove();
 });
 
 function spawnCommand(sender, args) {
@@ -102,18 +104,20 @@ function resetSpawnsAndCounters(sender) {
         return sender.sendMessage({ translate: 'commands.spawn.tracking.no' });
     worldSpawns.reset();
     channelMap.resetAll();
-    sender.sendMessage({ translate: 'commands.spawn.tracking.reset.success' });
-    Utils.broadcastActionBar({ translate: 'commands.spawn.tracking.reset.success.actionbar', with: [sender.name] }, sender);
+    sender.sendMessage({ translate: 'commands.spawn.tracking.test.success' });
+    Utils.broadcastActionBar({ translate: 'commands.spawn.tracking.test.success.actionbar', with: [sender.name] }, sender);
 }
 
 function recentSpawns(sender, actionTwo) {
     if (worldSpawns === null)
         return sender.sendMessage({ translate: 'commands.spawn.tracking.no' });
     let output
-    if (actionTwo === null)
+    if (actionTwo === null) {
         output = worldSpawns.getRecentsOutput();
-    else
-        output = worldSpawns.getRecentsOutput(actionTwo);
+    } else {
+        const mobname = actionTwo.includes('minecraft:') ? actionTwo : `minecraft:${actionTwo}`;
+        output = worldSpawns.getRecentsOutput(mobname);
+    }
     sender.sendMessage(output);
 }
 

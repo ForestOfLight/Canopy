@@ -95,7 +95,7 @@ function addWarp(sender, name, warpMap) {
     let warps = JSON.parse(world.getDynamicProperty('warps'));
     warps.warpList[name] = new Warp(name, location, dimension);
     world.setDynamicProperty(`warps`, JSON.stringify(warps));
-    sender.sendMessage(`§7Warp "${name}" has been added.`);
+    sender.sendMessage({ translate: 'commands.warp.add.success', with: [name] });
 }
 
 function removeWarp(sender, name, warpMap) {
@@ -104,7 +104,7 @@ function removeWarp(sender, name, warpMap) {
 
     warpMap.delete(name);
     setWarpMap(warpMap);
-    sender.sendMessage(`§7Warp "${name}" has been removed.`);
+    sender.sendMessage({ translate: 'commands.warp.remove.success', with: [name] });
 }
 
 function warpTP(sender, name, warpMap) {

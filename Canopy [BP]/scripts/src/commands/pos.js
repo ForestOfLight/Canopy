@@ -22,11 +22,9 @@ new Command({
 });
 
 function posCommand(sender, args) {
-    const player = String(args.player);
-    let target = world.getPlayers({ name: player })[0];
-    if (player === null)
-        target = sender;
-    else if (!target)
+    const { player } = args;
+    const target = player === null ? sender : world.getPlayers({ name: String(player) })[0];
+    if (!target)
         return sender.sendMessage({ translate: 'generic.player.notfound', with: [player] });
 
     let output = `§a${player !== null ? `${target.name}'s` : 'Your'} position: §f${Utils.stringifyLocation(target.location, 2)}`;
