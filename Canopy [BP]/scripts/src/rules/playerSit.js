@@ -7,7 +7,7 @@ const SNEAK_SPEED = 6;
 new Rule({
     category: 'Rules',
     identifier: 'playerSit',
-    description: { translate: 'rules.playerSit', with: [String(SNEAK_COUNT)] },
+    description: { translate: 'rules.playerSit', with: [SNEAK_COUNT.toString()] },
 });
 
 const playerSneaks = {};

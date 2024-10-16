@@ -16,7 +16,7 @@ const gamemodeMap = {
 for (const key in gamemodeMap) {
     new Command({
         name: key,
-        description: { translate: `commands.gamemode.${key}.description` },
+        description: { translate: `commands.gamemode.${key}` },
         usage: key,
         callback: (sender) => sender.runCommand(`gamemode ${gamemodeMap[key]}`),
         contingentRules: ['commandGamemode']

@@ -6,7 +6,7 @@ const helpBook = new HelpBook();
 
 const cmd = new Command({
     name: 'help',
-    description: { translate: 'commands.help.description.' },
+    description: { translate: 'commands.help' },
     usage: 'help [page/searchTerm]',
     args: [
         { type: 'string|number', name: 'pageName' }
@@ -25,7 +25,7 @@ function helpCommand(sender, args) {
     else if (helpBook.getPageNames().map(name => name.toLowerCase()).includes(String(pageName).toLowerCase()))
         helpBook.printPage(pageName, sender);
     else
-        helpBook.printSearchResults(pageName, sender);
+        helpBook.printSearchResults(String(pageName), sender);
 }
 
 function populateNativeCommandPages(helpBook) {

@@ -45,15 +45,14 @@ class HelpBook {
 
     async print(player) {
         for (let page of Object.values(this.helpPages)) {
-            player.sendMessage( await page.toRawMessage());
+            player.sendMessage(await page.toRawMessage());
         }
     }
 
     async printPage(pageName, player) {
         for (let page of Object.values(this.helpPages)) {
             if (String(page.title).toLowerCase() === String(pageName).toLowerCase()) {
-                const message = await page.toRawMessage();
-                player.sendMessage(message);
+                player.sendMessage(await page.toRawMessage());
                 return;
             }
         }
@@ -64,7 +63,7 @@ class HelpBook {
         const results = [];
         for (let page of Object.values(this.helpPages)) {
             for (let entry of page.entries) {
-                if (entry.title.toLowerCase().includes(searchTerm.toLowerCase()) || entry.description.toLowerCase().includes(searchTerm.toLowerCase())) {
+                if (entry.title.toLowerCase().includes(searchTerm.toLowerCase())) {
                     results.push(entry);
                 }
             }
@@ -73,12 +72,18 @@ class HelpBook {
         if (results.length === 0) {
             player.sendMessage({ translate: 'commands.help.search.noresult', with: [searchTerm] });
         } else {
-            let output = '';
+            const message = { rawtext: [{ translate: 'commands.help.search.results', with: [searchTerm] }] };
             for (let entry of results) {
-                output += '\n  ' + await entry.toString();
+                const entryRawMessage = await entry.toRawMessage();
+                const newEntryTitle = Utils.recolor(entryRawMessage.rawtext[0].text, searchTerm, '§a');
+                message.rawtext.push({ 
+                    rawtext: [
+                        { text: '\n  ' }, { text: newEntryTitle },
+                        { translate: entryRawMessage.rawtext[1].translate, with: entryRawMessage.rawtext[1].with }
+                    ]
+                });
             }
-            output = Utils.recolor(output, searchTerm, '§a');
-            player.sendMessage({ translate: 'commands.help.search.results', with: [searchTerm, output] });
+            player.sendMessage(message);
         }
     }
 }

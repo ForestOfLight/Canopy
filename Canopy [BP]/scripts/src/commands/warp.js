@@ -45,7 +45,7 @@ new Command({
 
 new Command({
     name: 'warps',
-    description: { translate: 'commands.warps' },
+    description: { translate: 'commands.warp.list' },
     usage: 'warps',
     callback: warpListCommand,
     contingentRules: ['commandWarp']
@@ -148,8 +148,8 @@ async function warpListCommand(sender) {
     let warpMap = getWarpMapCopy();
 
     if (warpMap.size === 0)
-        return sender.sendMessage({ translate: 'commands.warps.list.empty' });
-    const message = { rawtext: [{ translate: 'commands.warps.list.header' }] };
+        return sender.sendMessage({ translate: 'commands.warp.list.empty' });
+    const message = { rawtext: [{ translate: 'commands.warp.list.header' }] };
     warpMap.forEach((currWarp) => {
         message.rawtext.push({ text: `\n§7- ${currWarp.name}` });
     });

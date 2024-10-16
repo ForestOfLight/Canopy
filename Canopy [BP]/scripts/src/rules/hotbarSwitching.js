@@ -11,7 +11,7 @@ new Rule({
 new Rule({
     category: 'Rules',
     identifier: 'hotbarSwitchingSurvival',
-    description: 'Enables hotbarSwitching for survival mode.',
+    description: { translate: 'rules.hotbarSwitchingSurvival' },
     contingentRules: ['hotbarSwitching'],
 });
 

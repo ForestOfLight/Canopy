@@ -6,7 +6,7 @@ const ACTIVE_DURABILITY = 2;
 const rule = new Rule({
     category: 'Rules',
     identifier: 'durabilityNotifier',
-    description: { translate: 'rules.durabilityNotifier', with: [String(ACTIVE_DURABILITY)] },
+    description: { translate: 'rules.durabilityNotifier', with: [ACTIVE_DURABILITY.toString()] },
 });
 
 world.afterEvents.playerBreakBlock.subscribe((event) => {

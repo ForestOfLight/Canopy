@@ -109,20 +109,6 @@ system.runInterval(() => {
 });
 
 function InfoDisplay(player) {
-	let InfoText = '';
-
-	InfoText += parseCoordsAndCardinalFacing(player);
-	InfoText += parseFacing(player);
-	InfoText += parseTPSAndEntities(player);
-	InfoText += parseLightAndBiome(player);
-	InfoText += parseDayAndTime(player);
-	InfoText += parseSessionTime(player);
-	InfoText += parseMoonPhaseAndSlimeChunk(player);
-	InfoText += parseEventTrackerInfo(player);
-	InfoText += parseHopperCounters(player);
-	InfoText += parseLookingAtAndSignalStrength(player);
-	InfoText += parsePeek(player);
-
 	const infoMessage = { rawtext: [] };
 	infoMessage.rawtext.push(parseCoordsAndCardinalFacing(player));
 	infoMessage.rawtext.push(parseFacing(player));
@@ -130,11 +116,16 @@ function InfoDisplay(player) {
 	infoMessage.rawtext.push(parseLightAndBiome(player));
 	infoMessage.rawtext.push(parseDayAndTime(player));
 	infoMessage.rawtext.push(parseSessionTime(player));
+	infoMessage.rawtext.push(parseMoonPhaseAndSlimeChunk(player));
+	infoMessage.rawtext.push(parseEventTrackerInfo(player));
+	infoMessage.rawtext.push(parseHopperCounters(player));
+	infoMessage.rawtext.push(parseLookingAtAndSignalStrength(player));
+	infoMessage.rawtext.push(parsePeek(player));
 
 	if (infoMessage.rawtext[infoMessage.rawtext.length - 1].text === '\n')
 		infoMessage.rawtext[infoMessage.rawtext.length - 1].text = '';
 	
-	player.onScreenDisplay.setTitle(InfoText.trim());
+	player.onScreenDisplay.setTitle(infoMessage);
 }
 
 function parseCoordsAndCardinalFacing(player) {
@@ -154,7 +145,7 @@ function parseCoordsAndCardinalFacing(player) {
 	else if (showCoords)
 		message.rawtext.push({ text: `§r${coords.x} ${coords.y} ${coords.z}§r\n` });
 	else if (showCardinal)
-		message.rawtext.push({ rawtext: [{translate: 'rules.infoDisplay.facing.display'},{ text: `\n` }]});
+		message.rawtext.push({ rawtext: [{translate: 'rules.infoDisplay.cardinalFacing.display', with: [facing] },{ text: `\n` }]});
 
 	return message;
 }
@@ -264,13 +255,13 @@ function parseMoonPhaseAndSlimeChunk(player) {
 		slimeChunk = isSlime ? { translate: 'rules.infoDisplay.slimeChunk.display' } : { text: '' };
 	} 
 	if (showMoonPhase && showSlimeChunk)
-		message.rawtext.push({ rawtext: [{ translate: 'rules.infoDisplay.moonPhaseAndSlimeChunk.display', with: [moonPhase] },slimeChunk,{ text: '\n' }] });
+		message.rawtext.push({ rawtext: [{ translate: 'rules.infoDisplay.moonPhase.display', with: [moonPhase] },{ text: ' ' },slimeChunk,{ text: '\n' }] });
 	else if (showMoonPhase)
 		message.rawtext.push({ rawtext: [{ translate: 'rules.infoDisplay.moonPhase.display', with: [moonPhase] },{ text: '\n' }] });
 	else if (showSlimeChunk && isSlime)
 		message.rawtext.push({ rawtext: [slimeChunk,{ text: '\n' }] });
 
-	return output;
+	return message;
 }
 
 function parseEventTrackerInfo(player) {
