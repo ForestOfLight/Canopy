@@ -12,6 +12,8 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
         console.warn(`[RuleRegistry] Failed to parse rule data: ${error}, ${event.message}`);
     }
     if (!ruleData) return;
+    if (typeof ruleData.description === 'string')
+        ruleData.description = { text: ruleData.description };
     new Rule(ruleData);
     // console.warn(`[Canopy] Registered rule: ${ruleData.extensionName}:${ruleData.identifier}`);
 }, { namespaces: ['canopyExtension']});

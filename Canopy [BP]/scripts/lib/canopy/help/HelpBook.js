@@ -1,5 +1,6 @@
 import { HelpPage } from "./HelpPage";
 import Utils from "stickycore/utils";
+import { CommandHelpEntry } from "./HelpEntry";
 
 class HelpBook {
     constructor() {
@@ -69,22 +70,44 @@ class HelpBook {
             }
         }
 
-        if (results.length === 0) {
+        if (results.length === 0)
             player.sendMessage({ translate: 'commands.help.search.noresult', with: [searchTerm] });
-        } else {
-            const message = { rawtext: [{ translate: 'commands.help.search.results', with: [searchTerm] }] };
-            for (let entry of results) {
-                const entryRawMessage = await entry.toRawMessage();
-                const newEntryTitle = Utils.recolor(entryRawMessage.rawtext[0].text, searchTerm, '§a');
-                message.rawtext.push({ 
-                    rawtext: [
-                        { text: '\n  ' }, { text: newEntryTitle },
-                        { translate: entryRawMessage.rawtext[1].translate, with: entryRawMessage.rawtext[1].with }
-                    ]
-                });
-            }
-            player.sendMessage(message);
+        else
+            player.sendMessage(await this.processSearchResults(searchTerm, results));
+    }
+
+    async processSearchResults(searchTerm, results) {
+        let message = { rawtext: [{ translate: 'commands.help.search.results', with: [searchTerm] }] };
+        for (const entry of results) {
+            const entryRawMessage = await this.formatEntryHeader(entry, searchTerm, message);
+            message = this.formatEntryHelp(entryRawMessage, searchTerm, message);
         }
+        return message;
+    }
+
+    async formatEntryHeader(entry, searchTerm, message) {
+        const entryRawMessage = await entry.toRawMessage();
+        const newEntryTitle = Utils.recolor(entryRawMessage.rawtext[0].text, searchTerm, '§a');
+        message.rawtext.push({
+            rawtext: [
+                { text: '\n  ' }, { text: newEntryTitle },
+                { translate: entryRawMessage.rawtext[1].translate, with: entryRawMessage.rawtext[1].with }
+            ]
+        });
+        return entryRawMessage;
+    }
+
+    formatEntryHelp(entryRawMessage, searchTerm, message) {
+        for (let i = 2; i < entryRawMessage.rawtext.length; i++) {
+            const newEntryText = Utils.recolor(entryRawMessage.rawtext[i].rawtext[0].text, searchTerm, '§a');
+            message.rawtext.push({
+                rawtext: [
+                    { text: newEntryText },
+                    { translate: entryRawMessage.rawtext[i].rawtext[1].translate, with: entryRawMessage.rawtext[i].rawtext[1].with }
+                ]
+            });
+        }
+        return message;
     }
 }
 

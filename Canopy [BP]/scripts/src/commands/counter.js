@@ -160,7 +160,14 @@ class CounterChannelMap {
 
     getQueryOutput(channel) {
         let realtimeText = this.realtime ? 'realtime: ' : '';
-        let message = { rawtext: [{ translate: 'commands.counter.query.channel', with: [formatColor(channel.color), realtimeText, this.getMinutesSinceStart(channel), channel.totalCount, Utils.calculatePerTime(channel.totalCount, this.getDeltaTime(channel), channel.mode)] }] };
+        let message = { rawtext: [
+            { translate: 'commands.counter.query.channel', with: [
+                formatColor(channel.color), 
+                realtimeText, 
+                String(this.getMinutesSinceStart(channel)), 
+                String(channel.totalCount), 
+                Utils.calculatePerTime(channel.totalCount ,this.getDeltaTime(channel), channel.mode) ]
+            }] };
         for (const item of Object.keys(channel.itemMap)) {
             message.rawtext.push({ text: `\n §7- ${item}: ${getAllModeOutput(channel, item)}` });
         }
@@ -304,8 +311,9 @@ function queryAll(sender) {
         message.rawtext.push({ rawtext: [channelMap.getQueryOutput(channel), { text: '\n' }] });
     });
     
-    if (output === '') output = { translate: 'commands.counter.query.empty' };
-    sender?.sendMessage(output);
+    if (message == { rawtext: [] })
+        message = { translate: 'commands.counter.query.empty' };
+    sender?.sendMessage(message);
 }
 
 function setMode(sender, color, mode) {

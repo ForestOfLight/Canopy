@@ -38,7 +38,7 @@ function changedimensionCommand(player, args) {
         return cmd.sendUsage(player);
     const validDimensionId = validDimensions[dimension.toLowerCase()];
     if (!validDimensionId)
-        return player.sendMessage({ translate: 'commands.changedimension.notfound', with: Object.keys(validDimensions).join(', ')});
+        return player.sendMessage({ translate: 'commands.changedimension.notfound', with: [Object.keys(validDimensions).join(', ')] });
     
     const validDimension = world.getDimension(validDimensionId);
     if ((x !== null && y !== null && z !== null) && (Utils.isNumeric(x) && Utils.isNumeric(y) && Utils.isNumeric(z))) {

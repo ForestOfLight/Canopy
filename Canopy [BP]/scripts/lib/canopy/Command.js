@@ -17,7 +17,7 @@ class Command {
 	#extensionName;
 	static prefix = './';
 
-	constructor({ name, description = '', usage, callback, args = [], contingentRules = [], adminOnly = false, helpEntries = [], helpHidden = false, extensionName = false }) {
+	constructor({ name, description = { text: '' }, usage, callback, args = [], contingentRules = [], adminOnly = false, helpEntries = [], helpHidden = false, extensionName = false }) {
 		this.#name = name;
         this.#description = description;
         this.#usage = usage;
