@@ -28,35 +28,35 @@ commands.help.extension.commands=Befehle für §a%s§2.
 
 commands.camera=Platziere eine Kamera, beobachte sie oder nutze eine Überleben freundlich version des Zuschauer Modus.
 commands.camera.place=Platzier eine Kamera bei deiner derzeitigen Position. (Alias: cp)
-commands.camera.view=Toggles viewing your latest camera placement. (Alias: cv)
-commands.camera.spectate=Toggles a survival-friendly spectator mode. (Alias: cs)
-commands.camera.place.viewing=§cYou cannot place a camera while viewing one.
-commands.camera.place.success=§7Camera placed at %s.
-commands.camera.view.spectating=§cYou cannot view a camera while spectating.
-commands.camera.view.fail=§cYou have not placed a camera yet.
-commands.camera.view.dimension=§cPlease go to %s to view this camera.
-commands.camera.view.started=§aViewing camera
-commands.camera.view.ended=§7Camera view ended
-commands.camera.spectate.viewing=§cYou cannot spectate while viewing a camera.
-commands.camera.spectate.gamemode=§cYou cannot change your gamemode while spectating.
-commands.camera.spectate.started=§aSpectating
-commands.camera.spectate.ended=§7Spectating ended
+commands.camera.view=Schaltet die Beobachtung der letzt Platzierten Kamera um. (Alias: cv)
+commands.camera.spectate=Schaltet einen Überleben freundlichen Zuschauer Modus um. (Alias: cs)
+commands.camera.place.viewing=§cDu kannst keine Kamera Platzieren wärend du eine andere Kamera beobachtest.
+commands.camera.place.success=§7Kamera bei %s platziert.
+commands.camera.view.spectating=§cDu kannst keine Kamera Beobachten wärend du zuschaust.
+commands.camera.view.fail=§cDu hast noch keine Kamera platziert.
+commands.camera.view.dimension=§cBitte gehe zu %s um diese Kamera zu beobachten.
+commands.camera.view.started=§aKamera ansehen
+commands.camera.view.ended=§7Kamera ansehen beendet
+commands.camera.spectate.viewing=§cDu kannst nicht zuschauen wärend du eine Kamera beobachtest.
+commands.camera.spectate.gamemode=§cdu kanst deinen Spielmodus nicht enden wärend du zuschaust.
+commands.camera.spectate.started=§aBeobachten
+commands.camera.spectate.ended=§7Beobachten beendet
 
-commands.canopy=Enable or disable a rule.
+commands.canopy=Aktiviere oder Deaktiviere eine Regel.
 
-commands.changedimension=Teleports you to the specified dimension.
-commands.changedimension.notfound=§cInvalid dimension. Please use one of these: %s
-commands.changedimension.success.coords=§7Teleported to %1 in %2 dimension.
-commands.changedimension.success=§7Changed to %s dimension.
-commands.changedimension.fail.coords=§cInvalid coordinates. Please provide all x, y, z numeric values or none.
+commands.changedimension=Telepotiert dich zur angegebenen Diemension.
+commands.changedimension.notfound=§cUngültige Dimension. Bitte nutze eine dieser Optionen: %s
+commands.changedimension.success.coords=§7Teleportiert zu %1 in %2 Diemension.
+commands.changedimension.success=§7Zu %s Dimension geändert.
+commands.changedimension.fail.coords=§cUngültige Koordinaten. Bitte stelle jede x, y, z Koordinate als numerischer wert oder ganicht bereit.
 
-commands.claimprojectiles=Changes the owner of all projectiles within a radius.
-commands.claimprojectiles.fail.nonefound=§7No projectiles found in range (%s blocks).
-commands.claimprojectiles.success.self=§7Successfully became the owner of %1 projectiles within %2 blocks of you.
-commands.claimprojectiles.success.other=§7Successfully changed the owner of %1 projectiles within %2 blocks of %3.
+commands.claimprojectiles=Ändert den Besitzer von allen Projektielen in einem Radius.
+commands.claimprojectiles.fail.nonefound=§Keine Projektiele in Reichweite gefunden (%s Blöcke).
+commands.claimprojectiles.success.self=§7Wurde erfolgreich zum Besitzer von %1 Projektielen in einem %2 Blöcke Radius um dich herum.
+commands.claimprojectiles.success.other=§7Änderte erfolgreich den Besitzer von %1 Projektielen in einem %2 Blöcke Radius um %3.
 
-commands.cleanup=Removes all items and experience orbs within a radius. (Alias: k)
-commands.cleanup.success=§7Cleaned up %s entities.
+commands.cleanup=Entfernt alle Items und erfahrungs Kugeln in einem Radius. (Alias: k)
+commands.cleanup.success=§7Entfernte %s Entitäten.
 
 commands.counter=Manages hopper counters. (Alias: ct)
 commands.counter.channel.notfound=§cInvalid color: %s. Please use one of the wool block colors.
