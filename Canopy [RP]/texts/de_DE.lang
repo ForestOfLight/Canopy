@@ -4,30 +4,30 @@ entity.canopy:rideable.name=Canopy Rideable
 action.hint.exit.canopy:rideable=Sneak to stand
 
 ## generic
-generic.welcome.start=§7This server is running §l§aCanopy§r§7. Type ./help to get started.§r
-generic.welcome.extensions=§7Loaded extensions: §a%s
-generic.player.notfound=§cPlayer '%s' not found.
-generic.target.notfound=§cTarget not found.
-generic.entity.notfound=§cEntity not found.
+generic.welcome.start=§7Dieser Server nutzt §l§aCanopy§r§7. Nutze ./help um anzufangen.§r
+generic.welcome.extensions=§7Geladene Erweiterungen: §a%s
+generic.player.notfound=§cSpieler '%s' nicht gefunden.
+generic.target.notfound=§cZiel nicht gefunden.
+generic.entity.notfound=§cEntität nicht gefunden.
 generic.total='Total'
 
 ## commands
-commands.generic.unknown=§cInvalid command: '%1'. Use %2help for more information.
-commands.generic.nopermission=§cYou do not have permission to run this command.
-commands.generic.usage=§cUsage: %s
-commands.generic.blocked.survival=§cThis command can only be used in creative mode or spectator mode.
+commands.generic.unknown=§cUngültiger Befel: '%1'. Nutze %2help für mehr Informationen.
+commands.generic.nopermission=§cDu hast nicht die benötigen Rechte um diesen Befehl zu nutzen.
+commands.generic.usage=§cNutzen: %s
+commands.generic.blocked.survival=§cDieser Befehl kann nur im Kreativ oder Zuschauer modus genutzt werden.
 
-commands.help=Displays help pages.
-commands.help.search.noresult=§cNo results found for '%s'
-commands.help.search.results=§l§aCanopy§r §2Help search results for '§r%1§2':%2
-commands.help.page.header=§l§aCanopy§r§2 Help Page: §f%1
-commands.help.infodisplay=Togglable rules for your InfoDisplay.
-commands.help.rules=Togglable global rules.
-commands.help.extension.rules=Togglable rules for §a%s§2.
-commands.help.extension.commands=Commands for §a%s§2.
+commands.help=Zeigt Hilfe Seiten an.
+commands.help.search.noresult=§cKeine ergebnisse für '%s'gefunden.
+commands.help.search.results=§l§aCanopy§r §2Hilfe Suchergebnisse '§r%1§2':%2
+commands.help.page.header=§l§aCanopy§r§2 Hilfe Seite: §f%1
+commands.help.infodisplay=Umschaltbare Regeln für deine Info Anzeige.
+commands.help.rules=Umschaltbare globale Regeln.
+commands.help.extension.rules=Umschaltbare Regeln für §a%s§2.
+commands.help.extension.commands=Befehle für §a%s§2.
 
-commands.camera=Place a camera, view it, or use a survival-friendly spectator mode.
-commands.camera.place=Places a camera at your current location. (Alias: cp)
+commands.camera=Platziere eine Kamera, beobachte sie oder nutze eine Überleben freundlich version des Zuschauer Modus.
+commands.camera.place=Platzier eine Kamera bei deiner derzeitigen Position. (Alias: cp)
 commands.camera.view=Toggles viewing your latest camera placement. (Alias: cv)
 commands.camera.spectate=Toggles a survival-friendly spectator mode. (Alias: cs)
 commands.camera.place.viewing=§cYou cannot place a camera while viewing one.
