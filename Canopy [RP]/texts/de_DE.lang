@@ -1,4 +1,4 @@
-//status zeile 60
+//status zeile 79
 ## vanilla
 entity.canopy:probe.name=Canopy Probe
 entity.canopy:rideable.name=Canopy Rideable
@@ -59,38 +59,38 @@ commands.claimprojectiles.success.other=§7Änderte erfolgreich den Besitzer von
 commands.cleanup=Entfernt alle Items und erfahrungs Kugeln in einem Radius. (Alias: k)
 commands.cleanup.success=§7Entfernte %s Entitäten.
 
-commands.counter=Manages hopper counters. (Alias: ct)
-commands.counter.channel.notfound=§cInvalid color: %s. Please use one of the wool block colors.
-commands.counter.query=Displays the count and rates of the hopper counter for the specified color.
-commands.counter.query.empty=§7There are no hopper counters in use.
-commands.counter.query.channel=§7Items for %1§7 (%2%3 min.), total: §f%4§7, (§f%5§7):
-commands.counter.realtime=Displays count and rates, but uses real-world time instead of tick-based time.
-commands.counter.mode=Sets the mode of a hopper counter.
-commands.counter.mode.notfound=§cInvalid mode: '%1'. Please use one of the following modes: %2
-commands.counter.mode.single.success=§7Hopper Counter %1§7 mode: %2
-commands.counter.mode.single.success.actionbar=[%1] Set %2 hopper counter mode to %3
-commands.counter.mode.all.success=§7All Hopper Counters mode: %s
-commands.counter.mode.all.success.actionbar=[%1] Set all hopper counters mode to %2
-commands.counter.reset=Resets all hopper counters and restarts the timer.
-commands.counter.reset.single=§7Reset and time restarted: %s
-commands.counter.reset.single.actionbar=[%1] Reset %2 hopper counter.
-commands.counter.reset.all=§7All channels have been reset and hopper counter timer started.
-commands.counter.reset.all.actionbar=[%s] Reset all hopper counters.
+commands.counter=Verwaltet Trichterzähler. (Alias: ct)
+commands.counter.channel.notfound=§cUngültige Farbe: %s. Bitt nutze eine der Woll Farben.
+commands.counter.query=Zeigt die Anzahl und Raten von Trichterzählern einer Angegebenen Farbe an.
+commands.counter.query.empty=§7Es werden derzeit keine Trichterzähler genutzt.
+commands.counter.query.channel=§7Items für %1§7 (%2%3 min.), Total: §f%4§7, (§f%5§7):
+commands.counter.realtime=Zeigt die Anzahl und Raten von Trichterzählern nutzt aber Echtzeit anstelle von Tick basierter Zeit.
+commands.counter.mode=Legt den Modus von Trichterzählern fest.
+commands.counter.mode.notfound=§cUngültiger Modus: '%1'. Bitte nutze einen der folgenden Modis: %2
+commands.counter.mode.single.success=§7Trichterzähler %1§7 Modus: %2
+commands.counter.mode.single.success.actionbar=[%1] Setze %2 Trichterzähler Modus zu %3
+commands.counter.mode.all.success=§7Modus für alle Trichterzähler: %s
+commands.counter.mode.all.success.actionbar=[%1] Setze Modus für alle Trichterzähler zu %2
+commands.counter.reset=Setzt alle Trichterzähler zurück und startet Zeit neu.
+commands.counter.reset.single=§7Zurückgesetzt und Zeit neu gestartet: %s
+commands.counter.reset.single.actionbar=[%1] %2 Trichterzähler Zurückgesetzt.
+commands.counter.reset.all=§7Alle Kanäle wurden zurück gesetzt und Trichterzähler zeit wurde gestartet.
+commands.counter.reset.all.actionbar=[%s] Setzt alle Trichterzähler zurück.
 
-commands.data=Displays information about the block or entity you are looking at.
-commands.data.notarget.id=§cNo entity found with id '%2'.
-commands.data.properties=§aProperties:§r %s
-commands.data.states=§aStates:§r %s
-commands.data.components=§aComponents:§r %s
+commands.data=Zeigt informationen über den Block oder die Entität die du ansiehst an.
+commands.data.notarget.id=§cKeine Entität mit der id '%2' gefunden.
+commands.data.properties=§aEigenschaften:§r %s
+commands.data.states=§aStadien:§r %s
+commands.data.components=§aKomponenten:§r %s
 commands.data.tags=§aTags:§r %s
-commands.data.dynamicProperties=§aDynamicProperties:§r %1 total byte count: %2
-commands.data.effects=§aEffects:§r %s
-commands.data.other=§aOther:§r head location: %1 rotation: [%2, %3], velocity: %4, view direction: %5
+commands.data.dynamicProperties=§aDynamische Eigenschaften:§r %1 totale byte Anzahl: %2
+commands.data.effects=§aEffekte:§r %s
+commands.data.other=§aAndere:§r Kopf Position: %1 Rotation: [%2, %3], Geschwindichkeit: %4, Sicht weite: %5
 
-commands.distance=Calculates the distance between two locations. (Alias: d)
-commands.distance.target=Calculates distance between you and the block or entity you are looking at.
-commands.distance.fromto=Calculates the distance between two locations.
-commands.distance.from=Saves a location to calculate distance from.
+commands.distance=Berechnet die distanz zwischen zwei Orten. (Alias: d)
+commands.distance.target=Berechnet die distanz zwischen dir und dem Block oder der Entität die du ansiehst.
+commands.distance.fromto=Berechnet die distanz zwischen zwei Orten.
+commands.distance.from=Speichert einen Ort zur Berechnung der Entfernung.
 commands.distance.from.success=§7Saved location: %s
 commands.distance.to=Calculates the distance from the saved location to the specified location.
 commands.distance.to.fail.nosave=§cNo saved location found. Save a location with: %sdistance from [x y z]
