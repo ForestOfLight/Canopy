@@ -1,4 +1,4 @@
-//status zeile 204
+//status zeile 244
 ## vanilla
 entity.canopy:probe.name=Canopy Probe
 entity.canopy:rideable.name=Canopy Rideable
@@ -203,45 +203,45 @@ commands.trackevent.stop=§7Stoppt Verfolgung von %s.
 commands.trackevent.start=§7Started tracking %s.
 commands.trackevent.invalid=§cEreignis %1 nicht in %2 gefunden.
 
-commands.warp=Teleport to and manage warps. (Alias: w)
-commands.warp.edit=Adds or removes a warp.
-commands.warp.tp=Teleports you to a warp.
-commands.warp.list=List all available warps.
-commands.warp.exists=§cWarp '%s' already exists. Use ./warps to see the list of warps.
-commands.warp.noexist=§cWarp '%s' not found. Use ./warps to see the list of warps.
-commands.warp.add.success=§7Warp '%s' has been added.
-commands.warp.remove.success=§7Warp '%s' has been removed.
-commands.warp.tp.fail.dimension=§cPlease go to %1 to teleport to '%2'.
-commands.warp.tp.success=§7Teleported to warp '%s'.
-commands.warp.list.empty=§7There are no warps.
-commands.warp.list.header=§7Available warps:
+commands.warp=Teleport zu Warp Punkten und deren Verwaltung. (Alias: w)
+commands.warp.edit=Hinzufügen oder Entfernen eines Warpes.
+commands.warp.tp=Teleportiert Sie zu einer Warp Punkt.
+commands.warp.list=Listet alle verfügbaren Warp Punkte auf.
+commands.warp.exists=§cWarp Punkt '%s' existiert bereits. Verwenden Sie ./warps, um die Liste der Warp Punkten zu sehen.
+commands.warp.noexist=§cWarp '%s' nicht gefunden. Benutze ./warps, um die Liste der Warp Punkte zu sehen.
+commands.warp.add.success=§7Warp Punkt '%s' wurde hinzugefügt.
+commands.warp.remove.success=§7Warp Punkt '%s' wurde entfernt.
+commands.warp.tp.fail.dimension=§cBitte gehen Sie zu %1, um nach '%2' zu teleportieren.
+commands.warp.tp.success=§7Zum Warp Punkt '%s' teleportiert.
+commands.warp.list.empty=§7Es gibt keine Warp Punkte.
+commands.warp.list.header=§7Verfügbare Warp Punkte:
 
-## rules
-rules.generic.unknown=§cInvalid rule: %s. Use %2help for more information.
-rules.generic.blocked=§cThe %s rule is disabled.
-rules.generic.status=§7%1 is currently %2§r§7.
-rules.generic.nochange=§7%1 is already %2§r§7.
-rules.generic.updated=§7%1 is now %2§r§7.
+## Regeln
+rules.generic.unknown=§cInvalid rule: %s. Verwenden Sie %2help für weitere Informationen.
+rules.generic.blocked=§cDie Regel %s ist deaktiviert.
+rules.generic.status=§7%1 ist derzeit %2§r§7.
+rules.generic.nochange=§7%1 ist bereits %2§r§7.
+rules.generic.updated=§7%1 ist jetzt %2§r§7.
 
-rules.commandCamera=Enables camera command.
-rules.commandChangeDimension=Enables changedimension command.
-rules.commandClaimProjectiles=Enables claimprojectiles command.
-rules.commandCleanup=Enables cleanup command.
-rules.hopperCounters=Enables counter command & hopper counter functionality.
-rules.commandGamemode=Enables shortened gamemode commands (e.g. `./s` for survival), including without OP.
-rules.commandJumpSurvival=Enables jump command in survival mode.
-rules.commandPos=Enables pos command.
-rules.commandRemoveEntity=Enables removeentity command.
-rules.commandSpawnMocking=Enables spawn mocking command.
-rules.commandSummonTnt=Enables summontnt command.
-rules.commandTick=Enables tick command.
-rules.commandTntFuse=Enables tntfuse command & custom TNT fuse time functionality.
-rules.commandWarp=Enables warp & warps commands.
-rules.commandWarpSurvival=Enables warp & warps commands in survival mode.
-rules.allowBubbleColumnPlacement=Removes the restriction on placing bubble columns.
-rules.armorStandRespawning=Armor stands respawn when hit by a projectile, dropping their items.
-rules.autoItemPickup=Automatically picks up items when breaking blocks.
-rules.beeNoDrown=Enables bees healing from drowning damage.
+rules.commandCamera=Aktiviert den Kamera-Befehl.
+rules.commandChangeDimension=Aktiviert den changedimension Befehl.
+rules.commandClaimProjectiles=Aktiviert den claimprojectiles Befehl.
+rules.commandCleanup=Aktiviert den cleanup Befehl.
+rules.hopperCounters=Aktiviert den Zähler-Befehl und die Hopper-Zähler-Funktionalität.
+rules.commandGamemode=Aktiviert verkürzte Spielmodus-Befehle (z.B. `./s` für Survival), auch ohne OP.
+rules.commandJumpSurvival=Schaltet den Sprungbefehl im Survival-Modus ein.
+rules.commandPos=Aktiviert den pos-Befehl.
+rules.commandRemoveEntity=Aktiviert den Befehl removeentity.
+rules.commandSpawnMocking=Aktiviert den spawn mocking Befehl.
+rules.commandSummonTnt=Aktiviert den summontnt Befehl.
+rules.commandTick=Aktiviert den tick Befehl.
+rules.commandTntFuse=Aktiviert den Befehl tntfuse und die benutzerdefinierte TNTZündzeitfunktionalität.
+rules.commandWarp=Ermöglicht Warp & Warps Befehle.
+rules.commandWarpSurvival=Aktiviert Warp und Warps im Überlebensmodus.
+rules.allowBubbleColumnPlacement=Entfernt die Beschränkung der Platzierung von Blasensäulen.
+rules.armorStandRespawning=Rüstungsständer respawnen, wenn sie von einem Projektil getroffen werden und lassen ihre Gegenstände fallen.
+rules.autoItemPickup=Automatisches Aufnehmen von Gegenständen beim Zerschlagen von Blöcken.
+rules.beeNoDrown=Aktiviert die Heilung von Bienen bei Ertrinkungsschaden.
 rules.cauldronConcreteConversion=Concrete powder items inside a cauldron filled with water will convert to concrete items.
 rules.creativeOneHitKill=Allows creative players to one hit kill any entity. If sneaking, it will also kill nearby entities.
 rules.dupeTnt=TNT can be duplicated when moved by a piston and powered next to a note blocks.
