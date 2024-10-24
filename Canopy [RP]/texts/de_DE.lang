@@ -1,8 +1,7 @@
-//status zeile 244
 ## vanilla
 entity.canopy:probe.name=Canopy Probe
-entity.canopy:rideable.name=Canopy Rideable
-action.hint.exit.canopy:rideable=Sneak to stand
+entity.canopy:rideable.name=Canopy Reitbar
+action.hint.exit.canopy:rideable=Schleich um abzusitzen
 
 ## generic
 generic.welcome.start=§7Dieser Server nutzt §l§aCanopy§r§7. Nutze ./help um anzufangen.§r
