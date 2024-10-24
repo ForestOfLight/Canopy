@@ -1,4 +1,4 @@
-//status zeile 94
+//status zeile 204
 ## vanilla
 entity.canopy:probe.name=Canopy Probe
 entity.canopy:rideable.name=Canopy Rideable
@@ -161,47 +161,47 @@ commands.spawn.tracking.mob=Startet die Verfolgung eines bestimmten Mob-Spawns. 
 commands.spawn.tracking.mob.invalid=§cUngültiger Mob-Name: %s
 commands.spawn.tracking.query=Zeigt eine Zusammenfassung aller Spawns an, die seit dem Start des Tests aufgetreten sind.
 commands.spawn.tracking.query.dimension=§7Dimension %s§r:
-commands.spawn.tracking.no=§cSpawns are not currently being tracked.
-commands.spawn.tracking.already=§cSpawns are already being tracked.
-commands.spawn.tracking.test=Resets all spawn counters and hopper counters.
-commands.spawn.tracking.test.success=§7Spawn counters and hopper counters reset.
-commands.spawn.tracking.test.success.actionbar=[%s] §7Reset spawn counters and hopper counters.
-commands.spawn.tracking.stop=Stops tracking mob spawns.
-commands.spawn.tracking.stop.success=§7Spawns are no longer being tracked.
-commands.spawn.tracking.stop.actionbar=[%s] §7Stopped tracking spawns.
-commands.spawn.mocking=Enables/disables mob spawning while allowing the spawning algorithm to run.
-commands.spawn.mocking.enable=§aSpawn mocking is now enabled. Mobs will no longer spawn, but the spawning algorithm will continue.
-commands.spawn.mocking.disable=§cSpawn mocking is now disabled. Mobs will spawn as normal.
-commands.spawn.mocking.enable.actionbar=[%s] §aSpawn mocking enabled.
-commands.spawn.mocking.disable.actionbar=[%s] §cSpawn mocking disabled.
+commands.spawn.tracking.no=§cSpawns werden derzeit nicht verfolgt.
+commands.spawn.tracking.already=§cSpawns werden bereits verfolgt.
+commands.spawn.tracking.test=Setzt alle Spawnzähler und Hopperzähler zurück.
+commands.spawn.tracking.test.success=§7Spawnzähler und Trichterzähler zurückgesetzt.
+commands.spawn.tracking.test.success.actionbar=[%s] §7Spawnzähler und Trichterzähler zurücksetzen.
+commands.spawn.tracking.stop=Hält die Verfolgung von Mob-Spawns an.
+commands.spawn.tracking.stop.success=§7Spawns werden nicht mehr verfolgt.
+commands.spawn.tracking.stop.actionbar=[%s] §7Die Verfolgung von Spawns wurde gestoppt.
+commands.spawn.mocking=Aktiviert/deaktiviert das Spawnen von Mobs, während der Spawnen-Algorithmus ausgeführt werden kann.
+commands.spawn.mocking.enable=§aSpawn-Vervolgung ist jetzt aktiviert. Mobs werden nicht mehr spawnen, aber der Spawn-Algorithmus wird fortgesetzt.
+commands.spawn.mocking.disable=§cSpawn-Vervolgung ist jetzt deaktiviert. Die Mobs spawnen wie gewohnt.
+commands.spawn.mocking.enable.actionbar=[%s] §aSpawn-Vervolgung aktiviert.
+commands.spawn.mocking.disable.actionbar=[%s] §cSpawn-Vervolgung deaktiviert.
 
-commands.summontnt=Summons the specified amount of primed TNT at your location.
-commands.summontnt.fail.none=§cNo TNT summoned.
-commands.summontnt.success=§7Summoned §c%s TNT§7.
+commands.summontnt=Beschwört die angegebene Menge an gezündetem TNT an deinem Standort.
+commands.summontnt.fail.none=§cKein TNT beschworen.
+commands.summontnt.success=§7Beschworen §c%s TNT§7.
 
-commands.tick=Set and control the server tick speed.
-commands.tick.mspt=Slows down the server tick speed to the specified mspt.
-commands.tick.mspt.fail=§cMSPT cannot be less than 50.0.
-commands.tick.mspt.success=§7%1 set the tick speed to %2 mspt.
-commands.tick.step=Allows the server to run at normal speed for the specified amount of steps.
-commands.tick.step.fail=§cCannot step ticks without setting a tick speed.
-commands.tick.step.start=§7%1 stepping %2 tick(s)...
-commands.tick.step.done=§7Tick step complete.
-commands.tick.reset=Resets the server tick speed to normal.
-commands.tick.reset.success=§7%s reset the tick speed.
-commands.tick.sleep=Pauses the server for the specified amount of milliseconds.
-commands.tick.sleep.fail=§cInvalid sleep time.
-commands.tick.sleep.success=§7%1 pausing the server for %2 ms.
+commands.tick=Setzt und kontrolliert die Tickgeschwindigkeit des Servers.
+commands.tick.mspt=Verlangsamt die Tickgeschwindigkeit des Servers auf die angegebene mspt.
+commands.tick.mspt.fail=§cMSPT kann nicht kleiner als 50.0 sein.
+commands.tick.mspt.success=§7%1 setzt die Tickgeschwindigkeit auf %2 mspt.
+commands.tick.step=Erlaubt dem Server, mit normaler Geschwindigkeit für die angegebene Anzahl von Schritten zu laufen.
+commands.tick.step.fail=§Kann keine Ticks ausführen, ohne eine Tick-Geschwindigkeit festzulegen.
+commands.tick.step.start=§7%1 schrittweise %2 Tick(s)...
+commands.tick.step.done=§7Tick-Schritt abgeschlossen.
+commands.tick.reset=Stellt die Tickgeschwindigkeit des Servers auf normal zurück.
+commands.tick.reset.success=§7%s Tickgeschwindigkeit zurückgesetzt.
+commands.tick.sleep=Pausiert den Server für die angegebene Anzahl von Millisekunden.
+commands.tick.sleep.fail=§cUngültige Schlafzeit.
+commands.tick.sleep.success=§7%1 Pausiert den Server für %2 ms.
 
-commands.tntfuse=Sets the fuse time of primed TNT in ticks.
-commands.tntfuse.reset.success=§7Reset TNT fuse time to §a80§7 ticks.
-commands.tntfuse.set.fail=§cInvalid fuse time: %1 ticks. Must be between 0 and %2 ticks.
-commands.tntfuse.set.success=§7TNT fuse time set to §a%s§7 ticks.
+commands.tntfuse=Setzt die Zündungszeit von gezündetem TNT in Ticks.
+commands.tntfuse.reset.success=§7Setzt die TNT-Zündzeit auf §a80§7 Ticks zurück.
+commands.tntfuse.set.fail=§cUngültige Zünderzeit: %1 Ticks. Muss zwischen 0 und %2 Ticks liegen.
+commands.tntfuse.set.success=§7TNT- Zündungszeit auf §a%s§7 Ticks eingestellt.
 
-commands.trackevent=Count the number of times any event occurs. Displays the count in the InfoDisplay.
-commands.trackevent.stop=§7Stopped tracking %s.
+commands.trackevent=Zählt, wie oft ein Ereignis auftritt. Zeigt die Anzahl im InfoDisplay an.
+commands.trackevent.stop=§7Stoppt Verfolgung von %s.
 commands.trackevent.start=§7Started tracking %s.
-commands.trackevent.invalid=§cEvent %1 not found in %2.
+commands.trackevent.invalid=§cEreignis %1 nicht in %2 gefunden.
 
 commands.warp=Teleport to and manage warps. (Alias: w)
 commands.warp.edit=Adds or removes a warp.
