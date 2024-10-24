@@ -1,4 +1,4 @@
-//status zeile 79
+//status zeile 94
 ## vanilla
 entity.canopy:probe.name=Canopy Probe
 entity.canopy:rideable.name=Canopy Rideable
@@ -92,60 +92,60 @@ commands.distance.target=Berechnet die distanz zwischen dir und dem Block oder d
 commands.distance.fromto=Berechnet die distanz zwischen zwei Orten.
 commands.distance.from=Speichert einen Ort zur Berechnung der Entfernung.
 commands.distance.from.success=§7Ort gespeichert: %s
-commands.distance.to=Calculates the distance from the saved location to the specified location.
-commands.distance.to.fail.nosave=§cNo saved location found. Save a location with: %sdistance from [x y z]
-commands.distance.target.notfound=§cNo block or entity found to calculate distance from.
-commands.distance.cartesian=§7Cartesian: §r§l%s§r
-commands.distance.cylindrical=§7Cartesian(XZ): §r§l%s§r
+commands.distance.to=Berechnet die Entfernung zwischen dem gespeicherten Ort und dem angegebenen Ort.
+commands.distance.to.fail.nosave=§cKein gespeicherter Ort gefunden. Speichern Sie einen Ort mit: %s Entfernung von [x y z]
+commands.distance.target.notfound=§cKein Block oder Entität gefunden, um die Entfernung von zu messen.
+commands.distance.cartesian=§7Kartesisch: §r§l%s§r
+commands.distance.cylindrical=§7Kartesisch(XZ): §r§l%s§r
 commands.distance.manhattan=§7§7Manhattan: §r§l%s§r
 
-commands.entitydensity=Find entity-dense areas in a dimension.
-commands.entitydensity.fail.noentities=§7No dense areas found in %s. No entities in the dimension?
-commands.entitydensity.fail.dimension=§cInvalid dimension. Please use one of these: %s
-commands.entitydensity.fail.gridsize=§cInvalid grid size. Please use a value between 1 and 2048. Recommended: 100-1024.
-commands.entitydensity.success.header=§7Entity-dense areas in %1 (grid size %2x%3):
-commands.entitydensity.success.area=§7- %1 entities at %2, %3
+commands.entitydensity=Finde Bereiche mit hoher Entitätsdichte in einer Dimension.
+commands.entitydensity.fail.noentities=§7Keine dichten Gebiete gefunden in %s. Keine Entitäten in der Dimension?
+commands.entitydensity.fail.dimension=§cUngültige Dimension. Bitte verwenden Sie eine der folgenden: %s
+commands.entitydensity.fail.gridsize=§cUngültige Gittergröße. Bitte verwenden Sie einen Wert zwischen 1 und 2048. Empfohlen: 100-1024.
+commands.entitydensity.success.header=§7Gebiete mit hoher Entitätsdichte in %1 (Gittergröße %2x%3):
+commands.entitydensity.success.area=§7- %1 Einheiten bei %2, %3
 
-commands.gamemode.s=Set your gamemode to survival.
-commands.gamemode.a=Set your gamemode to adventure.
-commands.gamemode.c=Set your gamemode to creative.
-commands.gamemode.sp=Set your gamemode to spectator.
+commands.gamemode.s=Setzen Sie den Spielmodus auf Überleben.
+commands.gamemode.a=Stellt euren Spielmodus auf Abenteuer ein.
+commands.gamemode.c=Stellt euren Spielmodus auf kreativ.
+commands.gamemode.sp=Setzen Sie Ihren Spielmodus auf Zuschauer.
 
-commands.health=Displays the server's current TPS, MSPT, and entity counts.
-commands.health.fail.mspt=§cCould not compute MSPT. Please report this error.
+commands.health=Zeigt die aktuellen TPS-, MSPT- und Entitätszahlen des Servers an.
+commands.health.fail.mspt=§cMSPT konnte nicht berechnet werden. Bitte melden Sie diesen Fehler.
 
-commands.info=Toggle InfoDisplay rules. (Alias: i)
-commands.info.allupdated=%s§r§7 all InfoDisplay rules.
+commands.info=Regeln für die Infoanzeige umschalten. (Alias: i)
+commands.info.allupdated=%s§r§7 alle Info Anzeige Regeln.
 
-commands.jump=Teleport to the block you are looking at. (Alias: j)
-commands.jump.fail.noblock=§cNo block found to jump to.
+commands.jump=Teleportiert Sie zu dem Block, den Sie gerade betrachten. (Alias: j)
+commands.jump.fail.noblock=§cKein Block gefunden, zu dem gesprungen werden kann.
 
-commands.log=Log tnt, projectile, and falling block movement.
-commands.log.precision=§7Log precision set to %s.
-commands.log.started=§7Started logging %s.
-commands.log.stopped=§7Stopped logging %s.
+commands.log=Protokoliere tnt, Projektil und fallende Block bewegung.
+commands.log.precision=§7Protokoll Präzision eingestellt auf %s.
+commands.log.started=§7Beginn der Protokollierung %s.
+commands.log.stopped=§7Protokollierung gestoppt %s.
 
-commands.peek=Peek into a target's inventory and optionally highlight items that match a query.
-commands.peek.fail.unloaded=§cTarget at %s is unloaded.
-commands.peek.fail.noinventory=§cNo inventory found in %1 at %2.
-commands.peek.fail.noitems=§cNo items found in %1 at %2.
-commands.peek.query.cleared=§7Peek query cleared.
-commands.peek.query.set=§7Peek query set to '%s'.
+commands.peek=Einblick in das Inventar eines Ziels und optionale Hervorhebung von Items, die einer Suchanfrage entsprechen.
+commands.peek.fail.unloaded=§cZiel bei %s ist entladen.
+commands.peek.fail.noinventory=§cKein Inventar in %1 bei %2 gefunden.
+commands.peek.fail.noitems=§cKeine Items in %1 bei %2 gefunden.
+commands.peek.query.cleared=§7Einblicks Abfrage gelöscht.
+commands.peek.query.set=§7Enblicks Abfrage eingestellt auf '%s'.
 
-commands.pos=Shows your current position, or the position of another player.
-commands.pos.self=§aYour position: §f%s
-commands.pos.other=§a%1's position: §f%2
+commands.pos=Zeigt Ihre aktuelle Position oder die Position eines anderen Spielers an..
+commands.pos.self=§aIhre Position: §f%s
+commands.pos.other=§a%1's Position: §f%2
 commands.pos.dimension=§7Dimension: §7%s
-commands.pos.relative.overworld=§7Relative Overworld position: §a%s
-commands.pos.relative.nether=§7Relative Nether position: §c%s
+commands.pos.relative.overworld=§7Relative Oberwelt Position: §a%s
+commands.pos.relative.nether=§7Relative Nether/Hölle Position: §c%s
 
-commands.removeentity=Instantly remove the entity you are looking at or by id.
-commands.removeentity.fail.player=§cCannot remove players.
-commands.removeentity.fail.noid=§cNo entity found with id '%s'.
-commands.removeentity.success=§7Removed %1 with id '%2'.
+commands.removeentity=Sofortiges Entfernen der Entität, die Sie gerade betrachten, oder nach Id.
+commands.removeentity.fail.player=§cSpieler können nicht entfernt werden.
+commands.removeentity.fail.noid=§cKeine Entität mit der Id '%s' gefunden.
+commands.removeentity.success=§7Entfernt %1 mit der id '%2'.
 
-commands.resetall=Resets all §lCanopy§r§8 rules and data. Use with caution.
-commands.resetall.success=§7All §lCanopy§r§8 player and world dynamic properties have been reset.
+commands.resetall=Setzt alle §lCanopy§r§8 Regeln und Daten zurück. Mit Vorsicht verwenden.
+commands.resetall.success=§7Alle Eigenschaften von §lCanopy§r§8 für Spieler und Welt- Dynamik wurden zurückgesetzt.
 
 commands.spawn=Spawn command for tracking and mocking spawns.
 commands.spawn.entities=Displays a list of all entities & their positions in the world.
