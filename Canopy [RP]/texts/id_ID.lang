@@ -50,13 +50,13 @@ commands.changedimension.success.coords=§7Diteleportasi ke %1 di %2 dimensi.
 commands.changedimension.success=§7Berubah ke %s dimensi.
 commands.changedimension.fail.coords=§cKoordinat tidak valid. Harap berikan semua nilai numerik x, y, z atau tidak sama sekali.
 
-commands.claimprojectiles=Changes the owner of all projectiles within a radius.
-commands.claimprojectiles.fail.nonefound=§7No projectiles found in range (%s blocks).
-commands.claimprojectiles.success.self=§7Successfully became the owner of %1 projectiles within %2 blocks of you.
-commands.claimprojectiles.success.other=§7Successfully changed the owner of %1 projectiles within %2 blocks of %3.
+commands.claimprojectiles=Mengubah pemilik semua proyektil dalam radius.
+commands.claimprojectiles.fail.nonefound=§7Tidak ada proyektil yang ditemukan dalam jangkauan (%s blok).
+commands.claimprojectiles.success.self=§7berhasil menjadi pemilik %1 proyektil dalam jarak %2 blok dari Anda.
+commands.claimprojectiles.success.other=§7Berhasil mengubah pemilik %1 proyektil dalam %2 blok dari %3.
 
-commands.cleanup=Removes all items and experience orbs within a radius. (Alias: k)
-commands.cleanup.success=§7Cleaned up %s entities.
+commands.cleanup=Menghapus semua item dan bola pengalaman dalam radius. (Alias: k)
+commands.cleanup.success=§7Membersihkan %s entitas.
 
 commands.counter=Manages hopper counters. (Alias: ct)
 commands.counter.channel.notfound=§cInvalid color: %s. Please use one of the wool block colors.
