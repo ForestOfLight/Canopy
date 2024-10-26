@@ -1,30 +1,30 @@
 ## vanilla
 entity.canopy:probe.name=Canopy Probe
-entity.canopy:rideable.name=Canopy Rideable
-action.hint.exit.canopy:rideable=Sneak to stand
+entity.canopy:rideable.name=Canopy dapat dikendarai
+action.hint.exit.canopy:rideable=Menyelinap untuk berdiri
 
 ## generic
-generic.welcome.start=§7This server is running §l§aCanopy§r§7. Type ./help to get started.§r
-generic.welcome.extensions=§7Loaded extensions: §a%s
-generic.player.notfound=§cPlayer '%s' not found.
-generic.target.notfound=§cTarget not found.
-generic.entity.notfound=§cEntity not found.
+generic.welcome.start=§7Server ini menjalankan §l§aCanopy§r§7. Ketik ./help untuk memulai.§r
+generic.welcome.extensions=§7Ekstensi yang dimuat: §a%s
+generic.player.notfound=§cPemain '%s' tidak ditemukan.
+generic.target.notfound=§cTarget tidak ditemukan.
+generic.entity.notfound=§cEntitas tidak ditemukan.
 generic.total='Total'
 
 ## commands
-commands.generic.unknown=§cInvalid command: '%1'. Use %2help for more information.
-commands.generic.nopermission=§cYou do not have permission to run this command.
-commands.generic.usage=§cUsage: %s
-commands.generic.blocked.survival=§cThis command can only be used in creative mode or spectator mode.
+commands.generic.unknown=§cPerintah tidak valid: '%1'. Gunakan %2help untuk informasi lebih lanjut.
+commands.generic.nopermission=§cAnda tidak memiliki izin untuk menjalankan perintah ini.
+commands.generic.usage=§cPenggunaan: %s
+commands.generic.blocked.survival=§cPerintah ini hanya dapat digunakan dalam mode kreatif atau mode penonton.
 
-commands.help=Displays help pages.
-commands.help.search.noresult=§cNo results found for '%s'
-commands.help.search.results=§l§aCanopy§r §2Help search results for '§r%1§2':%2
-commands.help.page.header=§l§aCanopy§r§2 Help Page: §f%1
-commands.help.infodisplay=Togglable rules for your InfoDisplay.
-commands.help.rules=Togglable global rules.
-commands.help.extension.rules=Togglable rules for §a%s§2.
-commands.help.extension.commands=Commands for §a%s§2.
+commands.help=Menampilkan halaman bantuan.
+commands.help.search.noresult=§cTidak ada hasil yang ditemukan untuk '%s'
+commands.help.search.results=§l§aCanopy§r §2Bantuan hasil pencarian untuk '§r%1§2':%2
+commands.help.page.header=§l§aCanopy§r§2 Halaman Bantuan: §f%1
+commands.help.infodisplay=Aturan yang dapat diubah untuk InfoDisplay Anda.
+commands.help.rules=Aturan global yang dapat diubah.
+commands.help.extension.rules=Aturan yang dapat diubah untuk §a%s§2.
+commands.help.extension.commands=Perintah untuk §a%s§2.
 
 commands.camera=Place a camera, view it, or use a survival-friendly spectator mode.
 commands.camera.place=Places a camera at your current location. (Alias: cp)
