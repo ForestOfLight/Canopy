@@ -20,15 +20,7 @@
             "causes_fire": false
           }
         },
-        "canopy:normalFuse": {
-          "minecraft:explode": {
-            "fuse_length": 4,
-            "fuse_lit": true,
-            "power": 4,
-            "causes_fire": false
-          }
-        },
-        "canopy:longFuse": {
+        "canopy:fuse": {
           "minecraft:explode": {
             "fuse_length": 3600,
             "fuse_lit": true,
@@ -77,17 +69,10 @@
             ]
           }
         },
-        "canopy:normalFuse": {
+        "canopy:fuse": {
           "add": {
             "component_groups": [
-                "canopy:normalFuse"
-            ]
-          }
-        },
-        "canopy:longFuse": {
-          "add": {
-            "component_groups": [
-                "canopy:longFuse"
+                "canopy:fuse"
             ]
           }
         },

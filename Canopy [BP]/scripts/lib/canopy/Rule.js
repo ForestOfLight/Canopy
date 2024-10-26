@@ -60,16 +60,7 @@ class Rule {
         }
         return this.parseString(world.getDynamicProperty(this.#identifier));
     }
-
-    parseString(value) {
-        try {
-            return JSON.parse(value);
-        } catch (error) {
-            if (value === 'undefined') return undefined;
-            if (value === 'NaN') return NaN;
-        }
-    }
-
+    
     async recieveRuleValue(scriptEventReceive, resolve) {
         if (scriptEventReceive.id !== 'canopyExtension:ruleValueResponse' || scriptEventReceive.sourceType !== 'Server') return;
         const splitMessage = scriptEventReceive.message.split(' ');
@@ -80,6 +71,15 @@ class Rule {
         const value = splitMessage[2];
         // console.warn(`[Canopy] Received rule value: ${extensionName}:${ruleID} ${value}`);
         resolve(value);
+    }
+
+    parseString(value) {
+        try {
+            return JSON.parse(value);
+        } catch (error) {
+            if (value === 'undefined') return undefined;
+            if (value === 'NaN') return NaN;
+        }
     }
     
     setValue(value) {

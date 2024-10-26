@@ -194,7 +194,7 @@ commands.tick.sleep.success=§7%1 pausing the server for %2 ms.
 
 commands.tntfuse=Sets the fuse time of primed TNT in ticks.
 commands.tntfuse.reset.success=§7Reset TNT fuse time to §a80§7 ticks.
-commands.tntfuse.set.fail=§cInvalid fuse time: %1 ticks. Must be between 0 and %2 ticks.
+commands.tntfuse.set.fail=§cInvalid fuse time: %1 ticks. Must be between %2 and %3 ticks.
 commands.tntfuse.set.success=§7TNT fuse time set to §a%s§7 ticks.
 
 commands.trackevent=Count the number of times any event occurs. Displays the count in the InfoDisplay.
