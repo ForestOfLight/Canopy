@@ -170,13 +170,13 @@ commands.spawn.tracking.stop.success=§7Kemunculan(spawn) tidak lagi dilacak.
 commands.spawn.tracking.stop.actionbar=[%s] §7Berhenti melacak kemunculan.
 commands.spawn.mocking=Mengaktifkan/menonaktifkan kemunculan mob sambil mengizinkan algoritma kemunculan(spawn) berjalan.
 commands.spawn.mocking.enable=§aKemunculan(spawn) mengejek(mocking) sekarang diaktifkan. Mob tidak akan lagi muncul, tetapi algoritma kemunculan(spawn) akan terus berlanjut.
-commands.spawn.mocking.disable=§Spawn mocking sekarang dinonaktifkan. Massa akan bertelur seperti biasa.
-commands.spawn.mocking.enable.actionbar=[%s] §aSpawn mocking enabled.
-commands.spawn.mocking.disable.actionbar=[%s] §cSpawn mocking disabled.
+commands.spawn.mocking.disable=§cKemunculan(spawn) mengejek(mocking) sekarang dinonaktifkan. Mob akan kembali muncul seperti biasa.
+commands.spawn.mocking.enable.actionbar=[%s] §aKemunculan(spawn) mengejek(mocking) diaktifkan.
+commands.spawn.mocking.disable.actionbar=[%s] §cKemunculan(spawn) mengejek(mocking) dinonaktifkan.
 
-commands.summontnt=Summons the specified amount of primed TNT at your location.
-commands.summontnt.fail.none=§cNo TNT summoned.
-commands.summontnt.success=§7Summoned §c%s TNT§7.
+commands.summontnt=Memanggil TNT prima dalam jumlah tertentu di lokasi Anda.
+commands.summontnt.fail.none=§cTidak ada TNT yang dipanggil.
+commands.summontnt.success=§7Memanggil §c%s TNT§7.
 
 commands.tick=Set and control the server tick speed.
 commands.tick.mspt=Slows down the server tick speed to the specified mspt.
