@@ -105,15 +105,15 @@ commands.entitydensity.fail.gridsize=§cInvalid grid size. Please use a value be
 commands.entitydensity.success.header=§7Entity-dense areas in %1 (grid size %2x%3):
 commands.entitydensity.success.area=§7- %1 entities at %2, %3
 
-commands.gamemode.s=Set your gamemode to survival.
-commands.gamemode.a=Set your gamemode to adventure.
-commands.gamemode.c=Set your gamemode to creative.
-commands.gamemode.sp=Set your gamemode to spectator.
+commands.gamemode.s=已将你的游戏模式设为生存.
+commands.gamemode.a=已将你的游戏模式设为冒险.
+commands.gamemode.c=已将你的游戏模式设为创造.
+commands.gamemode.sp=已将你的游戏模式设为观察者.
 
-commands.health=Displays the server's current TPS, MSPT, and entity counts.
-commands.health.fail.mspt=§cCould not compute MSPT. Please report this error.
+commands.health=显示服务器的TPS、MSPT和实体数量.
+commands.health.fail.mspt=§c不能计算出MSPT. 请反馈问题.
 
-commands.info=Toggle InfoDisplay rules. (Alias: i)
+commands.info=开关信息显示规则. (快捷指令: i)
 commands.info.allupdated=%s§r§7 all InfoDisplay rules.
 
 commands.jump=Teleport to the block you are looking at. (Alias: j)
