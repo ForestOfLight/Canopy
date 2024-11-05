@@ -202,18 +202,18 @@ commands.trackevent.stop=§7停止监测游戏事件 %s.
 commands.trackevent.start=§7开始监测游戏事件 %s.
 commands.trackevent.invalid=§c游戏事件 %1 未在 %2 中找到.
 
-commands.warp=Teleport to and manage warps. (Alias: w)
-commands.warp.edit=Adds or removes a warp.
-commands.warp.tp=Teleports you to a warp.
-commands.warp.list=List all available warps.
-commands.warp.exists=§cWarp '%s' already exists. Use ./warps to see the list of warps.
-commands.warp.noexist=§cWarp '%s' not found. Use ./warps to see the list of warps.
-commands.warp.add.success=§7Warp '%s' has been added.
-commands.warp.remove.success=§7Warp '%s' has been removed.
-commands.warp.tp.fail.dimension=§cPlease go to %1 to teleport to '%2'.
-commands.warp.tp.success=§7Teleported to warp '%s'.
-commands.warp.list.empty=§7There are no warps.
-commands.warp.list.header=§7Available warps:
+commands.warp=传送和管理路径点. (快捷指令: w)
+commands.warp.edit=添加和移除路径点.
+commands.warp.tp=将你传送到一个路径点.
+commands.warp.list=列出所有可用的路径点.
+commands.warp.exists=§c路径点 '%s' 已经存在. 使用 ./warps 列出所有的路径点.
+commands.warp.noexist=§c路径点 '%s' 未找到. 使用 ./warps 列出所有的路径点.
+commands.warp.add.success=§7路径点 '%s' 已被添加.
+commands.warp.remove.success=§7路径点 '%s' 已被移除.
+commands.warp.tp.fail.dimension=§c请到 %1 来传送到 '%2'.
+commands.warp.tp.success=§7传送到路径点 '%s'.
+commands.warp.list.empty=§7当前没有路径点.
+commands.warp.list.header=§7可用的路径点:
 
 ## rules
 rules.generic.unknown=§cInvalid rule: %s. Use %2help for more information.
