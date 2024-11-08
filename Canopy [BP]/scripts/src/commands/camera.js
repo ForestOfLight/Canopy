@@ -190,7 +190,7 @@ function startSpectate(sender) {
     system.runTimeout(() => {
         sender.setGameMode('spectator');
         for (let effect of sender.getEffects())
-            sender.removeEffect(effect.typeId);
+            sender.removeEffect(effect?.typeId);
         sender.addEffect('night_vision', 999999, { amplifier: 0, showParticles: false });
         sender.addEffect('conduit_power', 999999, { amplifier: 0, showParticles: false });
         sender.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.started' });
@@ -203,7 +203,7 @@ function endSpectate(sender) {
     sender.setDynamicProperty('isSpectating', false);
     system.runTimeout(() => {
         for (let effect of sender.getEffects())
-            sender.removeEffect(effect.typeId);
+            sender.removeEffect(effect?.typeId);
         sender.teleport(beforeSpectatorPlayer.location, { dimension: world.getDimension(beforeSpectatorPlayer.dimensionId), rotation: beforeSpectatorPlayer.rotation });
         for (const effect of beforeSpectatorPlayer.effects) {
             sender.addEffect(effect.typeId, Math.min(20000000, effect.duration), { amplifier: effect.amplifier });
