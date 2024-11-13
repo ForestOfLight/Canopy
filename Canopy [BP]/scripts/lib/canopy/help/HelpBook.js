@@ -87,24 +87,46 @@ class HelpBook {
     async formatEntryHeader(entry, searchTerm, message) {
         const entryRawMessage = await entry.toRawMessage();
         const newEntryTitle = Utils.recolor(entryRawMessage.rawtext[0].text, searchTerm, '§a');
-        message.rawtext.push({
+        const newEntry = {
             rawtext: [
-                { text: '\n  ' }, { text: newEntryTitle },
-                { translate: entryRawMessage.rawtext[1].translate, with: entryRawMessage.rawtext[1].with }
+                { text: '\n  ' }, { text: newEntryTitle }
             ]
-        });
+        };
+
+        const description = entryRawMessage.rawtext[1];
+        if (description.translate) {
+            newEntry.rawtext.push({
+                translate: description.translate,
+                with: description.with
+            });
+        } else if (description.text) {
+            newEntry.rawtext.push({
+                text: description.text
+            });
+        }
+
+        message.rawtext.push(newEntry);
         return entryRawMessage;
     }
 
     formatEntryHelp(entryRawMessage, searchTerm, message) {
         for (let i = 2; i < entryRawMessage.rawtext.length; i++) {
             const newEntryText = Utils.recolor(entryRawMessage.rawtext[i].rawtext[0].text, searchTerm, '§a');
-            message.rawtext.push({
-                rawtext: [
-                    { text: newEntryText },
-                    { translate: entryRawMessage.rawtext[i].rawtext[1].translate, with: entryRawMessage.rawtext[i].rawtext[1].with }
-                ]
-            });
+            const newEntry = { rawtext: [{ text: newEntryText }] };
+
+            const description = entryRawMessage.rawtext[i].rawtext[1];
+            if (description.translate) {
+                newEntry.rawtext.push({
+                    translate: description.translate,
+                    with: description.with
+                });
+            } else if (description.text) {
+                newEntry.rawtext.push({
+                    text: description.text
+                });
+            }
+
+            message.rawtext.push(newEntry);
         }
         return message;
     }
