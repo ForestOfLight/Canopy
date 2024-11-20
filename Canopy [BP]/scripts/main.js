@@ -24,6 +24,7 @@ import 'src/commands/tntfuse'
 import 'src/commands/removeentity'
 import 'src/commands/pos'
 import 'src/commands/cleanup'
+import 'src/commands/sit'
 
 // Script Events
 import 'src/commands/scriptevents/counter'

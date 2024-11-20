@@ -146,6 +146,9 @@ commands.removeentity.success=§7Removed %1 with id '%2'.
 commands.resetall=Resets all §lCanopy§r§8 rules and data. Use with caution.
 commands.resetall.success=§7All §lCanopy§r§8 player and world dynamic properties have been reset.
 
+commands.sit=Makes your player sit down.
+commands.sit.busy=§cYou are busy and cannot sit down.
+
 commands.spawn=Spawn command for tracking and mocking spawns.
 commands.spawn.entities=Displays a list of all entities & their positions in the world.
 commands.spawn.recent=Displays all mob spawns from the last 30s. Specify a mob name to filter.
