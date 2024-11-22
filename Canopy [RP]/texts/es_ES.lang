@@ -1,0 +1,304 @@
+## vanilla
+entity.canopy:probe.name=Canopy Probe
+entity.canopy:rideable.name=Canopy Montable
+action.hint.exit.canopy:rideable=Agachar para pararse
+
+## generic
+generic.welcome.start=§7Este servidor está usando §l§aCanopy§r§7. Escribe ./help para comenzar.§r
+generic.welcome.extensions=§7Extensiones cargadas: §a%s
+generic.player.notfound=§cNo se pudo encontrar jugador '%s'.
+generic.target.notfound=§cNo se pudo encontrar objetivo.
+generic.entity.notfound=§cNo se pudo encontrar entidad.
+generic.total='Total'
+
+## commands
+commands.generic.unknown=§cComando inválido: '%1'. Usa %2help para más información.
+commands.generic.nopermission=§cNo tienes permiso para ejecutar este comando.
+commands.generic.usage=§cUso: %s
+commands.generic.blocked.survival=§cEste comando sólo se puede utilizar en modo creativo o modo espectador.
+
+commands.help=Muestra páginas de ayuda.
+commands.help.search.noresult=§cNo se encontraron resultados para '%s'
+commands.help.search.results=§l§aCanopy§r §2Resultados de búsqueda de ayuda para '§r%1§2':%2
+commands.help.page.header=§l§aCanopy§r§2 Pagina de Ayuda: §f%1
+commands.help.infodisplay=Togglable rules for your InfoDisplay.
+commands.help.rules=Reglas alternables globales.
+commands.help.extension.rules=Reglas alternables para su §a%s§2.
+commands.help.extension.commands=Comandos para §a%s§2.
+
+####      v Needs Translating v      ####
+
+commands.camera=Place a camera, view it, or use a survival-friendly spectator mode.
+commands.camera.place=Places a camera at your current location. (Alias: cp)
+commands.camera.view=Toggles viewing your latest camera placement. (Alias: cv)
+commands.camera.spectate=Toggles a survival-friendly spectator mode. (Alias: cs)
+commands.camera.place.viewing=§cYou cannot place a camera while viewing one.
+commands.camera.place.success=§7Camera placed at %s.
+commands.camera.view.spectating=§cYou cannot view a camera while spectating.
+commands.camera.view.fail=§cYou have not placed a camera yet.
+commands.camera.view.dimension=§cPlease go to %s to view this camera.
+commands.camera.view.started=§aViewing camera
+commands.camera.view.ended=§7Camera view ended
+commands.camera.spectate.viewing=§cYou cannot spectate while viewing a camera.
+commands.camera.spectate.gamemode=§cYou cannot change your gamemode while spectating.
+commands.camera.spectate.started=§aSpectating
+commands.camera.spectate.ended=§7Spectating ended
+
+commands.canopy=Enable or disable a rule.
+
+commands.changedimension=Teleports you to the specified dimension.
+commands.changedimension.notfound=§cInvalid dimension. Please use one of these: %s
+commands.changedimension.success.coords=§7Teleported to %1 in %2 dimension.
+commands.changedimension.success=§7Changed to %s dimension.
+commands.changedimension.fail.coords=§cInvalid coordinates. Please provide all x, y, z numeric values or none.
+
+commands.claimprojectiles=Changes the owner of all projectiles within a radius.
+commands.claimprojectiles.fail.nonefound=§7No projectiles found in range (%s blocks).
+commands.claimprojectiles.success.self=§7Successfully became the owner of %1 projectiles within %2 blocks of you.
+commands.claimprojectiles.success.other=§7Successfully changed the owner of %1 projectiles within %2 blocks of %3.
+
+commands.cleanup=Removes all items and experience orbs within a radius. (Alias: k)
+commands.cleanup.success=§7Cleaned up %s entities.
+
+commands.counter=Manages hopper counters. (Alias: ct)
+commands.counter.channel.notfound=§cInvalid color: %s. Please use one of the wool block colors.
+commands.counter.query=Displays the count and rates of the hopper counter for the specified color.
+commands.counter.query.empty=§7There are no hopper counters in use.
+commands.counter.query.channel=§7Items for %1§7 (%2%3 min.), total: §f%4§7, (§f%5§7):
+commands.counter.realtime=Displays count and rates, but uses real-world time instead of tick-based time.
+commands.counter.mode=Sets the mode of a hopper counter.
+commands.counter.mode.notfound=§cInvalid mode: '%1'. Please use one of the following modes: %2
+commands.counter.mode.single.success=§7Hopper Counter %1§7 mode: %2
+commands.counter.mode.single.success.actionbar=[%1] Set %2 hopper counter mode to %3
+commands.counter.mode.all.success=§7All Hopper Counters mode: %s
+commands.counter.mode.all.success.actionbar=[%1] Set all hopper counters mode to %2
+commands.counter.reset=Resets all hopper counters and restarts the timer.
+commands.counter.reset.single=§7Reset and time restarted: %s
+commands.counter.reset.single.actionbar=[%1] Reset %2 hopper counter.
+commands.counter.reset.all=§7All channels have been reset and hopper counter timer started.
+commands.counter.reset.all.actionbar=[%s] Reset all hopper counters.
+
+commands.data=Displays information about the block or entity you are looking at.
+commands.data.notarget.id=§cNo entity found with id '%2'.
+commands.data.properties=§aProperties:§r %s
+commands.data.states=§aStates:§r %s
+commands.data.components=§aComponents:§r %s
+commands.data.tags=§aTags:§r %s
+commands.data.dynamicProperties=§aDynamicProperties:§r %1 total byte count: %2
+commands.data.effects=§aEffects:§r %s
+commands.data.other=§aOther:§r head location: %1 rotation: [%2, %3], velocity: %4, view direction: %5
+
+commands.distance=Calculates the distance between two locations. (Alias: d)
+commands.distance.target=Calculates distance between you and the block or entity you are looking at.
+commands.distance.fromto=Calculates the distance between two locations.
+commands.distance.from=Saves a location to calculate distance from.
+commands.distance.from.success=§7Saved location: %s
+commands.distance.to=Calculates the distance from the saved location to the specified location.
+commands.distance.to.fail.nosave=§cNo saved location found. Save a location with: %sdistance from [x y z]
+commands.distance.target.notfound=§cNo block or entity found to calculate distance from.
+commands.distance.cartesian=§7Cartesian: §r§l%s§r
+commands.distance.cylindrical=§7Cartesian(XZ): §r§l%s§r
+commands.distance.manhattan=§7§7Manhattan: §r§l%s§r
+
+commands.entitydensity=Find entity-dense areas in a dimension.
+commands.entitydensity.fail.noentities=§7No dense areas found in %s. No entities in the dimension?
+commands.entitydensity.fail.dimension=§cInvalid dimension. Please use one of these: %s
+commands.entitydensity.fail.gridsize=§cInvalid grid size. Please use a value between 1 and 2048. Recommended: 100-1024.
+commands.entitydensity.success.header=§7Entity-dense areas in %1 (grid size %2x%3):
+commands.entitydensity.success.area=§7- %1 entities at %2, %3
+
+commands.gamemode.s=Set your gamemode to survival.
+commands.gamemode.a=Set your gamemode to adventure.
+commands.gamemode.c=Set your gamemode to creative.
+commands.gamemode.sp=Set your gamemode to spectator.
+
+commands.health=Displays the server's current TPS, MSPT, and entity counts.
+commands.health.fail.mspt=§cCould not compute MSPT. Please report this error.
+
+commands.info=Toggle InfoDisplay rules. (Alias: i)
+commands.info.allupdated=%s§r§7 all InfoDisplay rules.
+
+commands.jump=Teleport to the block you are looking at. (Alias: j)
+commands.jump.fail.noblock=§cNo block found to jump to.
+
+commands.log=Log tnt, projectile, and falling block movement.
+commands.log.precision=§7Log precision set to %s.
+commands.log.started=§7Started logging %s.
+commands.log.stopped=§7Stopped logging %s.
+
+commands.peek=Peek into a target's inventory and optionally highlight items that match a query.
+commands.peek.fail.unloaded=§cTarget at %s is unloaded.
+commands.peek.fail.noinventory=§cNo inventory found in %1 at %2.
+commands.peek.fail.noitems=§cNo items found in %1 at %2.
+commands.peek.query.cleared=§7Peek query cleared.
+commands.peek.query.set=§7Peek query set to '%s'.
+
+commands.pos=Shows your current position, or the position of another player.
+commands.pos.self=§aYour position: §f%s
+commands.pos.other=§a%1's position: §f%2
+commands.pos.dimension=§7Dimension: §7%s
+commands.pos.relative.overworld=§7Relative Overworld position: §a%s
+commands.pos.relative.nether=§7Relative Nether position: §c%s
+
+commands.removeentity=Instantly remove the entity you are looking at or by id.
+commands.removeentity.fail.player=§cCannot remove players.
+commands.removeentity.fail.noid=§cNo entity found with id '%s'.
+commands.removeentity.success=§7Removed %1 with id '%2'.
+
+commands.resetall=Resets all §lCanopy§r§8 rules and data. Use with caution.
+commands.resetall.success=§7All §lCanopy§r§8 player and world dynamic properties have been reset.
+
+commands.spawn=Spawn command for tracking and mocking spawns.
+commands.spawn.entities=Displays a list of all entities & their positions in the world.
+commands.spawn.recent=Displays all mob spawns from the last 30s. Specify a mob name to filter.
+commands.spawn.tracking.start=Starts tracking mob spawns. Specify coords to track within an area.
+commands.spawn.tracking.start.success=§7Spawns are now being tracked.
+commands.spawn.tracking.start.mob=§7Spawns are now being tracked for: %s.
+commands.spawn.tracking.start.mob.actionbar=[%1] §aAdded %2 to spawn tracking and reset.
+commands.spawn.tracking.start.area= Area: %1 to %2.
+commands.spawn.tracking.start.mocking= Since spawn mocking is enabled, mobs will not spawn but they will be tracked.
+commands.spawn.tracking.start.actionbar=[%s] §7Started tracking spawns.
+commands.spawn.tracking.mob=Starts tracking a specific mob spawn. Specify coords to track within an area. Run again to add more mob types to track.
+commands.spawn.tracking.mob.invalid=§cInvalid mob name: %s
+commands.spawn.tracking.query=Displays a summary of all spawns that have occurred since the start of your test.
+commands.spawn.tracking.query.dimension=§7Dimension %s§r:
+commands.spawn.tracking.no=§cSpawns are not currently being tracked.
+commands.spawn.tracking.already=§cSpawns are already being tracked.
+commands.spawn.tracking.test=Resets all spawn counters and hopper counters.
+commands.spawn.tracking.test.success=§7Spawn counters and hopper counters reset.
+commands.spawn.tracking.test.success.actionbar=[%s] §7Reset spawn counters and hopper counters.
+commands.spawn.tracking.stop=Stops tracking mob spawns.
+commands.spawn.tracking.stop.success=§7Spawns are no longer being tracked.
+commands.spawn.tracking.stop.actionbar=[%s] §7Stopped tracking spawns.
+commands.spawn.mocking=Enables/disables mob spawning while allowing the spawning algorithm to run.
+commands.spawn.mocking.enable=§aSpawn mocking is now enabled. Mobs will no longer spawn, but the spawning algorithm will continue.
+commands.spawn.mocking.disable=§cSpawn mocking is now disabled. Mobs will spawn as normal.
+commands.spawn.mocking.enable.actionbar=[%s] §aSpawn mocking enabled.
+commands.spawn.mocking.disable.actionbar=[%s] §cSpawn mocking disabled.
+
+commands.summontnt=Summons the specified amount of primed TNT at your location.
+commands.summontnt.fail.none=§cNo TNT summoned.
+commands.summontnt.success=§7Summoned §c%s TNT§7.
+
+commands.tick=Set and control the server tick speed.
+commands.tick.mspt=Slows down the server tick speed to the specified mspt.
+commands.tick.mspt.fail=§cMSPT cannot be less than 50.0.
+commands.tick.mspt.success=§7%1 set the tick speed to %2 mspt.
+commands.tick.step=Allows the server to run at normal speed for the specified amount of steps.
+commands.tick.step.fail=§cCannot step ticks without setting a tick speed.
+commands.tick.step.start=§7%1 stepping %2 tick(s)...
+commands.tick.step.done=§7Tick step complete.
+commands.tick.reset=Resets the server tick speed to normal.
+commands.tick.reset.success=§7%s reset the tick speed.
+commands.tick.sleep=Pauses the server for the specified amount of milliseconds.
+commands.tick.sleep.fail=§cInvalid sleep time.
+commands.tick.sleep.success=§7%1 pausing the server for %2 ms.
+
+commands.tntfuse=Sets the fuse time of primed TNT in ticks.
+commands.tntfuse.reset.success=§7Reset TNT fuse time to §a80§7 ticks.
+commands.tntfuse.set.fail=§cInvalid fuse time: %1 ticks. Must be between 0 and %2 ticks.
+commands.tntfuse.set.success=§7TNT fuse time set to §a%s§7 ticks.
+
+commands.trackevent=Count the number of times any event occurs. Displays the count in the InfoDisplay.
+commands.trackevent.stop=§7Stopped tracking %s.
+commands.trackevent.start=§7Started tracking %s.
+commands.trackevent.invalid=§cEvent %1 not found in %2.
+
+commands.warp=Teleport to and manage warps. (Alias: w)
+commands.warp.edit=Adds or removes a warp.
+commands.warp.tp=Teleports you to a warp.
+commands.warp.list=List all available warps.
+commands.warp.exists=§cWarp '%s' already exists. Use ./warps to see the list of warps.
+commands.warp.noexist=§cWarp '%s' not found. Use ./warps to see the list of warps.
+commands.warp.add.success=§7Warp '%s' has been added.
+commands.warp.remove.success=§7Warp '%s' has been removed.
+commands.warp.tp.fail.dimension=§cPlease go to %1 to teleport to '%2'.
+commands.warp.tp.success=§7Teleported to warp '%s'.
+commands.warp.list.empty=§7There are no warps.
+commands.warp.list.header=§7Available warps:
+
+## rules
+rules.generic.unknown=§cInvalid rule: %s. Use %2help for more information.
+rules.generic.blocked=§cThe %s rule is disabled.
+rules.generic.status=§7%1 is currently %2§r§7.
+rules.generic.nochange=§7%1 is already %2§r§7.
+rules.generic.updated=§7%1 is now %2§r§7.
+
+rules.commandCamera=Enables camera command.
+rules.commandChangeDimension=Enables changedimension command.
+rules.commandClaimProjectiles=Enables claimprojectiles command.
+rules.commandCleanup=Enables cleanup command.
+rules.hopperCounters=Enables counter command & hopper counter functionality.
+rules.commandGamemode=Enables shortened gamemode commands (e.g. `./s` for survival), including without OP.
+rules.commandJumpSurvival=Enables jump command in survival mode.
+rules.commandPos=Enables pos command.
+rules.commandRemoveEntity=Enables removeentity command.
+rules.commandSpawnMocking=Enables spawn mocking command.
+rules.commandSummonTnt=Enables summontnt command.
+rules.commandTick=Enables tick command.
+rules.commandTntFuse=Enables tntfuse command & custom TNT fuse time functionality.
+rules.commandWarp=Enables warp & warps commands.
+rules.commandWarpSurvival=Enables warp & warps commands in survival mode.
+rules.allowBubbleColumnPlacement=Removes the restriction on placing bubble columns.
+rules.armorStandRespawning=Armor stands respawn when hit by a projectile, dropping their items.
+rules.autoItemPickup=Automatically picks up items when breaking blocks.
+rules.beeNoDrown=Enables bees healing from drowning damage.
+rules.cauldronConcreteConversion=Concrete powder items inside a cauldron filled with water will convert to concrete items.
+rules.creativeOneHitKill=Allows creative players to one hit kill any entity. If sneaking, it will also kill nearby entities.
+rules.dupeTnt=TNT can be duplicated when moved by a piston and powered next to a note blocks.
+rules.durabilityNotifier=Enables a clink sound and tip when your tool has %s durability left.
+rules.durabilityNotifier.alert=§cDurability remaining: %s
+rules.entityInstantDeath=Removes the 20gt death animation. Entities will also not drop xp.
+rules.explosionChainReactionOnly=Makes explosion only affect TNT blocks.
+rules.explosionNoBlockDamage=Makes explosions not affect blocks.
+rules.explosionOff=Disables explosions entirely.
+rules.flippinArrows=Using an arrow on blocks will flip, rotate, or open them. Putting it in your offhand will flip blocks when placed.
+rules.hotbarSwitching=Allows for quick switching between multiple hotbars. Put an arrow in the top right of your inventory, then sneak and scroll to switch.
+rules.hotbarSwitchingSurvival=Enables hotbarSwitching for survival mode.
+rules.instaminableDeepslate=Makes deepslate instaminable while using netherite, efficiency 5, and haste 2.
+rules.instaminableEndstone=Makes endstone instaminable while using netherite, efficiency 5, and haste 2.
+rules.instantTame=Instantly tames animals with their respective food.
+rules.instantTameSurvival=Enables instantTame for survival mode.
+rules.noTileDrops=Prevents items dropping from blocks broken in creative mode.
+rules.pistonBedrockBreaking=Allows pistons to break bedrock when facing away from a bedrock block and expanding.
+rules.playerSit=Allows players to sit down after %s quick sneaks.
+rules.quickFillContainer=Using an item on a container with an arrow in the top left of your inventory will deposit all of that item into the container.
+rules.quickFillContainer.filled=§7Filled %1 with all %2
+rules.renewableElytra=Phantoms have a 1% chance to drop an elytra when killed by a shulker bullet.
+rules.renewableSponge=Guardians transform into elder guardians when hurt by lightning.
+rules.tntPrimeMaxMomentum=TNT always recieves its maximum momentum in a random direction when primed.
+rules.tntPrimeNoMomentum=TNT does not recieve any momentum when primed.
+rules.universalChunkLoading=Makes minecarts tick a 5x5 chunk area around them for 10 seconds after they are spawned.
+
+rules.infoDisplay.showDisplay=Toggles whether the InfoDisplay is shown.
+rules.infoDisplay.coords=Shows your coordinates truncated at 2 decimal places.
+rules.infoDisplay.facing=Shows your facing direction using yaw and pitch.
+rules.infoDisplay.facing.display=§rPitch: §7%1§r Yaw: §7%2§r
+rules.infoDisplay.cardinalFacing=Shows which direction you are facing using N, S, E, W & the coordinate direction (ex. N (-z)).
+rules.infoDisplay.cardinalFacing.display=§rFacing: §7%s§r
+rules.infoDisplay.tps=Shows the server's ticks per second.
+rules.infoDisplay.tps.display=§rTPS: %s§r
+rules.infoDisplay.entities=Shows the number of entities in front of you.
+rules.infoDisplay.entities.display=§rEntities: §7%s§r
+rules.infoDisplay.tpsAndEntities.display=§rTPS: %1§r Entities: §7%2§r
+rules.infoDisplay.light=Shows the light level of the block where your foot is.
+rules.infoDisplay.light.display=§rLight: §e%s§r
+rules.infoDisplay.biome=Shows the biome you are in.
+rules.infoDisplay.biome.display=§rBiome: §a%s§r
+rules.infoDisplay.lightAndBiome.display=§rLight: §e%1 §rBiome: §a%2§r
+rules.infoDisplay.worldDay=Shows the count of Minecraft days since the world began.
+rules.infoDisplay.worldDay.display=§rDay: §7%s§r
+rules.infoDisplay.timeOfDay=Shows the Minecraft day-cycle time as a 12-hour digital clock time.
+rules.infoDisplay.timeOfDay.display=§rTime: §7%s§r
+rules.infoDisplay.worldDayAndTimeOfDay.display=Day: §7%1§r §7%2§r
+rules.infoDisplay.sessionTime=Shows the time since you joined the world.
+rules.infoDisplay.sessionTime.display=§rSession: §7%s§r
+rules.infoDisplay.moonPhase=Shows the phase of the moon.
+rules.infoDisplay.moonPhase.display=§rMoon: §7%s§r
+rules.infoDisplay.slimeChunk=Shows whether the chunk you are in is a slime chunk (only displays when in a slime chunk).
+rules.infoDisplay.slimeChunk.display=§7(§aSlime Chunk§7)§r
+rules.infoDisplay.eventTrackers=Shows the counts of tracked events.
+rules.infoDisplay.hopperCounterCounts=Shows all active hopper counter counts in their respective colors. Hopper counter mode controls this info.
+rules.infoDisplay.lookingAt=Shows the identifier of the block or entity you are looking at.
+rules.infoDisplay.signalStrength=Shows the signal strength of the block you are looking at.
+rules.infoDisplay.peekInventory=Shows the inventory of the block or entity you are looking at.
