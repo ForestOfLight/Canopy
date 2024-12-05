@@ -1,6 +1,7 @@
 import { system, world } from '@minecraft/server'
 import { Rule, Command } from 'lib/canopy/Canopy'
 
+const MIN_FUSE_TICKS = 1;
 const MAX_FUSE_TICKS = 72000;
 
 new Rule({
@@ -21,20 +22,21 @@ const cmd = new Command({
 });
 
 world.afterEvents.entitySpawn.subscribe(async (event) => {
-    if (event.entity.typeId !== 'minecraft:tnt') return;
+    if (event.entity?.typeId !== 'minecraft:tnt') return;
     const fuseTimeProperty = world.getDynamicProperty('tntFuseTime');
     let fuseTime = 80;
-    if (fuseTimeProperty !== undefined && await Rule.getValue('commandTntFuse'))
+    if (fuseTimeProperty !== undefined && Rule.getNativeValue('commandTntFuse'))
         fuseTime = fuseTimeProperty;
-    
-    if (fuseTime === 80) {
-        event.entity.triggerEvent('canopy:normalFuse');
+
+    if (fuseTime === 1) {
+        event.entity.triggerEvent('canopy:explode');
     } else {
-        event.entity.triggerEvent('canopy:longFuse');
+        event.entity.triggerEvent('canopy:fuse');
         system.runTimeout(() => {
             event.entity.triggerEvent('canopy:explode');
-        }, fuseTime);
+        }, fuseTime - 1);
     }
+
 });
 
 function tntfuseCommand(sender, args) {
@@ -44,8 +46,8 @@ function tntfuseCommand(sender, args) {
     } else if (ticks === 'reset') {
         ticks = 80;
         sender.sendMessage({ translate: 'commands.tntfuse.reset.success' });
-    } else if (ticks < 0 || ticks > MAX_FUSE_TICKS)
-        return sender.sendMessage({ translate: 'commands.tntfuse.set.fail', with: [String(ticks), String(MAX_FUSE_TICKS)] });
+    } else if (ticks < MIN_FUSE_TICKS || ticks > MAX_FUSE_TICKS)
+        return sender.sendMessage({ translate: 'commands.tntfuse.set.fail', with: [String(ticks), String(MIN_FUSE_TICKS), String(MAX_FUSE_TICKS)] });
     else {
         sender.sendMessage({ translate: 'commands.tntfuse.set.success', with: [String(ticks)] });
     }

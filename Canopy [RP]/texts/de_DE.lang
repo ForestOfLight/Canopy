@@ -194,7 +194,7 @@ commands.tick.sleep.success=§7%1 Pausiert den Server für %2 ms.
 
 commands.tntfuse=Setzt die Zündungszeit von gezündetem TNT in Ticks.
 commands.tntfuse.reset.success=§7Setzt die TNT-Zündzeit auf §a80§7 Ticks zurück.
-commands.tntfuse.set.fail=§cUngültige Zünderzeit: %1 Ticks. Muss zwischen 0 und %2 Ticks liegen.
+commands.tntfuse.set.fail=§cUngültige Zünderzeit: %1 Ticks. Muss zwischen $2 und %3 Ticks liegen.
 commands.tntfuse.set.success=§7TNT- Zündungszeit auf §a%s§7 Ticks eingestellt.
 
 commands.trackevent=Zählt, wie oft ein Ereignis auftritt. Zeigt die Anzahl im InfoDisplay an.

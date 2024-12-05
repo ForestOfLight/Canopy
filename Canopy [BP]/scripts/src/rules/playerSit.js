@@ -2,7 +2,7 @@ import { DimensionTypes, system, world } from '@minecraft/server';
 import { Rule } from 'lib/canopy/Canopy';
 
 const SNEAK_COUNT = 3;
-const SNEAK_SPEED = 6;
+const SNEAK_SPEED = 10;
 
 new Rule({
     category: 'Rules',
@@ -53,3 +53,5 @@ function cleanupRideableEntities() {
         });
     });
 }
+
+export { sit };
