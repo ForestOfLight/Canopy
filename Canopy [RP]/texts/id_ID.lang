@@ -146,6 +146,9 @@ commands.removeentity.success=§7Menghapus %1 dengan id '%2'.
 commands.resetall=Mereset semua aturan dan data §lCanopy§r§8 Gunakan dengan hati-hati.
 commands.resetall.success=§7Semua pemain dan properti dinamis dunia §lCanopy§r§8 telah direset.
 
+commands.sit=Membuat pemain/karakter Anda duduk.
+commands.sit.busy=§cAnda sedang sibuk dan tidak bisa duduk.
+
 commands.spawn=Perintah kemunculan untuk melacak dan mengejek(mocking) kemunculan(spawn).
 commands.spawn.entities=Menampilkan daftar semua entitas & posisinya di dunia.
 commands.spawn.recent=Menampilkan semua mob yang muncul dari 30(detik) terakhir. Tentukan nama mob yang akan difilter.
