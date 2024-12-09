@@ -1,0 +1,305 @@
+## vanilla
+entity.canopy:probe.name=Canopy Probe
+entity.canopy:rideable.name=Canopy Rideable
+action.hint.exit.canopy:rideable=Sneak to stand
+
+## generic
+generic.welcome.start=§7当前服务器已加载 §l§aCanopy§r§7. 输入"./help"开始熟悉指令.§r
+generic.welcome.extensions=§7已加载扩展: §a%s
+generic.player.notfound=§c玩家 '%s' 未找到.
+generic.target.notfound=§c目标未找到.
+generic.entity.notfound=§c实体未找到.
+generic.total='总数'
+
+## commands
+commands.generic.unknown=§c无效的指令: '%1'. 输入"%2help" 获取更多信息.
+commands.generic.nopermission=§c你没有足够的权限使用这个指令.
+commands.generic.usage=§c使用方法: %s
+commands.generic.blocked.survival=§c此指令只能在创造模式或者观察者模式下使用.
+
+commands.help=显示指令帮助信息.
+commands.help.search.noresult=§c没有与此相关的结果：'%s'
+commands.help.search.results=§l§aCanopy§r §2指令帮助页面找到此结果 '§r%1§2':%2
+commands.help.page.header=§l§aCanopy§r§2 指令帮助 页数: §f%1
+commands.help.infodisplay=开关游戏中的信息显示.
+commands.help.rules=开关全局规则.
+commands.help.extension.rules=开关扩展 §a%s§2 的规则.
+commands.help.extension.commands=扩展 §a%s§2 的指令.
+
+commands.camera=放置一个摄像机进行监看，或者使用对生存友好的观察者模式.
+commands.camera.place=放置一个摄像机在你的位置. (快捷指令: cp)
+commands.camera.view=启用/关闭最后放置的监看. (快捷指令: cv)
+commands.camera.spectate=进入和退出生存友好的观察者模式. (快捷指令: cs)
+commands.camera.place.viewing=§c不能在监看中放置摄像机.
+commands.camera.place.success=§7摄像机放置在 %s.
+commands.camera.view.spectating=§c不能在观察者模式下进行监看摄像机.
+commands.camera.view.fail=§c还没放置过一个摄像机.
+commands.camera.view.dimension=§c请到 %s 去监看摄像机.
+commands.camera.view.started=§a监看中
+commands.camera.view.ended=§7监看结束
+commands.camera.spectate.viewing=§c不能在监看中进入观察者模式.
+commands.camera.spectate.gamemode=§c不能在特殊的观察者模式下变更游戏模式.
+commands.camera.spectate.started=§a观察者模式
+commands.camera.spectate.ended=§7退出观察者模式
+
+commands.canopy=启用或者关闭规则.
+
+commands.changedimension=传送你到指定的维度.
+commands.changedimension.notfound=§c无效的维度参数. 请使用其中之一: %s
+commands.changedimension.success.coords=§7成功传送到坐标 %1 维度 %2.
+commands.changedimension.success=§7传送到维度 %s.
+commands.changedimension.fail.coords=§c无效的坐标. 请提供所有 x、y、z 数值或不提供任何数值.
+
+commands.claimprojectiles=改变半径内所有弹射物的拥有者.
+commands.claimprojectiles.fail.nonefound=§7半径(%s blocks)内，没有弹射物.
+commands.claimprojectiles.success.self=§7成功将 %1 个弹射物(半径 %2 )的拥有者改为了你.
+commands.claimprojectiles.success.other=§7成功将 %1 个弹射物(半径 %2 )的拥有者改为了 %3.
+
+commands.cleanup=清除半径内所有的掉落物和经验球. (快捷指令: k)
+commands.cleanup.success=§7清除了 %s 个实体.
+
+commands.counter=管理漏斗计数器. (快捷指令: ct)
+commands.counter.channel.notfound=§c无效的颜色: %s. 请使用羊毛方块的颜色之一.
+commands.counter.query=显示指定的颜色频道的漏斗计数和效率.
+commands.counter.query.empty=§7没有漏斗计数器在工作.
+commands.counter.query.channel=§7频道 %1§7 (%2%3 min.), 总数: §f%4§7, (§f%5§7):
+commands.counter.realtime=显示漏斗计数和效率(现实时间单位).
+commands.counter.mode=设置漏斗计数器的模式.
+commands.counter.mode.notfound=§c无效的模式: '%1'. 请使用以下的模式之一: %2
+commands.counter.mode.single.success=§7漏斗计数器 %1§7 模式: %2
+commands.counter.mode.single.success.actionbar=[%1]将 %2 漏斗计数器模式设置到 %3
+commands.counter.mode.all.success=§7漏斗计数器所有的模式: %s
+commands.counter.mode.all.success.actionbar=[%1] 将所有的漏斗计数器模式设置到 %2
+commands.counter.reset=重置所有的漏斗计数器和计时器.
+commands.counter.reset.single=§7已重置计时器和计数器: %s
+commands.counter.reset.single.actionbar=[%1] 重置 %2 漏斗计数器.
+commands.counter.reset.all=§7所有的漏斗计数器和计时器已被重置.
+commands.counter.reset.all.actionbar=[%s] 重置了所有漏斗计数器.
+
+commands.data=显示你所指方块或者实体的信息.
+commands.data.notarget.id=§c没有于此id相配的实体 '%2'.
+commands.data.properties=§a性质:§r %s
+commands.data.states=§a状态:§r %s
+commands.data.components=§a元件:§r %s
+commands.data.tags=§a标签:§r %s
+commands.data.dynamicProperties=§a动态性质:§r %1 的总字节数: %2
+commands.data.effects=§a效果:§r %s
+commands.data.other=§a其他:§r 头部位置: %1 旋转: [%2, %3], 速度: %4, 视角方向: %5
+
+commands.distance=计算两点的距离. (快捷指令: d)
+commands.distance.target=计算你所指的方块或者实体与你的距离.
+commands.distance.fromto=计算两点的距离.
+commands.distance.from=保存位置用于计算距离.
+commands.distance.from.success=§7已保存位置: %s
+commands.distance.to=计算已保存的位置与指定位置之间的距离.
+commands.distance.to.fail.nosave=§c未保存位置. 保存一个位置用于计算: %s到 [x y z] 的距离
+commands.distance.target.notfound=§c没有找到方块或者实体用于计算距离.
+commands.distance.cartesian=§7几何距离: §r§l%s§r
+commands.distance.cylindrical=§7几何距离(XZ平面): §r§l%s§r
+commands.distance.manhattan=§7§7曼哈顿距离: §r§l%s§r
+
+commands.entitydensity=在所在维度寻找实体密集区域.
+commands.entitydensity.fail.noentities=§7没有找到实体密集区域 %s. 可能没有实体在这个维度?
+commands.entitydensity.fail.dimension=§c无效的维度参数. 请使用以下参数之一: %s
+commands.entitydensity.fail.gridsize=§c无效的网格大小. 请使用1到2048之间的整数. 建议使用: 100-1024.
+commands.entitydensity.success.header=§7实体密集区域在 %1 (网格大小 %2x%3):
+commands.entitydensity.success.area=§7-有 %1 个实体在 %2, %3
+
+commands.gamemode.s=已将你的游戏模式设为生存.
+commands.gamemode.a=已将你的游戏模式设为冒险.
+commands.gamemode.c=已将你的游戏模式设为创造.
+commands.gamemode.sp=已将你的游戏模式设为观察者.
+
+commands.health=显示服务器的TPS、MSPT和实体数量.
+commands.health.fail.mspt=§c不能计算出MSPT. 请反馈问题.
+
+commands.info=开关信息显示规则. (快捷指令: i)
+commands.info.allupdated=%s§r§7 所有信息显示规则.
+
+commands.jump=传送到所指方块上. (快捷指令: j)
+commands.jump.fail.noblock=§c没找到方块传送跳跃.
+
+commands.log=追踪TNT、弹射物和下落的方块运动.
+commands.log.precision=§7追踪精度设置为 %s.
+commands.log.started=§7开始追踪 %s.
+commands.log.stopped=§7停止追踪 %s.
+
+commands.peek=窥视目标物品栏并可以高亮列表中的物品.
+commands.peek.fail.unloaded=§c在 %s 的目标未加载.
+commands.peek.fail.noinventory=§c没找到物品栏： %1 在 %2.
+commands.peek.fail.noitems=§c没找到物品： %1 在 %2.
+commands.peek.query.cleared=§7窥视列表清除.
+commands.peek.query.set=§7窥视列表设置为 '%s'.
+
+commands.pos=显示你的位置或者其他玩家的位置.
+commands.pos.self=§a你的位置: §f%s
+commands.pos.other=§a%1的位置: §f%2
+commands.pos.dimension=§7维度: §7%s
+commands.pos.relative.overworld=§7地狱映射到主世界的位置: §a%s
+commands.pos.relative.nether=§7主世界映射到地狱的位置: §c%s
+
+commands.removeentity=立刻移除你所指的实体或者是指定的id.
+commands.removeentity.fail.player=§c不可以移除玩家.
+commands.removeentity.fail.noid=§c未找到实体id带有 '%s'.
+commands.removeentity.success=§7移除了 %1 带有id '%2'.
+
+commands.resetall=重置所有 §lCanopy§r§8 规则和数据. 请小心使用.
+commands.resetall.success=§7所有 §lCanopy§r§8 玩家和世界动态性质已被重置.
+
+commands.sit=使玩家坐下.
+commands.sit.busy=§c已被占用，无法坐下.
+
+commands.spawn=模拟生成和检测生成指令.
+commands.spawn.entities=展示当前世界所有实体及其位置的列表.
+commands.spawn.recent=显示最近30s所有怪物的生成数据. 请指定一种怪物到筛选器中.
+commands.spawn.tracking.start=开始监测怪物生成. 请指定坐标划定区域用于监测.
+commands.spawn.tracking.start.success=§7开始检测生物生成.
+commands.spawn.tracking.start.mob=§7正在检测该生物的生成: %s.
+commands.spawn.tracking.start.mob.actionbar=[%1] §a已加入 %2 到生物监测并重置.
+commands.spawn.tracking.start.area= 区域: %1 到 %2.
+commands.spawn.tracking.start.mocking= 由于生物模拟生成已开启, 生物不再会生成但会被监测.
+commands.spawn.tracking.start.actionbar=[%s] §7开始监测生物生成.
+commands.spawn.tracking.mob=开始检测指定的生物生成. 请指定坐标划定区域. 重新运行命令来添加更多生物种类.
+commands.spawn.tracking.mob.invalid=§c无效的生物名称: %s
+commands.spawn.tracking.query=总结自测试开始的所有的生成.
+commands.spawn.tracking.query.dimension=§7维度 %s§r:
+commands.spawn.tracking.no=§c生物生成没有被在被监测.
+commands.spawn.tracking.already=§c生物生成正在被监测.
+commands.spawn.tracking.test=重置所有生物生成计数器和漏斗计数器.
+commands.spawn.tracking.test.success=§7生物生成计数器和漏斗计数器已被重置.
+commands.spawn.tracking.test.success.actionbar=[%s] §7已重置生物生成和漏斗计数器.
+commands.spawn.tracking.stop=停止监测生物生成.
+commands.spawn.tracking.stop.success=§7生物生成不再被监测.
+commands.spawn.tracking.stop.actionbar=[%s] §7已停止生物生成监测.
+commands.spawn.mocking=开启/关闭生物生成但生物生成进程仍在进行.
+commands.spawn.mocking.enable=§a模拟生成已开启. 生物不再实际生成, 但生成进程仍在继续.
+commands.spawn.mocking.disable=§c模拟生成已关闭. 生物生成现在回归正常.
+commands.spawn.mocking.enable.actionbar=[%s] §a模拟生成已开启.
+commands.spawn.mocking.disable.actionbar=[%s] §c模拟生成已关闭.
+
+commands.summontnt=生成指定数量的点燃的TNT到你的位置.
+commands.summontnt.fail.none=§cTNT生成失败.
+commands.summontnt.success=§7已生成 §c%s 个TNT§7.
+
+commands.tick=设置和控制服务器tick速度.
+commands.tick.mspt=放慢服务器tick速度到指定mspt.
+commands.tick.mspt.fail=§cmspt不能低于50.0.
+commands.tick.mspt.success=§7%1 将服务器的tick设置到 %2 mspt.
+commands.tick.step=允许服务器已正常的速度步进指定游戏刻数.
+commands.tick.step.fail=§c没设置游戏速度不能步进游戏刻.
+commands.tick.step.start=§7%1 正在步进 %2 个游戏刻...
+commands.tick.step.done=§7游戏刻步进完成.
+commands.tick.reset=使游戏速度回到正常.
+commands.tick.reset.success=§7%s 成功重置游戏速度.
+commands.tick.sleep=暂停服务器指定时间（单位：毫秒）.
+commands.tick.sleep.fail=§c无效的停止时间.
+commands.tick.sleep.success=§7%1 正在停止服务器 %2 毫秒.
+
+commands.tntfuse=以游戏刻为单位设置TNT的引信时间.
+commands.tntfuse.reset.success=§7重置所有TNT引信时间到 §a80§7 游戏刻.
+commands.tntfuse.set.fail=§c无效的引信时间: %1 ticks. 必须时 0 到 %2 ticks.
+commands.tntfuse.set.success=§7TNT的引信时间设置为 §a%s§7 ticks.
+
+commands.trackevent=计算游戏事件发生数量. 显示数量在信息栏里.
+commands.trackevent.stop=§7停止监测游戏事件 %s.
+commands.trackevent.start=§7开始监测游戏事件 %s.
+commands.trackevent.invalid=§c游戏事件 %1 未在 %2 中找到.
+
+commands.warp=传送和管理路径点. (快捷指令: w)
+commands.warp.edit=添加和移除路径点.
+commands.warp.tp=将你传送到一个路径点.
+commands.warp.list=列出所有可用的路径点.
+commands.warp.exists=§c路径点 '%s' 已经存在. 使用 ./warps 列出所有的路径点.
+commands.warp.noexist=§c路径点 '%s' 未找到. 使用 ./warps 列出所有的路径点.
+commands.warp.add.success=§7路径点 '%s' 已被添加.
+commands.warp.remove.success=§7路径点 '%s' 已被移除.
+commands.warp.tp.fail.dimension=§c请到 %1 来传送到 '%2'.
+commands.warp.tp.success=§7传送到路径点 '%s'.
+commands.warp.list.empty=§7当前没有路径点.
+commands.warp.list.header=§7可用的路径点:
+
+## rules
+rules.generic.unknown=§c无效的规则: %s. 使用 %2help 来获取更多信息.
+rules.generic.blocked=§c%s 规则已关闭.
+rules.generic.status=§7%1 现在的状态是 %2§r§7.
+rules.generic.nochange=§7%1 现在的状态已经是 %2§r§7.
+rules.generic.updated=§7%1 现在的状态更新为 %2§r§7.
+
+rules.commandCamera=开启camera指令.
+rules.commandChangeDimension=开启changedimension指令.
+rules.commandClaimProjectiles=开启claimprojectiles指令.
+rules.commandCleanup=开启cleanup指令.
+rules.hopperCounters=开启counter指令和漏斗计数器功能.
+rules.commandGamemode=开启简短gamemode指令 (e.g. `./s` -> survival), 包括没有管理权限的.
+rules.commandJumpSurvival=开启jump指令（生存模式下）.
+rules.commandPos=开启pos指令.
+rules.commandRemoveEntity=开启removeentity指令.
+rules.commandSpawnMocking=开启spawn mocking指令.
+rules.commandSummonTnt=开启summontnt指令.
+rules.commandTick=开启tick指令.
+rules.commandTntFuse=开启tntfuse指令和自定义TNT引信时间功能.
+rules.commandWarp=开启warp & warps指令.
+rules.commandWarpSurvival=开启warp & warps指令（生存模式下）.
+rules.allowBubbleColumnPlacement=关闭放置气泡柱限制.
+rules.armorStandRespawning=盔甲架被弹射物击中会掉落所持物品.
+rules.autoItemPickup=破坏方块自动拾取物品.
+rules.beeNoDrown=开启蜜蜂溺水时受到治疗.
+rules.cauldronConcreteConversion=混凝土粉末物品丢入装水的炼药锅变成固化的混凝土.
+rules.creativeOneHitKill=创造玩家一击必杀. 蹲着时，玩家周围的实体也会被杀.
+rules.dupeTnt=TNT被活塞推动并且被音符盒充能时复制.
+rules.durabilityNotifier=当你的工具还剩%s耐久度时，发出叮的响声和提示.
+rules.durabilityNotifier.alert=§c耐久度还剩: %s
+rules.entityInstantDeath=消除20gt死亡动画. 同时实体不再会掉落经验.
+rules.explosionChainReactionOnly=使爆炸只影响TNT方块.
+rules.explosionNoBlockDamage=关闭爆炸破坏.
+rules.explosionOff=完全关闭爆炸.
+rules.flippinArrows=对方块使用箭可以翻转、旋转和打开. 放在副手可以使方块放置时翻转.
+rules.hotbarSwitching=开启快速切换多种状态栏. 放一个箭在你物品栏的右上角, 然后蹲下再滚动滚轮就可以切换.
+rules.hotbarSwitchingSurvival=开启状态栏切换（生存模式）.
+rules.instaminableDeepslate=急迫2下使用效率5的下届合金镐时，可以秒破深板岩.
+rules.instaminableEndstone=急迫2下使用效率5的下届合金镐时，可以秒破末地石.
+rules.instantTame=使用相应的食物可以立即驯服动物.
+rules.instantTameSurvival=开启instantTame（立即驯服）（生存模式下）.
+rules.noTileDrops=创造模式下防止方块被破坏时方块物品爆出.
+rules.pistonBedrockBreaking=允许活塞在背对基岩时，伸出时破坏基岩.
+rules.playerSit=允许玩家坐下，在快速 %s 次蹲下.
+rules.quickFillContainer=对容器使用一个物品时，放一个箭在物品栏的左上角，可以将背包里所有的这个物品放进容器里.
+rules.quickFillContainer.filled=§7填满 %1 了所有 %2
+rules.renewableElytra=幻翼被潜影贝子弹杀死时有 1% 几率掉落鞘翅.
+rules.renewableSponge=守卫者被闪电击中会变成远古守卫者.
+rules.tntPrimeMaxMomentum=TNT被点燃时会接受到最大的动量但是方向仍然是随机的.
+rules.tntPrimeNoMomentum=TNT被点燃时的动量设置为0.
+rules.universalChunkLoading=矿车生成时加载5x5的区块10s.
+
+rules.infoDisplay.showDisplay=在信息显示上开关天气显示.
+rules.infoDisplay.coords=坐标显示精确到两位小数.
+rules.infoDisplay.facing=显示你的仰角和俯角.
+rules.infoDisplay.facing.display=§r俯角: §7%1§r 仰角: §7%2§r
+rules.infoDisplay.cardinalFacing=使用N, S, E, W 和坐标系方向 (ex. N (-z))显示你的朝向.
+rules.infoDisplay.cardinalFacing.display=§r朝向: §7%s§r
+rules.infoDisplay.tps=显示TPS.
+rules.infoDisplay.tps.display=§rTPS: %s§r
+rules.infoDisplay.entities=显示你面前的实体个数.
+rules.infoDisplay.entities.display=§r实体数: §7%s§r
+rules.infoDisplay.tpsAndEntities.display=§rTPS: %1§r 实体数: §7%2§r
+rules.infoDisplay.light=显示脚下亮度.
+rules.infoDisplay.light.display=§r亮度: §e%s§r
+rules.infoDisplay.biome=显示群系.
+rules.infoDisplay.biome.display=§r群系: §a%s§r
+rules.infoDisplay.lightAndBiome.display=§r亮度: §e%1 §r群系: §a%2§r
+rules.infoDisplay.worldDay=显示存档天数.
+rules.infoDisplay.worldDay.display=§r存档天数: §7%s§r
+rules.infoDisplay.timeOfDay=显示游戏中时间.
+rules.infoDisplay.timeOfDay.display=§r时间: §7%s§r
+rules.infoDisplay.worldDayAndTimeOfDay.display=存档天数: §7%1§r §7%2§r
+rules.infoDisplay.sessionTime=显示的你加入存档的时间.
+rules.infoDisplay.sessionTime.display=§r在线时间: §7%s§r
+rules.infoDisplay.moonPhase=显示月相.
+rules.infoDisplay.moonPhase.display=§r月相: §7%s§r
+rules.infoDisplay.slimeChunk=显示当前区块是否是史莱姆区块(只在史莱姆区块时显示).
+rules.infoDisplay.slimeChunk.display=§7(§a史莱姆区块§7)§r
+rules.infoDisplay.eventTrackers=显示监测游戏事件发生次数.
+rules.infoDisplay.hopperCounterCounts=显示所有漏斗计数器和对应颜色. 漏斗计数器模式控制这个信息.
+rules.infoDisplay.lookingAt=显示你所看的方块和实体id.
+rules.infoDisplay.signalStrength=显示所指方块的信号强度.
+rules.infoDisplay.peekInventory=显示方块或者实体的物品栏.
