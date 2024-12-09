@@ -171,6 +171,7 @@ commands.spawn.tracking.test.success.actionbar=[%s] §7Reset spawn counters and 
 commands.spawn.tracking.stop=Stops tracking mob spawns.
 commands.spawn.tracking.stop.success=§7Spawns are no longer being tracked.
 commands.spawn.tracking.stop.actionbar=[%s] §7Stopped tracking spawns.
+commands.spawn.test=Resets all spawn counters and hopper counters.
 commands.spawn.mocking=Enables/disables mob spawning while allowing the spawning algorithm to run.
 commands.spawn.mocking.enable=§aSpawn mocking is now enabled. Mobs will no longer spawn, but the spawning algorithm will continue.
 commands.spawn.mocking.disable=§cSpawn mocking is now disabled. Mobs will spawn as normal.

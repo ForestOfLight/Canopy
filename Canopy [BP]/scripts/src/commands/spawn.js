@@ -32,6 +32,7 @@ const cmd = new Command({
         { usage: 'spawn tracking [x1 y1 z1] [x2 y2 z2]', description: { translate: 'commands.spawn.tracking.start' } },
         { usage: 'spawn <mobName> [x1 y1 z1] [x2 y2 z2]', description: { translate: 'commands.spawn.tracking.mob' } },
         { usage: 'spawn tracking', description: { translate: 'commands.spawn.tracking.query' } },
+        { usage: 'spawn tracking start', description: { translate: 'commands.spawn.tracking.start' } },
         { usage: 'spawn tracking stop', description: { translate: 'commands.spawn.tracking.stop' } },
         { usage: 'spawn test', description: { translate: 'commands.spawn.test' } },
         { usage: 'spawn mocking <true/false>', description: { translate: 'commands.spawn.mocking' } }
