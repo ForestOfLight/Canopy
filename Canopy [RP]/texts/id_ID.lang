@@ -171,6 +171,7 @@ commands.spawn.tracking.test.success.actionbar=[%s] §7Reset penghitung kemuncul
 commands.spawn.tracking.stop=Berhenti melacak kemunculan mob.
 commands.spawn.tracking.stop.success=§7Kemunculan tidak lagi dilacak.
 commands.spawn.tracking.stop.actionbar=[%s] §7Berhenti melacak kemunculan.
+commands.spawn.test=Mereset semua penghitung kemunculan dan penghitung penampung.
 commands.spawn.mocking=Mengaktifkan/menonaktifkan kemunculan mob sambil mengizinkan algoritma kemunculan berjalan.
 commands.spawn.mocking.enable=§aKemunculan(spawn) mengejek(mocking) sekarang diaktifkan. Mob tidak akan lagi muncul, tetapi algoritma kemunculan akan terus berlanjut.
 commands.spawn.mocking.disable=§cKemunculan(spawn) mengejek(mocking) sekarang dinonaktifkan. Mob akan kembali muncul seperti biasa.
