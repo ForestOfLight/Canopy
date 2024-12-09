@@ -30,7 +30,7 @@ const cmd = new Command({
         { usage: 'spawn entities', description: { translate: 'commands.spawn.entities' } },
         { usage: 'spawn recent [mobName]', description: { translate: 'commands.spawn.recent' } },
         { usage: 'spawn tracking start [x1 y1 z1] [x2 y2 z2]', description: { translate: 'commands.spawn.tracking.start' } },
-        { usage: 'spawn <mobName> [x1 y1 z1] [x2 y2 z2]', description: { translate: 'commands.spawn.tracking.mob' } },
+        { usage: 'spawn tracking <mobName> [x1 y1 z1] [x2 y2 z2]', description: { translate: 'commands.spawn.tracking.mob' } },
         { usage: 'spawn tracking', description: { translate: 'commands.spawn.tracking.query' } },
         { usage: 'spawn tracking stop', description: { translate: 'commands.spawn.tracking.stop' } },
         { usage: 'spawn test', description: { translate: 'commands.spawn.test' } },
