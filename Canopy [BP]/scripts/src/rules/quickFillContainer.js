@@ -12,12 +12,12 @@ const BANNED_CONTAINERS = ['minecraft:beacon', 'minecraft:jukebox', 'minecraft:l
 
 world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
     if (!Rule.getValue('quickFillContainer')) return;
+    const player = event.player;
+    if (!player) return;
     const block = event.block;
     if (BANNED_CONTAINERS.includes(block?.typeId)) return;
     const blockInv = block.getComponent('inventory')?.container;
     if (!blockInv) return;
-    const player = event.player;
-    if (!player) return;
     const playerInv = player.getComponent('inventory')?.container;
     if (!playerInv || playerInv.getItem(ARROW_SLOT)?.typeId !== 'minecraft:arrow') return;
     const handItemStack = event.itemStack;
