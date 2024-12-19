@@ -1,4 +1,5 @@
 import { world, system } from '@minecraft/server';
+import IPC from 'lib/ipc/ipc';
 import ArgumentParser from './ArgumentParser';
 import Rule from './Rule';
 
@@ -82,8 +83,13 @@ class Command {
 	
 	runCallback(sender, args) {
 		if (this.#extensionName) {
-			// console.warn(`[Canopy] Sending ${this.#extensionName} command callback: '${this.#name} ${JSON.stringify(args)}'`);
-			world.getDimension('overworld').runCommandAsync(`scriptevent canopyExtension:commandCallbackRequest ${this.#extensionName} "${sender?.name}" ${this.#name} ${JSON.stringify(args)}`);
+			console.warn(`[Canopy] Sending ${this.#extensionName} command callback from ${sender?.name}: '${this.#name} ${JSON.stringify(args)}'`);
+			IPC.send('canopyExtension:commandCallbackRequest', { 
+				extensionName: this.#extensionName,
+				commandName: this.#name,
+				senderName: sender?.name,
+				args: args
+			});
 			return;
 		}
 		this.#callback(sender, args);
