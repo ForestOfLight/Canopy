@@ -51,7 +51,7 @@ class Rule {
         if (this.#extensionName) {
             // console.warn(`[Canopy] [Rule] Attempting to get value for ${this.#identifier} from extension ${this.#extensionName}.`);
             return await IPC.invoke('canopyExtension:ruleValueRequest', { extensionName: this.#extensionName, ruleID: this.#identifier }).then((result) => {
-                console.warn(`[Canopy] [Rule] Received value for ${this.#identifier} from extension ${this.#extensionName}: ${result}`);
+                // console.warn(`[Canopy] [Rule] Received value for ${this.#identifier} from extension ${this.#extensionName}: ${result}`);
                 return this.parseString(result);
             });
         }

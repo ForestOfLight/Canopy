@@ -83,7 +83,7 @@ class Command {
 	
 	runCallback(sender, args) {
 		if (this.#extensionName) {
-			console.warn(`[Canopy] Sending ${this.#extensionName} command callback from ${sender?.name}: '${this.#name} ${JSON.stringify(args)}'`);
+			// console.warn(`[Canopy] Sending ${this.#extensionName} command callback from ${sender?.name}: '${this.#name} ${JSON.stringify(args)}'`);
 			IPC.send('canopyExtension:commandCallbackRequest', { 
 				extensionName: this.#extensionName,
 				commandName: this.#name,
