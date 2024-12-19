@@ -144,7 +144,7 @@ class Command {
     }
 
 	static broadcastPrefix() {
-		world.getDimension('overworld').runCommandAsync(`scriptevent canopyExtension:commandPrefix ${Command.prefix}`);
+		IPC.send('canopy:commandPrefix', Command.prefix);
 	}
 }
 
