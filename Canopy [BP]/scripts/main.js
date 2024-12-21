@@ -59,6 +59,7 @@ import 'src/rules/allowBubbleColumnPlacement'
 import 'src/rules/cauldronConcreteConversion'
 import 'src/rules/creativeOneHitKill'
 import 'src/rules/playerSit'
+import 'src/rules/refillHand'
 
 // Misc Processes
 import 'src/validWorld'

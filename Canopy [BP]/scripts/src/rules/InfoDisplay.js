@@ -1,5 +1,5 @@
 import { InfoDisplayRule } from 'lib/canopy/Canopy';
-import { system, world } from '@minecraft/server';
+import { ClientSystemInfo, system, SystemInfo, world } from '@minecraft/server';
 import Data from 'stickycore/data';
 import Utils from 'stickycore/utils';
 import { DataTPS } from 'src/tps';

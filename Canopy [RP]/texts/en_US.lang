@@ -267,6 +267,7 @@ rules.pistonBedrockBreaking=Allows pistons to break bedrock when facing away fro
 rules.playerSit=Allows players to sit down after %s quick sneaks.
 rules.quickFillContainer=Using an item on a container with an arrow in the top left of your inventory will deposit all of that item into the container.
 rules.quickFillContainer.filled=§7Filled %1 with all %2
+rules.refillHand=Refills your hand with items from your inventory when you run out. Put an arrow in the slot next to the top left of your inventory to use.
 rules.renewableElytra=Phantoms have a 1% chance to drop an elytra when killed by a shulker bullet.
 rules.renewableSponge=Guardians transform into elder guardians when hurt by lightning.
 rules.tntPrimeMaxMomentum=TNT always recieves its maximum momentum in a random direction when primed.

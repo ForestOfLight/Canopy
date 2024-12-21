@@ -896,6 +896,8 @@
 							]
 						}
 					},
+					// Pale Gardens - whenever it gets added to the official docs
+
 					// Plains
 					{
 						"event": "canopy:plains",

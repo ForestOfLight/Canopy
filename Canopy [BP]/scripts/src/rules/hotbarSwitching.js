@@ -20,27 +20,27 @@ const lastSelectedSlots = {};
 const lastLoadedSlots = {};
 const hotbarManagers = {};
 
-system.runInterval(async () => {
-    if (!await Rule.getValue('hotbarSwitching')) return;
+system.runInterval(() => {
+    if (!Rule.getNativeValue('hotbarSwitching')) return;
     const players = world.getAllPlayers();
     for (const player of players) {
         if (!player) continue;
-        if (!await hasAppropriateGameMode(player)) continue;
+        if (!hasAppropriateGameMode(player)) continue;
         if (hotbarManagers[player.id] === undefined) 
             hotbarManagers[player.id] = new HotbarManager(player);
         processHotbarSwitching(player);
     }
 });
 
-async function hasAppropriateGameMode(player) {
-    return await Rule.getValue('hotbarSwitchingSurvival') || player.getGameMode() === 'creative';
+function hasAppropriateGameMode(player) {
+    return Rule.getNativeValue('hotbarSwitchingSurvival') || player.getGameMode() === 'creative';
 }
 
-async function processHotbarSwitching(player) {
-    if (lastSelectedSlots[player.id] !== undefined && (!hasArrowInCorrectSlot(player) || !await hasAppropriateGameMode(player))) {
+function processHotbarSwitching(player) {
+    if (lastSelectedSlots[player.id] !== undefined && (!hasArrowInCorrectSlot(player) || !hasAppropriateGameMode(player))) {
         delete lastSelectedSlots[player.id];
         return;
-    } else if (lastSelectedSlots[player.id] === undefined && (!hasArrowInCorrectSlot(player) || !await hasAppropriateGameMode(player))) {
+    } else if (lastSelectedSlots[player.id] === undefined && (!hasArrowInCorrectSlot(player) || !hasAppropriateGameMode(player))) {
         return;
     }
     if (hasScrolled(player) && player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed) {
