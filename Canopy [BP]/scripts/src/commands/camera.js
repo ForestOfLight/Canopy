@@ -11,15 +11,17 @@ new Rule({
 const cmd = new Command({
     name: 'camera',
     description: { translate: 'commands.camera' },
-    usage: 'camera <action>',
+    usage: 'camera <place/view/spectate> [load]',
     args: [
-        { type: 'string', name: 'action' }
+        { type: 'string', name: 'action' },
+        { type: 'string', name: 'option' }
     ],
     callback: cameraCommand,
     contingentRules: ['commandCamera'],
     helpEntries: [
         { usage: 'camera place', description: { translate: 'commands.camera.place' } },
         { usage: 'camera view', description: { translate: 'commands.camera.view' } },
+        { usage: 'camera view load', description: { translate: 'commands.camera.view.load' } },
         { usage: 'camera spectate', description: { translate: 'commands.camera.spectate' } }
     ]
 });
@@ -93,14 +95,14 @@ world.afterEvents.playerDimensionChange.subscribe((event) => {
 });
 
 function cameraCommand(sender, args) {
-    const { action } = args;
+    const { action, option } = args;
     
     switch (action) {
         case 'place':
             placeCameraAction(sender);
             break;
         case 'view':
-            viewCameraAction(sender);
+            viewCameraAction(sender, option);
             break;
         case 'spectate':
             spectateAction(sender);
@@ -131,29 +133,29 @@ function placeCamera(sender, camera) {
     sender.sendMessage({ translate: 'commands.camera.place.success', with: [Utils.stringifyLocation(camera.location, 0)] });
 }
 
-function viewCameraAction(sender) {
-    let placedCamera;
-
+function viewCameraAction(sender, option) {
     if (sender.getDynamicProperty('isSpectating')) 
         return sender.sendMessage({ translate: 'commands.camera.view.spectating' });
     if (!sender.getDynamicProperty('placedCamera'))
         return sender.sendMessage({ translate: 'commands.camera.view.fail' });
 
-    placedCamera = JSON.parse(sender.getDynamicProperty('placedCamera'));
-    toggleCameraView(sender, placedCamera);
+    const placedCamera = JSON.parse(sender.getDynamicProperty('placedCamera'));
+    toggleCameraView(sender, placedCamera, option);
 }
 
-function toggleCameraView(sender, placedCamera) {
+function toggleCameraView(sender, placedCamera, option) {
     if (!sender.getDynamicProperty('isViewingCamera')) {
         if (placedCamera.dimension !== sender.dimension.id)
             return sender.sendMessage({ translate: 'commands.camera.view.dimension', with: [placedCamera.dimension] });
-        startCameraView(sender, placedCamera);
+        startCameraView(sender, placedCamera, option);
     } else {
         endCameraView(sender);
     }
 }
 
-function startCameraView(sender, placedCamera) {
+function startCameraView(sender, placedCamera, option) {
+    if (option === 'load')
+        loadChunkForTicks(placedCamera, 20);
     sender.camera.setCamera('minecraft:free', {
         easeOptions: { easeTime: 1.0, easeType: 'InOutSine' },
         location: placedCamera.location,
@@ -161,6 +163,15 @@ function startCameraView(sender, placedCamera) {
     });
     sender.setDynamicProperty('isViewingCamera', true);
     sender.onScreenDisplay.setActionBar({ translate: 'commands.camera.view.started' });
+}
+
+function loadChunkForTicks(placedCamera, ticks) {
+    const dimension = world.getDimension(placedCamera.dimension);
+    dimension.runCommand('tickingarea remove Canopy-cameraLoad');
+    dimension.runCommand(`tickingarea add ${placedCamera.location.x} ${placedCamera.location.y} ${placedCamera.location.z} ${placedCamera.location.x} ${placedCamera.location.y} ${placedCamera.location.z} Canopy-cameraLoad`);
+    system.runTimeout(() => {
+        dimension.runCommand('tickingarea remove Canopy-cameraLoad');
+    }, ticks);
 }
 
 function endCameraView(sender) {

@@ -116,9 +116,19 @@ class CounterChannelMap {
     addCounter(color, hopper) {
         const channel = this.getChannel(color);
         if (this.includes(hopper)) return false;
+        if (this.numHoppersInUse() === 0)
+            this.resetAll();
         channel.hopperList.push(new HopperCounter(hopper.location, hopper.dimension.id));
         this.setChannel(color, channel);
         return true;
+    }
+
+    numHoppersInUse() {
+        let totalHoppers = 0;
+        this.forEach(channel => {
+            totalHoppers += channel.hopperList.length;
+        });
+        return totalHoppers;
     }
 
     removeCounter(color, hopper) {

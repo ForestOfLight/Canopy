@@ -29,6 +29,7 @@ commands.help.extension.commands=Commands for §a%s§2.
 commands.camera=Place a camera, view it, or use a survival-friendly spectator mode.
 commands.camera.place=Places a camera at your current location. (Alias: cp)
 commands.camera.view=Toggles viewing your latest camera placement. (Alias: cv)
+commands.camera.view.load=For when your placed camera is unloaded. Attempts to load the chunk for one second.
 commands.camera.spectate=Toggles a survival-friendly spectator mode. (Alias: cs)
 commands.camera.place.viewing=§cYou cannot place a camera while viewing one.
 commands.camera.place.success=§7Camera placed at %s.
@@ -84,7 +85,7 @@ commands.data.components=§aComponents:§r %s
 commands.data.tags=§aTags:§r %s
 commands.data.dynamicProperties=§aDynamicProperties:§r %1 total byte count: %2
 commands.data.effects=§aEffects:§r %s
-commands.data.other=§aOther:§r head location: %1 rotation: [%2, %3], velocity: %4, view direction: %5
+commands.data.other=§aOther:§r head location: %1, rotation: [%2, %3], velocity: %4, view direction: %5
 
 commands.distance=Calculates the distance between two locations. (Alias: d)
 commands.distance.target=Calculates distance between you and the block or entity you are looking at.

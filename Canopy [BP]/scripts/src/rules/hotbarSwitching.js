@@ -1,5 +1,5 @@
 import { Rule } from "lib/canopy/Canopy";
-import { system, world } from '@minecraft/server';
+import { system, world, InputButton, ButtonState } from '@minecraft/server';
 import HotbarManager from 'src/classes/HotbarManager';
 
 new Rule({
@@ -43,7 +43,7 @@ async function processHotbarSwitching(player) {
     } else if (lastSelectedSlots[player.id] === undefined && (!hasArrowInCorrectSlot(player) || !await hasAppropriateGameMode(player))) {
         return;
     }
-    if (hasScrolled(player) && player.isSneaking) {
+    if (hasScrolled(player) && player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed) {
         switchToHotbar(player, player.selectedSlotIndex);
     }
     lastSelectedSlots[player.id] = player.selectedSlotIndex;

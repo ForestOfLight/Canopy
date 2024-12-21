@@ -112,10 +112,8 @@ function warpTP(sender, name, warpMap) {
 
     if (warp === undefined)
         return sender.sendMessage({ translate: 'commands.warp.noexist', with: [name] });
-    else if (warp.dimension.id !== sender.dimension.id)
-        return sender.sendMessage({ translate: 'commands.warp.tp.fail.dimension', with: [warp.dimension.id, name] });
 
-    sender.teleport({ x: warp.location.x, y: warp.location.y, z: warp.location.z });
+    sender.teleport({ x: warp.location.x, y: warp.location.y, z: warp.location.z }, { dimension: world.getDimension(warp.dimension.id) });
     sender.sendMessage({ translate: 'commands.warp.tp.success', with: [name] });
 }
 
