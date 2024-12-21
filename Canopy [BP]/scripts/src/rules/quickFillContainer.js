@@ -11,13 +11,13 @@ const ARROW_SLOT = 9;
 const BANNED_CONTAINERS = ['minecraft:beacon', 'minecraft:jukebox', 'minecraft:lectern'];
 
 world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
-    if (!Rule.getValue('quickFillContainer')) return;
+    if (!Rule.getNativeValue('quickFillContainer')) return;
+    const player = event.player;
+    if (!player) return;
     const block = event.block;
     if (BANNED_CONTAINERS.includes(block?.typeId)) return;
     const blockInv = block.getComponent('inventory')?.container;
     if (!blockInv) return;
-    const player = event.player;
-    if (!player) return;
     const playerInv = player.getComponent('inventory')?.container;
     if (!playerInv || playerInv.getItem(ARROW_SLOT)?.typeId !== 'minecraft:arrow') return;
     const handItemStack = event.itemStack;
@@ -27,8 +27,9 @@ world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
 
     system.run(() => {
         const successfulTransfers = transferAllItemType(playerInv, blockInv, handItemStack.typeId);
-        if (successfulTransfers === 0) 
+        if (successfulTransfers === 0) { // true either no items were transferred OR the stacks in the container were only topped off
             return;
+        }
         const feedback = { rawtext: [{ translate: 'rules.quickFillContainer.filled', with: [block.typeId.replace('minecraft:', ''), handItemStack.typeId.replace('minecraft:', '')] }] };
         feedback.rawtext.push({ text: ` (§a${blockInv.size - blockInv.emptySlotsCount}§7/§a${blockInv.size}§7)` });
         player.onScreenDisplay.setActionBar(feedback);

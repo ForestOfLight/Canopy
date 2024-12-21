@@ -1,4 +1,5 @@
-import { world, system } from '@minecraft/server';
+import { world } from '@minecraft/server';
+import IPC from "lib/ipc/ipc";
 
 const rules = {};
 
@@ -19,7 +20,8 @@ class Rule {
         this.#extensionName = extensionName;
         if (Rule.exists(identifier)) {
             throw new Error(`Rule with identifier '${identifier}' already exists.`);
-        } rules[identifier] = this;
+        }
+        rules[identifier] = this;
     }
 
     getCategory() {
@@ -48,29 +50,13 @@ class Rule {
 
     async getValue() {
         if (this.#extensionName) {
-            try {
-                world.getDimension('overworld').runCommandAsync(`scriptevent canopyExtension:ruleValueRequest ${this.#extensionName} ${this.#identifier}`);
-                const result = await new Promise((resolve, reject) => {
-                    system.afterEvents.scriptEventReceive.subscribe((event) => this.recieveRuleValue(event, resolve), { namespaces: ['canopyExtension'] });
-                });
-                return this.parseString(result);
-            } catch (error) {
-                throw new Error(`[Canopy] [Rule] Error getting value for ${this.#identifier}: ${error}`);
-            }
+            // console.warn(`[Canopy] [Rule] Attempting to get value for ${this.#identifier} from extension ${this.#extensionName}.`);
+            return await IPC.invoke(`canopyExtension:${this.#extensionName}:ruleValueRequest`, { ruleID: this.#identifier }).then(result => {
+                // console.warn(`[Canopy] [Rule] Received value for ${this.#identifier} from extension ${this.#extensionName}: ${result}`);
+                return result;
+            });
         }
         return this.parseString(world.getDynamicProperty(this.#identifier));
-    }
-    
-    async recieveRuleValue(scriptEventReceive, resolve) {
-        if (scriptEventReceive.id !== 'canopyExtension:ruleValueResponse' || scriptEventReceive.sourceType !== 'Server') return;
-        const splitMessage = scriptEventReceive.message.split(' ');
-        const extensionName = splitMessage[0];
-        if (extensionName !== this.#extensionName) return;
-        const ruleID = splitMessage[1];
-        if (ruleID !== this.#identifier) return;
-        const value = splitMessage[2];
-        // console.warn(`[Canopy] Received rule value: ${extensionName}:${ruleID} ${value}`);
-        resolve(value);
     }
 
     parseString(value) {
@@ -80,11 +66,12 @@ class Rule {
             if (value === 'undefined') return undefined;
             if (value === 'NaN') return NaN;
         }
+        return null;
     }
     
     setValue(value) {
         if (this.#extensionName) {
-            world.getDimension('overworld').runCommandAsync(`scriptevent canopyExtension:ruleValueSet ${this.#extensionName} ${this.#identifier} ${value}`);
+            IPC.send(`canopyExtension:${this.#extensionName}:ruleValueSet`, { extensionName: this.#extensionName, ruleID: this.#identifier, value: value });
         } else {
             world.setDynamicProperty(this.#identifier, value);
         }
