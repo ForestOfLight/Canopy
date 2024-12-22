@@ -85,7 +85,7 @@ commands.data.components=§aKomponen:§r %s
 commands.data.tags=§aTag:§r %s
 commands.data.dynamicProperties=§aPropertiDinamis:§r %1 jumlah total byte: %2
 commands.data.effects=§aEfek:§r %s
-commands.data.other=§aOther:§r lokasi kepala: %1 rotasi: [%2, %3], kecepatan: %4, arah pandangan: %5
+commands.data.other=§aOther:§r lokasi kepala: %1, rotasi: [%2, %3], kecepatan: %4, arah pandangan: %5
 
 commands.distance=Menghitung jarak antara dua lokasi. (Alias: d)
 commands.distance.target=Menghitung jarak antara Anda dan blok atau entitas yang sedang Anda lihat.
