@@ -249,6 +249,7 @@ rules.beeNoDrown=Enables bees healing from drowning damage.
 rules.cauldronConcreteConversion=Concrete powder items inside a cauldron filled with water will convert to concrete items.
 rules.creativeOneHitKill=Allows creative players to one hit kill any entity. If sneaking, it will also kill nearby entities.
 rules.dupeTnt=TNT can be duplicated when moved by a piston and powered next to a note blocks.
+rules.durabilitySwap=Swaps 0 durability items out of your hand.
 rules.durabilityNotifier=Enables a clink sound and tip when your tool has %s durability left.
 rules.durabilityNotifier.alert=§cDurability remaining: %s
 rules.entityInstantDeath=Removes the 20gt death animation. Entities will also not drop xp.
