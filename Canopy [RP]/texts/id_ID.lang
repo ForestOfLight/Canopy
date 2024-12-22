@@ -83,7 +83,7 @@ commands.data.properties=§aProperti:§r %s
 commands.data.states=§aKeadaan:§r %s
 commands.data.components=§aKomponen:§r %s
 commands.data.tags=§aTag:§r %s
-commands.data.dynamicProperties=§aPropertiDinamis:§r %1 jumlah total byte: %2
+commands.data.dynamicProperties=§aPropertiDinamis:§r %1 jumlah total bit: %2
 commands.data.effects=§aEfek:§r %s
 commands.data.other=§aOther:§r lokasi kepala: %1, rotasi: [%2, %3], kecepatan: %4, arah pandangan: %5
 
@@ -249,6 +249,7 @@ rules.beeNoDrown=Memungkinkan lebah sembuh dari kerusakan/damage akibat tenggela
 rules.cauldronConcreteConversion=Serbuk beton di dalam kawah yang berisi air akan berubah menjadi beton.
 rules.creativeOneHitKill=Memungkinkan pemain di mode kreatif untuk membunuh entitas apa pun dengan sekali pukul. Jika menyelinap, itu juga akan membunuh entitas di dekatnya.
 rules.dupeTnt=TNT dapat diduplikasi ketika digerakkan oleh piston dan diberi daya di sebelah blok not.
+rules.durabilitySwap=Menukar item dengan daya tahan 0 dari tangan Anda.
 rules.durabilityNotifier=Mengaktifkan suara denting. dan tip akan muncul saat alat Anda memiliki %s Daya tahan tersisa.
 rules.durabilityNotifier.alert=§cDaya tahan tersisa: %s
 rules.entityInstantDeath=Menghapus animasi kematian 20gt. Entitas juga tidak akan menjatuhkan xp.
