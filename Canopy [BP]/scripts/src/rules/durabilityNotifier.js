@@ -10,17 +10,9 @@ const rule = new Rule({
     description: { translate: 'rules.durabilityNotifier', with: [ACTIVE_DURABILITY.toString()] },
 });
 
-world.afterEvents.playerBreakBlock.subscribe((event) => {
-    durabilityClink(event.player, event.itemStackBeforeBreak, event.itemStackAfterBreak);
-});
-
-world.afterEvents.playerInteractWithBlock.subscribe((event) => {
-    durabilityClink(event.player, event.beforeItemStack, event.itemStack);
-});
-
-world.afterEvents.playerInteractWithEntity.subscribe((event) => {
-    durabilityClink(event.player, event.beforeItemStack, event.itemStack);
-});
+world.afterEvents.playerBreakBlock.subscribe((event) => durabilityClink(event.player, event.itemStackBeforeBreak, event.itemStackAfterBreak));
+world.afterEvents.playerInteractWithBlock.subscribe((event) => durabilityClink(event.player, event.beforeItemStack, event.itemStack));
+world.afterEvents.playerInteractWithEntity.subscribe((event) => durabilityClink(event.player, event.beforeItemStack, event.itemStack));
 
 function durabilityClink(player, beforeItemStack, itemStack) {
     if (!Rule.getNativeValue(rule.getID()) || !player || !itemStack || !beforeItemStack
@@ -53,3 +45,5 @@ function showNotification(player, durability, pitch = undefined) {
         player.playSound('note.xylophone', { pitch });
     player.onScreenDisplay.setActionBar({ translate: 'rules.durabilityNotifier.alert', with: [String(durability)] });
 }
+
+export { usedDurability, getRemainingDurability };

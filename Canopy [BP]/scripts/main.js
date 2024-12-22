@@ -60,6 +60,7 @@ import 'src/rules/cauldronConcreteConversion'
 import 'src/rules/creativeOneHitKill'
 import 'src/rules/playerSit'
 import 'src/rules/refillHand'
+import 'src/rules/durabilitySwap'
 
 // Misc Processes
 import 'src/validWorld'
