@@ -2,7 +2,6 @@ import { world, DimensionTypes } from '@minecraft/server'
 import { Rule, Command } from 'lib/canopy/Canopy'
 import Utils from 'stickycore/utils'
 import WorldSpawns from 'src/classes/WorldSpawns'
-import { channelMap } from 'src/commands/counter';
 import { categoryToMobMap } from 'src/classes/SpawnTracker';
 
 const thisRule = new Rule({
@@ -29,8 +28,8 @@ const cmd = new Command({
     helpEntries: [
         { usage: 'spawn entities', description: { translate: 'commands.spawn.entities' } },
         { usage: 'spawn recent [mobName]', description: { translate: 'commands.spawn.recent' } },
-        { usage: 'spawn tracking [x1 y1 z1] [x2 y2 z2]', description: { translate: 'commands.spawn.tracking.start' } },
-        { usage: 'spawn <mobName> [x1 y1 z1] [x2 y2 z2]', description: { translate: 'commands.spawn.tracking.mob' } },
+        { usage: 'spawn tracking start [x1 y1 z1] [x2 y2 z2]', description: { translate: 'commands.spawn.tracking.start' } },
+        { usage: 'spawn tracking <mobName> [x1 y1 z1] [x2 y2 z2]', description: { translate: 'commands.spawn.tracking.mob' } },
         { usage: 'spawn tracking', description: { translate: 'commands.spawn.tracking.query' } },
         { usage: 'spawn tracking stop', description: { translate: 'commands.spawn.tracking.stop' } },
         { usage: 'spawn test', description: { translate: 'commands.spawn.test' } },
@@ -63,7 +62,7 @@ function spawnCommand(sender, args) {
 
     if (action === 'entities') printAllEntities(sender);
     else if (action === 'mocking') handleMockingCmd(sender, actionTwo);
-    else if (action === 'test') resetSpawnsAndCounters(sender);
+    else if (action === 'test') resetSpawnCounters(sender);
     else if (action === 'recent') recentSpawns(sender, actionTwo);
     else if (action === 'tracking' && actionTwo === null) printTrackingStatus(sender);
     else if (action === 'tracking' && actionTwo !== null && x1 !== null && z2 === null) sender.sendMessage({ translate: 'commands.generic.usage', with: [`${Command.prefix}spawn tracking <start/stop/mobname> [x1 y1 z1] [x2 y2 z2]`] });
@@ -99,11 +98,10 @@ async function handleMockingCmd(sender, enable) {
     }
 }
 
-function resetSpawnsAndCounters(sender) {
+function resetSpawnCounters(sender) {
     if (worldSpawns === null)
         return sender.sendMessage({ translate: 'commands.spawn.tracking.no' });
     worldSpawns.reset();
-    channelMap.resetAll();
     sender.sendMessage({ translate: 'commands.spawn.tracking.test.success' });
     Utils.broadcastActionBar({ translate: 'commands.spawn.tracking.test.success.actionbar', with: [sender.name] }, sender);
 }

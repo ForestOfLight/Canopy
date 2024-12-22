@@ -1,4 +1,4 @@
-import { world } from "@minecraft/server";
+import { world, InputButton, ButtonState } from "@minecraft/server";
 import { Rule } from "lib/canopy/Canopy";
 
 new Rule({
@@ -11,11 +11,13 @@ world.afterEvents.entityHitEntity.subscribe((event) => {
     if (!Rule.getNativeValue('creativeOneHitKill') || event.damagingEntity?.typeId !== 'minecraft:player') return;
     const player = event.damagingEntity;
     if (player.getGameMode() === 'creative') {
-        if (player.isSneaking) {
+        if (player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed) {
             player.dimension.getEntities({ location: event.hitEntity.location, maxDistance: 3 }).forEach(entity => {
+                if (['item', 'player', 'experience_orb'].includes(entity.typeId.replace('minecraft:', ''))) return;
                 entity?.kill();
             });
         } else {
+            if (event.hitEntity?.typeId === 'minecraft:player') return;
             event.hitEntity?.kill();
         }
     }
