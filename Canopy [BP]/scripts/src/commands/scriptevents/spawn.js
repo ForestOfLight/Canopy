@@ -8,15 +8,14 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
     const sourceName = Utils.getScriptEventSourceName(event);
     const message = event.message;
     
-    if (message === 'test') resetSpawnsAndCounters(sourceName);
+    if (message === 'test') resetSpawnCounters(sourceName);
     if (message === 'tracking') printTrackingStatus();
 });
 
-function resetSpawnsAndCounters(sourceName) {
+function resetSpawnCounters(sourceName) {
     if (worldSpawns === null)
         return Utils.broadcastActionBar({ translate: 'commands.spawn.tracking.no' });
     worldSpawns.reset();
-    channelMap.resetAll();
     Utils.broadcastActionBar({ translate: 'commands.spawn.tracking.reset.success.actionbar', with: [sourceName] });
 }
 

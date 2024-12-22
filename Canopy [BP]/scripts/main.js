@@ -25,11 +25,15 @@ import 'src/commands/removeentity'
 import 'src/commands/pos'
 import 'src/commands/cleanup'
 import 'src/commands/sit'
+import 'src/commands/generator'
+import 'src/commands/resettest'
 
 // Script Events
 import 'src/commands/scriptevents/counter'
 import 'src/commands/scriptevents/spawn'
 import 'src/commands/scriptevents/tick'
+import 'src/commands/scriptevents/generator'
+import 'src/commands/scriptevents/resettest'
 
 // Rules
 import 'src/rules/InfoDisplay'

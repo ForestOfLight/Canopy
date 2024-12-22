@@ -111,6 +111,18 @@ commands.gamemode.a=Set your gamemode to adventure.
 commands.gamemode.c=Set your gamemode to creative.
 commands.gamemode.sp=Set your gamemode to spectator.
 
+commands.generator=Manages hopper generators. (Alias: gen)
+commands.generator.channel.notfound=§cInvalid color: %s. Please use one of the wool block colors.
+commands.generator.query=Displays the count and rates of the hopper generator for the specified color.
+commands.generator.query.empty=§7There are no hopper generators in use.
+commands.generator.query.channel=§7Generated items for %1§7 (%2%3 min.), total: §f%4§7, (§f%5§7):
+commands.generator.realtime=Displays count and rates, but uses real-world time instead of tick-based time.
+commands.generator.reset=Resets all hopper generators and restarts the timer.
+commands.generator.reset.single=§7Reset and time restarted: %s
+commands.generator.reset.single.actionbar=[%1] Reset %2 hopper generator.
+commands.generator.reset.all=§7All channels have been reset and hopper generator timer started.
+commands.generator.reset.all.actionbar=[%s] Reset all hopper generators.
+
 commands.health=Displays the server's current TPS, MSPT, and entity counts.
 commands.health.fail.mspt=§cCould not compute MSPT. Please report this error.
 
@@ -147,6 +159,10 @@ commands.removeentity.success=§7Removed %1 with id '%2'.
 commands.resetall=Resets all §lCanopy§r§8 rules and data. Use with caution.
 commands.resetall.success=§7All §lCanopy§r§8 player and world dynamic properties have been reset.
 
+commands.resettest=Resets spawn tracking, hopper counters, and hopper generators at the same time.
+commands.resettest.success=§7Reset spawn counters, hopper counters, and hopper generators.
+commands.resettest.success.actionbar=[%s] §7Reset spawn counters, hopper counters, and hopper generators.
+
 commands.sit=Makes your player sit down.
 commands.sit.busy=§cYou are busy and cannot sit down.
 
@@ -166,13 +182,13 @@ commands.spawn.tracking.query=Displays a summary of all spawns that have occurre
 commands.spawn.tracking.query.dimension=§7Dimension %s§r:
 commands.spawn.tracking.no=§cSpawns are not currently being tracked.
 commands.spawn.tracking.already=§cSpawns are already being tracked.
-commands.spawn.tracking.test=Resets all spawn counters and hopper counters.
-commands.spawn.tracking.test.success=§7Spawn counters and hopper counters reset.
-commands.spawn.tracking.test.success.actionbar=[%s] §7Reset spawn counters and hopper counters.
+commands.spawn.tracking.test=Resets all spawn counters.
+commands.spawn.tracking.test.success=§7Spawn counters reset.
+commands.spawn.tracking.test.success.actionbar=[%s] §7Reset spawn counters.
 commands.spawn.tracking.stop=Stops tracking mob spawns.
 commands.spawn.tracking.stop.success=§7Spawns are no longer being tracked.
 commands.spawn.tracking.stop.actionbar=[%s] §7Stopped tracking spawns.
-commands.spawn.test=Resets all spawn counters and hopper counters.
+commands.spawn.reset=Resets all spawn counters.
 commands.spawn.mocking=Enables/disables mob spawning while allowing the spawning algorithm to run.
 commands.spawn.mocking.enable=§aSpawn mocking is now enabled. Mobs will no longer spawn, but the spawning algorithm will continue.
 commands.spawn.mocking.disable=§cSpawn mocking is now disabled. Mobs will spawn as normal.
@@ -233,6 +249,7 @@ rules.commandClaimProjectiles=Enables claimprojectiles command.
 rules.commandCleanup=Enables cleanup command.
 rules.hopperCounters=Enables counter command & hopper counter functionality.
 rules.commandGamemode=Enables shortened gamemode commands (e.g. `./s` for survival), including without OP.
+rules.hopperGenerators=Enables generator command & hopper generator functionality.
 rules.commandJumpSurvival=Enables jump command in survival mode.
 rules.commandPos=Enables pos command.
 rules.commandRemoveEntity=Enables removeentity command.

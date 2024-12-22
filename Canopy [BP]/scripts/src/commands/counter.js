@@ -244,9 +244,11 @@ function updateCount(channel) {
     for (const hopperCounter of channel.hopperList) {
         const hopper = world.getDimension(hopperCounter.dimensionId).getBlock(hopperCounter.location);
 
-        if (!hopper) return;
-        if (hopper.typeId !== 'minecraft:hopper' || getHopperFacingBlock(hopper)?.typeId !== `minecraft:${channel.color}_wool`)
-            return channelMap.removeCounter(channel.color, hopper);
+        if (!hopper) continue;
+        if (hopper.typeId !== 'minecraft:hopper' || getHopperFacingBlock(hopper)?.typeId !== `minecraft:${channel.color}_wool`) {
+            channelMap.removeCounter(channel.color, hopper);
+            continue;
+        }
 
         const hopperContainer = hopper.getComponent('minecraft:inventory').container;
         const itemStack = hopperContainer?.getItem(0);
@@ -261,7 +263,7 @@ function updateCount(channel) {
 function counterCommand(sender, args) {
     const { argOne, argTwo } = args;
 
-    if (!channelMap.colors.includes(argOne) && argOne !== 'reset' && argOne !== 'realtime' && argOne !== 'all' && validModes.includes(argTwo)) {
+    if (argOne !== null && !channelMap.colors.includes(argOne) && argOne !== 'reset' && argOne !== 'realtime' && argOne !== 'all' && validModes.includes(argTwo)) {
         return sender.sendMessage({ translate: 'commands.counter.channel.notfound', with: [argOne] });
     }
 

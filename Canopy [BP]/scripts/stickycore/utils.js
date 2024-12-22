@@ -167,7 +167,7 @@ class Utils {
 		return { startTime, endTime };
 	}
 
-	static calculatePerTime(totalCount, deltaTime, mode) {
+	static calculatePerTime(totalCount, deltaTime, mode = 'countMode') {
 		const ticksPerHour = 72000;
 		let itemsPerHour = totalCount / (deltaTime / ticksPerHour);
 		let unit = 'h';
