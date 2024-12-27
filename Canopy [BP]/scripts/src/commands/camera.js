@@ -213,10 +213,13 @@ function endSpectate(sender) {
     const beforeSpectatorPlayer = JSON.parse(sender.getDynamicProperty('beforeSpectatorPlayer'));
     sender.setDynamicProperty('isSpectating', false);
     system.runTimeout(() => {
-        for (let effect of sender.getEffects())
-            sender.removeEffect(effect?.typeId);
+        for (let effect of sender.getEffects()) {
+            if (!effect) continue;
+            sender.removeEffect(effect.typeId);
+        }
         sender.teleport(beforeSpectatorPlayer.location, { dimension: world.getDimension(beforeSpectatorPlayer.dimensionId), rotation: beforeSpectatorPlayer.rotation });
         for (const effect of beforeSpectatorPlayer.effects) {
+            if (!effect.typeId || !effect.duration || !effect.amplifier) continue;
             sender.addEffect(effect.typeId, Math.min(20000000, effect.duration), { amplifier: effect.amplifier });
         }
         sender.setGameMode(beforeSpectatorPlayer.gamemode);
