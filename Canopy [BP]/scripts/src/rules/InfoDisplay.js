@@ -293,7 +293,8 @@ function parseLookingAtAndSignalStrength(player) {
 		message.rawtext.push({ text: String(lookingAtName) });
 	}
 	if (showSignalStrength) {
-		signalStrength = blockRayResult?.block?.getRedstonePower();
+		if (blockRayResult?.block)
+			signalStrength = blockRayResult.block.getRedstonePower();
 		if (signalStrength)
 			message.rawtext.push({ text: `§7: §c${signalStrength}§r` });
 	}
