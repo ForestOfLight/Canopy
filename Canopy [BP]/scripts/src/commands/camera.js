@@ -202,8 +202,8 @@ function startSpectate(sender) {
         sender.setGameMode('spectator');
         for (let effect of sender.getEffects())
             sender.removeEffect(effect?.typeId);
-        sender.addEffect('night_vision', 999999, { amplifier: 0, showParticles: false });
-        sender.addEffect('conduit_power', 999999, { amplifier: 0, showParticles: false });
+        sender.addEffect('night_vision', 20000000, { amplifier: 0, showParticles: false });
+        sender.addEffect('conduit_power', 20000000, { amplifier: 0, showParticles: false });
         sender.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.started' });
     }, 8);
 }
@@ -219,8 +219,11 @@ function endSpectate(sender) {
         }
         sender.teleport(beforeSpectatorPlayer.location, { dimension: world.getDimension(beforeSpectatorPlayer.dimensionId), rotation: beforeSpectatorPlayer.rotation });
         for (const effect of beforeSpectatorPlayer.effects) {
-            if (!effect.typeId || !effect.duration || !effect.amplifier) continue;
-            sender.addEffect(effect.typeId, Math.min(20000000, effect.duration), { amplifier: effect.amplifier });
+            try {
+                sender.addEffect(effect.typeId, Math.min(20000000, effect.duration), { amplifier: effect.amplifier });
+            } catch (error) {
+                console.warn(`Failed to add effect back to player ${sender.name}. Error: ${error}`);
+            }
         }
         sender.setGameMode(beforeSpectatorPlayer.gamemode);
         sender.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.ended' });
@@ -229,7 +232,7 @@ function endSpectate(sender) {
 
 function cameraFadeOut(sender) {
     sender.camera.fade({
-        fadeColor: { red: 0, green: 0, blue: 0 }, 
+        fadeColor: { red: 0, green: 0, blue: 0 },
         fadeTime: { fadeInTime: 0.5, fadeOutTime: 0.5, holdTime: 0.0 }
     });
 }
