@@ -1,6 +1,6 @@
 import { Command } from 'lib/canopy/Canopy';
 import { Entities } from 'src/entities';
-import Utils from 'stickycore/utils';
+import Utils from 'include/utils';
 
 const NUM_RESULTS = 10;
 

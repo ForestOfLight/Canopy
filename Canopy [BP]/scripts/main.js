@@ -71,7 +71,7 @@ import 'src/validWorld'
 
 // Reload message
 import { world } from '@minecraft/server';
-import Utils from 'stickycore/utils';
+import Utils from 'include/utils';
 import ProbeManager from 'src/classes/ProbeManager';
 import { Command } from 'lib/canopy/Canopy';
 

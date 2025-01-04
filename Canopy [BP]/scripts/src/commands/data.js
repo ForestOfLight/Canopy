@@ -1,5 +1,5 @@
 import { Command } from 'lib/canopy/Canopy'
-import Utils from 'stickycore/utils'
+import Utils from 'include/utils'
 import { world } from '@minecraft/server'
 
 const BLOCK_COMPONENTS = ['minecraft:inventory', 'minecraft:lavaContainer', 'minecraft:piston', 'minecraft:potionContainer', 'minecraft:record_player',

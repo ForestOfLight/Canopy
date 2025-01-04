@@ -5,12 +5,12 @@ class SlimeChunk extends InfoDisplayElement {
     player;
 
     constructor(player) {
-        this.player = player;
         super('slimeChunk', { translate: 'rules.infoDisplay.slimeChunk' }, 7);
+        this.player = player;
     }
 
     getFormattedDataOwnLine() {
-        return isSlime() ? { translate: 'rules.infoDisplay.slimeChunk.display' } : { text: '' };
+        return this.isSlime() ? { translate: 'rules.infoDisplay.slimeChunk.display' } : { text: '' };
     }
 
     getFormattedDataSharedLine() {

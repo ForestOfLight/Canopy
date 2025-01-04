@@ -5,8 +5,8 @@ class Light extends InfoDisplayElement {
     player;
 
     constructor(player) {
-        this.player = player;
         super('light', { translate: 'rules.infoDisplay.light' }, 4);
+        this.player = player;
     }
 
     getFormattedDataOwnLine() {

@@ -1,12 +1,12 @@
 import InfoDisplayElement from './InfoDisplayElement.js';
-import Vector from 'src/classes/Vector';
+import { Vector } from 'src/classes/Vector';
 
 class Entities extends InfoDisplayElement {
     player;
 
     constructor(player) {
-        this.player = player;
         super('entities', { translate: 'rules.infoDisplay.entities' }, 3);
+        this.player = player;
     }
 
     getFormattedDataOwnLine() {

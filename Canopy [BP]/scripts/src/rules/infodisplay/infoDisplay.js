@@ -2,8 +2,8 @@ import { InfoDisplayRule } from 'lib/canopy/Canopy';
 import { system, world } from '@minecraft/server';
 
 import Coords from './Coords';
-import Facing from './Facing';
 import CardinalFacing from './CardinalFacing';
+import Facing from './Facing';
 import TPS from './TPS';
 import Entities from './Entities';
 import Light from './Light';
@@ -20,7 +20,7 @@ import SignalStrength from './SignalStrength';
 import PeekInventory from './PeekInventory';
 
 const playerToInfoDisplayMap = {};
-const currentTickWorldwideElementData = {};
+let currentTickWorldwideElementData = {};
 
 class InfoDisplay {
 	player;
@@ -31,8 +31,8 @@ class InfoDisplay {
 		this.player = player;
 		this.elements = [
 			new Coords(player),
-			new Facing(player),
 			new CardinalFacing(player),
+			new Facing(player),
 			new TPS(),
 			new Entities(player),
 			new Light(player),
@@ -53,56 +53,63 @@ class InfoDisplay {
 
 	update() {
 		this.infoMessage = { rawtext: [] };
-		const enabledElementsQueue = this.getEnabledElements();
-		const enabledElementsLength = enabledElementsQueue.length;
+		const enabledElements = this.getEnabledElements();
 
-		for (let i = 0; i < enabledElementsLength; i++) {
-			const element = enabledElementsQueue.shift();
-			this.updateElementData(element, enabledElementsQueue);
+		for (let i = 0; i < enabledElements.length; i++) {
+			this.updateElementData(enabledElements, i);
 		}
 
 		this.trimTrailingWhitespace();
 		this.sendInfoMessage();
 	}
 	
-	updateElementData(element, enabledElementsQueue) {
-		let data = {};
-
+	updateElementData(elements, currIndex) {
+		const element = elements[currIndex];
+		
 		if (element.isWorldwide) {
 			if (!currentTickWorldwideElementData[element.identifier]) {
 				currentTickWorldwideElementData[element.identifier] = { own: element.getFormattedDataOwnLine(), shared: element.getFormattedDataSharedLine() };
 			}
-			data = currentTickWorldwideElementData[element.identifier];
 		}
-
-		if (this.getElementsOnLine(element.lineNumber) === 1) {
-			data.own = data.own || element.getFormattedDataOwnLine();
+		
+		let data = {};
+		if (this.getElementsOnLine(elements, element.lineNumber).length === 1) {
+			data = currentTickWorldwideElementData[element.identifier]?.own || element.getFormattedDataOwnLine();
 		} else {
-			data.shared = data.shared || element.getFormattedDataSharedLine();
+			data = currentTickWorldwideElementData[element.identifier]?.shared || element.getFormattedDataSharedLine();
 		}
 
-		this.infoMessage.rawtext.push(data.own || data.shared);
-		if (this.isLastElementOnLine(enabledElementsQueue, element)) {
+		if (currIndex !== 0 && this.isOnNewLine(elements, currIndex) && !this.dataIsWhitespace(data)) {
 			this.infoMessage.rawtext.push({ text: '\n' });
-		} else {
+		}
+		if (!this.isOnNewLine(elements, currIndex) && !this.dataIsWhitespace(data)) {
 			this.infoMessage.rawtext.push({ text: ' ' });
 		}
+		this.infoMessage.rawtext.push(data);
 	}
 
 	getEnabledElements() {
 		return this.elements.filter(element => element.rule.getValue(this.player));
 	}
 	
-	getElementsOnLine(lineNumber) {
-		return this.elements.filter(element => element.lineNumber === lineNumber);
+	getElementsOnLine(elements, lineNumber) {
+		return elements.filter(element => element.lineNumber === lineNumber);
 	}
 
-	isLastElementOnLine(enabledElementsQueue, element) {
-		return enabledElementsQueue.filter(e => e.lineNumber === element.lineNumber).length === 0;
+	isOnNewLine(elements, currIndex) {
+		return elements[currIndex].lineNumber !== elements[currIndex - 1]?.lineNumber;
+	}
+
+	dataIsWhitespace(data) {
+		return data.text === '' || data.text === ' ' || data.text === '\n';
+	}
+
+	lastElementHasNewline() {
+		return this.infoMessage.rawtext[this.infoMessage.rawtext.length - 1]?.text === '\n';
 	}
 
 	trimTrailingWhitespace() {
-		this.infoMessage.rawtext[this.infoMessage.rawtext.length - 1].text.trim();
+		this.infoMessage.rawtext[this.infoMessage.rawtext.length - 1]?.text.trim();
 	}
 
 	sendInfoMessage() {
@@ -110,18 +117,12 @@ class InfoDisplay {
 	}
 }
 
-world.afterEvents.playerJoin.subscribe((event) => {
-	const player = world.getPlayers({ name: event.playerName })[0];
-	if (!player || player.id !== event.playerId) return;
-	playerToInfoDisplayMap[player.id] = new InfoDisplay(player);
-});
-
 system.runInterval(() => {
 	currentTickWorldwideElementData = {};
 	const players = world.getAllPlayers();
 	for (const player of players) {
 		if (!player) continue;
-		const infoDisplay = playerToInfoDisplayMap[player.id];
+		const infoDisplay = playerToInfoDisplayMap[player.id] || new InfoDisplay(player);
 		infoDisplay.update();
 	}
 });
@@ -129,12 +130,6 @@ system.runInterval(() => {
 world.beforeEvents.playerLeave.subscribe((event) => {
 	delete playerToInfoDisplayMap[event.player.id];
 });
-
-function initInfoDisplay(player) {
-	playerToInfoDisplayMap[player.id] = new InfoDisplay(player);
-}
-
-export default initInfoDisplay;
 
 // -----------------------------------------------------------------------------------------------xw
 

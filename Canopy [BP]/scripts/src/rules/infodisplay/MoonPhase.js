@@ -15,8 +15,26 @@ class MoonPhase extends InfoDisplayElement {
     }
 
     getParsedMoonPhase() {
-        const moonPhase = MoonPhase[world.getMoonPhase()];
-        return moonPhase.replace(/([A-Z])/g, ' $1').trim();
+        switch (world.getMoonPhase()) {
+            case 0:
+                return 'Full Moon';
+            case 1:
+                return 'Waning Gibbous';
+            case 2:
+                return 'First Quarter';
+            case 3:
+                return 'Waning Crescent';
+            case 4:
+                return 'New Moon';
+            case 5:
+                return 'Waxing Crescent';
+            case 6:
+                return 'Last Quarter';
+            case 7:
+                return 'Waxing Gibbous';
+            default:
+                return 'Unknown';
+        }
     }
 }
 

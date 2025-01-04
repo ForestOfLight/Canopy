@@ -15,7 +15,8 @@ class TPS extends InfoDisplayElement {
     }
 
     getTPS() {
-		return DataTPS.tps >= 20 ? `§a20.0` : `§c${DataTPS.tps.toFixed(1)}`;
+        const tps = DataTPS.tps.toFixed(1);
+		return tps >= 20 ? `§a20.0` : `§c${tps}`;
 	}
 }
 

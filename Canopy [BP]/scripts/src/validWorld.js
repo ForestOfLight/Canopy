@@ -24,7 +24,6 @@ world.afterEvents.playerLeave.subscribe((event) => {
 
 function onValidWorld(player) {
     displayWelcome(player);
-    initInfoDisplay(player);
     ProbeManager.startCleanupCycle();
 }
 

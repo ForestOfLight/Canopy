@@ -5,8 +5,8 @@ class Biome extends InfoDisplayElement {
     player;
 
     constructor(player) {
-        this.player = player;
         super('biome', { translate: 'rules.infoDisplay.biome' }, 4);
+        this.player = player;
     }
 
     getFormattedDataOwnLine() {

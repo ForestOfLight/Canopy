@@ -1,6 +1,6 @@
 import { world } from '@minecraft/server';
 import { Rule, Command } from 'lib/canopy/Canopy';
-import Utils from 'stickycore/utils';
+import Utils from 'include/utils';
 
 const CLAIM_RADIUS = 25;
 

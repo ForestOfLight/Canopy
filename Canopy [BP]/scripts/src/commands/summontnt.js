@@ -1,5 +1,5 @@
 import { Rule, Command } from 'lib/canopy/Canopy'
-import Utils from 'stickycore/utils'
+import Utils from 'include/utils'
 
 new Rule({
     category: 'Rules',

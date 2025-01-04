@@ -4,8 +4,8 @@ class Coords extends InfoDisplayElement {
     player;
 
     constructor(player) {
-        this.player = player;
         super('coords', { translate: 'rules.infoDisplay.coords' }, 1);
+        this.player = player;
     }
 
     getFormattedDataOwnLine() {

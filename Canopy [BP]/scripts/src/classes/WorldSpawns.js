@@ -1,6 +1,6 @@
 import { world, DimensionTypes, MolangVariableMap, system } from '@minecraft/server';
 import { categoryToMobMap, SpawnTracker } from 'src/classes/SpawnTracker';
-import Utils from 'stickycore/utils';
+import Utils from 'include/utils';
 
 const categories = Object.keys(categoryToMobMap);
 const dimensionIds = DimensionTypes.getAll().map(({ typeId }) => typeId);

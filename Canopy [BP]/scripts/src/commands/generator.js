@@ -1,7 +1,7 @@
 import { ItemStack, system, world } from '@minecraft/server'
 import { Rule, Command } from 'lib/canopy/Canopy'
 import GeneratorChannelMap from 'src/classes/HopperGenerators'
-import Utils from 'stickycore/utils'
+import Utils from 'include/utils'
 
 new Rule({
     category: 'Rules',

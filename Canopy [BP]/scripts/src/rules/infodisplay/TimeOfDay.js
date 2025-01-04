@@ -11,7 +11,7 @@ class TimeOfDay extends InfoDisplayElement {
     }
 
     getFormattedDataSharedLine() {
-        return { test: `§7${this.ticksToTime(world.getTimeOfDay())}§r` };
+        return { text: `§7${this.ticksToTime(world.getTimeOfDay())}§r` };
     }
 
     ticksToTime(ticks) {

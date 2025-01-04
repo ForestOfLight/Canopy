@@ -1,6 +1,6 @@
 import { system, world } from '@minecraft/server'
-import Utils from 'stickycore/utils'
-import { categoryToMobMap } from 'src/data/mobs'
+import Utils from 'include/utils'
+import { categoryToMobMap } from 'include/data'
 
 const CLEAR_RECENTS_THRESHOLD = 600; // 600 ticks = 30 seconds
 let wasTrackingLastTick = false;

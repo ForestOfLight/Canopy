@@ -1,4 +1,4 @@
-const categoryToMobMap = {
+export const categoryToMobMap = {
     'creature' : [
         'allay',
         'armadillo',
@@ -102,7 +102,7 @@ const categoryToMobMap = {
     ],
 }
 
-const intToBiomeMap = {
+export const intToBiomeMap = {
     0: 'Bamboo Jungle',
     1: 'Bamboo Jungle Hills',
     2: 'Basalt Deltas',
@@ -190,5 +190,3 @@ const intToBiomeMap = {
     84: 'Warm Ocean',
     85: 'Warped Forest'
 };
-
-export { categoryToMobMap, intToBiomeMap }

@@ -261,7 +261,7 @@ class Utils {
 	static getEntitiesByType(type) {
 		let entities = [];
 		DimensionTypes.getAll().forEach(dimensionType => {
-			const dimensionEntities = mc.world.getDimension(dimensionType.typeId).getEntities({ type });
+			const dimensionEntities = world.getDimension(dimensionType.typeId).getEntities({ type });
 			if (dimensionEntities)
 				entities = entities.concat(dimensionEntities);
 		})

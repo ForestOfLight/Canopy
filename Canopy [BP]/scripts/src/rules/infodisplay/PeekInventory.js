@@ -1,11 +1,13 @@
 import InfoDisplayElement from './InfoDisplayElement.js';
+import Utils from 'include/utils';
+import { currentQuery } from 'src/commands/peek.js';
 
 class PeekInventory extends InfoDisplayElement {
     player;
 
     constructor(player) {
-        this.player = player;
         super('peekInventory', { translate: 'rules.infoDisplay.peekInventory' }, 11, false, ['lookingAt']);
+        this.player = player;
     }
 
     getFormattedDataOwnLine() {
@@ -17,7 +19,8 @@ class PeekInventory extends InfoDisplayElement {
     }
 
     parsePeekInventory() {
-        let ({ blockRayResult, entityRayResult } = Utils.getRaycastResults(this.player, 7));
+		let blockRayResult, entityRayResult;
+        ({ blockRayResult, entityRayResult } = Utils.getRaycastResults(this.player, 7));
 		if (!blockRayResult && !entityRayResult) return '';
 		const target = Utils.getClosestTarget(this.player, blockRayResult, entityRayResult);
 		if (!target) return '';
@@ -31,15 +34,15 @@ class PeekInventory extends InfoDisplayElement {
 		if (!inventory) return '';
 	
 		let output = '';
-		const items = Utils.populateItems(inventory, items);
+		const items = Utils.populateItems(inventory);
 		if (Object.keys(items).length > 0) {
 			for (let itemName in items) {
 				if (itemName.includes(currentQuery[this.player.name]))
-					output += `\n§c${itemName}: ${items[itemName]}`;
+					output += `§c${itemName}: ${items[itemName]}\n`;
 				else
-					output += `\n§r${itemName}: ${items[itemName]}`;
+					output += `§r${itemName}: ${items[itemName]}\n`;
 			}
-		} else output = '\n§rEmpty';
+		} else output = '§rEmpty';
 				
 		return output;
 	}

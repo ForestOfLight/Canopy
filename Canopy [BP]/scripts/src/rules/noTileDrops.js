@@ -1,6 +1,6 @@
 import { Rule } from 'lib/canopy/Canopy';
 import { system, world } from '@minecraft/server';
-import Utils from 'stickycore/utils';
+import Utils from 'include/utils';
 
 new Rule({
     category: 'Rules',

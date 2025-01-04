@@ -4,8 +4,8 @@ class CardinalFacing extends InfoDisplayElement {
     player;
 
     constructor(player) {
-        this.player = player;
         super('cardinalFacing', { translate: 'rules.infoDisplay.cardinalFacing' }, 1);
+        this.player = player;
     }
 
     getFormattedDataOwnLine() {

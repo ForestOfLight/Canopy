@@ -5,9 +5,9 @@ class SessionTime extends InfoDisplayElement {
     player;
 
     constructor(player) {
+        super('sessionTime', { translate: 'rules.infoDisplay.sessionTime' }, 6);
         this.player = player;
         player.setDynamicProperty('joinDate', Date.now());
-        super('sessionTime', { translate: 'rules.infoDisplay.sessionTime' }, 6);
     }
 
     getFormattedDataOwnLine() {
@@ -15,7 +15,7 @@ class SessionTime extends InfoDisplayElement {
     }
 
     getFormattedDataSharedLine() {
-        return { test: `§7${this.ticksToTime(world.getTimeOfDay())}§r` };
+        return this.getFormattedDataOwnLine();
     }
 
     getSessionTime() {

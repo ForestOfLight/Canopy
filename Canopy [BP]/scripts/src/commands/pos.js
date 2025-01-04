@@ -1,6 +1,6 @@
 import { Rule, Command } from 'lib/canopy/Canopy';
 import { world } from '@minecraft/server';
-import Utils from 'stickycore/utils';
+import Utils from 'include/utils';
 
 const NETHER_SCALE_FACTOR = 8;
 

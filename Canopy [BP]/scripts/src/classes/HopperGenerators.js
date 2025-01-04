@@ -1,5 +1,5 @@
 import { system, world } from "@minecraft/server";
-import Utils from "stickycore/utils";
+import Utils from "include/utils";
 import { formatColor, getAllModeOutput } from "src/commands/generator";
 
 class HopperGenerator {

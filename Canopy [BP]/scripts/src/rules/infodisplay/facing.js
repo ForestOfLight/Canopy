@@ -4,8 +4,8 @@ class Facing extends InfoDisplayElement {
     player;
 
     constructor(player) {
-        this.player = player;
         super('facing', { translate: 'rules.infoDisplay.facing' }, 2);
+        this.player = player;
     }
 
     getFormattedDataOwnLine() {
