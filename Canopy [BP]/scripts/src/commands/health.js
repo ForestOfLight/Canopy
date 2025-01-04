@@ -2,8 +2,7 @@ import { system } from '@minecraft/server'
 import { Command } from 'lib/canopy/Canopy'
 import { DataTPS } from 'src/tps'
 import  { Entities } from 'src/entities'
-import Data from 'stickycore/data'
-import Utils from 'stickycore/utils'
+import Utils from 'include/utils'
 
 new Command({
     name: 'health',
@@ -27,10 +26,10 @@ function printRealMspt(sender) {
     let endTime;
     let realMspt;
 
-    lastTick = Data.getAbsoluteTime();
+    lastTick = system.currentTick;
     ({ startTime, endTime } = Utils.wait(50));
     system.runTimeout(() => {
-        if (Data.getAbsoluteTime() - lastTick != 1)
+        if (system.currentTick - lastTick != 1)
             return sender.sendMessage({ translate: 'commands.health.fail.mspt' });
         
         realMspt = Date.now() - startTime - (endTime - startTime);

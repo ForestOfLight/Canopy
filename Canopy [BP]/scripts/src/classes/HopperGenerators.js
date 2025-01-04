@@ -1,5 +1,4 @@
 import { system, world } from "@minecraft/server";
-import Data from "stickycore/data";
 import Utils from "stickycore/utils";
 import { formatColor, getAllModeOutput } from "src/commands/generator";
 
@@ -17,7 +16,7 @@ class GeneratorChannel {
         this.hopperList = new Array();
         this.totalCount = 0;
         this.itemMap = new Map();
-        this.startTickTime = Data.getAbsoluteTime();
+        this.startTickTime = system.currentTick;
         this.startRealTime = Date.now();
     }
 }
@@ -114,7 +113,7 @@ class GeneratorChannelMap {
         const channel = this.getChannel(color);
         channel.totalCount = 0;
         channel.itemMap = new Map();
-        channel.startTickTime = Data.getAbsoluteTime();
+        channel.startTickTime = system.currentTick;
         channel.startRealTime = Date.now();
         this.setChannel(color, channel);
     }
@@ -148,7 +147,7 @@ class GeneratorChannelMap {
         if (this.realtime) {
             deltaTime = (Date.now() - channel.startRealTime) / msPerTick;
         } else {
-            deltaTime = Data.getAbsoluteTime() - channel.startTickTime;
+            deltaTime = system.currentTick - channel.startTickTime;
         }
         deltaTime = Math.floor(deltaTime / 8) * 8;
         return deltaTime;

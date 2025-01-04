@@ -3,29 +3,9 @@ import MT from 'lib/mt.js'
 import Utils from 'stickycore/utils'
 import { currentQuery } from 'src/commands/peek'
 
-mc.world.afterEvents.playerJoin.subscribe((event) => {
-	const player = mc.world.getPlayers({ name: event.playerName })[0];
-	if (!player || player.id !== event.playerId) return;
-	Data.updateJoinDate(player);
-});
-
 class Data {
-	static #owDimension = mc.world.getDimension('overworld');
-	
-	static getDay = () => mc.world.getDay();
-	static getTimeOfDay = () => mc.world.getTimeOfDay();
+
 	static getMoonPhase = () => this.parseMoonPhase(mc.world.getMoonPhase());
-	static getAbsoluteTime = () => mc.system.currentTick;
-	static getDefaultSpawnLocation = () => mc.world.getDefaultSpawnLocation();
-	static getWeather = () => {
-		return mc.system.run(() => this.#owDimension.getWeather())
-	};
-	static getLookingAtBlock = (player, distance = 7) => player.getBlockFromViewDirection(
-		{ includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: distance }
-	);
-	static getLookingAtEntities = (player, distance = 7) => player.getEntitiesFromViewDirection(
-		{ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: false, maxDistance: distance }
-	);
 	
 	static Chunk = class {
 		#baseX;
@@ -75,16 +55,6 @@ class Data {
 		return(isSlime);
 	}
 
-	static getPlayerDirection(player) {
-		const { x, z } = player.getViewDirection();
-		const angle = Math.atan2(z, x) * (180 / Math.PI);
-	
-		if (angle >= -45 && angle < 45) return 'E (+x)'
-		else if (angle >= 45 && angle < 135) return 'S (+z)';
-		else if (angle >= 135 || angle < -135) return 'W (-x)';
-		else return 'N (-z)';
-	}
-
 	static parseMoonPhase(moonPhase) {
 		switch (moonPhase) {
 			case 0: return 'Full';
@@ -97,16 +67,6 @@ class Data {
 			case 7: return 'Waxing Gibbous';
 			default: return 'unknown';
 		}
-	}
-
-	static getRaycastResults(player, distance) {
-		let blockRayResult;
-		let entityRayResult;
-	
-		blockRayResult = Data.getLookingAtBlock(player, distance);
-		entityRayResult = Data.getLookingAtEntities(player, distance);
-	
-		return { blockRayResult, entityRayResult };
 	}
 
 	static peekInventory(sender, blockRayResult, entityRayResult) {
@@ -154,16 +114,6 @@ class Data {
 		if (hours > 0) output += `${hours}:`;
 		output += `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 		return output;
-	}
-
-	static getEntitiesByType(type) {
-		const dimensions = ['overworld', 'nether', 'the_end'];
-		let entities = [];
-		for (const dimension of dimensions) {
-			const dimensionEntities = mc.world.getDimension(dimension).getEntities({ type });
-			if (dimensionEntities) entities = entities.concat(dimensionEntities);
-		}
-		return entities;
 	}
 }
 

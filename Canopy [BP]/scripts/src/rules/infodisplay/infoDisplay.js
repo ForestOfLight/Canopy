@@ -1,37 +1,111 @@
 import { InfoDisplayRule } from 'lib/canopy/Canopy';
-import { ClientSystemInfo, system, SystemInfo, world } from '@minecraft/server';
+import { system, world } from '@minecraft/server';
 import Data from 'stickycore/data';
 import Utils from 'stickycore/utils';
-import { DataTPS } from 'src/tps';
 import { Entities } from 'src/entities';
 import ProbeManager from 'src/classes/ProbeManager';
 import { getInfoDisplayOutput } from 'src/commands/counter';
 import { getAllTrackerInfoString } from 'src/commands/trackevent';
 
-new InfoDisplayRule({
-	identifier: 'showDisplay',
-	description: { translate: 'rules.infoDisplay.showDisplay' }
+import Rule from 'lib/canopy/Rule';
+import Coords from './coords';
+import Facing from './facing';
+
+const playerToInfoDisplayMap = {};
+const currentTickWorldwideElementData = {};
+
+class InfoDisplay {
+	owner;
+	elements = [];
+	infoMessage = { rawtext: [] };
+
+	constructor(owner) {
+		this.owner = owner;
+		this.rules = Rule.getRulesByCategory('InfoDisplay');
+		this.elements = [
+			new Coords(),
+			new Facing()
+		];
+		playerToInfoDisplayMap[owner.id] = this;
+	}
+
+	update() {
+		this.infoMessage = { rawtext: [] };
+		const enabledElementsQueue = this.getEnabledElements();
+		const enabledElementsLength = enabledElementsQueue.length;
+
+		for (let i = 0; i < enabledElementsLength; i++) {
+			const element = enabledElementsQueue.shift();
+			this.updateElementData(element, enabledElementsQueue);
+		}
+
+		this.trimTrailingWhitespace();
+		this.sendInfoMessage();
+	}
+	
+	updateElementData(element, enabledElementsQueue) {
+		let data = {};
+
+		if (element.isWorldwide) {
+			if (!currentTickWorldwideElementData[element.identifier]) {
+				currentTickWorldwideElementData[element.identifier] = { own: element.getFormattedDataOwnLine(), shared: element.getFormattedDataSharedLine() };
+			}
+			data = currentTickWorldwideElementData[element.identifier];
+		}
+
+		if (this.getElementsOnLine(element.lineNumber) === 1) {
+			data.own = data.own || element.getFormattedDataOwnLine();
+		} else {
+			data.shared = data.shared || element.getFormattedDataSharedLine();
+		}
+
+		this.infoMessage.rawtext.push(data.own || data.shared);
+		if (this.isLastElementOnLine(enabledElementsQueue, element)) {
+			this.infoMessage.rawtext.push({ text: '\n' });
+		} else {
+			this.infoMessage.rawtext.push({ text: ' ' });
+		}
+	}
+
+	getEnabledElements() {
+		return this.elements.filter(element => element.rule.getValue(this.owner));
+	}
+	
+	getElementsOnLine(lineNumber) {
+		return this.elements.filter(element => element.lineNumber === lineNumber);
+	}
+
+	isLastElementOnLine(enabledElementsQueue, element) {
+		return enabledElementsQueue.filter(e => e.lineNumber === element.lineNumber).length === 0;
+	}
+
+	trimTrailingWhitespace() {
+		this.infoMessage.rawtext[this.infoMessage.rawtext.length - 1].text.trim();
+	}
+
+	sendInfoMessage() {
+		this.owner.onScreenDisplay.setTitle(this.infoMessage);
+	}
+}
+
+world.afterEvents.playerJoin.subscribe((event) => {
+	const player = mc.world.getPlayers({ name: event.playerName })[0];
+	if (!player || player.id !== event.playerId) return;
+	player.setDynamicProperty('joinDate', Date.now());
+	playerToInfoDisplayMap[player.id] = new InfoDisplay(player);
 });
 
-new InfoDisplayRule({
-	identifier: 'coords',
-	description: { translate: 'rules.infoDisplay.coords' }
+system.runInterval(() => {
+	currentTickWorldwideElementData = {};
+	const players = world.getAllPlayers();
+	for (const player of players) {
+		if (!player) continue;
+		const infoDisplay = playerToInfoDisplayMap[player.id];
+		infoDisplay.update();
+	}
 });
 
-new InfoDisplayRule({
-	identifier: 'facing',
-	description: { translate: 'rules.infoDisplay.facing' }
-})
-
-new InfoDisplayRule({
-	identifier: 'cardinalFacing',
-	description: { translate: 'rules.infoDisplay.cardinalFacing' }
-});
-
-new InfoDisplayRule({
-	identifier: 'tps',
-	description: { translate: 'rules.infoDisplay.tps' }
-});
+// ----------------------------------------------------
 
 new InfoDisplayRule({
 	identifier: 'entities',
@@ -100,18 +174,10 @@ new InfoDisplayRule({
 	contingentRules: ['lookingAt']
 });
 
-system.runInterval(() => {
-	const players = world.getAllPlayers();
-	for (const player of players) {
-		if (!player) continue;
-		if (InfoDisplayRule.getValue(player, 'showDisplay')) InfoDisplay(player);
-	}
-});
-
 function InfoDisplay(player) {
 	const infoMessage = { rawtext: [] };
-	infoMessage.rawtext.push(parseCoordsAndCardinalFacing(player));
-	infoMessage.rawtext.push(parseFacing(player));
+	// infoMessage.rawtext.push(parseCoordsAndCardinalFacing(player));
+	// infoMessage.rawtext.push(parseFacing(player));
 	infoMessage.rawtext.push(parseTPSAndEntities(player));
 	infoMessage.rawtext.push(parseLightAndBiome(player));
 	infoMessage.rawtext.push(parseDayAndTime(player));
@@ -145,7 +211,7 @@ function parseCoordsAndCardinalFacing(player) {
 	else if (showCoords)
 		message.rawtext.push({ text: `§r${coords.x} ${coords.y} ${coords.z}§r\n` });
 	else if (showCardinal)
-		message.rawtext.push({ rawtext: [{translate: 'rules.infoDisplay.cardinalFacing.display', with: [facing] },{ text: `\n` }]});
+		message.rawtext.push({ rawtext: [{translate: 'rules.infoDisplay.cardinalFacing.display', with: [facing] },{ text: `\n` }] });
 
 	return message;
 }
@@ -171,7 +237,7 @@ function parseTPSAndEntities(player) {
 	if (showEntities) fovEntities = Entities.getEntitiesOnScreenCount(player);
 	if (showTPS) {
 		tpsData = DataTPS.tps.toFixed(1);
-		tps = tpsData >= 20 ? `§a20.0` : `§c${tpsData}`;	
+		tps = tpsData >= 20 ? `§a20.0` : `§c${tpsData}`;
 	}
 	if (showTPS && showEntities)
 		message.rawtext.push({ rawtext: [{ translate: 'rules.infoDisplay.tpsAndEntities.display', with: [tps, String(fovEntities)] },{ text: '\n' }] });
@@ -214,9 +280,9 @@ function parseDayAndTime(player) {
 	const message = { rawtext: [] };
 
 	if (showDay)
-		day = Data.getDay();
+		day = world.getDay();
 	if (showTimeOfDay)
-		dayTime = Utils.ticksToTime(Data.getTimeOfDay());
+		dayTime = Utils.ticksToTime(world.getTimeOfDay());
 	if (showDay && showTimeOfDay)
 		message.rawtext.push({ rawtext: [{ translate: 'rules.infoDisplay.worldDayAndTimeOfDay.display', with: [String(day), dayTime] },{ text: '\n' }] });
 	else if (showDay)
@@ -287,7 +353,7 @@ function parseLookingAtAndSignalStrength(player) {
 	const message = { rawtext: [] };
 
 	if (!showLookingAt && !showSignalStrength) return { text: '' };
-	({ blockRayResult, entityRayResult } = Data.getRaycastResults(player, 7));
+	({ blockRayResult, entityRayResult } = Utils.getRaycastResults(player, 7));
 	if (showLookingAt) {
 		lookingAtName = Utils.parseLookingAtEntity(entityRayResult).LookingAtName || Utils.parseLookingAtBlock(blockRayResult).LookingAtName;
 		message.rawtext.push({ text: String(lookingAtName) });
@@ -309,7 +375,7 @@ function parsePeek(player) {
 	let entityRayResult;
 	
 	if (!showPeekInventory) return { text: '' };
-	({ blockRayResult, entityRayResult } = Data.getRaycastResults(player, 7));
+	({ blockRayResult, entityRayResult } = Utils.getRaycastResults(player, 7));
 	peekInventory = Data.peekInventory(player, blockRayResult, entityRayResult);
 	return { text: `${peekInventory}` };
 }

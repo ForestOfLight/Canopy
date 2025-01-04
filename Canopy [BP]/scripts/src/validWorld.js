@@ -1,5 +1,4 @@
 import { world, system } from '@minecraft/server';
-import Data from 'stickycore/data';
 import ProbeManager from 'src/classes/ProbeManager';
 import { getLoadedExtensions } from 'lib/canopy/Canopy';
 
@@ -25,7 +24,7 @@ world.afterEvents.playerLeave.subscribe((event) => {
 
 function onValidWorld(player) {
     displayWelcome(player);
-    Data.updateJoinDate(player);
+    player.setDynamicProperty('joinDate', Date.now());
     ProbeManager.startCleanupCycle();
 }
 

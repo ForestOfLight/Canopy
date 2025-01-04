@@ -1,7 +1,6 @@
 import { system, world } from '@minecraft/server';
 import { Command } from 'lib/canopy/Canopy';
-import Data from 'stickycore/data';
-import Utils from 'stickycore/utils';
+import Utils from 'include/utils';
 
 const MAIN_COLOR = '§7';
 const SECONDARY_COLOR = '§c';
@@ -146,7 +145,7 @@ function hasTrait(entity, logType) {
 const loggingPlayers = new LoggingPlayers();
 const projectileLog = new TypeLog('projectiles');
 const fallingBlockLog = new TypeLog('falling_blocks');
-let logStartTick = Data.getAbsoluteTime();
+let logStartTick = system.currentTick;
 let activeTntLocations = {};
 
 world.afterEvents.entitySpawn.subscribe((event) => {
@@ -196,7 +195,7 @@ function logUpdate(loggingPlayer) {
     if (loggingPlayer.types.includes('falling_blocks')) {
         fallingBlockLog.update();
     }
-    if (projectileLog.movingEntities.length === 0 && fallingBlockLog.movingEntities.length === 0) logStartTick = Data.getAbsoluteTime();
+    if (projectileLog.movingEntities.length === 0 && fallingBlockLog.movingEntities.length === 0) logStartTick = system.currentTick;
 
     if (projectileLog.movingEntities.length > 0 || fallingBlockLog.movingEntities.length > 0)
         player.sendMessage(getLogHeader(projectileLog.movingEntities.concat(fallingBlockLog.movingEntities)));
@@ -209,7 +208,7 @@ function logUpdate(loggingPlayer) {
 }
 
 function getLogHeader(movingEntities) {
-    const absoluteTimeStr = (Data.getAbsoluteTime() - logStartTick).toString().padStart(2, '0');
+    const absoluteTimeStr = (system.currentTick - logStartTick).toString().padStart(2, '0');
     return { rawtext: [
         { text: `${TERTIARY_COLOR}----- ` },
         { translate: 'generic.total' },

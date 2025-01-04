@@ -146,9 +146,6 @@ commands.removeentity.success=§7移除了 %1 带有id '%2'.
 commands.resetall=重置所有 §lCanopy§r§8 规则和数据. 请小心使用.
 commands.resetall.success=§7所有 §lCanopy§r§8 玩家和世界动态性质已被重置.
 
-commands.sit=使玩家坐下.
-commands.sit.busy=§c已被占用，无法坐下.
-
 commands.spawn=模拟生成和检测生成指令.
 commands.spawn.entities=展示当前世界所有实体及其位置的列表.
 commands.spawn.recent=显示最近30s所有怪物的生成数据. 请指定一种怪物到筛选器中.

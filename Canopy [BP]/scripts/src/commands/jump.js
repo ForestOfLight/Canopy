@@ -1,5 +1,4 @@
 import { Rule, Command } from 'lib/canopy/Canopy';
-import Data from 'stickycore/data';
 
 new Rule({
     category: 'Rules',
@@ -29,7 +28,7 @@ async function jumpCommand(sender) {
     if (!await Rule.getValue('commandJumpSurvival') && sender.getGameMode() === 'survival')
         return sender.sendMessage({ translate: 'rules.generic.blocked', with: ['commandJumpSurvival'] });
 
-    blockRayResult = Data.getLookingAtBlock(sender, maxDistance);
+    blockRayResult = sender.getBlockFromViewDirection({ includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: maxDistance });
     if (!blockRayResult?.block)
         return sender.sendMessage({ translate: 'commands.jump.fail.noblock' });
     jumpLocation = getBlockLocationFromFace(blockRayResult.block, blockRayResult.face);

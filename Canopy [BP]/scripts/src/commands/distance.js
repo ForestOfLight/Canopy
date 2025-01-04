@@ -1,6 +1,5 @@
 import { Command } from 'lib/canopy/Canopy';
-import Utils from 'stickycore/utils';
-import Data from 'stickycore/data';
+import Utils from 'include/utils';
 
 let savedLocation = { x: undefined, y: undefined, z: undefined };
 const MAX_DISTANCE = 64*16;
@@ -118,7 +117,7 @@ function targetDistance(sender) {
     let playerLocation = sender.getHeadLocation();
     let targetLocation;
 
-    const { blockRayResult, entityRayResult } = Data.getRaycastResults(sender, MAX_DISTANCE);
+    const { blockRayResult, entityRayResult } = Utils.getRaycastResults(sender, MAX_DISTANCE);
     if (!blockRayResult && !entityRayResult[0])
         return { translate: 'commands.distance.target.notfound' };
     const target = Utils.getClosestTarget(sender, blockRayResult, entityRayResult);
