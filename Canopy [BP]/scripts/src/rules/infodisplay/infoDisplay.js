@@ -1,32 +1,54 @@
 import { InfoDisplayRule } from 'lib/canopy/Canopy';
 import { system, world } from '@minecraft/server';
-import Data from 'stickycore/data';
-import Utils from 'stickycore/utils';
-import { Entities } from 'src/entities';
-import ProbeManager from 'src/classes/ProbeManager';
-import { getInfoDisplayOutput } from 'src/commands/counter';
-import { getAllTrackerInfoString } from 'src/commands/trackevent';
 
-import Rule from 'lib/canopy/Rule';
-import Coords from './coords';
-import Facing from './facing';
+import Coords from './Coords';
+import Facing from './Facing';
+import CardinalFacing from './CardinalFacing';
+import TPS from './TPS';
+import Entities from './Entities';
+import Light from './Light';
+import Biome from './Biome';
+import WorldDay from './WorldDay';
+import TimeOfDay from './TimeOfDay';
+import SessionTime from './SessionTime';
+import MoonPhase from './MoonPhase';
+import SlimeChunk from './SlimeChunk';
+import EventTrackers from './EventTrackers';
+import HopperCounterCounts from './HopperCounterCounts';
+import LookingAt from './LookingAt';
+import SignalStrength from './SignalStrength';
+import PeekInventory from './PeekInventory';
 
 const playerToInfoDisplayMap = {};
 const currentTickWorldwideElementData = {};
 
 class InfoDisplay {
-	owner;
+	player;
 	elements = [];
 	infoMessage = { rawtext: [] };
 
-	constructor(owner) {
-		this.owner = owner;
-		this.rules = Rule.getRulesByCategory('InfoDisplay');
+	constructor(player) {
+		this.player = player;
 		this.elements = [
-			new Coords(),
-			new Facing()
+			new Coords(player),
+			new Facing(player),
+			new CardinalFacing(player),
+			new TPS(),
+			new Entities(player),
+			new Light(player),
+			new Biome(player),
+			new WorldDay(),
+			new TimeOfDay(),
+			new SessionTime(player),
+			new MoonPhase(),
+			new SlimeChunk(player),
+			new EventTrackers(),
+			new HopperCounterCounts(),
+			new LookingAt(player),
+			new SignalStrength(player),
+			new PeekInventory(player)
 		];
-		playerToInfoDisplayMap[owner.id] = this;
+		playerToInfoDisplayMap[player.id] = this;
 	}
 
 	update() {
@@ -68,7 +90,7 @@ class InfoDisplay {
 	}
 
 	getEnabledElements() {
-		return this.elements.filter(element => element.rule.getValue(this.owner));
+		return this.elements.filter(element => element.rule.getValue(this.player));
 	}
 	
 	getElementsOnLine(lineNumber) {
@@ -84,14 +106,13 @@ class InfoDisplay {
 	}
 
 	sendInfoMessage() {
-		this.owner.onScreenDisplay.setTitle(this.infoMessage);
+		this.player.onScreenDisplay.setTitle(this.infoMessage);
 	}
 }
 
 world.afterEvents.playerJoin.subscribe((event) => {
-	const player = mc.world.getPlayers({ name: event.playerName })[0];
+	const player = world.getPlayers({ name: event.playerName })[0];
 	if (!player || player.id !== event.playerId) return;
-	player.setDynamicProperty('joinDate', Date.now());
 	playerToInfoDisplayMap[player.id] = new InfoDisplay(player);
 });
 
@@ -105,94 +126,37 @@ system.runInterval(() => {
 	}
 });
 
-// ----------------------------------------------------
-
-new InfoDisplayRule({
-	identifier: 'entities',
-	description: { translate: 'rules.infoDisplay.entities' }
+world.beforeEvents.playerLeave.subscribe((event) => {
+	delete playerToInfoDisplayMap[event.player.id];
 });
 
-new InfoDisplayRule({
-	identifier: 'light',
-	description: { translate: 'rules.infoDisplay.light' }
-});
-
-new InfoDisplayRule({
-	identifier: 'biome',
-	description: { translate: 'rules.infoDisplay.biome' }
-});
-
-new InfoDisplayRule({
-	identifier: 'worldDay',
-	description: { translate: 'rules.infoDisplay.worldDay' }
-});
-
-new InfoDisplayRule({
-	identifier: 'timeOfDay',
-	description: { translate: 'rules.infoDisplay.timeOfDay' }
-});
-
-new InfoDisplayRule({
-	identifier: 'sessionTime',
-	description: { translate: 'rules.infoDisplay.sessionTime' }
-});
-
-new InfoDisplayRule({
-	identifier: 'moonPhase',
-	description: { translate: 'rules.infoDisplay.moonPhase' }
-});
-
-new InfoDisplayRule({
-	identifier: 'slimeChunk',
-	description: { translate: 'rules.infoDisplay.slimeChunk' }
-});
-
-new InfoDisplayRule({
-	identifier: 'eventTrackers',
-	description: { translate: 'rules.infoDisplay.eventTrackers' }
-});
-
-new InfoDisplayRule({
-	identifier: 'hopperCounterCounts',
-	description: { translate: 'rules.infoDisplay.hopperCounterCounts' }
-});
-
-new InfoDisplayRule({
-	identifier: 'lookingAt',
-	description: { translate: 'rules.infoDisplay.lookingAt' }
-});
-
-new InfoDisplayRule({
-	identifier: 'signalStrength',
-	description: { translate: 'rules.infoDisplay.signalStrength' },
-	contingentRules: ['lookingAt']
-});
-
-new InfoDisplayRule({
-	identifier: 'peekInventory',
-	description: { translate: 'rules.infoDisplay.peekInventory' },
-	contingentRules: ['lookingAt']
-});
-
-function InfoDisplay(player) {
-	const infoMessage = { rawtext: [] };
-	// infoMessage.rawtext.push(parseCoordsAndCardinalFacing(player));
-	// infoMessage.rawtext.push(parseFacing(player));
-	infoMessage.rawtext.push(parseTPSAndEntities(player));
-	infoMessage.rawtext.push(parseLightAndBiome(player));
-	infoMessage.rawtext.push(parseDayAndTime(player));
-	infoMessage.rawtext.push(parseSessionTime(player));
-	infoMessage.rawtext.push(parseMoonPhaseAndSlimeChunk(player));
-	infoMessage.rawtext.push(parseEventTrackerInfo(player));
-	infoMessage.rawtext.push(parseHopperCounters(player));
-	infoMessage.rawtext.push(parseLookingAtAndSignalStrength(player));
-	infoMessage.rawtext.push(parsePeek(player));
-
-	if (infoMessage.rawtext[infoMessage.rawtext.length - 1].text === '\n')
-		infoMessage.rawtext[infoMessage.rawtext.length - 1].text = '';
-	
-	player.onScreenDisplay.setTitle(infoMessage);
+function initInfoDisplay(player) {
+	playerToInfoDisplayMap[player.id] = new InfoDisplay(player);
 }
+
+export default initInfoDisplay;
+
+// -----------------------------------------------------------------------------------------------xw
+
+// function InfoDisplay(player) {
+// 	const infoMessage = { rawtext: [] };
+// 	// infoMessage.rawtext.push(parseCoordsAndCardinalFacing(player));
+// 	// infoMessage.rawtext.push(parseFacing(player));
+// 	// infoMessage.rawtext.push(parseTPSAndEntities(player));
+// 	// infoMessage.rawtext.push(parseLightAndBiome(player));
+// 	// infoMessage.rawtext.push(parseDayAndTime(player));
+// 	// infoMessage.rawtext.push(parseSessionTime(player));
+// 	// infoMessage.rawtext.push(parseMoonPhaseAndSlimeChunk(player));
+// 	// infoMessage.rawtext.push(parseEventTrackerInfo(player));
+// 	// infoMessage.rawtext.push(parseHopperCounters(player));
+// 	// infoMessage.rawtext.push(parseLookingAtAndSignalStrength(player));
+// 	// infoMessage.rawtext.push(parsePeek(player));
+
+// 	if (infoMessage.rawtext[infoMessage.rawtext.length - 1].text === '\n')
+// 		infoMessage.rawtext[infoMessage.rawtext.length - 1].text = '';
+	
+// 	player.onScreenDisplay.setTitle(infoMessage);
+// }
 
 function parseCoordsAndCardinalFacing(player) {
 	const showCoords = InfoDisplayRule.getValue(player, 'coords');

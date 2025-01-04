@@ -1,12 +1,9 @@
-import InfoDisplayElement from './infoDisplayElement.js';
+import InfoDisplayElement from './InfoDisplayElement.js';
 import { DataTPS } from 'src/tps';
 
 class TPS extends InfoDisplayElement {
-    player;
-
-    constructor(player) {
-        this.player = player;
-        super('tps', { translate: 'rules.infoDisplay.tps' }, 3);
+    constructor() {
+        super('tps', { translate: 'rules.infoDisplay.tps' }, 3, true);
     }
 
     getFormattedDataOwnLine() {
@@ -18,8 +15,8 @@ class TPS extends InfoDisplayElement {
     }
 
     getTPS() {
-		return tpsData >= 20 ? `§a20.0` : `§c${DataTPS.tps.toFixed(1)}`;
+		return DataTPS.tps >= 20 ? `§a20.0` : `§c${DataTPS.tps.toFixed(1)}`;
 	}
 }
 
-export default CardinalFacing;
+export default TPS;

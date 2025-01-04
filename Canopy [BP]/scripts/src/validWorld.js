@@ -24,7 +24,7 @@ world.afterEvents.playerLeave.subscribe((event) => {
 
 function onValidWorld(player) {
     displayWelcome(player);
-    player.setDynamicProperty('joinDate', Date.now());
+    initInfoDisplay(player);
     ProbeManager.startCleanupCycle();
 }
 

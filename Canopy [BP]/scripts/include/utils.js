@@ -1,25 +1,6 @@
-import { world, ItemStack } from '@minecraft/server';
+import { world, ItemStack, DimensionTypes } from '@minecraft/server';
 
 class Utils {
-	static ticksToTime(ticks) {
-		const ticksPerDay = 24000;
-		const ticksPerHour = ticksPerDay / 24;
-		ticks = (ticks + 6 * ticksPerHour) % ticksPerDay; // 0 ticks is 6:00 AM in game
-		
-		let hours = Math.floor(ticks / ticksPerHour);
-		const minutes = Math.floor((ticks % ticksPerHour) * 60 / ticksPerHour);
-		
-		let period = 'AM';
-		if (hours >= 12) period = 'PM';
-		if (hours >= 13) hours -= 12;
-		else if (hours === 0) hours = 12;
-	
-		const formattedHours = hours.toString().padStart(2, '0');
-		const formattedMinutes = minutes.toString().padStart(2, '0');
-	
-		return `${formattedHours}:${formattedMinutes} ${period}`;
-	}
-
     static calcDistance(locationOne, locationTwo, useY = true) {
 		const x = locationOne.x - locationTwo.x;
 		const z = locationOne.z - locationTwo.z;
@@ -145,19 +126,6 @@ class Utils {
 		}
 	}
 
-	static normalizeVector(vector) {
-		const length = Math.sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
-		return {
-			x: vector.x / length,
-			y: vector.y / length,
-			z: vector.z / length,
-		};
-	}
-
-	static dotProduct(vectorOne, vectorTwo) {
-		return vectorOne.x * vectorTwo.x + vectorOne.y * vectorTwo.y + vectorOne.z * vectorTwo.z;
-	}
-
 	static wait(ms) {
 		let startTime = Date.now();
 		let endTime = Date.now();
@@ -232,7 +200,7 @@ class Utils {
 				return '§cNether';
 			case 'minecraft:the_end':
 			case 'the_end':
-				return '§dThe End';
+				return '§dEnd';
 			default:
 				return '§7Unknown';
 		}
@@ -291,12 +259,12 @@ class Utils {
 	}
 
 	static getEntitiesByType(type) {
-		const dimensions = ['overworld', 'nether', 'the_end'];
 		let entities = [];
-		for (const dimension of dimensions) {
-			const dimensionEntities = mc.world.getDimension(dimension).getEntities({ type });
-			if (dimensionEntities) entities = entities.concat(dimensionEntities);
-		}
+		DimensionTypes.getAll().forEach(dimensionType => {
+			const dimensionEntities = mc.world.getDimension(dimensionType.typeId).getEntities({ type });
+			if (dimensionEntities)
+				entities = entities.concat(dimensionEntities);
+		})
 		return entities;
 	}
 

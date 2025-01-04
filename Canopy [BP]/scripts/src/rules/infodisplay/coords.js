@@ -1,4 +1,4 @@
-import InfoDisplayElement from './infoDisplayElement.js';
+import InfoDisplayElement from './InfoDisplayElement.js';
 
 class Coords extends InfoDisplayElement {
     player;

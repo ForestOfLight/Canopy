@@ -1,46 +1,6 @@
 import { world } from '@minecraft/server';
-import Utils from 'stickycore/utils';
 
 const Entities = {
-    getPlayerRadiusEntityCount(player, radius) {
-        const { x, z } = player.location;
-        const dimensionEntities = player.dimension.getEntities();
-
-        let count = 0;
-        for (const entity of dimensionEntities) {
-            try {
-                const { x: ex, z: ez } = entity.location;
-                const distance = Math.sqrt((x - ex) ** 2 + (z - ez) ** 2);
-
-                if (distance <= radius && entity.isValid()) count++;
-            } catch (error) {
-                if (error.message.includes('property')) continue; // Entity has despawned
-                else console.warn(error.message);
-            }
-        }
-
-        return count;
-    },
-
-    getEntitiesOnScreenCount(player) { // author: jeanmajid
-        const viewDirection = Utils.normalizeVector(player.getViewDirection());
-        const entities = player.dimension.getEntities({ location: player.location, maxDistance: 96 });
-
-        let count = 0;
-        for (const entity of entities) {
-            if (!entity) continue;
-            try{
-                const toEntity = Utils.normalizeVector(subtractVectors(entity.location, player.location));
-                const dotProduct = Utils.dotProduct(viewDirection, toEntity);
-                if (dotProduct > 0.4) count++;
-            } catch (error) {
-                if (error.message.includes('property')) continue; // Entity has despawned
-                throw error;
-            }
-        }
-        return count;
-    },
-
     findDenseAreas(dimensionId, gridSize, numResults = 10) {
         const grid = new Map();
         const entities = world.getDimension(dimensionId).getEntities();
@@ -88,13 +48,5 @@ const Entities = {
         sender.sendMessage(output);
     },
 };
-
-function subtractVectors(vector1, vector2) {
-    return {
-        x: vector1.x - vector2.x,
-        y: vector1.y - vector2.y,
-        z: vector1.z - vector2.z,
-    };
-}
 
 export { Entities }

@@ -36,7 +36,7 @@ import 'src/commands/scriptevents/generator'
 import 'src/commands/scriptevents/resettest'
 
 // Rules
-import 'src/rules/infodisplay/infoDisplay'
+import 'src/rules/infodisplay/InfoDisplay'
 import 'src/rules/explosionNoBlockDamage'
 import 'src/rules/autoItemPickup'
 import 'src/rules/universalChunkLoading'
