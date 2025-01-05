@@ -40,10 +40,9 @@ class Utils {
 	}
 
 	static parseLookingAtEntity(lookingAtEntities) {
-		let entity;
 		let entityName;
 
-		entity = lookingAtEntities[0]?.entity ?? undefined;
+		const entity = lookingAtEntities[0]?.entity ?? undefined;
 		if (entity) {
 			try {
 				entityName = `§a${Utils.parseName(entity)}`;

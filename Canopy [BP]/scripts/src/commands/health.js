@@ -1,7 +1,7 @@
 import { system } from '@minecraft/server'
 import { Command } from 'lib/canopy/Canopy'
 import { DataTPS } from 'src/tps'
-import  { Entities } from 'src/entities'
+import  { printDimensionEntities } from 'src/commands/entitydensity'
 import Utils from 'include/utils'
 
 new Command({
@@ -15,7 +15,7 @@ function healthCommand(sender) {
     system.runTimeout(() => {
         printRealMspt(sender);
     }, 0);
-    Entities.printDimensionEntities(sender);
+    printDimensionEntities(sender);
     const tpsFormatted = DataTPS.tps > 20.0 ? `§a20.0` : `§c${DataTPS.tps.toFixed(1)}`;
     sender.sendMessage(`§7TPS:§r ${tpsFormatted}`);
 }
