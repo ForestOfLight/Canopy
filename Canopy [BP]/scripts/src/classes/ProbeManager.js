@@ -62,7 +62,7 @@ class ProbeManager {
     getProperty(player, property) {
         let result = '?';
 
-        if (this.isHoldingRiptideTrident(player)) {
+        if (this.isDoingBannedAction(player)) {
             this.removeProbe(player);
             return result;
         }
@@ -81,7 +81,8 @@ class ProbeManager {
         return value === -1 ? result : value;
     }
 
-    isHoldingRiptideTrident(player) {
+    isDoingBannedAction(player) {
+        // Trident with Riptide
         const equippable = player.getComponent(EntityComponentTypes.Equippable);
         const mainhandItemStack = equippable?.getEquipment(EquipmentSlot.Mainhand);
         if (mainhandItemStack?.typeId === 'minecraft:trident') {
@@ -89,6 +90,10 @@ class ProbeManager {
             const hasRiptide = enchantable?.hasEnchantment('riptide');
             return hasRiptide;
         }
+        // Riding an entity
+        const riding = player.getComponent(EntityComponentTypes.Riding);
+        if (riding?.entityRidingOn)
+            return true;
         return false;
     }
 
