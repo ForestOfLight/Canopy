@@ -220,7 +220,7 @@ commands.warp.list.empty=§7There are no warps.
 commands.warp.list.header=§7Available warps:
 
 ## rules
-rules.generic.unknown=§cInvalid rule: %s. Use %2help for more information.
+rules.generic.unknown=§cInvalid rule: '%s'. Use %2help for more information.
 rules.generic.blocked=§cThe %s rule is disabled.
 rules.generic.status=§7%1 is currently %2§r§7.
 rules.generic.nochange=§7%1 is already %2§r§7.
