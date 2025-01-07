@@ -26,9 +26,9 @@ commands.help.rules=Umschaltbare globale Regeln.
 commands.help.extension.rules=Umschaltbare Regeln für §a%s§2.
 commands.help.extension.commands=Befehle für §a%s§2.
 
-commands.camera=Platziere eine Kamera, beobachte sie oder nutze eine Überleben freundlich version des Zuschauer Modus.
-commands.camera.place=Platzier eine Kamera bei deiner derzeitigen Position. (Alias: cp)
-commands.camera.view=Schaltet die Beobachtung der letzt Platzierten Kamera um. (Alias: cv)
+commands.camera=Platziere eine Kamera, beobachte sie oder nutze eine Überleben freundliche Version des Zuschauer Modus.
+commands.camera.place=Platziert eine Kamera bei deiner derzeitigen Position. (Alias: cp)
+commands.camera.view=Schaltet die Beobachtung der letzt platzierten Kamera um. (Alias: cv)
 commands.camera.spectate=Schaltet einen Überleben freundlichen Zuschauer Modus um. (Alias: cs)
 commands.camera.place.viewing=§cDu kannst keine Kamera Platzieren wärend du eine andere Kamera beobachtest.
 commands.camera.place.success=§7Kamera bei %s platziert.
