@@ -146,6 +146,10 @@ commands.removeentity.success=§7Menghapus %1 dengan id '%2'.
 commands.resetall=Mereset semua aturan dan data §lCanopy§r§8 Gunakan dengan hati-hati.
 commands.resetall.success=§7Semua pemain dan properti dinamis dunia §lCanopy§r§8 telah direset.
 
+commands.simmap=Menampilkan map chunk yang dimuat di dekat Anda, atau lokasi yang ditentukan.
+commands.simmap.header=§7Chunk yang dimuat dalam %1§7 di sekitar §2%2§7
+commands.simmap.invalidDistance=§cJarak '%1' tidak valid. Silakan gunakan nilai antara 1 dan %2.
+
 commands.sit=Membuat pemain/karakter Anda duduk.
 commands.sit.busy=§cAnda sedang sibuk dan tidak bisa duduk.
 
