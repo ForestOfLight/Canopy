@@ -239,9 +239,11 @@ commands.warp.list.header=§7Warps yang tersedia:
 ## rules
 rules.generic.unknown=§cAturan tidak valid: %s. Gunakan %2help untuk informasi lebih lanjut.
 rules.generic.blocked=§cAturan %s dinonaktifkan.
-rules.generic.status=§7%1 saat ini %2§r§7.
-rules.generic.nochange=§7%1 sudah %2§r§7.
-rules.generic.updated=§7%1 sekarang %2§r§7.
+rules.generic.status=§7%1 saat ini §l%2§r§7.
+rules.generic.nochange=§7%1 sudah §l%2§r§7.
+rules.generic.updated=§7%1 sekarang §l%2§r§7.
+rules.generic.enabled=§adiaktifkan
+rules.generic.disabled=§cdinonaktifkan
 
 rules.commandCamera=Mengaktifkan perintah kamera.
 rules.commandChangeDimension=Mengaktifkan perintah perubahan dimensi.
