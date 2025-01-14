@@ -1,6 +1,6 @@
 import { world, StructureSaveMode, StructureRotation, BlockPermutation, StructureMirrorAxis } from '@minecraft/server'
 import DirectionStateFinder from 'src/classes/DirectionState';
-import Utils from 'stickycore/utils';
+import Utils from 'include/utils';
 
 class BlockRotator {
     static idPrefix = 'canopy:rotator-';

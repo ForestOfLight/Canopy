@@ -1,5 +1,5 @@
 import { system } from "@minecraft/server";
-import Utils from "stickycore/utils";
+import Utils from "include/utils";
 import { channelMap as counterMap } from 'src/commands/counter';
 import { channelMap as generatorMap } from 'src/commands/generator';
 import { worldSpawns } from 'src/commands/spawn';

@@ -1,7 +1,7 @@
 import { system, world } from '@minecraft/server';
 import { Rule } from 'lib/canopy/Canopy';
 import { channelMap, formatColor, query, queryAll } from 'src/commands/counter';
-import Utils from 'stickycore/utils';
+import Utils from 'include/utils';
 
 system.afterEvents.scriptEventReceive.subscribe(async (event) => {
     if (event.id !== 'canopy:counter') return;

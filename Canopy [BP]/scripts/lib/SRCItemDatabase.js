@@ -13,7 +13,7 @@ import {
     StructureSaveMode,
     world
 } from "@minecraft/server";
-import { Vector } from './Vector.js';
+import { Vector } from 'src/classes/Vector.js';
 
 
 /**

@@ -1,6 +1,6 @@
 import { world, DimensionTypes } from '@minecraft/server'
 import { Rule, Command } from 'lib/canopy/Canopy'
-import Utils from 'stickycore/utils'
+import Utils from 'include/utils'
 import WorldSpawns from 'src/classes/WorldSpawns'
 import { categoryToMobMap } from 'src/classes/SpawnTracker';
 

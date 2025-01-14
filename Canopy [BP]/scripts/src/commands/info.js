@@ -36,10 +36,14 @@ function infoCommand(sender, args) {
     if (!InfoDisplayRule.exists(ruleID))
         return sender.sendMessage({ translate: 'rules.generic.unknown', with: [ruleID, Command.prefix] });
     const ruleValue = InfoDisplayRule.getValue(sender, ruleID);
-    if (enable === null)
-        return sender.sendMessage({ translate: 'rules.generic.status', with: [ruleID, ruleValue ? '§l§aenabled' : '§l§cdisabled'] });
-    if (enable === ruleValue)
-        return sender.sendMessage({ tramslate: 'rules.generic.nochange', with: [ruleID, enable ? '§l§aenabled' : '§l§cdisabled'] });
+    if (enable === null) {
+        const enabledRawText = ruleValue ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' };
+        return sender.sendMessage({ translate: 'rules.generic.status', with: [ruleID, enabledRawText] });
+    }
+    if (enable === ruleValue) {
+        const enabledRawText = enable ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' };
+        return sender.sendMessage({ tramslate: 'rules.generic.nochange', with: [ruleID, enabledRawText] });
+    }
 
     if (['showDisplay', 'light', 'biome'].includes(ruleID))
         ProbeManager.removeProbe(sender);
@@ -71,7 +75,8 @@ function clearInfoDisplay(sender) {
 function updateRule(sender, ruleID, ruleValue, enable) {
     if (ruleValue === enable) return;
     InfoDisplayRule.setValue(sender, ruleID, enable);
-    sender.sendMessage({ translate: 'rules.generic.updated', with: [ruleID, enable ? '§l§aenabled' : '§l§cdisabled'] });
+    const enabledRawText = enable ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' };
+    sender.sendMessage({ translate: 'rules.generic.updated', with: [ruleID, enabledRawText] });
 }
 
 function updateRules(sender, ruleIDs, enable) {

@@ -1,4 +1,4 @@
-import SRCItemDatabase from 'src/classes/SRCItemDatabase';
+import SRCItemDatabase from 'lib/SRCItemDatabase';
 
 class HotbarManager {
     constructor(player) {

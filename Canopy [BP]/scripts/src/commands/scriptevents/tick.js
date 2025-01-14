@@ -1,5 +1,5 @@
 import { system, world } from "@minecraft/server";
-import Utils from "stickycore/utils";
+import Utils from "include/utils";
 
 system.afterEvents.scriptEventReceive.subscribe((event) => {
     if (event.id !== "canopy:tick") return;

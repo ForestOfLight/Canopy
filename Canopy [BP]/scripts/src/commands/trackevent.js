@@ -1,7 +1,7 @@
 import { world } from '@minecraft/server';
 import { Command } from 'lib/canopy/Canopy';
 import EventTracker from 'src/classes/EventTracker';
-import Utils from 'stickycore/utils';
+import Utils from 'include/utils';
 
 const cmd = new Command({
     name: 'trackevent',

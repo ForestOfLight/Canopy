@@ -22,11 +22,11 @@ async function canopyCommand(sender, args) {
 
     const rule = Rule.getRule(ruleID);
     const ruleValue = await rule.getValue();
-    const enabledFormat = ruleValue ? '§l§aenabled' : '§l§cdisabled';
+    const enabledRawText = ruleValue ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' }
     if (enable === null)
-        return sender.sendMessage({ translate: 'rules.generic.status', with: [rule.getID(), enabledFormat] });
+        return sender.sendMessage({ translate: 'rules.generic.status', with: [rule.getID(), enabledRawText] });
     if (ruleValue === enable)
-        return sender.sendMessage({ translate: 'rules.generic.nochange', with: [rule.getID(), enabledFormat] });
+        return sender.sendMessage({ translate: 'rules.generic.nochange', with: [rule.getID(), enabledRawText] });
 
     if (ruleID === 'hopperCounters' && !enable)
         resetCounterMap();
@@ -43,7 +43,7 @@ async function canopyCommand(sender, args) {
 function updateRule(sender, ruleID, ruleValue, enable) {
     if (ruleValue === enable) return;
     Rule.getRule(ruleID).setValue(enable);
-    sender.sendMessage({ translate: 'rules.generic.updated', with: [ruleID, enable ? '§l§aenabled' : '§l§cdisabled'] });
+    sender.sendMessage({ translate: 'rules.generic.updated', with: [ruleID, enable ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' }] });
 }
 
 async function updateRules(sender, ruleIDs, enable) {

@@ -1,6 +1,5 @@
 import { Player, world } from '@minecraft/server';
 import { Rule, Command } from 'lib/canopy/Canopy';
-import Data from 'stickycore/data';
 
 new Rule({
     category: 'Rules',
@@ -36,6 +35,6 @@ function removeEntityCommand(sender, args) {
 
 function getTargetEntity(sender, id) {
     if (id === null)
-        return Data.getLookingAtEntities(sender, 16)[0]?.entity;
+        return sender.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: false, maxDistance: 16 })[0]?.entity;
     return world.getEntity(String(id));
 }

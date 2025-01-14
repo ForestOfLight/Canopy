@@ -1,7 +1,6 @@
 import { system, world, ItemStack } from '@minecraft/server'
 import { Rule, Command } from 'lib/canopy/Canopy'
-import Data from 'stickycore/data'
-import Utils from 'stickycore/utils'
+import Utils from 'include/utils'
 
 new Rule({
     category: 'Rules',
@@ -54,7 +53,7 @@ class CounterChannel {
         this.mode = 'countMode';
         this.totalCount = 0;
         this.itemMap = new Map();
-        this.startTickTime = Data.getAbsoluteTime();
+        this.startTickTime = system.currentTick;
         this.startRealTime = Date.now();
     }
 }
@@ -151,7 +150,7 @@ class CounterChannelMap {
         const channel = this.getChannel(color);
         channel.totalCount = 0;
         channel.itemMap = new Map();
-        channel.startTickTime = Data.getAbsoluteTime();
+        channel.startTickTime = system.currentTick;
         channel.startRealTime = Date.now();
         this.setChannel(color, channel);
     }
@@ -191,7 +190,7 @@ class CounterChannelMap {
         if (this.realtime) {
             deltaTime = (Date.now() - channel.startRealTime) / msPerTick;
         } else {
-            deltaTime = Data.getAbsoluteTime() - channel.startTickTime;
+            deltaTime = system.currentTick - channel.startTickTime;
         }
         deltaTime = Math.floor(deltaTime / 8) * 8;
         return deltaTime;

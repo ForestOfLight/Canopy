@@ -1,6 +1,5 @@
 import { Command } from 'lib/canopy/Canopy';
-import Data from 'stickycore/data';
-import Utils from 'stickycore/utils';
+import Utils from 'include/utils';
 
 const MAX_DISTANCE = 6*16;
 const currentQuery = {};
@@ -25,7 +24,7 @@ function peekCommand(sender, args) {
     let targetName;
 
     updateQueryMap(sender, itemQuery);
-    ({blockRayResult, entityRayResult} = Data.getRaycastResults(sender, MAX_DISTANCE));
+    ({blockRayResult, entityRayResult} = Utils.getRaycastResults(sender, MAX_DISTANCE));
     if (!blockRayResult && !entityRayResult[0])
         return sender.sendMessage({ translate: 'generic.target.notfound' });
     target = Utils.getClosestTarget(sender, blockRayResult, entityRayResult);

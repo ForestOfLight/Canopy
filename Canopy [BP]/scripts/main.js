@@ -36,7 +36,7 @@ import 'src/commands/scriptevents/generator'
 import 'src/commands/scriptevents/resettest'
 
 // Rules
-import 'src/rules/InfoDisplay'
+import 'src/rules/infodisplay/InfoDisplay'
 import 'src/rules/explosionNoBlockDamage'
 import 'src/rules/autoItemPickup'
 import 'src/rules/universalChunkLoading'
@@ -71,7 +71,7 @@ import 'src/validWorld'
 
 // Reload message
 import { world } from '@minecraft/server';
-import Utils from 'stickycore/utils';
+import Utils from 'include/utils';
 import ProbeManager from 'src/classes/ProbeManager';
 import { Command } from 'lib/canopy/Canopy';
 
