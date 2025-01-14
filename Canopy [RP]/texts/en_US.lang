@@ -222,9 +222,11 @@ commands.warp.list.header=§7Available warps:
 ## rules
 rules.generic.unknown=§cInvalid rule: '%s'. Use %2help for more information.
 rules.generic.blocked=§cThe %s rule is disabled.
-rules.generic.status=§7%1 is currently %2§r§7.
-rules.generic.nochange=§7%1 is already %2§r§7.
-rules.generic.updated=§7%1 is now %2§r§7.
+rules.generic.status=§7%1 is currently §l%2§r§7.
+rules.generic.nochange=§7%1 is already §l%2§r§7.
+rules.generic.updated=§7%1 is now §l%2§r§7.
+rules.generic.enabled=§aenabled
+rules.generic.disabled=§cdisabled
 
 rules.commandCamera=Enables camera command.
 rules.commandChangeDimension=Enables changedimension command.
