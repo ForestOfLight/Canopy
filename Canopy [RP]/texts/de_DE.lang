@@ -216,7 +216,7 @@ commands.warp.list.empty=§7Es gibt keine Warp Punkte.
 commands.warp.list.header=§7Verfügbare Warp Punkte:
 
 ## Regeln
-rules.generic.unknown=§cInvalid rule: %s. Verwenden Sie %2help für weitere Informationen.
+rules.generic.unknown=§cUngültige Regel: %s. Verwenden Sie %2help für weitere Informationen.
 rules.generic.blocked=§cDie Regel %s ist deaktiviert.
 rules.generic.status=§7%1 ist derzeit %2§r§7.
 rules.generic.nochange=§7%1 ist bereits %2§r§7.
