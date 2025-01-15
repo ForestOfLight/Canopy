@@ -21,21 +21,26 @@ const validDimensions = {
 const cmd = new Command({
     name: 'simmap',
     description: { translate: 'commands.simmap' },
-    usage: 'simmap [distance] [dimension x z] OR simmap display [distance / dimension x z]',
+    usage: 'simmap [distance] [dimension x z] [display <distance / dimension x z / here>]',
     args: [
         { type: 'number|string', name: 'argOne' },
         { type: 'string|number', name: 'argTwo' },
         { type: 'number', name: 'argThree' },
         { type: 'number', name: 'argFour' },
     ],
-    callback: simmapCommand
+    callback: simmapCommand,
+    helpEntries: [
+        { usage: 'simmap <distance>', description: { translate: 'commands.simmap.help.distance' } },
+        { usage: 'simmap [distance] <dimension x z>', description: { translate: 'commands.simmap.help.location' } },
+        { usage: 'simmap display <distance / dimension x z>', description: { translate: 'commands.simmap.help.display.set' } },
+        { usage: 'simmap display here', description: { translate: 'commands.simmap.help.display.reset' } }
+    ]
 });
 
 function simmapCommand(sender, args) {
     let { argOne, argTwo, argThree, argFour } = args;
     if (argOne === 'display') {
         handleInfoDisplayConfig(sender, argTwo, argThree, argFour);
-        return;
     } else {
         handleChatCommand(sender, argOne, argTwo, argThree, argFour);
     }
@@ -43,38 +48,57 @@ function simmapCommand(sender, args) {
 
 function handleInfoDisplayConfig(sender, argTwo, x, z) {
     if (Utils.isNumeric(argTwo) && (argTwo < 1 || argTwo > MAX_CHUNK_DISTANCE)) {
-        sender.sendMessage({ translate: 'commands.simmap.invalidDistance', with: [String(argOne), String(MAX_CHUNK_DISTANCE)] });
+        sender.sendMessage({ translate: 'commands.simmap.invalidDistance', with: [String(argTwo), String(MAX_CHUNK_DISTANCE)] });
         return;
     }
 
     if (Utils.isNumeric(argTwo))
         updateDistance(sender, argTwo);
     else if (validDimensions[argTwo] && x !== null && z !== null)
-        updateLocation(sender, validDimensions[argTwo], x, z);
+        updateLocation(sender, world.getDimension(validDimensions[argTwo]), x, z);
+    else if (argTwo === 'here')
+        resetLocation(sender);
     else
         return cmd.sendUsage(sender);
 }
 
 function updateDistance(sender, distance) {
-    const config = {
-        isLocked: false,
-        dimension: sender.dimension,
-        location: { x: 0, z: 0 },
-        distance: argTwo
-    };
+    const config = getConfig(sender);
+    config.distance = distance;
     sender.setDynamicProperty('simulationMapConfig', JSON.stringify(config));
-    sender.sendMessage({ translate: 'commands.simmap.config.distance', with: [String(argTwo)] });
+    sender.sendMessage({ translate: 'commands.simmap.config.distance', with: [String(distance)] });
 }
 
 function updateLocation(sender, dimension, x, z) {
-    const config = {
-        isLocked: true,
-        dimension,
-        location: { x, z },
-        distance: 7
-    };
+    const config = getConfig(sender);
+    config.isLocked = true;
+    config.dimension = dimension.id;
+    config.location = { x, z };
     sender.setDynamicProperty('simulationMapConfig', JSON.stringify(config));
     sender.sendMessage({ translate: 'commands.simmap.config.location', with: [`[${x}, ${z}]`, Utils.getColoredDimensionName(dimension.id)] });
+}
+
+function resetLocation(sender) {
+    const config = getConfig(sender);
+    config.isLocked = false;
+    config.dimension = sender.dimension.id;
+    config.location = { x: 0, z: 0 };
+    sender.setDynamicProperty('simulationMapConfig', JSON.stringify(config));
+}
+
+function getConfig(player) {
+    const dynamicConfig = player.getDynamicProperty('simulationMapConfig');
+    if (dynamicConfig) {
+        return JSON.parse(dynamicConfig);
+    }
+    const config = {
+        isLocked: false,
+        dimension: MinecraftDimensionTypes.overworld,
+        location: { x: 0, z: 0 },
+        distance: 7
+    };
+    player.setDynamicProperty('simulationMapConfig', JSON.stringify(config));
+    return config;
 }
 
 function handleChatCommand(sender, argOne, argTwo, argThree, argFour) {
@@ -167,4 +191,4 @@ function formatVisualChunkMap(loadedChunks, dimensionChunkLocation, distance) {
     return message;
 }
 
-export default getLoadedChunksMessage;
+export { getConfig, getLoadedChunksMessage };

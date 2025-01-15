@@ -116,6 +116,8 @@ class InfoDisplay {
 	}
 
 	sendInfoMessage() {
+		if (this.infoMessage.rawtext.length == 0)
+			return;
 		this.player.onScreenDisplay.setTitle(this.infoMessage);
 	}
 }

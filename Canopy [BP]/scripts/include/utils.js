@@ -14,7 +14,7 @@ class Utils {
 	}
 
     static isNumeric(str) {
-        return !isNaN(Number(str)) && isFinite(str);
+		return !isNaN(Number(str)) && str !== null;
     }
 
 	static parseLookingAtBlock(lookingAtBlock) {

@@ -127,7 +127,7 @@ commands.health=Displays the server's current TPS, MSPT, and entity counts.
 commands.health.fail.mspt=§cCould not compute MSPT. Please report this error.
 
 commands.info=Toggle InfoDisplay rules. (Alias: i)
-commands.info.allupdated=§7All InfoDisplay rules are now %s
+commands.info.allupdated=§7All InfoDisplay rules are now §l
 commands.info.canopyRule=§cThe rule '%1' is global rule, and must be toggled using %2canopy. Use %2help for more information.
 
 commands.jump=Teleport to the block you are looking at. (Alias: j)
@@ -165,6 +165,10 @@ commands.resettest.success=§7Reset spawn counters, hopper counters, and hopper 
 commands.resettest.success.actionbar=[%s] §7Reset spawn counters, hopper counters, and hopper generators.
 
 commands.simmap=Displays a map of the loaded chunks near you or the specified location.
+commands.simmap.help.distance=Displays the map with a radius of chunks equal to the specified distance.
+commands.simmap.help.location=Display the map around the specified location.
+commands.simmap.help.display.set=Sets the distance or location for the simulation map in your InfoDisplay.
+commands.simmap.help.display.reset=Sets the location for the simulation map in your InfoDisplay to follow your current location.
 commands.simmap.header=§7Loaded chunks in %1§7 around §2%2§7
 commands.simmap.invalidDistance=§cDistance '%1' is invalid. Please use a value between 1 and %2.
 commands.simmap.config.distance=§7InfoDisplay Simulation Map distance updated to %s.
@@ -327,7 +331,7 @@ rules.infoDisplay.moonPhase=Shows the phase of the moon.
 rules.infoDisplay.moonPhase.display=§rMoon: §7%s§r
 rules.infoDisplay.eventTrackers=Shows the counts of tracked events.
 rules.infoDisplay.hopperCounterCounts=Shows all active hopper counter counts in their respective colors. Hopper counter mode controls this info.
-rules.infoDisplay.simulationMap=Shows a map of the loaded chunks around you. The simmap command can be used to configure this.
+rules.infoDisplay.simulationMap=Shows a map of the loaded chunks around you. The simmap command can be used to configure this. Warning: This is a very laggy rule.
 rules.infoDisplay.lookingAt=Shows the identifier of the block or entity you are looking at.
 rules.infoDisplay.signalStrength=Shows the signal strength of the block you are looking at.
 rules.infoDisplay.peekInventory=Shows the inventory of the block or entity you are looking at.
