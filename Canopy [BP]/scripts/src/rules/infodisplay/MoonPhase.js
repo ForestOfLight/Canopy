@@ -3,7 +3,7 @@ import { world, MoonPhase } from '@minecraft/server';
 
 class MoonPhase extends InfoDisplayElement {
     constructor() {
-        super('moonPhase', { translate: 'rules.infoDisplay.moonPhase' }, 7, true);
+        super('moonPhase', { translate: 'rules.infoDisplay.moonPhase' }, 8, true);
     }
 
     getFormattedDataOwnLine() {

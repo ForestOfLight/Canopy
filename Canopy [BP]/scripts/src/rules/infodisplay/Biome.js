@@ -5,7 +5,7 @@ class Biome extends InfoDisplayElement {
     player;
 
     constructor(player) {
-        super('biome', { translate: 'rules.infoDisplay.biome' }, 4);
+        super('biome', { translate: 'rules.infoDisplay.biome' }, 5);
         this.player = player;
     }
 

@@ -3,7 +3,7 @@ import { world } from '@minecraft/server';
 
 class TimeOfDay extends InfoDisplayElement {
     constructor() {
-        super('timeOfDay', { translate: 'rules.infoDisplay.timeOfDay' }, 5, true);
+        super('timeOfDay', { translate: 'rules.infoDisplay.timeOfDay' }, 6, true);
     }
 
     getFormattedDataOwnLine() {

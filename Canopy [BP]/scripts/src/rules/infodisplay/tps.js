@@ -3,7 +3,7 @@ import { DataTPS } from 'src/tps';
 
 class TPS extends InfoDisplayElement {
     constructor() {
-        super('tps', { translate: 'rules.infoDisplay.tps' }, 3, true);
+        super('tps', { translate: 'rules.infoDisplay.tps' }, 4, true);
     }
 
     getFormattedDataOwnLine() {

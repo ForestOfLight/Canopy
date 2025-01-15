@@ -5,7 +5,7 @@ class SessionTime extends InfoDisplayElement {
     player;
 
     constructor(player) {
-        super('sessionTime', { translate: 'rules.infoDisplay.sessionTime' }, 6);
+        super('sessionTime', { translate: 'rules.infoDisplay.sessionTime' }, 7);
         this.player = player;
         player.setDynamicProperty('joinDate', Date.now());
     }

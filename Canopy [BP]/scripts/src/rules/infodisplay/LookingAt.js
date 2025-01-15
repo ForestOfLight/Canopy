@@ -3,7 +3,7 @@ import Utils from 'include/utils';
 
 class LookingAt extends InfoDisplayElement {
     constructor(player) {
-        super('lookingAt', { translate: 'rules.infoDisplay.lookingAt' }, 10);
+        super('lookingAt', { translate: 'rules.infoDisplay.lookingAt' }, 12);
         this.player = player;
     }
 

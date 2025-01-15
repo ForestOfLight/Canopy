@@ -5,7 +5,7 @@ class Entities extends InfoDisplayElement {
     player;
 
     constructor(player) {
-        super('entities', { translate: 'rules.infoDisplay.entities' }, 3);
+        super('entities', { translate: 'rules.infoDisplay.entities' }, 4);
         this.player = player;
     }
 

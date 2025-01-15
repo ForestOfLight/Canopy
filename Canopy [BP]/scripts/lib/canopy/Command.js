@@ -160,7 +160,7 @@ world.beforeEvents.chatSend.subscribe((event) => {
 	if (command.isAdminOnly() && !sender.hasTag('CanopyAdmin')) 
 		return sender.sendMessage({ translate: 'commands.generic.nopermission' });
 	
-	system.run( async () => {
+	system.run(async () => {
 		for (let ruleID of command.getContingentRules()) {
 			const ruleValue = await Rule.getValue(ruleID);
 			if (!ruleValue) {

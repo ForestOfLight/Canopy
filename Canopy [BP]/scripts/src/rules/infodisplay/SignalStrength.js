@@ -5,7 +5,7 @@ class SignalStrength extends InfoDisplayElement {
     player;
 
     constructor(player) {
-        super('signalStrength', { translate: 'rules.infoDisplay.signalStrength' }, 10, false, ['lookingAt']);
+        super('signalStrength', { translate: 'rules.infoDisplay.signalStrength' }, 12, false, ['lookingAt']);
         this.player = player;
     }
 

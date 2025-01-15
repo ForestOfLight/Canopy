@@ -5,7 +5,7 @@ class Light extends InfoDisplayElement {
     player;
 
     constructor(player) {
-        super('light', { translate: 'rules.infoDisplay.light' }, 4);
+        super('light', { translate: 'rules.infoDisplay.light' }, 5);
         this.player = player;
     }
 

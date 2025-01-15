@@ -6,7 +6,7 @@ class PeekInventory extends InfoDisplayElement {
     player;
 
     constructor(player) {
-        super('peekInventory', { translate: 'rules.infoDisplay.peekInventory' }, 11, false, ['lookingAt']);
+        super('peekInventory', { translate: 'rules.infoDisplay.peekInventory' }, 13, false, ['lookingAt']);
         this.player = player;
     }
 
@@ -20,7 +20,7 @@ class PeekInventory extends InfoDisplayElement {
 
     parsePeekInventory() {
 		let blockRayResult, entityRayResult;
-        ({ blockRayResult, entityRayResult } = Utils.getRaycastResults(this.player, 7));
+        ({ blockRayResult, entityRayResult } = Utils.getRaycastResults(this.player, 9));
 		if (!blockRayResult && !entityRayResult) return '';
 		const target = Utils.getClosestTarget(this.player, blockRayResult, entityRayResult);
 		if (!target) return '';

@@ -3,6 +3,8 @@ import { system, world } from '@minecraft/server';
 import Coords from './Coords';
 import CardinalFacing from './CardinalFacing';
 import Facing from './Facing';
+import ChunkCoords from './ChunkCoords';
+import SlimeChunk from './SlimeChunk';
 import TPS from './TPS';
 import Entities from './Entities';
 import Light from './Light';
@@ -11,9 +13,9 @@ import WorldDay from './WorldDay';
 import TimeOfDay from './TimeOfDay';
 import SessionTime from './SessionTime';
 import MoonPhase from './MoonPhase';
-import SlimeChunk from './SlimeChunk';
 import EventTrackers from './EventTrackers';
 import HopperCounterCounts from './HopperCounterCounts';
+import SimulationMap from './simulationMap';
 import LookingAt from './LookingAt';
 import SignalStrength from './SignalStrength';
 import PeekInventory from './PeekInventory';
@@ -32,6 +34,8 @@ class InfoDisplay {
 			new Coords(player),
 			new CardinalFacing(player),
 			new Facing(player),
+			new ChunkCoords(player),
+			new SlimeChunk(player),
 			new TPS(),
 			new Entities(player),
 			new Light(player),
@@ -40,9 +44,9 @@ class InfoDisplay {
 			new TimeOfDay(),
 			new SessionTime(player),
 			new MoonPhase(),
-			new SlimeChunk(player),
 			new EventTrackers(),
 			new HopperCounterCounts(),
+			new SimulationMap(player),
 			new LookingAt(player),
 			new SignalStrength(player),
 			new PeekInventory(player)
@@ -127,5 +131,6 @@ system.runInterval(() => {
 });
 
 world.beforeEvents.playerLeave.subscribe((event) => {
+	if (!event.player) return;
 	delete playerToInfoDisplayMap[event.player.id];
 });

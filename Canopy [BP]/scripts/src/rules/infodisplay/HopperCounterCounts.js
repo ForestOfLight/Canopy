@@ -3,7 +3,7 @@ import { getInfoDisplayOutput } from 'src/commands/counter';
 
 class HopperCounterCounts extends InfoDisplayElement {
     constructor() {
-        super('hopperCounterCounts', { translate: 'rules.infoDisplay.hopperCounterCounts' }, 9, true);
+        super('hopperCounterCounts', { translate: 'rules.infoDisplay.hopperCounterCounts' }, 10, true);
     }
 
     getFormattedDataOwnLine() {

@@ -5,7 +5,7 @@ class SlimeChunk extends InfoDisplayElement {
     player;
 
     constructor(player) {
-        super('slimeChunk', { translate: 'rules.infoDisplay.slimeChunk' }, 7);
+        super('slimeChunk', { translate: 'rules.infoDisplay.slimeChunk' }, 3);
         this.player = player;
     }
 

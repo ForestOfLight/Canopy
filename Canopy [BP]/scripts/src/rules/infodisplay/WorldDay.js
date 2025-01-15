@@ -3,7 +3,7 @@ import { world } from '@minecraft/server';
 
 class WorldDay extends InfoDisplayElement {
     constructor() {
-        super('worldDay', { translate: 'rules.infoDisplay.worldDay' }, 5, true);
+        super('worldDay', { translate: 'rules.infoDisplay.worldDay' }, 6, true);
     }
 
     getFormattedDataOwnLine() {
