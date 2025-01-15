@@ -27,9 +27,9 @@ const cmd = new Command({
 })
 
 new Command({
-    name: 'gen',
+    name: 'gt',
     description: { translate: 'commands.generator' },
-    usage: 'gen <color/all/reset/realtime> [reset/realtime]',
+    usage: 'gt <color/all/reset/realtime> [reset/realtime]',
     args: [
         { type: 'string', name: 'argOne' },
         { type: 'string', name: 'argTwo' }

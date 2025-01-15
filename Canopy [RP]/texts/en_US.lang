@@ -43,6 +43,7 @@ commands.camera.spectate.started=§aSpectating
 commands.camera.spectate.ended=§7Spectating ended
 
 commands.canopy=Enable or disable a rule.
+commands.canopy.infodisplayRule=§cThe rule '%1' is part of the InfoDisplay, and must be toggled using %2info. Use %2help for more information.
 
 commands.changedimension=Teleports you to the specified dimension.
 commands.changedimension.notfound=§cInvalid dimension. Please use one of these: %s
@@ -110,11 +111,24 @@ commands.gamemode.a=Set your gamemode to adventure.
 commands.gamemode.c=Set your gamemode to creative.
 commands.gamemode.sp=Set your gamemode to spectator.
 
+commands.generator=Manages hopper generators. (Alias: gt)
+commands.generator.channel.notfound=§cInvalid color: %s. Please use one of the wool block colors.
+commands.generator.query=Displays the count and rates of the hopper generator for the specified color.
+commands.generator.query.empty=§7There are no hopper generators in use.
+commands.generator.query.channel=§7Generated items for %1§7 (%2%3 min.), total: §f%4§7, (§f%5§7):
+commands.generator.realtime=Displays count and rates, but uses real-world time instead of tick-based time.
+commands.generator.reset=Resets all hopper generators and restarts the timer.
+commands.generator.reset.single=§7Reset and time restarted: %s
+commands.generator.reset.single.actionbar=[%1] Reset %2 hopper generator.
+commands.generator.reset.all=§7All channels have been reset and hopper generator timer started.
+commands.generator.reset.all.actionbar=[%s] Reset all hopper generators.
+
 commands.health=Displays the server's current TPS, MSPT, and entity counts.
 commands.health.fail.mspt=§cCould not compute MSPT. Please report this error.
 
 commands.info=Toggle InfoDisplay rules. (Alias: i)
-commands.info.allupdated=%s§r§7 all InfoDisplay rules.
+commands.info.allupdated=§7All InfoDisplay rules are now %s
+commands.info.canopyRule=§cThe rule '%1' is global rule, and must be toggled using %2canopy. Use %2help for more information.
 
 commands.jump=Teleport to the block you are looking at. (Alias: j)
 commands.jump.fail.noblock=§cNo block found to jump to.
@@ -146,6 +160,10 @@ commands.removeentity.success=§7Removed %1 with id '%2'.
 commands.resetall=Resets all §lCanopy§r§8 rules and data. Use with caution.
 commands.resetall.success=§7All §lCanopy§r§8 player and world dynamic properties have been reset.
 
+commands.resettest=Resets spawn tracking, hopper counters, and hopper generators at the same time.
+commands.resettest.success=§7Reset spawn counters, hopper counters, and hopper generators.
+commands.resettest.success.actionbar=[%s] §7Reset spawn counters, hopper counters, and hopper generators.
+
 commands.simmap=Displays a map of the loaded chunks near you or the specified location.
 commands.simmap.header=§7Loaded chunks in %1§7 around §2%2§7
 commands.simmap.invalidDistance=§cDistance '%1' is invalid. Please use a value between 1 and %2.
@@ -171,13 +189,13 @@ commands.spawn.tracking.query=Displays a summary of all spawns that have occurre
 commands.spawn.tracking.query.dimension=§7Dimension %s§r:
 commands.spawn.tracking.no=§cSpawns are not currently being tracked.
 commands.spawn.tracking.already=§cSpawns are already being tracked.
-commands.spawn.tracking.test=Resets all spawn counters and hopper counters.
-commands.spawn.tracking.test.success=§7Spawn counters and hopper counters reset.
-commands.spawn.tracking.test.success.actionbar=[%s] §7Reset spawn counters and hopper counters.
+commands.spawn.tracking.test=Resets all spawn counters.
+commands.spawn.tracking.test.success=§7Spawn counters reset.
+commands.spawn.tracking.test.success.actionbar=[%s] §7Reset spawn counters.
 commands.spawn.tracking.stop=Stops tracking mob spawns.
 commands.spawn.tracking.stop.success=§7Spawns are no longer being tracked.
 commands.spawn.tracking.stop.actionbar=[%s] §7Stopped tracking spawns.
-commands.spawn.test=Resets all spawn counters and hopper counters.
+commands.spawn.reset=Resets all spawn counters.
 commands.spawn.mocking=Enables/disables mob spawning while allowing the spawning algorithm to run.
 commands.spawn.mocking.enable=§aSpawn mocking is now enabled. Mobs will no longer spawn, but the spawning algorithm will continue.
 commands.spawn.mocking.disable=§cSpawn mocking is now disabled. Mobs will spawn as normal.
@@ -226,11 +244,11 @@ commands.warp.list.empty=§7There are no warps.
 commands.warp.list.header=§7Available warps:
 
 ## rules
-rules.generic.unknown=§cInvalid rule: '%s'. Use %2help for more information.
+rules.generic.unknown=§cInvalid rule: '%1'. Use %2help for more information.
 rules.generic.blocked=§cThe %s rule is disabled.
-rules.generic.status=§7%1 is currently §l%2§r§7.
-rules.generic.nochange=§7%1 is already §l%2§r§7.
-rules.generic.updated=§7%1 is now §l%2§r§7.
+rules.generic.status=§7%1 is currently §l
+rules.generic.nochange=§7%1 is already §l
+rules.generic.updated=§7%1 is now §l
 rules.generic.enabled=§aenabled
 rules.generic.disabled=§cdisabled
 
@@ -239,6 +257,7 @@ rules.commandChangeDimension=Enables changedimension command.
 rules.commandClaimProjectiles=Enables claimprojectiles command.
 rules.commandCleanup=Enables cleanup command.
 rules.hopperCounters=Enables counter command & hopper counter functionality.
+rules.hopperGenerators=Enables generator command & hopper generator functionality.
 rules.commandGamemode=Enables shortened gamemode commands (e.g. `./s` for survival), including without OP.
 rules.commandJumpSurvival=Enables jump command in survival mode.
 rules.commandPos=Enables pos command.
@@ -308,7 +327,7 @@ rules.infoDisplay.moonPhase=Shows the phase of the moon.
 rules.infoDisplay.moonPhase.display=§rMoon: §7%s§r
 rules.infoDisplay.eventTrackers=Shows the counts of tracked events.
 rules.infoDisplay.hopperCounterCounts=Shows all active hopper counter counts in their respective colors. Hopper counter mode controls this info.
-rules.infoDisplay.simulationMap=Shows a map of the loaded chunks around you.
+rules.infoDisplay.simulationMap=Shows a map of the loaded chunks around you. The simmap command can be used to configure this.
 rules.infoDisplay.lookingAt=Shows the identifier of the block or entity you are looking at.
 rules.infoDisplay.signalStrength=Shows the signal strength of the block you are looking at.
 rules.infoDisplay.peekInventory=Shows the inventory of the block or entity you are looking at.

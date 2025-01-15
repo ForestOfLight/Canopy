@@ -2,7 +2,7 @@ import { DimensionTypes, system, world } from '@minecraft/server';
 import { Rule } from 'lib/canopy/Canopy';
 
 const SNEAK_COUNT = 3;
-const SNEAK_SPEED = 10;
+const SNEAK_SPEED = 4;
 
 new Rule({
     category: 'Rules',

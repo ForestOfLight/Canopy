@@ -34,15 +34,17 @@ function infoCommand(sender, args) {
     }
     
     if (!InfoDisplayRule.exists(ruleID))
-        return sender.sendMessage({ translate: 'rules.generic.unknown', with: [ruleID, Command.prefix] });
+        return sender.sendMessage({ rawtext: [ { translate: 'rules.generic.unknown', with: [ruleID] }, enabledRawText, { text: '§r§7.' } ] });
+    if (!(InfoDisplayRule.getRule(ruleID) instanceof InfoDisplayRule))
+        return sender.sendMessage({ translate: 'commands.info.canopyRule', with: [ruleID, Command.prefix] });
     const ruleValue = InfoDisplayRule.getValue(sender, ruleID);
     if (enable === null) {
         const enabledRawText = ruleValue ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' };
-        return sender.sendMessage({ translate: 'rules.generic.status', with: [ruleID, enabledRawText] });
+        return sender.sendMessage({ rawtext: [ { translate: 'rules.generic.status', with: [ruleID] }, enabledRawText, { text: '§r§7.' } ] });
     }
     if (enable === ruleValue) {
         const enabledRawText = enable ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' };
-        return sender.sendMessage({ tramslate: 'rules.generic.nochange', with: [ruleID, enabledRawText] });
+        return sender.sendMessage({ rawtext: [ { translate: 'rules.generic.nochange', with: [ruleID] }, enabledRawText, { text: '§r§7.' } ] });
     }
 
     if (['showDisplay', 'light', 'biome'].includes(ruleID))
@@ -65,7 +67,8 @@ function changeAll(sender, enable) {
         entry.setValue(sender, enable);
     }
     if (!enable) clearInfoDisplay(sender);
-    sender.sendMessage({ translate: 'commands.info.allupdated', with: [enable ? '§l§aEnabled' : '§l§cDisabled'] });
+    const enabledRawText = enable ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' };
+    sender.sendMessage({ rawtext: [ { translate: 'commands.info.allupdated' }, enabledRawText, { text: '§r§7.' } ] });
 }
 
 function clearInfoDisplay(sender) {
@@ -76,7 +79,7 @@ function updateRule(sender, ruleID, ruleValue, enable) {
     if (ruleValue === enable) return;
     InfoDisplayRule.setValue(sender, ruleID, enable);
     const enabledRawText = enable ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' };
-    sender.sendMessage({ translate: 'rules.generic.updated', with: [ruleID, enabledRawText] });
+    sender.sendMessage({ rawtext: [ { translate: 'rules.generic.updated', with: [ruleID] }, enabledRawText, { text: '§r§7.' } ] });
 }
 
 function updateRules(sender, ruleIDs, enable) {

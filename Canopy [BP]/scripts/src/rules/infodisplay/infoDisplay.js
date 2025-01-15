@@ -15,7 +15,7 @@ import SessionTime from './SessionTime';
 import MoonPhase from './MoonPhase';
 import EventTrackers from './EventTrackers';
 import HopperCounterCounts from './HopperCounterCounts';
-import SimulationMap from './simulationMap';
+import SimulationMap from './SimulationMap';
 import LookingAt from './LookingAt';
 import SignalStrength from './SignalStrength';
 import PeekInventory from './PeekInventory';
