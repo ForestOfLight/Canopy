@@ -223,6 +223,19 @@ class Utils {
 		}
 	}
 
+	static getScriptEventSourceObject(event) {
+		switch (event.sourceType) {
+			case 'Block':
+				return event.sourceBlock;
+			case 'Entity':
+				return event.sourceEntity;
+			case 'Server':
+				return 'Server';
+			default:
+				return 'Unknown';
+		}
+	}
+
 	static recolor(text, term, colorCode = '§f') {
 		const lowerText = text.toLowerCase();
 		const lowerTerm = term.toLowerCase();
