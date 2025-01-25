@@ -1,9 +1,8 @@
 import { world } from '@minecraft/server';
-import IPC from "lib/ipc/ipc";
+import IPC from "../ipc/ipc";
+import Rules from "./Rules";
 
-const rules = {};
-
-class Rule {
+export class Rule {
     #category;
     #identifier;
     #description;
@@ -18,10 +17,10 @@ class Rule {
         this.#contingentRules = contingentRules;
         this.#independentRules = independentRules;
         this.#extensionName = extensionName;
-        if (Rule.exists(identifier)) {
+        if (Rules.exists(identifier)) {
             throw new Error(`Rule with identifier '${identifier}' already exists.`);
         }
-        rules[identifier] = this;
+        Rules.add(this);
     }
 
     getCategory() {
@@ -78,49 +77,7 @@ class Rule {
     }
 
     getDependentRuleIDs() {
-        return Object.values(rules).filter(rule => rule.#contingentRules.includes(this.#identifier)).map(rule => rule.#identifier);
-    }
-
-    static exists(identifier) {
-        return rules[identifier] !== undefined;
-    }
-    
-    static async getValue(identifier) {
-        return await Rule.getRule(identifier).getValue();
-    }
-
-    static getNativeValue(identifier) {
-        return Rule.getRule(identifier).parseString(world.getDynamicProperty(identifier));
-    }
-
-    static setValue(identifier, value) {
-        Rule.getRule(identifier).setValue(value);
-    }
-
-    static getRules() {
-        return rules;
-    }
-
-    static getCategories() {
-        return [...new Set(Object.values(rules).map(rule => rule.#category))];
-    }
-
-    static getRulesByCategory(category) {
-        let result = Object.values(rules).filter(rule => rule.#category === category);
-        result.sort((a, b) => a.#identifier.localeCompare(b.#identifier));
-        return result;
-    }
-
-    static getRulesByExtension(extensionName) {
-        return Object.values(rules).filter(rule => rule.#extensionName === extensionName);
-    }
-
-    static getRule(identifier) {
-        return rules[identifier];
-    }
-
-    static getExtensionNames() {
-        return [...new Set(Object.values(rules).map(rule => rule.#extensionName))].filter(name => name !== false);
+        return Rules.getAll().filter(rule => rule.#contingentRules.includes(this.#identifier)).map(rule => rule.#identifier);
     }
 }
 

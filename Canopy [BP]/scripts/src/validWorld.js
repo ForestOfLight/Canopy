@@ -1,6 +1,6 @@
 import { world, system } from '@minecraft/server';
 import ProbeManager from 'src/classes/ProbeManager';
-import { getLoadedExtensions } from 'lib/canopy/Canopy';
+import { Extensions } from '../lib/canopy/Canopy';
 
 let hasShownWelcome = {};
 
@@ -36,8 +36,8 @@ function displayWelcome(player) {
     graphic += `§a |          | /\n`;
     graphic += `§a+ ----- +\n`;
     player.sendMessage({ rawtext: [{ text: graphic }, { translate: 'generic.welcome.start' }] });
-    const extensions = getLoadedExtensions();
+    const extensions = Extensions.getVersionedNames();
     if (extensions.length > 0) {
-        player.sendMessage({ translate: 'generic.welcome.extensions', with: [extensions.join('§7, §a')] });
+        player.sendMessage({ translate: 'generic.welcome.extensions', with: [extensions.join('§r§7, §a§o')] });
     }
 }

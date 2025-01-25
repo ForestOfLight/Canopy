@@ -29,7 +29,7 @@ describe('ArgumentParser', () => {
         expect(result).toEqual(['@e']);
     });
 
-    it('should parse entity arguments correctly', () => {
+    it('should parse entity arguments with filters correctly', () => {
         const result = ArgumentParser.parseArgs('@e[type=creeper]');
         expect(result).toEqual(['@e[type=creeper]']);
     });
