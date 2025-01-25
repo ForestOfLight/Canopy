@@ -23,10 +23,10 @@ jobs:
 
       - name: Check for TODO comments
         run: |
-          if (grep -r -E "// TODO|/// TODO|/\*\* TODO \*/" .); then
+          if (grep -r -E "// TODO|/// TODO|/\*\* TODO \*/" .) {
             echo "TODO comments found. Please resolve them before committing."
             exit 1
-          fi
+          }
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
