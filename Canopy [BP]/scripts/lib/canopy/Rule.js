@@ -13,12 +13,15 @@ export class Rule {
     constructor({ category, identifier, description = '', contingentRules = [], independentRules = [], extensionName = false }) {
         this.#category = category;
         this.#identifier = identifier;
+        if (typeof description == 'string')
+            description = { text: description };
         this.#description = description;
         this.#contingentRules = contingentRules;
         this.#independentRules = independentRules;
         this.#extensionName = extensionName;
         if (Rules.exists(identifier)) {
-            throw new Error(`Rule with identifier '${identifier}' already exists.`);
+            console.warn(`[Canopy] Rule with identifier '${identifier}' already exists.`);
+            return;
         }
         Rules.add(this);
     }
@@ -55,15 +58,16 @@ export class Rule {
                 return result;
             });
         }
-        return this.parseString(world.getDynamicProperty(this.#identifier));
+        return this.parseValue(world.getDynamicProperty(this.#identifier));
     }
 
-    parseString(value) {
+    parseValue(value) {
         try {
             return JSON.parse(value);
         } catch (error) {
             if (value === 'undefined') return undefined;
             if (value === 'NaN') return NaN;
+            console.warn(`[Canopy] [Rule] Failed to parse value for ${this.#identifier}: ${value}`);
         }
         return null;
     }
