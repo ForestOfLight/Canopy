@@ -15,6 +15,7 @@ jobs:
     strategy:
       matrix:
         node-version: [20.14.0]
+      fail-fast: true
 
     steps:
       - name: Checkout code
