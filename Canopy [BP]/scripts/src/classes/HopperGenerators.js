@@ -141,16 +141,16 @@ class GeneratorChannelMap {
     }
 
     getDeltaTime(channel) {
-        const msPerTick = 50.0;
-        let deltaTime;
+        const millisecondsPerTick = 50.0;
+        let deltaTicks;
         
         if (this.realtime) {
-            deltaTime = (Date.now() - channel.startRealTime) / msPerTick;
+            deltaTicks = (Date.now() - channel.startRealTime) / millisecondsPerTick;
         } else {
-            deltaTime = system.currentTick - channel.startTickTime;
+            deltaTicks = system.currentTick - channel.startTickTime;
         }
-        deltaTime = Math.floor(deltaTime / 8) * 8;
-        return deltaTime;
+        deltaTicks = Math.floor(deltaTicks / 8) * 8; // normalize to hopper speed
+        return deltaTicks;
     }
 
     getMinutesSinceStart(channel) {

@@ -2,11 +2,11 @@ import { world, ItemStack, DimensionTypes } from '@minecraft/server';
 
 class Utils {
     static calcDistance(locationOne, locationTwo, useY = true) {
-		const x = locationOne.x - locationTwo.x;
-		const z = locationOne.z - locationTwo.z;
-		if (!useY) return Math.sqrt(x*x + z*z);
-		const y = locationOne.y - locationTwo.y;
-		return Math.sqrt(x*x + y*y + z*z);
+		const dx = locationOne.x - locationTwo.x;
+		const dz = locationOne.z - locationTwo.z;
+		if (!useY) return Math.sqrt(dx*dx + dz*dz);
+		const dy = locationOne.y - locationTwo.y;
+		return Math.sqrt(dx*dx + dy*dy + dz*dz);
 	}
 
 	static isString(str) {
@@ -14,7 +14,7 @@ class Utils {
 	}
 
     static isNumeric(str) {
-		return !isNaN(Number(str)) && str !== null;
+		return !isNaN(Number(str)) && str !== null && typeof str !== 'boolean';
     }
 
 	static parseLookingAtBlock(lookingAtBlock) {
@@ -65,17 +65,18 @@ class Utils {
 	static getClosestTarget(player, blockRayResult, entityRayResult) {
 		let entity;
 		let block;
-		let entityDist;
-		let blockDist;
-		
-		if (entityRayResult.length > 0) entity = entityRayResult[0]?.entity;
-		if (blockRayResult) block = blockRayResult.block;
-		if (!entity) return block;
-		if (!block) return entity;
-		entityDist = Utils.calcDistance(player.getHeadLocation(), entity.location);
-		blockDist = Utils.calcDistance(player.getHeadLocation(), block.location);
+		if (entityRayResult.length > 0) 
+			entity = entityRayResult[0]?.entity;
+		if (blockRayResult) 
+			block = blockRayResult.block;
+		if (!entity) 
+			return block;
+		if (!block) 
+			return entity;
+		const entityDist = Utils.calcDistance(player.getHeadLocation(), entity.location);
+		const blockDist = Utils.calcDistance(player.getHeadLocation(), block.location);
 	
-		return entityDist < blockDist ? entity : block;
+		return entityDist <= blockDist ? entity : block;
 	}
 
 	static parseName(target, includePrefix = true) {
@@ -83,6 +84,8 @@ class Utils {
 	}
 
 	static stringifyLocation(location, precision = 0) {
+		if (precision < 0)
+			throw new Error('Precision cannot be negative');
 		return `[${location.x.toFixed(precision)}, ${location.y.toFixed(precision)}, ${location.z.toFixed(precision)}]`
 	}
 
@@ -134,9 +137,9 @@ class Utils {
 		return { startTime, endTime };
 	}
 
-	static calculatePerTime(totalCount, deltaTime, mode = 'countMode') {
+	static calculatePerTime(totalCount, deltaTicks, mode = 'countMode') {
 		const ticksPerHour = 72000;
-		let itemsPerHour = totalCount / (deltaTime / ticksPerHour);
+		let itemsPerHour = totalCount / (deltaTicks / ticksPerHour);
 		let unit = 'h';
 		if (mode === 'perminuteMode') {
 			itemsPerHour /= 60;
@@ -146,7 +149,7 @@ class Utils {
 			itemsPerHour /= 3600;
 			unit = 's';
 		}
-		if (itemsPerHour == NaN || itemsPerHour == Infinity) return '?/?';
+		if (isNaN(itemsPerHour) || itemsPerHour === Infinity) return '?/?';
 		return `${itemsPerHour.toFixed(1)}/${unit}`;
 	}
 
@@ -180,7 +183,8 @@ class Utils {
 	}
 
 	static locationInArea(area, position) {
-		if (area?.dimensionId !== position.dimensionId) return false;
+		if (area?.dimensionId !== position?.dimensionId)
+			return false;
 		const { posOne, posTwo } = area;
 		const { location } = position;
 		const inX = location.x >= Math.min(posOne.x, posTwo.x) && location.x <= Math.max(posOne.x, posTwo.x);
@@ -237,13 +241,16 @@ class Utils {
 	}
 
 	static recolor(text, term, colorCode = '§f') {
+		if (text === '' || term === '' || colorCode === '')
+			return text;
 		const lowerText = text.toLowerCase();
 		const lowerTerm = term.toLowerCase();
 		const index = lowerText.indexOf(lowerTerm);
-		if (index === -1) return text;
+		if (index === -1)
+			return text;
 		const splitText = lowerText.split(lowerTerm);
 		let newText = '';
-		let lastColorCode = '';
+		let lastColorCode = '§f';
 		let currentIndex = 0;
 	
 		for (let i = 0; i < splitText.length; i++) {
@@ -288,6 +295,16 @@ class Utils {
 		entityRayResult = player.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: false, maxDistance: distance });
 	
 		return { blockRayResult, entityRayResult };
+	}
+
+	static titleCase(str) {
+		return str
+			.replace(/([a-z])([A-Z])/g, '$1 $2')
+			.toLowerCase()
+			.replaceAll('_', ' ')
+			.split(' ')
+			.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+			.join(' ');
 	}
 }
 

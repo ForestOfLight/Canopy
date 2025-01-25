@@ -1,0 +1,24 @@
+{
+	"name": "canopy",
+	"author": {
+		"name": "ForestOfLight",
+		"email": "forestpupoozzle@gmail.com"
+	},
+	"type": "module",
+	"bugs": {
+		"url": "https://github.com/ForestOfLight/Canopy/issues"
+	},
+	"license": "MIT",
+	"dependencies": {
+		"@minecraft/server": "^1.17.0-beta.1.21.51-stable",
+		"@vitest/coverage-v8": "^3.0.4"
+	},
+	"scripts": {
+		"test": "vitest"
+	},
+	"devDependencies": {
+		"axios": "^1.7.9",
+		"strip-json-comments": "^5.0.1",
+		"vitest": "^3.0.1"
+	}
+}

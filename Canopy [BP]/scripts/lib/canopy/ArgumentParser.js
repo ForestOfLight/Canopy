@@ -9,6 +9,7 @@ class ArgumentParser {
         let args = [];
         let raw = text.match(this.regex);
 
+        if (!raw) return [];
         raw.forEach((arg, index) => {
             let argData = this.#argParser(arg, index, raw);
             args[index] = argData;

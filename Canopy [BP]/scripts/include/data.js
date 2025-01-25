@@ -48,7 +48,7 @@ export const categoryToMobMap = {
         'ender_dragon',
         'enderman',
         'endermite',
-        'evokcation_illager',
+        'evocation_illager',
         'ghast',
         'guardian',
         'hoglin',
@@ -80,7 +80,7 @@ export const categoryToMobMap = {
         'squid',
     ],
     'water_ambient' : [
-        'cod',
+        'fish',
         'pufferfish',
         'salmon',
         'tropicalfish',
