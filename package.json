@@ -10,14 +10,19 @@
 	},
 	"license": "MIT",
 	"dependencies": {
-		"@minecraft/server": "^1.17.0-beta.1.21.51-stable",
-		"@vitest/coverage-v8": "^3.0.4"
+		"@minecraft/server": "^1.17.0-beta.1.21.51-stable"
 	},
 	"scripts": {
-		"test": "vitest run --coverage"
+		"test": "vitest run --coverage",
+		"lint": "eslint ."
 	},
 	"devDependencies": {
+		"@eslint/compat": "^1.2.5",
+		"@eslint/js": "^9.19.0",
+		"@vitest/coverage-v8": "^3.0.4",
 		"axios": "^1.7.9",
+		"eslint": "^9.19.0",
+		"globals": "^15.14.0",
 		"strip-json-comments": "^5.0.1",
 		"vitest": "^3.0.1"
 	}

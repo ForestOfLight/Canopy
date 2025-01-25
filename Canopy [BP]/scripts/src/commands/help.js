@@ -1,4 +1,4 @@
-import { Commands, Rule, InfoDisplayRule, Extensions } from 'lib/canopy/Canopy';
+import { Commands, Command, Rule, InfoDisplayRule, Extensions } from 'lib/canopy/Canopy';
 import { HelpBook, CommandHelpPage, RuleHelpPage, InfoDisplayRuleHelpPage } from 'lib/canopy/Canopy';
 
 const COMMANDS_PER_PAGE = 8;

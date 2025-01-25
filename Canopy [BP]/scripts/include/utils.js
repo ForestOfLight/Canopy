@@ -100,7 +100,9 @@ class Utils {
 				let data = item.typeId.replace('minecraft:','');
 				if (items[data]) items[data] += item.amount;
 				else items[data] = item.amount;
-			} catch {}
+			} catch {
+				continue;
+			}
 		}
 	
 		return items;
