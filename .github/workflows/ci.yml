@@ -23,7 +23,8 @@ jobs:
 
       - name: Check for TODO comments
         run: |
-          if (grep -r -E "// TODO|/// TODO|/\*\* TODO \*/" --exclude-dir=node_modules --exclude=./.github/workflows/ci.yml .) {
+          if (grep -r -n -E "// TODO|/// TODO|/\*\* TODO \*/" --exclude-dir=node_modules --exclude=./.github/workflows/ci.yml .) {
+            grep -r -n -E "// TODO|/// TODO|/\*\* TODO \*/" --exclude-dir=node_modules --exclude=./.github/workflows/ci.yml .
             echo "TODO comments found. Please resolve them before committing."
             exit 1
           }
