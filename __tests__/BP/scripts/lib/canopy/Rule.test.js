@@ -34,12 +34,12 @@ describe('Rule', () => {
     });
 
     describe('constructor', () => {
+        console.warn = vi.fn();
         it('should add the rule to the Rules registry', () => {
             expect(Rules.exists('test_rule')).toBe(true);
         });
 
         it('should warn if a rule with the same identifier already exists', () => {
-            console.warn = vi.fn();
             new Rule({ category: 'test', identifier: 'test_rule' });
             expect(console.warn).toHaveBeenCalled();
         });

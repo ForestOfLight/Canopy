@@ -134,6 +134,7 @@ describe('Extension', () => {
     });
 
     describe('makeID()', () => {
+        console.warn = vi.fn();
         it('should return a valid ID', () => {
             expect(extension.makeID('TestExtension')).toBe('testextension');
         });
