@@ -28,7 +28,7 @@ class PeekInventory extends InfoDisplayElement {
         let inventory;
 		try {
 			inventory = target.getComponent('inventory');
-		} catch(error) {
+		} catch {
 			return '';
 		}
 		if (!inventory) return '';

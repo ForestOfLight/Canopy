@@ -1,5 +1,5 @@
 import { Command } from 'lib/canopy/Canopy';
-import { system, CommandError } from '@minecraft/server';
+import { CommandError } from '@minecraft/server';
 
 const cmd = new Command({
     name: 'loop',

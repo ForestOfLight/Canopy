@@ -8,7 +8,7 @@ class HelpBook {
     }
 
     newPage(page) {
-        if (!page instanceof HelpPage) {
+        if (!(page instanceof HelpPage)) {
             throw new Error('[HelpBook] Page must be an instance of HelpPage');
         }
         this.helpPages[page.title] = page;

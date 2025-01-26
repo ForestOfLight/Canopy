@@ -31,7 +31,7 @@ function peekCommand(sender, args) {
     targetName = Utils.parseName(target);
     try {
         inventory = target.getComponent('inventory');
-    } catch(error) {
+    } catch {
         return sender.sendMessage({ translate: 'commands.peek.fail.unloaded', with: [Utils.stringifyLocation(target.location, 0)] });
     }
     if (!inventory)

@@ -1,4 +1,4 @@
-import { system, world, MinecraftDimensionTypes, System } from '@minecraft/server';
+import { system, world, MinecraftDimensionTypes, Block } from '@minecraft/server';
 import Utils from 'include/utils';
 
 system.afterEvents.scriptEventReceive.subscribe((event) => {
@@ -13,7 +13,7 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
         runLocation = world.getDimension(MinecraftDimensionTypes.overworld);
     else if (source === 'Unknown')
         return 'Unknown source. Try running the command from somewhere else.';
-    else if (typeof source === 'Block')
+    else if (typeof source === Block)
         runLocation = source.dimension;
     loopCommand(args[0], args[1], runLocation);
 });

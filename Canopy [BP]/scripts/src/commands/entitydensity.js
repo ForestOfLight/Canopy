@@ -106,7 +106,9 @@ function findDenseAreas(dimensionId, gridSize, numResults = 10) {
             const key = `${cellX},${cellZ}`;
     
             grid.set(key, (grid.get(key) || 0) + 1);
-        } catch {}
+        } catch {
+            continue;
+        }
     }
     const sortedCells = Array.from(grid)
         .map(([key, count]) => ({ key, count }))

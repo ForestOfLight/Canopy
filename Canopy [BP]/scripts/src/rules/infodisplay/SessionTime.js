@@ -1,5 +1,4 @@
 import InfoDisplayElement from './InfoDisplayElement.js';
-import { world } from '@minecraft/server';
 
 class SessionTime extends InfoDisplayElement {
     player;

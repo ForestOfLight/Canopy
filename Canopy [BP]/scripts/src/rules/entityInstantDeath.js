@@ -11,5 +11,7 @@ world.afterEvents.entityDie.subscribe(async (event) => {
     if (!await Rule.getNativeValue('entityInstantDeath')) return;
     try {
         event.deadEntity.remove();
-    } catch {} // already dead
+    } catch {
+        // already dead
+    }
 });

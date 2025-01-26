@@ -1,5 +1,5 @@
 import InfoDisplayElement from './InfoDisplayElement.js';
-import { world, MoonPhase } from '@minecraft/server';
+import { world } from '@minecraft/server';
 
 class MoonPhase extends InfoDisplayElement {
     constructor() {

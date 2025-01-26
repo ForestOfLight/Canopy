@@ -124,7 +124,7 @@ function checkForAbort(block, blockId) {
 
 function safeSetblock(player, block, directionState, permutationValue, otherPermutations = {}) {
     if (Object.keys(otherPermutations).length === 0) otherPermutations = '';
-    else otherPermutations = ',' + Object.entries(otherPermutations).map(([key, value]) => `\"${key}\"=${value}`).join(',');
+    else otherPermutations = ',' + Object.entries(otherPermutations).map(([key, value]) => `"${key}"=${value}`).join(',');
     const setblockCmd = `setblock ${block.location.x} ${block.location.y} ${block.location.z} ${block.typeId} ["${directionState.name}"=${permutationValue}${otherPermutations}] replace`;
     (async () => {
         player.runCommandAsync(`setblock ${block.location.x} ${block.location.y} ${block.location.z} air replace`);

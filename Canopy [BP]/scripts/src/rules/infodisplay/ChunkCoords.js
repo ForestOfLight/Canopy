@@ -1,8 +1,6 @@
 import InfoDisplayElement from './InfoDisplayElement.js';
 
 class ChunkCoords extends InfoDisplayElement {
-    player;
-
     constructor(player) {
         super('chunkCoords', { translate: 'rules.infoDisplay.chunkCoords' }, 3);
         this.player = player;
@@ -17,11 +15,11 @@ class ChunkCoords extends InfoDisplayElement {
         return this.getFormattedDataOwnLine();
     }
 
-    getChunkCoords(player) {
-        const x = Math.floor(this.player.location.x / 16);
-        const y = Math.floor(this.player.location.y / 16);
-        const z = Math.floor(this.player.location.z / 16);
-        return { x, y, z };
+    getChunkCoords() {
+        const chunkX = Math.floor(this.player.location.x / 16);
+        const chunkY = Math.floor(this.player.location.y / 16);
+        const chunkZ = Math.floor(this.player.location.z / 16);
+        return { x: chunkX, y: chunkY, z: chunkZ };
     }
 }
 

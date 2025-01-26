@@ -131,7 +131,7 @@ function setWarpMap(newWarpMap) {
     let warps = JSON.parse(world.getDynamicProperty('warps'));
     let newWarpList = {};
 
-    for (let [key, value] of Object.entries(warps.warpList)) {
+    for (let key of Object.keys(warps.warpList)) {
         if (!newWarpMap.has(key)) continue;
         newWarpList[key] = newWarpMap.get(key);
     }

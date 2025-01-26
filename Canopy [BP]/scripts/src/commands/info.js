@@ -1,4 +1,4 @@
-import { Command, InfoDisplayRule } from 'lib/canopy/Canopy';
+import { Command, InfoDisplayRule, Commands } from 'lib/canopy/Canopy';
 import ProbeManager from 'src/classes/ProbeManager';
 
 const cmd = new Command({
@@ -33,15 +33,18 @@ function infoCommand(sender, args) {
         return;
     }
     
-    if (!InfoDisplayRule.exists(ruleID))
-        return sender.sendMessage({ rawtext: [ { translate: 'rules.generic.unknown', with: [ruleID] }, enabledRawText, { text: '§r§7.' } ] });
+    if (!InfoDisplayRule.exists(ruleID)) {
+        return sender.sendMessage({ rawtext: [ { translate: 'rules.generic.unknown', with: [ruleID, Commands.getPrefix()] }, { text: '§r§7.' } ] });
+    }
     if (!(InfoDisplayRule.getRule(ruleID) instanceof InfoDisplayRule))
-        return sender.sendMessage({ translate: 'commands.info.canopyRule', with: [ruleID, Command.prefix] });
+        return sender.sendMessage({ translate: 'commands.info.canopyRule', with: [ruleID, Command.getPrefix()] });
+
     const ruleValue = InfoDisplayRule.getValue(sender, ruleID);
     if (enable === null) {
         const enabledRawText = ruleValue ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' };
         return sender.sendMessage({ rawtext: [ { translate: 'rules.generic.status', with: [ruleID] }, enabledRawText, { text: '§r§7.' } ] });
     }
+
     if (enable === ruleValue) {
         const enabledRawText = enable ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' };
         return sender.sendMessage({ rawtext: [ { translate: 'rules.generic.nochange', with: [ruleID] }, enabledRawText, { text: '§r§7.' } ] });

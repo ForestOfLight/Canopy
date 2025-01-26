@@ -1,5 +1,7 @@
 import { world, system } from "@minecraft/server";
 import IPC from "../ipc/ipc";
+import ArgumentParser from "./ArgumentParser";
+import Rules from "./Rules";
 
 const ADMIN_ONLY_TAG = 'CanopyAdmin';
 const COMMAND_PREFIX = './';
@@ -85,7 +87,7 @@ export class Commands {
             
             system.run(async () => {
                 for (let ruleID of command.getContingentRules()) {
-                    const ruleValue = await Rule.getValue(ruleID);
+                    const ruleValue = await Rules.getValue(ruleID);
                     if (!ruleValue) {
                         return sender.sendMessage({ translate: 'rules.generic.blocked', with: [ruleID] });
                     }
@@ -93,9 +95,7 @@ export class Commands {
                 
                 let parsedArgs = {};
                 command.getArgs().forEach((argData, index) => {
-                    try {
-                        parsedArgs[argData.name] = this.checkArg(args[index], argData.type);
-                    } catch {}
+                    parsedArgs[argData.name] = this.checkArg(args[index], argData.type);
                 });
                 
                 command.runCallback(sender, parsedArgs);

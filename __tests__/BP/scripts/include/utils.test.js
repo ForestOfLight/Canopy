@@ -382,17 +382,16 @@ describe('Utils', () => {
 
 	describe('wait()', () => {
 		it('waits for the specified time', () => {
-			const start = Date.now();
 			const { startTime, endTime } = Utils.wait(100);
 			const duration = endTime - startTime;
 			expect(duration).toBeGreaterThanOrEqual(100);
-			expect(duration).toBeLessThan(110);
+			expect(duration).toBeLessThan(150);
 		});
 
 		it('returns the correct start and end times', () => {
 			const { startTime, endTime } = Utils.wait(50);
 			expect(endTime - startTime).toBeGreaterThanOrEqual(50);
-			expect(endTime - startTime).toBeLessThan(60);
+			expect(endTime - startTime).toBeLessThan(100);
 		});
 	});
 

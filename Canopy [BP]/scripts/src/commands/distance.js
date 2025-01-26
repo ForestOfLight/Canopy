@@ -124,7 +124,7 @@ function targetDistance(sender) {
 
     try {
         targetLocation = target.location;
-    } catch(error) {
+    } catch {
         return { translate: 'commands.distance.target.notfound' };
     }
 

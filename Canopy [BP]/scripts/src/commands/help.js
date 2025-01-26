@@ -4,7 +4,7 @@ import { HelpBook, CommandHelpPage, RuleHelpPage, InfoDisplayRuleHelpPage } from
 const COMMANDS_PER_PAGE = 8;
 const helpBook = new HelpBook();
 
-const cmd = new Command({
+new Command({
     name: 'help',
     description: { translate: 'commands.help' },
     usage: 'help [page/searchTerm]',
