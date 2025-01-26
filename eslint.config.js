@@ -5,9 +5,9 @@ import { includeIgnoreFile } from "@eslint/compat";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const gitignorePath = path.resolve(__dirname, ".gitignore");
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
+const gitignorePath = path.resolve(dirname, ".gitignore");
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
@@ -16,6 +16,7 @@ export default [
       '**/scripts/lib/mt.js',
       '**/scripts/lib/ipc/',
       '**/scripts/lib/SRCItemDatabase.js',
+      '**/__tests__/',
     ]
   },
   js.configs.recommended,
@@ -28,4 +29,51 @@ export default [
     } 
   },
   includeIgnoreFile(gitignorePath),
+  {
+    rules: {
+        "no-constructor-return": "error",
+        "no-duplicate-imports": "error",
+        "no-template-curly-in-string": "error",
+        "no-unreachable-loop": "error",
+        "no-use-before-define": "error",
+        "no-useless-assignment": "error",
+        // Suggestions:
+        "arrow-body-style": "error",
+        "block-scoped-var": "error",
+        "camelcase": [ "warn", { "ignoreImports": true } ],
+        "curly": ["error", "multi", "consistent"],
+        "default-case": "error",
+        "default-case-last": "error",
+        "eqeqeq": "error",
+        "func-style": ["error", "declaration", { "allowArrowFunctions": true }],
+        "max-classes-per-file": ["error", 1], // { ignoreExpressions: true }
+        "max-depth": ["warn"],
+        "max-lines": ["warn"],
+        "max-lines-per-function": ["warn"],
+        "max-params": ["warn"],
+        "new-cap": "error",
+        "no-else-return": "error",
+        "no-lonely-if": "error",
+        "no-magic-numbers": ["error", { "ignore": [0, 1], "ignoreArrayIndexes": true } ],
+        "no-negated-condition": "error",
+        "no-nested-ternary": "error",
+        "no-return-assign": "error",
+        "no-shadow": "error",
+        "no-throw-literal": "error",
+        "no-undefined": "error",
+        "no-underscore-dangle": "error",
+        "no-unneeded-ternary": "error",
+        "no-useless-computed-key": "error",
+        "no-useless-concat": "error",
+        "no-useless-constructor": "error",
+        "no-useless-return": "error",
+        "no-var": "error",
+        "no-warning-comments": "warn",
+        "one-var": ["error", "never"],
+        "operator-assignment": "error",
+        "prefer-const": "error",
+        "require-await": "error",
+        "yoda": "error",
+    }
+  }
 ];

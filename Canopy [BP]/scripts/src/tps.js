@@ -1,4 +1,6 @@
-import { system } from '@minecraft/server'
+import { system, TicksPerSecond} from '@minecraft/server'
+
+const MS_PER_SECOND = 1000;
 
 const DataTPS = {
 	tps: 0,
@@ -9,17 +11,17 @@ const DataTPS = {
 	msptArray: [],
 
 	tpsToMspt(tps) {
-		return 1000 / tps;
+		return MS_PER_SECOND / tps;
 	},
 
 	msptToTps(mspt) {
-		return 1000 / mspt;
+		return MS_PER_SECOND / mspt;
 	}
 }
 
 system.runInterval(() => {
-	if (DataTPS.tpsArray.length >= 20) DataTPS.tpsArray.shift();
-	if (DataTPS.msptArray.length >= 20) DataTPS.msptArray.shift();
+	if (DataTPS.tpsArray.length >= TicksPerSecond) DataTPS.tpsArray.shift();
+	if (DataTPS.msptArray.length >= TicksPerSecond) DataTPS.msptArray.shift();
 	DataTPS.mspt = Date.now() - DataTPS.lastTick;
 	DataTPS.tpsArray.push(DataTPS.msptToTps(DataTPS.mspt));
 	DataTPS.tps = DataTPS.tpsArray.reduce((a,b) => a + b) / DataTPS.tpsArray.length;
