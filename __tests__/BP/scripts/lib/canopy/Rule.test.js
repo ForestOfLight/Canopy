@@ -21,9 +21,10 @@ vi.mock('@minecraft/server', () => ({
 }));
 
 describe('Rule', () => {
+    let testRule;
     beforeEach(() => {
         Rules.clear();
-        new Rule({ 
+        testRule = new Rule({ 
             category: 'test', 
             identifier: 'test_rule',
             description: 'This is a test rule',
@@ -31,22 +32,49 @@ describe('Rule', () => {
             contingentRules: ['test_rule_2'],
             independentRules: ['test_rule_3']
         });
+        Rules.add(testRule);
     });
 
     describe('constructor', () => {
-        console.warn = vi.fn();
-        it('should add the rule to the Rules registry', () => {
-            expect(Rules.exists('test_rule')).toBe(true);
+        it('should initialize with the correct properties', () => {
+            const ruleData = {
+                category: 'test_category',
+                identifier: 'test_identifier',
+                description: 'test_description',
+                contingentRules: ['rule1', 'rule2'],
+                independentRules: ['rule3', 'rule4'],
+                extensionName: 'test_extension'
+            };
+            const rule = new Rule(ruleData);
+
+            expect(rule.getCategory()).toBe(ruleData.category);
+            expect(rule.getID()).toBe(ruleData.identifier);
+            expect(rule.getDescription()).toEqual({ text: ruleData.description });
+            expect(rule.getContigentRuleIDs()).toEqual(ruleData.contingentRules);
+            expect(rule.getIndependentRuleIDs()).toEqual(ruleData.independentRules);
+            expect(rule.getExtensionName()).toBe(ruleData.extensionName);
         });
 
-        it('should warn if a rule with the same identifier already exists', () => {
-            new Rule({ category: 'test', identifier: 'test_rule' });
-            expect(console.warn).toHaveBeenCalled();
+        it('should set description to a rawtext object if it is a string', () => {
+            const rule = new Rule({
+                category: 'test_category',
+                identifier: 'test_identifier',
+                description: 'test_description'
+            });
+
+            expect(rule.getDescription()).toEqual({ text: 'test_description' });
         });
 
-        it('should not add the rule to the Rules registry if a rule with the same identifier already exists', () => {
-            new Rule({ category: 'test', identifier: 'test_rule' });
-            expect(Rules.getAll().length).toBe(1);
+        it('should set default values for optional properties', () => {
+            const rule = new Rule({
+                category: 'test_category',
+                identifier: 'test_identifier'
+            });
+
+            expect(rule.getDescription()).toEqual({ text: '' });
+            expect(rule.getContigentRuleIDs()).toEqual([]);
+            expect(rule.getIndependentRuleIDs()).toEqual([]);
+            expect(rule.getExtensionName()).toBe(false);
         });
     });
 
@@ -90,6 +118,10 @@ describe('Rule', () => {
         // Gametest
     });
 
+    describe.skip('getNativeValue()', () => {
+        // Gametest
+    });
+
     describe('parseValue()', () => {
         it('should parse JSON strings to objects', () => {
             expect(Rules.get('test_rule').parseValue('{"test": "value"}')).toEqual({ test: 'value' });
@@ -116,26 +148,5 @@ describe('Rule', () => {
 
     describe.skip('setValue()', () => {
         // Gametest
-    });
-
-    describe('getDependentRuleIDs()', () => {
-        beforeEach(() => {
-            new Rule({ 
-                category: 'test', 
-                identifier: 'test_rule_2',
-                description: 'This is another test rule',
-                extensionName: 'Test Extension',
-                contingentRules: [],
-                independentRules: []
-            });
-        });
-        
-        it('should return an array of rule IDs that are dependent on the rule', () => {
-            expect(Rules.get('test_rule_2').getDependentRuleIDs()).toEqual(['test_rule']);
-        });
-        
-        it('should return an empty array if no rules are dependent on the rule', () => {
-            expect(Rules.get('test_rule').getDependentRuleIDs()).toEqual([]);
-        });
     });
 });

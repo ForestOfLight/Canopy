@@ -1,42 +1,63 @@
-import { world } from "@minecraft/server";
-
 export class Rules {
-    static #rules = {};
+    static rules = {};
 
     static add(rule) {
-        this.#rules[rule.getID()] = rule;
+        if (this.exists(rule.getID())) {
+            throw new Error(`[Canopy] Rule with identifier '${rule.getID()}' already exists.`);
+        }
+        this.rules[rule.getID()] = rule;
     }
 
     static get(identifier) {
-        return this.#rules[identifier];
+        return this.rules[identifier];
     }
 
     static getAll() {
-        return Object.values(this.#rules);
+        return Object.values(this.rules);
+    }
+
+    static getIDs() {
+        return Object.keys(this.rules);
     }
 
     static exists(name) {
-        return this.#rules[name] !== undefined;
+        return this.rules[name] !== undefined;
     }
 
     static remove(name) {
-        delete this.#rules[name];
+        delete this.rules[name];
     }
 
     static clear() {
-        this.#rules = {};
+        this.rules = {};
     }
     
     static async getValue(identifier) {
-        return await this.get(identifier).getValue();
+        const rule = this.get(identifier);
+        if (!rule)
+            throw new Error(`[Canopy] Rule with identifier '${identifier}' does not exist.`);
+        return await rule.getValue();
     }
 
     static getNativeValue(identifier) {
-        return this.get(identifier).parseString(world.getDynamicProperty(identifier));
+        const rule = this.get(identifier);
+        if (!rule)
+            throw new Error(`[Canopy] Rule with identifier '${identifier}' does not exist.`);
+        return rule.getNativeValue();
     }
 
     static setValue(identifier, value) {
-        this.get(identifier).setValue(value);
+        const rule = this.get(identifier)
+        if (!rule)
+            throw new Error(`[Canopy] Rule with identifier '${identifier}' does not exist.`);
+        rule.setValue(value);
+    }
+
+    static getDependentRuleIDs(identifier) {
+        const rule = this.get(identifier);
+        if (!rule)
+            throw new Error(`[Canopy] Rule with identifier '${identifier}' does not exist.`);
+        return Rules.getAll().filter(rule => rule.getContigentRuleIDs().includes(identifier)).map(rule => rule.getID());
     }
 }
 

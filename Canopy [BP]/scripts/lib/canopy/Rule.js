@@ -1,6 +1,5 @@
 import { world } from '@minecraft/server';
 import IPC from "../ipc/ipc";
-import Rules from "./Rules";
 
 export class Rule {
     #category;
@@ -19,11 +18,6 @@ export class Rule {
         this.#contingentRules = contingentRules;
         this.#independentRules = independentRules;
         this.#extensionName = extensionName;
-        if (Rules.exists(identifier)) {
-            console.warn(`[Canopy] Rule with identifier '${identifier}' already exists.`);
-            return;
-        }
-        Rules.add(this);
     }
 
     getCategory() {
@@ -61,6 +55,12 @@ export class Rule {
         return this.parseValue(world.getDynamicProperty(this.#identifier));
     }
 
+    getNativeValue() {
+        if (this.#extensionName)
+            throw new Error(`[Canopy] [Rule] Native value is not available for ${this.#identifier} from extension ${this.#extensionName}.`);
+        return this.parseValue(world.getDynamicProperty(this.#identifier));
+    }
+
     parseValue(value) {
         try {
             return JSON.parse(value);
@@ -78,10 +78,6 @@ export class Rule {
         } else {
             world.setDynamicProperty(this.#identifier, value);
         }
-    }
-
-    getDependentRuleIDs() {
-        return Rules.getAll().filter(rule => rule.#contingentRules.includes(this.#identifier)).map(rule => rule.#identifier);
     }
 }
 
