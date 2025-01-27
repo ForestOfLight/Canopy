@@ -1,6 +1,5 @@
-import { Rule, Command } from 'lib/canopy/Canopy';
+import { Rule, Command, InfoDisplayRule } from 'lib/canopy/Canopy';
 import { resetCounterMap } from 'src/commands/counter';
-import { InfoDisplayRule } from 'lib/canopy/Canopy';
 
 const cmd = new Command({
     name: 'canopy',
@@ -34,16 +33,17 @@ async function canopyCommand(sender, args) {
     if (ruleID === 'hopperCounters' && !enable)
         resetCounterMap();
 
-    if (!enable)
-        await updateRules(sender, rule.getDependentRuleIDs(), enable);
-    else
+    if (enable)
         await updateRules(sender, rule.getContigentRuleIDs(), enable);
+    else
+        await updateRules(sender, rule.getDependentRuleIDs(), enable);
     await updateRules(sender, rule.getIndependentRuleIDs(), false);
     
-    updateRule(sender, ruleID, ruleValue, enable);
+    await updateRule(sender, ruleID, enable);
 }
 
-function updateRule(sender, ruleID, ruleValue, enable) {
+async function updateRule(sender, ruleID, enable) {
+    const ruleValue = await Rule.getValue(ruleID);
     if (ruleValue === enable) return;
     Rule.getRule(ruleID).setValue(enable);
     const enabledRawText = enable ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' };
@@ -51,7 +51,6 @@ function updateRule(sender, ruleID, ruleValue, enable) {
 }
 
 async function updateRules(sender, ruleIDs, enable) {
-    for (const ruleID of ruleIDs) {
-        updateRule(sender, ruleID, await Rule.getValue(ruleID), enable);
-    }
+    for (const ruleID of ruleIDs) 
+        await updateRule(sender, ruleID, enable);
 }

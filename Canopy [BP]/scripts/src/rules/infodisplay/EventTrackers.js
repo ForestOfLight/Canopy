@@ -2,8 +2,9 @@ import InfoDisplayElement from './InfoDisplayElement.js';
 import { getAllTrackerInfoString } from 'src/commands/trackevent';
 
 class EventTrackers extends InfoDisplayElement {
-    constructor() {
-        super('eventTrackers', { translate: 'rules.infoDisplay.eventTrackers' }, 9, true);
+    constructor(displayLine) {
+        const ruleData = { identifier: 'eventTrackers', description: { translate: 'rules.infoDisplay.eventTrackers' } };
+        super(ruleData, displayLine, true);
     }
 
     getFormattedDataOwnLine() {

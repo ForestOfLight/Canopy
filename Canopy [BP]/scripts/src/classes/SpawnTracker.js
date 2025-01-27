@@ -1,26 +1,32 @@
-import { system, world } from '@minecraft/server'
-import Utils from 'include/utils'
-import { categoryToMobMap } from 'include/data'
+import { system, world } from "@minecraft/server";
+import Utils from "../../include/utils";
+import { categoryToMobMap } from "../../include/data";
 
 const CLEAR_RECENTS_THRESHOLD = 600; // 600 ticks = 30 seconds
 let wasTrackingLastTick = false;
 
 class SpawnTracker {
-    constructor(dimensionId, category = null, mobIds = [], activeArea = null) {
-        if (category !== null && mobIds.length > 0) {
-            throw new Error("SpawnTracker constructor should be called with either 'category' or 'mobIds', but not both.");
-        }
-
-        this.category = category;
+    constructor(dimensionId, mobIds = [], activeArea = null ) {
         this.dimensionId = dimensionId;
-        this.startTick = system.currentTick;
-        this.activeArea = activeArea;
+        this.mobs = mobIds || [];
+        this.category = this.getCategory();
+        this.activeArea = activeArea || null;
         this.spawns = {};
         this.recents = {};
         this.mobsPerTick = {};
         this.recentsClearRunner = null;
-        this.mobs = category ? categoryToMobMap[category] : mobIds;
+        this.startTick = system.currentTick;
         this.startTracking();
+    }
+
+    getCategory() {
+        for (const [category, mobs] of Object.entries(categoryToMobMap)) {
+            for (const mob of this.mobs) {
+                if (mobs.includes(mob))
+                    return category;
+            }
+        }
+        return null;
     }
 
     getMobsPerTickMap() {
@@ -71,11 +77,9 @@ class SpawnTracker {
     }
 
     clearOldMobs(tickThreshold) {
-        for (const mobType in this.recents) {
-            this.recents[mobType] = this.recents[mobType].filter((timedLocation) => {
-                return system.currentTick - timedLocation.time < tickThreshold;
-            });
-        }
+        for (const mobType in this.recents) 
+            this.recents[mobType] = this.recents[mobType].filter((timedLocation) => system.currentTick - timedLocation.time < tickThreshold);
+        
     }
 
     reset() {
@@ -115,9 +119,9 @@ class SpawnTracker {
 
     getRecents() {
         const recents = {};
-        for (const mobType in this.recents) {
+        for (const mobType in this.recents) 
             recents[mobType] = this.recents[mobType].map((timedLocation) => timedLocation.location);
-        }
+        
         return recents;
     }
 

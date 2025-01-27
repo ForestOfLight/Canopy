@@ -21,7 +21,7 @@ const cmd = new Command({
     contingentRules: ['commandTntFuse']
 });
 
-world.afterEvents.entitySpawn.subscribe(async (event) => {
+world.afterEvents.entitySpawn.subscribe((event) => {
     if (event.entity?.typeId !== 'minecraft:tnt') return;
     const fuseTimeProperty = world.getDynamicProperty('tntFuseTime');
     let fuseTime = 80;
@@ -36,7 +36,6 @@ world.afterEvents.entitySpawn.subscribe(async (event) => {
             event.entity.triggerEvent('canopy:explode');
         }, fuseTime - 1);
     }
-
 });
 
 function tntfuseCommand(sender, args) {
@@ -47,7 +46,7 @@ function tntfuseCommand(sender, args) {
         ticks = 80;
         sender.sendMessage({ translate: 'commands.tntfuse.reset.success' });
     } else if (ticks < MIN_FUSE_TICKS || ticks > MAX_FUSE_TICKS)
-        return sender.sendMessage({ translate: 'commands.tntfuse.set.fail', with: [String(ticks), String(MIN_FUSE_TICKS), String(MAX_FUSE_TICKS)] });
+        {return sender.sendMessage({ translate: 'commands.tntfuse.set.fail', with: [String(ticks), String(MIN_FUSE_TICKS), String(MAX_FUSE_TICKS)] });}
     else {
         sender.sendMessage({ translate: 'commands.tntfuse.set.success', with: [String(ticks)] });
     }

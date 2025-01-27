@@ -20,9 +20,8 @@ async function fetchBedrockSamplesData(entityType) {
     if (typeof response.data == 'string') {
         const stringData = stripJsonComments(response.data);
         return JSON.parse(stringData);
-    } else {
-        return response.data;
-    }
+    } 
+    return response.data;
 }
 
 describe.concurrent('categoryToMobMap', () => {

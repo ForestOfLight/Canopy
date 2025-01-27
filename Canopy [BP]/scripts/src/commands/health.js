@@ -21,18 +21,13 @@ function healthCommand(sender) {
 }
 
 function printRealMspt(sender) {
-    let lastTick;
-    let startTime;
-    let endTime;
-    let realMspt;
-
-    lastTick = system.currentTick;
-    ({ startTime, endTime } = Utils.wait(50));
+    const lastTick = system.currentTick;
+    const { startTime, endTime } = Utils.wait(50);
     system.runTimeout(() => {
-        if (system.currentTick - lastTick != 1)
+        if (system.currentTick - lastTick !== 1)
             return sender.sendMessage({ translate: 'commands.health.fail.mspt' });
         
-        realMspt = Date.now() - startTime - (endTime - startTime);
+        const realMspt = Date.now() - startTime - (endTime - startTime);
         const realMsptFormatted = realMspt > 50.0 ? `§c${realMspt}` : `§a${realMspt}`;
         sender.sendMessage(`§7MSPT:§r ${realMsptFormatted}`)
     }, 1);

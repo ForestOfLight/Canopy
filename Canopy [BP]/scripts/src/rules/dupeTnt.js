@@ -54,25 +54,17 @@ function correctAttachedLocations(attachedLocations, pistonState, direction) {
     };
     let offset = directionToOffsetExpandMap[direction];
     if (pistonState === 'Retracting') offset = { x: -offset.x, y: -offset.y, z: -offset.z };
-    return attachedLocations.map((location) => {
-        return { x: location.x + offset.x, y: location.y + offset.y, z: location.z + offset.z };
-    });
+    return attachedLocations.map((location) => ({ x: location.x + offset.x, y: location.y + offset.y, z: location.z + offset.z }));
 }
 
 function isOverlapping(entityList, locationList) {
-    return entityList.some((entity) => {
-        return locationList.some((location) => {
-            return Math.floor(entity.location.x) === location.x 
+    return entityList.some((entity) => locationList.some((location) => Math.floor(entity.location.x) === location.x 
                 && Math.floor(entity.location.y) === location.y 
-                && Math.floor(entity.location.z) === location.z;
-        });
-    });
+                && Math.floor(entity.location.z) === location.z));
 }
 
 function getEntityAtLocation(entityList, location) {
-    return entityList.find((entity) => {
-        return Math.floor(entity.location.x) === location.x && Math.floor(entity.location.y) === location.y && Math.floor(entity.location.z) === location.z;
-    });
+    return entityList.find((entity) => Math.floor(entity.location.x) === location.x && Math.floor(entity.location.y) === location.y && Math.floor(entity.location.z) === location.z);
 }
 
 function dupeTnt(block, tntEntity) {

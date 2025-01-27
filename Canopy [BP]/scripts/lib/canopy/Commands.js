@@ -10,7 +10,9 @@ export class Commands {
     static #commands = {};
     static #prefix = COMMAND_PREFIX;
 
-    static add(command) {
+    static register(command) {
+        if (this.exists(command.getName()))
+            throw new Error(`[Canopy] Command with name '${command.getName()}' already exists.`);
         this.#commands[command.getName()] = command;
     }
 
@@ -39,42 +41,47 @@ export class Commands {
     }
 
     static getNativeCommands() {
-		let result = Object.values(this.#commands).filter(cmd => !cmd.getExtensionName());
+		const result = Object.values(this.#commands).filter(cmd => !cmd.getExtensionName());
 		result.sort((a, b) => a.getName().localeCompare(b.getName()));
 		return result;
 	}
 	
     static checkArg(value, type) {
         let data;
-        if (type == 'array' && Array.isArray(value)) data = value;
-        else if (type == 'identifier' && /@[aepsr]\[/g.test(value)) data = value;
-        else if (type == 'identifier' && /@[aepsr]/g.test(value) && value.length == 2) data = value;
-        else if (type == 'player' && value.startsWith('@"') && value.endsWith('"')) data = value;
-        else if (type == 'player' && value.startsWith('@') && !value.includes(' ')) data = value;
-        else if (type.includes('|')) {
-            let ts = type.split('|');
-            let tv = typeof value;
+        if (type === 'array' && Array.isArray(value)) {
+            data = value;
+        } else if (type === 'identifier' && /@[aepsr]\[/g.test(value)) {
+            data = value;
+        } else if (type === 'identifier' && /@[aepsr]/g.test(value) && value.length === 2) {
+            data = value;
+        } else if (type === 'player' && value.startsWith('@"') && value.endsWith('"')) {
+            data = value;
+        } else if (type === 'player' && value.startsWith('@') && !value.includes(' ')) {
+            data = value;
+        } else if (type.includes('|')) {
+            const ts = type.split('|');
+            const tv = typeof value;
             
             if (ts.includes(tv)) data = value;
             else data = null;
+        } else if (typeof value == type) {
+            data = value;
+        } else {
+            data = null;
         }
-        else if (typeof value == type) data = value;
-        else data = null;
         
         return data;
     }
 
     static handleGetPrefixRequest() {
-        IPC.on('canopy:getCommandPrefix', () => {
-            return this.#prefix;
-        });
+        IPC.on('canopy:getCommandPrefix', () => this.#prefix);
     }
 
     static handleChatCommands() {
         world.beforeEvents.chatSend.subscribe((event) => {
             const { sender, message } = event;
-            
-            let [name, ...args] = ArgumentParser.parseArgs(message);
+            const [...args] = ArgumentParser.parseArgs(message);
+            let name = args.shift();
             if (!String(name).startsWith(this.getPrefix()))
                 return;
             name = name.replace(this.getPrefix(), '');
@@ -86,14 +93,14 @@ export class Commands {
                 return sender.sendMessage({ translate: 'commands.generic.nopermission' });
             
             system.run(async () => {
-                for (let ruleID of command.getContingentRules()) {
+                for (const ruleID of command.getContingentRules()) {
                     const ruleValue = await Rules.getValue(ruleID);
-                    if (!ruleValue) {
+                    if (!ruleValue) 
                         return sender.sendMessage({ translate: 'rules.generic.blocked', with: [ruleID] });
-                    }
+                    
                 }
                 
-                let parsedArgs = {};
+                const parsedArgs = {};
                 command.getArgs().forEach((argData, index) => {
                     parsedArgs[argData.name] = this.checkArg(args[index], argData.type);
                 });

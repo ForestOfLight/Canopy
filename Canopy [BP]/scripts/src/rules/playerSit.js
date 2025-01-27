@@ -39,7 +39,9 @@ system.runInterval(() => {
 });
 
 function sit(player) {
-    const rideableEntity = player.dimension.spawnEntity('canopy:rideable', { x: player.location.x, y: player.location.y - 0.12, z: player.location.z });
+    const heightAdjustment = -0.12;
+    const entityLocation = { x: player.location.x, y: player.location.y + heightAdjustment, z: player.location.z };
+    const rideableEntity = player.dimension.spawnEntity('canopy:rideable', entityLocation);
     rideableEntity.setRotation(player.getRotation());
     rideableEntity.getComponent('rideable').addRider(player);
 }
@@ -47,9 +49,8 @@ function sit(player) {
 function cleanupRideableEntities() {
     DimensionTypes.getAll().forEach((dimensionType) => {
         world.getDimension(dimensionType.typeId).getEntities({ type: 'canopy:rideable' }).forEach(entity => {
-            if (!entity.getComponent('rideable').getRiders().length > 0) {
+            if (!entity.getComponent('rideable').getRiders().length > 0)
                 entity.remove();
-            }
         });
     });
 }

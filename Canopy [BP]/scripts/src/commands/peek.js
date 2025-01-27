@@ -15,39 +15,59 @@ new Command({
 })
 
 function peekCommand(sender, args) {
-    let { itemQuery } = args;
-    let blockRayResult;
-    let entityRayResult;
-    let target;
-    let inventory;
-    let items = {};
-    let targetName;
-
+    const { itemQuery } = args;
+    
     updateQueryMap(sender, itemQuery);
-    ({blockRayResult, entityRayResult} = Utils.getRaycastResults(sender, MAX_DISTANCE));
-    if (!blockRayResult && !entityRayResult[0])
-        return sender.sendMessage({ translate: 'generic.target.notfound' });
-    target = Utils.getClosestTarget(sender, blockRayResult, entityRayResult);
-    targetName = Utils.parseName(target);
-    try {
-        inventory = target.getComponent('inventory');
-    } catch {
-        return sender.sendMessage({ translate: 'commands.peek.fail.unloaded', with: [Utils.stringifyLocation(target.location, 0)] });
-    }
-    if (!inventory)
-        return sender.sendMessage({ translate: 'commands.peek.fail.noinventory', with: [targetName, Utils.stringifyLocation(target.location, 0)] });
-
-    items = Utils.populateItems(inventory);
-    sender.sendMessage(formatOutput(targetName, target.location, items, itemQuery));
+    const target = getTarget(sender);
+    if (!target) return;
+    const inventory = getInventory(sender, target);
+    if (!inventory) return;
+    const items = Utils.populateItems(inventory);
+    sender.sendMessage(formatOutput(target, items, itemQuery));
 }
 
-function formatOutput(targetName, targetLocation, items, itemQuery) {
+function updateQueryMap(sender, itemQuery) {
+    const oldQuery = currentQuery[sender.name];
+    if ([null, undefined].includes(oldQuery) && itemQuery === null) {return;}
+    else if (itemQuery === null && ![null, undefined].includes(oldQuery)) {
+        currentQuery[sender.name] = null;
+        return sender.sendMessage({ translate: 'commands.peek.query.cleared' });
+    } 
+        currentQuery[sender.name] = itemQuery;
+        sender.sendMessage({ translate: 'commands.peek.query.set', with: [itemQuery] });   
+}
+
+function getTarget(sender) {
+    const {blockRayResult, entityRayResult} = Utils.getRaycastResults(sender, MAX_DISTANCE);
+    if (!blockRayResult && !entityRayResult[0])
+        return sender.sendMessage({ translate: 'generic.target.notfound' });
+    const targetEntity = Utils.getClosestTarget(sender, blockRayResult, entityRayResult);
+    const targetData = {
+        name: Utils.parseName(targetEntity),
+        entity: targetEntity,
+    };
+    return targetData;
+}
+
+function getInventory(sender, target) {
+    let inventory;
+    try {
+        inventory = target.entity.getComponent('inventory');
+    } catch {
+        return sender.sendMessage({ translate: 'commands.peek.fail.unloaded', with: [Utils.stringifyLocation(target.entity.location, 0)] });
+    }
+    if (!inventory)
+        return sender.sendMessage({ translate: 'commands.peek.fail.noinventory', with: [target.name, Utils.stringifyLocation(target.entity.location, 0)] });
+    return inventory;
+}
+
+function formatOutput(target, items, itemQuery) {
     if (Object.keys(items).length === 0)
-        return { translate: 'commands.peek.fail.noitems', with: [targetName, Utils.stringifyLocation(targetLocation, 0)] };
+        return { translate: 'commands.peek.fail.noitems', with: [target.name, Utils.stringifyLocation(target.entity.location, 0)] };
 
     let output = '§g-------------\n';
-    output += `§l§e${targetName}§r: ${Utils.stringifyLocation(targetLocation, 0)}`;
-    for (let itemName in items) {
+    output += `§l§e${target.name}§r: ${Utils.stringifyLocation(target.entity.location, 0)}`;
+    for (const itemName in items) {
         if (itemQuery && itemName.includes(itemQuery))
             output += `\n§c${itemName}§r: ${items[itemName]}`;
         else
@@ -55,18 +75,6 @@ function formatOutput(targetName, targetLocation, items, itemQuery) {
     }
     output += '\n§g-------------';
     return output;
-}
-
-function updateQueryMap(sender, itemQuery) {
-    const oldQuery = currentQuery[sender.name];
-    if ([null, undefined].includes(oldQuery) && itemQuery === null) return;
-    else if (itemQuery === null && ![null, undefined].includes(oldQuery)) {
-        currentQuery[sender.name] = null;
-        return sender.sendMessage({ translate: 'commands.peek.query.cleared' });
-    } else {
-        currentQuery[sender.name] = itemQuery;
-        sender.sendMessage({ translate: 'commands.peek.query.set', with: [itemQuery] });
-    }
 }
 
 export { currentQuery };

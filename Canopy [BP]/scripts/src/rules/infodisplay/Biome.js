@@ -4,8 +4,9 @@ import ProbeManager from 'src/classes/ProbeManager';
 class Biome extends InfoDisplayElement {
     player;
 
-    constructor(player) {
-        super('biome', { translate: 'rules.infoDisplay.biome' }, 5);
+    constructor(player, displayLine) {
+        const ruleData = { identifier: 'biome', description: { translate: 'rules.infoDisplay.biome' } };
+        super(ruleData, displayLine);
         this.player = player;
     }
 

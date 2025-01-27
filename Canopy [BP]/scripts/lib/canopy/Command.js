@@ -26,9 +26,7 @@ class Command {
 		this.#extensionName = extensionName;
 
 		this.checkMembers();
-		if (Commands.exists(this.#name))
-			throw new Error(`[Command] Command '${this.#name}' already exists.`);
-		Commands.add(this);
+		Commands.register(this);
 	}
 
 	checkMembers() {

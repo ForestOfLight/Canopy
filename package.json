@@ -14,7 +14,7 @@
 	},
 	"scripts": {
 		"test": "vitest run --coverage",
-		"lint": "eslint ."
+		"lint": "eslint . --fix"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",

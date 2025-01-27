@@ -22,7 +22,7 @@ function loopCommand(times, command, runLocation) {
     if (!Utils.isNumeric(times))
         return 'Invalid arguments. Usage: loop <times> <command>';
 
-    for (let i = 0; i < times; i++) {
+    for (let i = 0; i < times; i++) 
         runLocation.runCommand(command);
-    }
+    
 }

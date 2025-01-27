@@ -47,20 +47,19 @@ new Command({
 
 function distanceCommand(sender, args) {
     const { actionArgOne, actionArgTwo } = args;
-    let output = '';
-
-    if (actionArgOne === 'from' && actionArgTwo !== 'to')
-        output = trySaveLocation(sender, args);
-    else if (actionArgOne === 'to')
-        output = tryCalculateDistanceFromSave(sender, args);
-    else if (actionArgOne === 'from' && actionArgTwo === 'to')
-        output = tryCalculateDistance(sender, args);
-    else if (actionArgOne === 'target')
-        output = targetDistance(sender, args);
-    else
-        output = { translate: 'commands.generic.usage', with: [cmd.getUsage()] };
     
-    sender.sendMessage(output);
+    let message;
+    if (actionArgOne === 'from' && actionArgTwo !== 'to')
+        message = trySaveLocation(sender, args);
+    else if (actionArgOne === 'to')
+        message = tryCalculateDistanceFromSave(sender, args);
+    else if (actionArgOne === 'from' && actionArgTwo === 'to')
+        message = tryCalculateDistance(sender, args);
+    else if (actionArgOne === 'target')
+        message = targetDistance(sender, args);
+    else
+        message = { translate: 'commands.generic.usage', with: [cmd.getUsage()] };
+    sender.sendMessage(message);
 }
 
 function trySaveLocation(sender, args) {
@@ -77,13 +76,12 @@ function trySaveLocation(sender, args) {
 
 function tryCalculateDistanceFromSave(sender, args) {
     const { fromArgX, fromArgY, fromArgZ } = args;
-    let fromLocation;
-    let toLocation;
-
+    
     if (!hasSavedLocation() || (savedLocation.x === null && savedLocation.y === null && savedLocation.z === null))
         return { translate: 'commands.distance.to.fail.nosave', with: [Command.prefix] };
-    fromLocation = savedLocation;
-
+    const fromLocation = savedLocation;
+    
+    let toLocation;
     if (areDefined(fromArgX, fromArgY, fromArgZ))
         toLocation = { x: fromArgX, y: fromArgY, z: fromArgZ };
     else if (areUndefined(fromArgX, fromArgY, fromArgZ))
@@ -114,7 +112,7 @@ function tryCalculateDistance(sender, args) {
 }
 
 function targetDistance(sender) {
-    let playerLocation = sender.getHeadLocation();
+    const playerLocation = sender.getHeadLocation();
     let targetLocation;
 
     const { blockRayResult, entityRayResult } = Utils.getRaycastResults(sender, MAX_DISTANCE);

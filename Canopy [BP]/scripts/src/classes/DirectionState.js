@@ -1,12 +1,5 @@
 import { StructureMirrorAxis } from "@minecraft/server";
 
-class DirectionState {
-    constructor(name, value) {
-        this.name = name;
-        this.value = value;
-    }
-}
-
 class DirectionStateFinder {
     static getDirectionState(permutation) {
         const potentialStates = {
@@ -18,7 +11,7 @@ class DirectionStateFinder {
         };
         for (const state in potentialStates) {
             if (potentialStates[state] === undefined) continue;
-            return new DirectionState(state, potentialStates[state]);
+            return { name: state, value: potentialStates[state] };
         }
         return undefined;
     }
@@ -62,6 +55,8 @@ class DirectionStateFinder {
                     0: StructureMirrorAxis.Z,
                     1: StructureMirrorAxis.X
                 }[directionState.value];
+            default:
+                throw new Error('Could not mirror direction. Invalid direction state.');
         }
     }
 
@@ -109,6 +104,8 @@ class DirectionStateFinder {
                     'x': 'z',
                     'z': 'y'
                 }[directionState.value];
+            default:
+                throw new Error('Could not rotate direction. Invalid direction state.');
         }
     }
 
@@ -152,6 +149,8 @@ class DirectionStateFinder {
                     0: 1,
                     1: 0
                 }[directionState.value];
+            default:
+                throw new Error('Could not mirror direction. Invalid direction state.');
         }
     }
 

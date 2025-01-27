@@ -28,7 +28,7 @@ class LoggingPlayer {
     }
 
     removeType(type) {
-        this.types = this.types.filter(t => t != type);
+        this.types = this.types.filter(t => t !== type);
     }
 }
 
@@ -47,7 +47,7 @@ class LoggingPlayers {
     }
 
     get(player) {
-        return this.playerList.find(loggingPlayer => loggingPlayer.player.id == player.id);
+        return this.playerList.find(loggingPlayer => loggingPlayer.player.id === player.id);
     }
 
     includes(player) {
@@ -73,14 +73,14 @@ class TypeLog {
         for (const dimensionId of ['overworld', 'nether', 'the_end']) {
             const dimEntities = world.getDimension(dimensionId).getEntities();
             for (const entity of dimEntities) {
-                if (hasTrait(entity, this.logType)) {
+                if (hasTrait(entity, this.logType)) 
                     this.thisTickEntities.push(entity);
-                }
+                
             }
         }
-        for (const entity of this.thisTickEntities) {
+        for (const entity of this.thisTickEntities) 
             if (this.hasMovedSinceLastTick(entity)) this.movingEntities.push(entity);
-        }
+        
     }
 
     updateLastTickEntities() {
@@ -96,12 +96,12 @@ class TypeLog {
     }
 
     hasMovedSinceLastTick(entity) {
-        const lastTickEntity = this.lastTickEntities.find(lastTickEntity => 
-            lastTickEntity.id === entity.id &&
-            lastTickEntity.location.x === entity.location.x &&
-            lastTickEntity.location.y === entity.location.y &&
-            lastTickEntity.location.z === entity.location.z &&
-            lastTickEntity.dimension.id === entity.dimension.id
+        const lastTickEntity = this.lastTickEntities.find(e => 
+            e.id === entity.id &&
+            e.location.x === entity.location.x &&
+            e.location.y === entity.location.y &&
+            e.location.z === entity.location.z &&
+            e.dimension.id === entity.dimension.id
         );
         return lastTickEntity === undefined;
     }
@@ -109,9 +109,9 @@ class TypeLog {
     printLogBody(player, precision) {
         const formattedTypeMap = this.createFormattedTypeMap(precision);
         let output = '';
-        for (const typeId of Object.keys(formattedTypeMap)) {
+        for (const typeId of Object.keys(formattedTypeMap)) 
             output += `${TERTIARY_COLOR}${typeId}\n${MAIN_COLOR} - ${formattedTypeMap[typeId].join(', ')}\n`;
-        }
+        
         player.sendMessage(output);
     }
 
@@ -128,40 +128,43 @@ class TypeLog {
         const x = entity.location.x.toFixed(precision);
         const y = entity.location.y.toFixed(precision);
         const z = entity.location.z.toFixed(precision);
-        const lastTickEntity = this.lastTickEntities.find(lastTickEntity => lastTickEntity.id === entity.id);
-        if (lastTickEntity === undefined) return `${MAIN_COLOR}[${x}, ${y}, ${z}]`;
-        const xColor = lastTickEntity.location.x !== entity.location.x ? SECONDARY_COLOR : MAIN_COLOR;
-        const yColor = lastTickEntity.location.y !== entity.location.y ? SECONDARY_COLOR : MAIN_COLOR;
-        const zColor = lastTickEntity.location.z !== entity.location.z ? SECONDARY_COLOR : MAIN_COLOR;
+        const lastTickEntity = this.lastTickEntities.find(e => e.id === entity.id);
+        if (lastTickEntity === undefined)
+            return `${MAIN_COLOR}[${x}, ${y}, ${z}]`;
+        const xColor = lastTickEntity.location.x === entity.location.x ? MAIN_COLOR : SECONDARY_COLOR;
+        const yColor = lastTickEntity.location.y === entity.location.y ? MAIN_COLOR : SECONDARY_COLOR;
+        const zColor = lastTickEntity.location.z === entity.location.z ? MAIN_COLOR : SECONDARY_COLOR;
         return `${MAIN_COLOR}[${xColor}${x}${MAIN_COLOR}, ${yColor}${y}${MAIN_COLOR}, ${zColor}${z}${MAIN_COLOR}]`;
     }
 }
 
 function hasTrait(entity, logType) {
-    if (logType === 'projectiles') return entity.getComponent('minecraft:projectile') !== undefined;
-    if (logType === 'falling_blocks') return entity.typeId === 'minecraft:falling_block';
+    if (logType === 'projectiles')
+        return entity.getComponent('minecraft:projectile') !== undefined;
+    if (logType === 'falling_blocks')
+        return entity.typeId === 'minecraft:falling_block';
 }
 
 const loggingPlayers = new LoggingPlayers();
 const projectileLog = new TypeLog('projectiles');
 const fallingBlockLog = new TypeLog('falling_blocks');
 let logStartTick = system.currentTick;
-let activeTntLocations = {};
+const activeTntLocations = {};
 
 world.afterEvents.entitySpawn.subscribe((event) => {
     const entity = event.entity;
-    if (entity.typeId === 'minecraft:tnt') {
+    if (entity.typeId === 'minecraft:tnt') 
         activeTntLocations[entity.id] = entity.location;
-    }
+    
 });
 
 world.beforeEvents.entityRemove.subscribe((event) => {
     const removedEntity = event.removedEntity;
     if (removedEntity?.typeId === 'minecraft:tnt') {
         loggingPlayers.forEach(loggingPlayer => {
-            if (loggingPlayer.types.includes('tnt')) {
+            if (loggingPlayer.types.includes('tnt')) 
                 printTntLog(loggingPlayer.player, removedEntity);
-            }
+            
         });
     }
 });
@@ -189,12 +192,12 @@ function logUpdate(loggingPlayer) {
     const player = loggingPlayer.player;
     const precision = player.getDynamicProperty('logPrecision');
 
-    if (loggingPlayer.types.includes('projectiles')) {
+    if (loggingPlayer.types.includes('projectiles')) 
         projectileLog.update();
-    }
-    if (loggingPlayer.types.includes('falling_blocks')) {
+    
+    if (loggingPlayer.types.includes('falling_blocks')) 
         fallingBlockLog.update();
-    }
+    
     if (projectileLog.movingEntities.length === 0 && fallingBlockLog.movingEntities.length === 0) logStartTick = system.currentTick;
 
     if (projectileLog.movingEntities.length > 0 || fallingBlockLog.movingEntities.length > 0)
@@ -217,7 +220,7 @@ function getLogHeader(movingEntities) {
 }
 
 function logCommand(sender, args) {
-    let { type, precision } = args;
+    const { type, precision } = args;
 
     if (sender.getDynamicProperty('logPrecision') === undefined) sender.setDynamicProperty('logPrecision', 3);
     if (precision !== null) setLogPrecsion(sender, precision);
@@ -238,7 +241,7 @@ function toggleLogging(sender, type) {
     if (!loggingPlayers.includes(sender)) loggingPlayers.add(sender);
     const loggingPlayer = loggingPlayers.get(sender);
 
-    let output = '';
+    let output;
     if (loggingPlayer.types.includes(type)) {
         loggingPlayer.removeType(type);
         output = { translate: 'commands.log.stopped', with: [type] };

@@ -49,16 +49,18 @@ world.afterEvents.entitySpawn.subscribe(async (event) => {
 
     if (!isMocking || event.cause === 'Loaded' || !await Rule.getValue('commandSpawnMocking')) return;
     let shouldCancelSpawn = false;
-    for (const category in categoryToMobMap) {
+    for (const category in categoryToMobMap) 
         if (categoryToMobMap[category].includes(event.entity.typeId.replace('minecraft:', ''))) shouldCancelSpawn = true;
-    }
+    
     if (shouldCancelSpawn && event.entity) event.entity.remove();
 });
 
 function spawnCommand(sender, args) {
     const { action, actionTwo, x1, y1, z1, x2, y2, z2 } = args;
-    const posOne = { x: x1, y: y1, z: z1 };
-    const posTwo = { x: x2, y: y2, z: z2 };
+    const area = {
+        posOne: { x: x1, y: y1, z: z1 },
+        posTwo: { x: x2, y: y2, z: z2 }
+    };
 
     if (action === 'entities') printAllEntities(sender);
     else if (action === 'mocking') handleMockingCmd(sender, actionTwo);
@@ -66,9 +68,9 @@ function spawnCommand(sender, args) {
     else if (action === 'recent') recentSpawns(sender, actionTwo);
     else if (action === 'tracking' && actionTwo === null) printTrackingStatus(sender);
     else if (action === 'tracking' && actionTwo !== null && x1 !== null && z2 === null) sender.sendMessage({ translate: 'commands.generic.usage', with: [`${Command.prefix}spawn tracking <start/stop/mobname> [x1 y1 z1] [x2 y2 z2]`] });
-    else if (action === 'tracking' && actionTwo === 'start') startTracking(sender, posOne, posTwo);
+    else if (action === 'tracking' && actionTwo === 'start') startTracking(sender, area);
     else if (action === 'tracking' && actionTwo === 'stop') stopTracking(sender);
-    else if (action === 'tracking' && actionTwo !== null) trackMob(sender, actionTwo, posOne, posTwo);
+    else if (action === 'tracking' && actionTwo !== null) trackMob(sender, actionTwo, area);
     else return cmd.sendUsage(sender);
 }
 
@@ -125,7 +127,8 @@ function printTrackingStatus(sender) {
     sender.sendMessage(worldSpawns.getOutput());
 }
 
-function startTracking(sender, posOne, posTwo) {
+function startTracking(sender, area) {
+    const { posOne, posTwo } = area;
     if (worldSpawns !== null)
         return sender.sendMessage({ translate: 'commands.spawn.tracking.already' });
     if (!isLocationNull(posOne) && !isLocationNull(posTwo))
@@ -152,11 +155,12 @@ function stopTracking(sender) {
     Utils.broadcastActionBar({ translate: 'commands.spawn.tracking.stop.actionbar', with: [sender.name] }, sender);
 }
 
-function trackMob(sender, mobName, posOne, posTwo) {
+function trackMob(sender, mobName, area) {
+    const { posOne, posTwo } = area;
     let isTrackable = false;
-    for (const category in categoryToMobMap) {
+    for (const category in categoryToMobMap) 
         if (categoryToMobMap[category].includes(mobName)) isTrackable = true;
-    }
+    
     if (!isTrackable)
         return sender.sendMessage({ translate: 'commands.spawn.tracking.mob.invalid', with: [String(mobName)] });
     if (!currMobIds.includes(mobName))

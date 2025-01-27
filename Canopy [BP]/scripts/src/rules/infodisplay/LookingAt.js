@@ -2,8 +2,9 @@ import InfoDisplayElement from './InfoDisplayElement.js';
 import Utils from 'include/utils';
 
 class LookingAt extends InfoDisplayElement {
-    constructor(player) {
-        super('lookingAt', { translate: 'rules.infoDisplay.lookingAt' }, 12);
+    constructor(player, displayLine) {
+        const ruleData = { identifier: 'lookingAt', description: { translate: 'rules.infoDisplay.lookingAt' } };
+        super(ruleData, displayLine);
         this.player = player;
     }
 
@@ -16,8 +17,7 @@ class LookingAt extends InfoDisplayElement {
     }
 
     getLookingAtName() {
-        let blockRayResult, entityRayResult;
-        ({ blockRayResult, entityRayResult } = Utils.getRaycastResults(this.player, 7));
+        const { blockRayResult, entityRayResult } = Utils.getRaycastResults(this.player, 7);
         return Utils.parseLookingAtEntity(entityRayResult).LookingAtName || Utils.parseLookingAtBlock(blockRayResult).LookingAtName;
     }
 }

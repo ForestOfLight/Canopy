@@ -3,8 +3,9 @@ import InfoDisplayElement from './InfoDisplayElement.js';
 class SessionTime extends InfoDisplayElement {
     player;
 
-    constructor(player) {
-        super('sessionTime', { translate: 'rules.infoDisplay.sessionTime' }, 7);
+    constructor(player, displayLine) {
+        const ruleData = { identifier: 'sessionTime', description: { translate: 'rules.infoDisplay.sessionTime' } };
+        super(ruleData, displayLine);
         this.player = player;
         player.setDynamicProperty('joinDate', Date.now());
     }

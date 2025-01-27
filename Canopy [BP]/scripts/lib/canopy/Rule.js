@@ -1,5 +1,6 @@
 import { world } from '@minecraft/server';
 import IPC from "../ipc/ipc";
+import Rules from "./Rules";
 
 export class Rule {
     #category;
@@ -18,6 +19,7 @@ export class Rule {
         this.#contingentRules = contingentRules;
         this.#independentRules = independentRules;
         this.#extensionName = extensionName;
+        Rules.register(this);
     }
 
     getCategory() {
@@ -47,10 +49,10 @@ export class Rule {
     async getValue() {
         if (this.#extensionName) {
             // console.warn(`[Canopy] [Rule] Attempting to get value for ${this.#identifier} from extension ${this.#extensionName}.`);
-            return await IPC.invoke(`canopyExtension:${this.#extensionName}:ruleValueRequest`, { ruleID: this.#identifier }).then(result => {
+            return await IPC.invoke(`canopyExtension:${this.#extensionName}:ruleValueRequest`, { ruleID: this.#identifier }).then(result => 
                 // console.warn(`[Canopy] [Rule] Received value for ${this.#identifier} from extension ${this.#extensionName}: ${result}`);
-                return result;
-            });
+                 result
+            );
         }
         return this.parseValue(world.getDynamicProperty(this.#identifier));
     }
@@ -73,11 +75,11 @@ export class Rule {
     }
     
     setValue(value) {
-        if (this.#extensionName) {
+        if (this.#extensionName) 
             IPC.send(`canopyExtension:${this.#extensionName}:ruleValueSet`, { extensionName: this.#extensionName, ruleID: this.#identifier, value: value });
-        } else {
+         else 
             world.setDynamicProperty(this.#identifier, value);
-        }
+        
     }
 }
 

@@ -20,9 +20,9 @@ function durabilityClink(player, beforeItemStack, itemStack) {
         || !usedDurability(beforeItemStack, itemStack)
     ) return;
     const durability = getRemainingDurability(itemStack);
-    if (ADDITIONAL_DURABILITIES.includes(durability)) {
+    if (ADDITIONAL_DURABILITIES.includes(durability)) 
         showNotification(player, durability);
-    }
+    
     if (durability <= ACTIVE_DURABILITY) {
         const pitch = 1 - (durability/5);
         showNotification(player, durability, pitch);

@@ -59,9 +59,9 @@ function itemFitsInPartiallyFilledSlot(slot, itemStack) {
 
 function addItem(inventory, itemStack) {
     const isItemDeposited = partiallyFilledSlotPass(inventory, itemStack);
-    if (!isItemDeposited) {
+    if (!isItemDeposited) 
         emptySlotPass(inventory, itemStack);
-    }
+    
 }
 
 function partiallyFilledSlotPass(inventory, itemStack) {

@@ -16,9 +16,9 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
 function tickSleep(sourceName, milliseconds) {
     if (milliseconds === null || milliseconds < 1) return;
     world.sendMessage({ translate: 'command.tick.sleep.success', with: [sourceName, String(milliseconds)] });
-    let startTime = Date.now();
+    const startTime = Date.now();
     let waitTime = 0;
-    while (waitTime < milliseconds) {
+    while (waitTime < milliseconds) 
         waitTime = Date.now() - startTime;
-    }
+    
 }

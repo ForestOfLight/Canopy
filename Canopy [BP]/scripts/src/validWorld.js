@@ -2,10 +2,10 @@ import { world, system } from '@minecraft/server';
 import ProbeManager from 'src/classes/ProbeManager';
 import { Extensions } from '../lib/canopy/Canopy';
 
-let hasShownWelcome = {};
+const hasShownWelcome = {};
 
 world.afterEvents.playerJoin.subscribe((event) => {
-    let runner = system.runInterval(() => {
+    const runner = system.runInterval(() => {
         const players = world.getPlayers({ name: event.playerName });
         players.forEach(player => {
             if (!player) return;
@@ -37,7 +37,6 @@ function displayWelcome(player) {
     graphic += `§a+ ----- +\n`;
     player.sendMessage({ rawtext: [{ text: graphic }, { translate: 'generic.welcome.start' }] });
     const extensions = Extensions.getVersionedNames();
-    if (extensions.length > 0) {
+    if (extensions.length > 0)
         player.sendMessage({ translate: 'generic.welcome.extensions', with: [extensions.join('§r§7, §a§o')] });
-    }
 }

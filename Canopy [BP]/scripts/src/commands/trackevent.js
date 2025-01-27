@@ -9,7 +9,7 @@ const cmd = new Command({
     usage: 'trackevent <eventName> [beforeEvent/afterEvent]',
     args: [
         { type: 'string', name: 'eventName' },
-        { type: 'string', name: 'isAfterEvent' }
+        { type: 'string', name: 'eventType' }
     ],
     callback: trackCommand
 });
@@ -31,12 +31,13 @@ world.afterEvents.worldInitialize.subscribe(() => {
 });
 
 function trackCommand(sender, args) {
-    let { eventName, isAfterEvent } = args;
+    const { eventName, eventType } = args;
+    let isAfterEvent;
     if (eventName === null)
         return cmd.sendUsage(sender);
-    if (isAfterEvent == 'beforeEvent')
+    if (eventType === 'beforeEvent')
         isAfterEvent = false;
-    else if (isAfterEvent == 'afterEvent' || isAfterEvent === null)
+    else if (eventType === 'afterEvent' || eventType === null)
         isAfterEvent = true;
     else
         return cmd.sendUsage(sender);

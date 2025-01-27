@@ -62,6 +62,5 @@ function convertCoords(fromDimension, toDimension, location) {
         return { x: location.x / 8, y: location.y, z: location.z / 8 };
     else if (fromDimension === 'nether' && toDimension === 'overworld')
         return { x: location.x * 8, y: location.y, z: location.z * 8 };
-    else
-        return location;
+    return location;
 }

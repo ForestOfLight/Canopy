@@ -119,14 +119,14 @@ class GeneratorChannelMap {
     }
 
     resetAll() {
-        for (const color of this.colors) {
+        for (const color of this.colors) 
             this.reset(color);
-        }
+        
     }
 
     getQueryOutput(channel) {
-        let realtimeText = this.realtime ? 'realtime: ' : '';
-        let message = { rawtext: [
+        const realtimeText = this.realtime ? 'realtime: ' : '';
+        const message = { rawtext: [
             { translate: 'commands.generator.query.channel', with: [
                 formatColor(channel.color), 
                 realtimeText, 
@@ -134,9 +134,9 @@ class GeneratorChannelMap {
                 String(channel.totalCount), 
                 Utils.calculatePerTime(channel.totalCount, this.getDeltaTime(channel)) ]
             }] };
-        for (const item of Object.keys(channel.itemMap)) {
+        for (const item of Object.keys(channel.itemMap)) 
             message.rawtext.push({ text: `\n §7- ${item}: ${getAllModeOutput(channel, item)}` });
-        }
+        
         return message;
     }
 
@@ -144,11 +144,11 @@ class GeneratorChannelMap {
         const millisecondsPerTick = 50.0;
         let deltaTicks;
         
-        if (this.realtime) {
+        if (this.realtime) 
             deltaTicks = (Date.now() - channel.startRealTime) / millisecondsPerTick;
-        } else {
+         else 
             deltaTicks = system.currentTick - channel.startTickTime;
-        }
+        
         deltaTicks = Math.floor(deltaTicks / 8) * 8; // normalize to hopper speed
         return deltaTicks;
     }

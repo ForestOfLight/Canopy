@@ -28,28 +28,29 @@ class InfoDisplay {
 	elements = [];
 	infoMessage = { rawtext: [] };
 
+	 
 	constructor(player) {
 		this.player = player;
 		this.elements = [
-			new Coords(player),
-			new CardinalFacing(player),
-			new Facing(player),
-			new ChunkCoords(player),
-			new SlimeChunk(player),
-			new TPS(),
-			new Entities(player),
-			new Light(player),
-			new Biome(player),
-			new WorldDay(),
-			new TimeOfDay(),
-			new SessionTime(player),
-			new MoonPhase(),
-			new EventTrackers(),
-			new HopperCounterCounts(),
-			new SimulationMap(player),
-			new LookingAt(player),
-			new SignalStrength(player),
-			new PeekInventory(player)
+			new Coords(player, 1),
+			new CardinalFacing(player, 1),
+			new Facing(player, 2),
+			new ChunkCoords(player, 3),
+			new SlimeChunk(player, 3),
+			new TPS(4),
+			new Entities(player, 5),
+			new Light(player, 6),
+			new Biome(player, 6),
+			new WorldDay(7),
+			new TimeOfDay(7),
+			new SessionTime(player, 8),
+			new MoonPhase(9),
+			new EventTrackers(10),
+			new HopperCounterCounts(11),
+			new SimulationMap(player, 12),
+			new LookingAt(player, 13),
+			new SignalStrength(player, 14),
+			new PeekInventory(player, 15),
 		];
 		playerToInfoDisplayMap[player.id] = this;
 	}
@@ -58,9 +59,9 @@ class InfoDisplay {
 		this.infoMessage = { rawtext: [] };
 		const enabledElements = this.getEnabledElements();
 
-		for (let i = 0; i < enabledElements.length; i++) {
+		for (let i = 0; i < enabledElements.length; i++) 
 			this.updateElementData(enabledElements, i);
-		}
+		
 
 		this.trimTrailingWhitespace();
 		this.sendInfoMessage();
@@ -70,24 +71,24 @@ class InfoDisplay {
 		const element = elements[currIndex];
 		
 		if (element.isWorldwide) {
-			if (!currentTickWorldwideElementData[element.identifier]) {
+			if (!currentTickWorldwideElementData[element.identifier]) 
 				currentTickWorldwideElementData[element.identifier] = { own: element.getFormattedDataOwnLine(), shared: element.getFormattedDataSharedLine() };
-			}
+			
 		}
 		
-		let data = {};
-		if (this.getElementsOnLine(elements, element.lineNumber).length === 1) {
+		let data;
+		if (this.getElementsOnLine(elements, element.lineNumber).length === 1) 
 			data = currentTickWorldwideElementData[element.identifier]?.own || element.getFormattedDataOwnLine();
-		} else {
+		 else 
 			data = currentTickWorldwideElementData[element.identifier]?.shared || element.getFormattedDataSharedLine();
-		}
+		
 
-		if (currIndex !== 0 && this.isOnNewLine(elements, currIndex) && !this.dataIsWhitespace(data)) {
+		if (currIndex !== 0 && this.isOnNewLine(elements, currIndex) && !this.dataIsWhitespace(data)) 
 			this.infoMessage.rawtext.push({ text: '\n' });
-		}
-		if (!this.isOnNewLine(elements, currIndex) && !this.dataIsWhitespace(data)) {
+		
+		if (!this.isOnNewLine(elements, currIndex) && !this.dataIsWhitespace(data)) 
 			this.infoMessage.rawtext.push({ text: ' ' });
-		}
+		
 		this.infoMessage.rawtext.push(data);
 	}
 
@@ -116,7 +117,7 @@ class InfoDisplay {
 	}
 
 	sendInfoMessage() {
-		if (this.infoMessage.rawtext.length == 0)
+		if (this.infoMessage.rawtext.length === 0)
 			return;
 		this.player.onScreenDisplay.setTitle(this.infoMessage);
 	}

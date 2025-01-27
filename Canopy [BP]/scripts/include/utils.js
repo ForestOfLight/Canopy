@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { world, ItemStack, DimensionTypes } from '@minecraft/server';
 
 class Utils {
@@ -18,21 +19,19 @@ class Utils {
     }
 
 	static parseLookingAtBlock(lookingAtBlock) {
-		let block;
 		let blockName = '';
 		let raycastHitFace;
-
-		block = lookingAtBlock?.block ?? undefined;
+		const block = lookingAtBlock?.block ?? undefined;
 		if (block) {
 			raycastHitFace = lookingAtBlock.face;
 			try {
 				blockName = `§a${Utils.parseName(block)}`;
 			} catch (error) {
-				if (error.message.includes('loaded')) {
+				if (error.message.includes('loaded')) 
 					blockName = `§c${Utils.stringifyLocation(block.location, 0)} Unloaded`;
-				} else if (error.message.includes('undefined')) {
+				 else if (error.message.includes('undefined')) 
 					blockName = '§7Undefined';
-				}
+				
 			}
 		}
 
@@ -47,15 +46,15 @@ class Utils {
 			try {
 				entityName = `§a${Utils.parseName(entity)}`;
 
-				if (entity.typeId === 'minecraft:player') {
+				if (entity.typeId === 'minecraft:player') 
 					entityName = `§a§o${entity.name}§r`;
-				}
+				
 			} catch (error) {
-				if (error.message.includes('loaded')) {
+				if (error.message.includes('loaded')) 
 					entityName = `§c${Utils.stringifyLocation(entity.location, 0)} Unloaded`;
-				} else if (error.message.includes('undefined')) {
+				 else if (error.message.includes('undefined')) 
 					entityName = '§7Undefined';
-				}
+				
 			}
 		}
 
@@ -80,7 +79,9 @@ class Utils {
 	}
 
 	static parseName(target, includePrefix = true) {
-		return target.typeId.replace('minecraft:', '') === 'player' ? `§o${target.name}§r` : (includePrefix ? target.typeId : target.typeId.replace('minecraft:', ''));
+		if (target.typeId.replace('minecraft:', '') === 'player') 
+			return `§o${target.name}§r`;
+		return includePrefix ? target.typeId : target.typeId.replace('minecraft:', '');
 	}
 
 	static stringifyLocation(location, precision = 0) {
@@ -90,14 +91,14 @@ class Utils {
 	}
 
 	static populateItems(inventory) {
-		let items = {};
+		const items = {};
 	
 		inventory = inventory.container;
 		for (let i=0; i<inventory.size; i++) {
 			try {
 				const item = inventory.getSlot(i);
 				
-				let data = item.typeId.replace('minecraft:','');
+				const data = item.typeId.replace('minecraft:','');
 				if (items[data]) items[data] += item.amount;
 				else items[data] = item.amount;
 			} catch {
@@ -131,11 +132,11 @@ class Utils {
 	}
 
 	static wait(ms) {
-		let startTime = Date.now();
+		const startTime = Date.now();
 		let endTime = Date.now();
-		while (endTime - startTime < ms) {
+		while (endTime - startTime < ms) 
 			endTime = Date.now();
-		}
+		
 		return { startTime, endTime };
 	}
 
@@ -220,8 +221,7 @@ class Utils {
 			case 'Entity':
 				if (event.sourceEntity.typeId === 'minecraft:player')
 					return event.sourceEntity.name;
-				else 
-					return event.sourceEntity.typeId;
+				return event.sourceEntity.typeId;
 			case 'Server':
 				return 'Server';
 			default:
@@ -256,8 +256,8 @@ class Utils {
 		let currentIndex = 0;
 	
 		for (let i = 0; i < splitText.length; i++) {
-			let splice = splitText[i];
-			let originalSplice = text.slice(currentIndex, currentIndex + splice.length);
+			const splice = splitText[i];
+			const originalSplice = text.slice(currentIndex, currentIndex + splice.length);
 			currentIndex += splice.length;
 	
 			if (i === splitText.length - 1) {
@@ -265,7 +265,7 @@ class Utils {
 				continue;
 			}
 	
-			let colorCodeIndex = originalSplice.lastIndexOf('§');
+			const colorCodeIndex = originalSplice.lastIndexOf('§');
 			if (colorCodeIndex === -1) {
 				newText += originalSplice + colorCode + text.slice(currentIndex, currentIndex + term.length) + lastColorCode;
 			} else {
@@ -290,12 +290,8 @@ class Utils {
 	}
 
 	static getRaycastResults(player, distance) {
-		let blockRayResult;
-		let entityRayResult;
-	
-		blockRayResult = player.getBlockFromViewDirection({ includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: distance });
-		entityRayResult = player.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: false, maxDistance: distance });
-	
+		const blockRayResult = player.getBlockFromViewDirection({ includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: distance });
+		const entityRayResult = player.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: false, maxDistance: distance });
 		return { blockRayResult, entityRayResult };
 	}
 

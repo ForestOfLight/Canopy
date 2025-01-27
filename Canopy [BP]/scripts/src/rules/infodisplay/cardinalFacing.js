@@ -3,8 +3,9 @@ import InfoDisplayElement from './InfoDisplayElement.js';
 class CardinalFacing extends InfoDisplayElement {
     player;
 
-    constructor(player) {
-        super('cardinalFacing', { translate: 'rules.infoDisplay.cardinalFacing' }, 1);
+    constructor(player, displayLine) {
+        const ruleData = { identifier: 'cardinalFacing', description: { translate: 'rules.infoDisplay.cardinalFacing' } };
+        super(ruleData, displayLine);
         this.player = player;
     }
 
@@ -23,7 +24,7 @@ class CardinalFacing extends InfoDisplayElement {
 		if (angle >= -45 && angle < 45) return 'E (+x)'
 		else if (angle >= 45 && angle < 135) return 'S (+z)';
 		else if (angle >= 135 || angle < -135) return 'W (-x)';
-		else return 'N (-z)';
+		return 'N (-z)';
 	}
 }
 

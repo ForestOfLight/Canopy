@@ -156,9 +156,9 @@ class CounterChannelMap {
     }
 
     resetAll() {
-        for (const color of this.colors) {
+        for (const color of this.colors) 
             this.reset(color);
-        }
+        
     }
 
     setMode(color, mode) {
@@ -168,8 +168,8 @@ class CounterChannelMap {
     }
 
     getQueryOutput(channel) {
-        let realtimeText = this.realtime ? 'realtime: ' : '';
-        let message = { rawtext: [
+        const realtimeText = this.realtime ? 'realtime: ' : '';
+        const message = { rawtext: [
             { translate: 'commands.counter.query.channel', with: [
                 formatColor(channel.color), 
                 realtimeText, 
@@ -177,9 +177,9 @@ class CounterChannelMap {
                 String(channel.totalCount), 
                 Utils.calculatePerTime(channel.totalCount ,this.getDeltaTime(channel), channel.mode) ]
             }] };
-        for (const item of Object.keys(channel.itemMap)) {
+        for (const item of Object.keys(channel.itemMap)) 
             message.rawtext.push({ text: `\n §7- ${item}: ${getAllModeOutput(channel, item)}` });
-        }
+        
         return message;
     }
 
@@ -187,11 +187,11 @@ class CounterChannelMap {
         const msPerTick = 50.0;
         let deltaTime;
         
-        if (this.realtime) {
+        if (this.realtime) 
             deltaTime = (Date.now() - channel.startRealTime) / msPerTick;
-        } else {
+         else 
             deltaTime = system.currentTick - channel.startTickTime;
-        }
+        
         deltaTime = Math.floor(deltaTime / 8) * 8;
         return deltaTime;
     }
@@ -262,9 +262,9 @@ function updateCount(channel) {
 function counterCommand(sender, args) {
     const { argOne, argTwo } = args;
 
-    if (argOne !== null && !channelMap.colors.includes(argOne) && argOne !== 'reset' && argOne !== 'realtime' && argOne !== 'all' && validModes.includes(argTwo)) {
+    if (argOne !== null && !channelMap.colors.includes(argOne) && argOne !== 'reset' && argOne !== 'realtime' && argOne !== 'all' && validModes.includes(argTwo)) 
         return sender.sendMessage({ translate: 'commands.counter.channel.notfound', with: [argOne] });
-    }
+    
 
     if (argOne === 'reset')
         resetAll(sender);
@@ -322,7 +322,7 @@ function queryAll(sender) {
         message.rawtext.push({ rawtext: [channelMap.getQueryOutput(channel), { text: '\n' }] });
     });
     
-    if (message == { rawtext: [] })
+    if (message.rawtext.length === 0)
         message = { translate: 'commands.counter.query.empty' };
     sender?.sendMessage(message);
 }
@@ -381,7 +381,7 @@ function getModeOutput(channel) {
 
 function getAllModeOutput(channel, item) {
     let output = '';
-    let rateModes = validModes.filter(mode => mode !== 'countMode');
+    const rateModes = validModes.filter(mode => mode !== 'countMode');
 
     if (channel.mode === 'countMode')
         output += `${Utils.getColorCode(channel.color)}${channel.itemMap[item]}`;
@@ -405,12 +405,12 @@ export function getInfoDisplayOutput() {
     let hopperCounterOutput;
 	
 	if (activeChannels?.length === 0) return '';
-	if (activeChannels.length <= 4) {
+	if (activeChannels.length <= 4) 
 		output += 'Counters: ';
-	}
+	
 	for (let i = 0; i < activeChannels.length; i++) {
 		const color = activeChannels[i];
-		if (i != 0 && (i % 4) == 0)
+		if (i !== 0 && (i % 4) === 0)
             output += '\n';
 		const channel = channelMap.getChannel(color);
 		if (channel.hopperList.length === 0) {
@@ -425,9 +425,9 @@ export function getInfoDisplayOutput() {
 }
 
 export function resetCounterMap() {
-    for (const color in channelMap.colors) {
+    for (const color in channelMap.colors) 
         channelMap.removeChannel(color);
-    }
+    
 }
 
 export { channelMap, formatColor, query, queryAll };

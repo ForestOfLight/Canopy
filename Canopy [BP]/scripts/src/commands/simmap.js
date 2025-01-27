@@ -38,28 +38,31 @@ const cmd = new Command({
 });
 
 function simmapCommand(sender, args) {
-    let { argOne, argTwo, argThree, argFour } = args;
-    if (argOne === 'display') {
-        handleInfoDisplayConfig(sender, argTwo, argThree, argFour);
-    } else {
-        handleChatCommand(sender, argOne, argTwo, argThree, argFour);
-    }
+    const { argOne } = args;
+    if (argOne === 'display') 
+        handleInfoDisplayConfig(sender, args);
+     else 
+        handleChatCommand(sender, args);
+    
 }
 
-function handleInfoDisplayConfig(sender, argTwo, x, z) {
+function handleInfoDisplayConfig(sender, args) {
+    const { argTwo, argThree: x, argFour: z } = args;
     if (Utils.isNumeric(argTwo) && (argTwo < 1 || argTwo > MAX_CHUNK_DISTANCE)) {
         sender.sendMessage({ translate: 'commands.simmap.invalidDistance', with: [String(argTwo), String(MAX_CHUNK_DISTANCE)] });
         return;
     }
 
-    if (Utils.isNumeric(argTwo))
+    if (Utils.isNumeric(argTwo)) {
         updateDistance(sender, argTwo);
-    else if (validDimensions[argTwo] && x !== null && z !== null)
-        updateLocation(sender, world.getDimension(validDimensions[argTwo]), x, z);
-    else if (argTwo === 'here')
+    } else if (validDimensions[argTwo] && x !== null && z !== null) {
+        const dimensionLocation = { dimension: validDimensions[argTwo], x, z };
+        updateLocation(sender, dimensionLocation);
+    } else if (argTwo === 'here') {
         resetLocation(sender);
-    else
+    } else {
         return cmd.sendUsage(sender);
+    }
 }
 
 function updateDistance(sender, distance) {
@@ -69,7 +72,8 @@ function updateDistance(sender, distance) {
     sender.sendMessage({ translate: 'commands.simmap.config.distance', with: [String(distance)] });
 }
 
-function updateLocation(sender, dimension, x, z) {
+function updateLocation(sender, dimensionLocation) {
+    const { dimension, x, z } = dimensionLocation;
     const config = getConfig(sender);
     config.isLocked = true;
     config.dimension = dimension.id;
@@ -88,9 +92,9 @@ function resetLocation(sender) {
 
 function getConfig(player) {
     const dynamicConfig = player.getDynamicProperty('simulationMapConfig');
-    if (dynamicConfig) {
+    if (dynamicConfig) 
         return JSON.parse(dynamicConfig);
-    }
+    
     const config = {
         isLocked: false,
         dimension: MinecraftDimensionTypes.overworld,
@@ -101,28 +105,35 @@ function getConfig(player) {
     return config;
 }
 
-function handleChatCommand(sender, argOne, argTwo, argThree, argFour) {
+function handleChatCommand(sender, args) {
+    const { argOne, argTwo, argThree, argFour } = args;
     if (Utils.isNumeric(argOne) && (argOne < 1 || argOne > MAX_CHUNK_DISTANCE)) {
         sender.sendMessage({ translate: 'commands.simmap.invalidDistance', with: [String(argOne), String(MAX_CHUNK_DISTANCE)] });
         return;
     }
 
+    const dimensionLocation = { dimension: sender.dimension, location: sender.location };
     if (argOne === null) {
-        printLoadedChunks(sender, sender.dimension, sender.location, DEFAULT_CHUNK_DISTANCE);
+        printLoadedChunks(sender, dimensionLocation, DEFAULT_CHUNK_DISTANCE);
     } else if (Utils.isNumeric(argOne) && argTwo === null) {
-        printLoadedChunks(sender, sender.dimension, sender.location, argOne);
+        printLoadedChunks(sender, dimensionLocation, argOne);
     } else if (argOne !== null && argTwo !== null && argThree === null) {
         return cmd.sendUsage(sender);
     } else if (Utils.isNumeric(argOne) && argTwo !== null && argThree !== null && argFour !== null) {
-        printLoadedChunks(sender, world.getDimension(validDimensions[argTwo]), { x: argThree, z: argFour }, argOne);
+        dimensionLocation.dimension = world.getDimension(validDimensions[argTwo]);
+        dimensionLocation.location = { x: argThree, z: argFour };
+        printLoadedChunks(sender, dimensionLocation, argOne);
     } else if (!Utils.isNumeric(argOne) && Utils.isNumeric(argTwo) && argThree !== null) {
-        printLoadedChunks(sender, world.getDimension(validDimensions[argOne]), { argTwo, x: argThree }, DEFAULT_CHUNK_DISTANCE);
+        dimensionLocation.dimension = world.getDimension(validDimensions[argOne]);
+        dimensionLocation.location = { x: argTwo, z: argThree };
+        printLoadedChunks(sender, dimensionLocation, DEFAULT_CHUNK_DISTANCE);
     } else {
         return cmd.sendUsage(sender);
     }
 }
 
-function printLoadedChunks(player, dimension, location, distance) {
+function printLoadedChunks(player, dimensionLocation, distance) {
+    const { dimension, location } = dimensionLocation;
     const chunkLocation = coordsToChunkLocation(location);
     const dimensionChunkLocation = { dimension, ...chunkLocation };
     const loadedChunks = getNearbyLoadedChunks(dimensionChunkLocation, distance);
@@ -169,8 +180,7 @@ function isChunkLoaded(dimension, x, z) {
     } catch (error) {
         if (error.message === 'cannot read property \'typeId\' of undefined')
             return false;
-        else
-            throw error;
+        throw error;
     }
 }
 

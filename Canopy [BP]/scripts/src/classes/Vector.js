@@ -1,5 +1,6 @@
 /**
  * Part of ItemStack Database by @gameza_src
+ * Unknown author
  */
 const isVec3Symbol = Symbol("isVec3");
 export function Vector(x = 0, y = 0, z = 0) {
@@ -7,7 +8,7 @@ export function Vector(x = 0, y = 0, z = 0) {
         this.x = Number(x);
         this.y = Number(y);
         this.z = Number(z);
-    } else return { x: Number(x), y: Number(y), z: Number(z), __proto__: Vector.prototype };
+    } else {return { x: Number(x), y: Number(y), z: Number(z), __proto__: Vector.prototype };}
 }
 Vector.magnitude = function magnitude(vec) { return Math.sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z); }
 Vector.normalize = function normalize(vec) { const l = Vector.magnitude(vec); return { x: vec.x / l, y: vec.y / l, z: vec.z / l, __proto__: Vector.prototype }; }
@@ -18,7 +19,7 @@ Vector.subtract = function subtract(a, b) { return { x: a.x - b.x, y: a.y - b.y,
 Vector.add = function add(a, b) { return { x: a.x + b.x, y: a.y + b.y, z: a.z + b.z, __proto__: Vector.prototype } };
 Vector.multiply = function multiply(vec, num) {
     if (typeof num == "number") return { x: vec.x * num, y: vec.y * num, z: vec.z * num, __proto__: Vector.prototype };
-    else return { x: vec.x * num.x, y: vec.y * num.y, z: vec.z * num.z, __proto__: Vector.prototype };
+    return { x: vec.x * num.x, y: vec.y * num.y, z: vec.z * num.z, __proto__: Vector.prototype };
 }
 Vector.isVec3 = function isVec3(vec) { return vec[isVec3Symbol] === true; }
 Vector.floor = function floor(vec) { return { x: Math.floor(vec.x), y: Math.floor(vec.y), z: Math.floor(vec.z), __proto__: Vector.prototype }; }
@@ -29,7 +30,7 @@ Vector.lerp = function lerp(a, b, t) { return Vector.multiply(a, 1 - t).add(Vect
 Vector.distance = function distance(a, b) { return Vector.magnitude(Vector.subtract(a, b)); }
 Vector.from = function from(object) {
     if (Vector.isVec3(object)) return object;
-    if (Array.isArray(object)) return Vector(object[0], object[1], object[2]);
+    if (Array.isArray(object)) return new Vector(object[0], object[1], object[2]);
     const { x = 0, y = 0, z = 0 } = object ?? {};
     return { x: Number(x), y: Number(y), z: Number(z), __proto__: Vector.prototype };
 }

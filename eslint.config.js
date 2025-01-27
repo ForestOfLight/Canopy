@@ -16,7 +16,6 @@ export default [
       '**/scripts/lib/mt.js',
       '**/scripts/lib/ipc/',
       '**/scripts/lib/SRCItemDatabase.js',
-      '**/__tests__/',
     ]
   },
   js.configs.recommended,
@@ -35,16 +34,16 @@ export default [
         "no-duplicate-imports": "error",
         "no-template-curly-in-string": "error",
         "no-unreachable-loop": "error",
-        "no-use-before-define": "error",
+        "no-use-before-define": ["error", { "functions": false }],
         "no-useless-assignment": "error",
         // Suggestions:
         "arrow-body-style": "error",
         "block-scoped-var": "error",
         "camelcase": [ "warn", { "ignoreImports": true } ],
-        "curly": ["error", "multi", "consistent"],
+        "curly": ["error", "multi-or-nest", "consistent"],
         "default-case": "error",
         "default-case-last": "error",
-        "eqeqeq": "error",
+        "eqeqeq": ["error", "smart"],
         "func-style": ["error", "declaration", { "allowArrowFunctions": true }],
         "max-classes-per-file": ["error", 1], // { ignoreExpressions: true }
         "max-depth": ["warn"],
@@ -54,13 +53,11 @@ export default [
         "new-cap": "error",
         "no-else-return": "error",
         "no-lonely-if": "error",
-        "no-magic-numbers": ["error", { "ignore": [0, 1], "ignoreArrayIndexes": true } ],
         "no-negated-condition": "error",
         "no-nested-ternary": "error",
         "no-return-assign": "error",
         "no-shadow": "error",
         "no-throw-literal": "error",
-        "no-undefined": "error",
         "no-underscore-dangle": "error",
         "no-unneeded-ternary": "error",
         "no-useless-computed-key": "error",
@@ -74,6 +71,13 @@ export default [
         "prefer-const": "error",
         "require-await": "error",
         "yoda": "error",
+    }
+  },
+  {
+    files: ["**/__tests__/**"],
+    rules: {
+      "max-lines-per-function": "off",
+      "max-lines": "off",
     }
   }
 ];

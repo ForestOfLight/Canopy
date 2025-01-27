@@ -33,9 +33,9 @@ function infoCommand(sender, args) {
         return;
     }
     
-    if (!InfoDisplayRule.exists(ruleID)) {
+    if (!InfoDisplayRule.exists(ruleID)) 
         return sender.sendMessage({ rawtext: [ { translate: 'rules.generic.unknown', with: [ruleID, Commands.getPrefix()] }, { text: '§r§7.' } ] });
-    }
+    
     if (!(InfoDisplayRule.getRule(ruleID) instanceof InfoDisplayRule))
         return sender.sendMessage({ translate: 'commands.info.canopyRule', with: [ruleID, Command.getPrefix()] });
 
@@ -56,19 +56,19 @@ function infoCommand(sender, args) {
         clearInfoDisplay(sender);
     
     const rule = InfoDisplayRule.getRule(ruleID);
-    if (!enable)
-        updateRules(sender, rule.getDependentRuleIDs(), enable);
-    else
+    if (enable)
         updateRules(sender, rule.getContigentRuleIDs(), enable);
+    else
+        updateRules(sender, rule.getDependentRuleIDs(), enable);
     updateRules(sender, rule.getIndependentRuleIDs(), !enable);
 
-    updateRule(sender, ruleID, ruleValue, enable);
+    updateRule(sender, ruleID, enable);
 }
 
 function changeAll(sender, enable) {
-    for (let entry of InfoDisplayRule.getRules()) {
+    for (const entry of InfoDisplayRule.getRules()) 
         entry.setValue(sender, enable);
-    }
+    
     if (!enable) clearInfoDisplay(sender);
     const enabledRawText = enable ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' };
     sender.sendMessage({ rawtext: [ { translate: 'commands.info.allupdated' }, enabledRawText, { text: '§r§7.' } ] });
@@ -78,7 +78,8 @@ function clearInfoDisplay(sender) {
     sender.onScreenDisplay.setTitle('');
 }
 
-function updateRule(sender, ruleID, ruleValue, enable) {
+function updateRule(sender, ruleID, enable) {
+    const ruleValue = InfoDisplayRule.getValue(sender, ruleID);
     if (ruleValue === enable) return;
     InfoDisplayRule.setValue(sender, ruleID, enable);
     const enabledRawText = enable ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' };
@@ -86,7 +87,6 @@ function updateRule(sender, ruleID, ruleValue, enable) {
 }
 
 function updateRules(sender, ruleIDs, enable) {
-    for (const ruleID of ruleIDs) {
-        updateRule(sender, ruleID, InfoDisplayRule.getValue(sender, ruleID), enable);
-    }
+    for (const ruleID of ruleIDs)
+        updateRule(sender, ruleID, enable);
 }

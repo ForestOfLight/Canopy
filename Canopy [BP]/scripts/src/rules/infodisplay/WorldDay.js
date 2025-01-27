@@ -2,8 +2,9 @@ import InfoDisplayElement from './InfoDisplayElement.js';
 import { world } from '@minecraft/server';
 
 class WorldDay extends InfoDisplayElement {
-    constructor() {
-        super('worldDay', { translate: 'rules.infoDisplay.worldDay' }, 6, true);
+    constructor(displayLine) {
+        const ruleData = { identifier: 'worldDay', description: { translate: 'rules.infoDisplay.worldDay' } };
+        super(ruleData, displayLine, true);
     }
 
     getFormattedDataOwnLine() {

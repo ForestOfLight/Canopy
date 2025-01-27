@@ -91,13 +91,13 @@ function generateItems(channel) {
         if (!hopper) continue;
         const hopperContainer = hopper.getComponent('minecraft:inventory').container;
         const itemStack = hopperContainer?.getItem(0);
-        if (!itemStack) {
+        if (itemStack) {
+            hopperGenerator.outputItemType = itemStack.typeId;
+        } else {
             if (hopperGenerator.outputItemType === null)
                 continue;
             hopperContainer.setItem(0, new ItemStack(hopperGenerator.outputItemType));
             generatedItems.push(hopperGenerator.outputItemType);
-        } else {
-            hopperGenerator.outputItemType = itemStack.typeId;
         }
     }
     return generatedItems;
@@ -114,9 +114,9 @@ function updateCount(channel, generatedItems) {
 function generatorCommand(sender, args) {
     const { argOne, argTwo } = args;
 
-    if (argOne !== null && !channelMap.colors.includes(argOne) && argOne !== 'reset' && argOne !== 'realtime' && argOne !== 'all') {
+    if (argOne !== null && !channelMap.colors.includes(argOne) && argOne !== 'reset' && argOne !== 'realtime' && argOne !== 'all') 
         return sender.sendMessage({ translate: 'commands.generator.channel.notfound', with: [argOne] });
-    }
+    
 
     if (argOne === 'reset')
         resetAll(sender);
@@ -170,7 +170,7 @@ function queryAll(sender) {
         message.rawtext.push({ rawtext: [channelMap.getQueryOutput(channel), { text: '\n' }] });
     });
     
-    if (message == { rawtext: [] })
+    if (message.rawtext.length === 0)
         message = { translate: 'commands.generator.query.empty' };
     sender?.sendMessage(message);
 }
@@ -181,7 +181,7 @@ function formatColor(color) {
 
 function getAllModeOutput(channel, item) {
     let output = '';
-    let rateModes = ['perhourMode', 'perminuteMode', 'persecondMode'];
+    const rateModes = ['perhourMode', 'perminuteMode', 'persecondMode'];
 
     output += `${Utils.getColorCode(channel.color)}${channel.itemMap[item]}`;
     for (let i = 0; i < rateModes.length; i++) {
@@ -194,9 +194,9 @@ function getAllModeOutput(channel, item) {
 }
 
 export function resetGeneratorMap() {
-    for (const color in channelMap.colors) {
+    for (const color in channelMap.colors) 
         channelMap.removeChannel(color);
-    }
+    
 }
 
 export { channelMap, formatColor, query, queryAll, getAllModeOutput };

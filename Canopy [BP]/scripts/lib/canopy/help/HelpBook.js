@@ -8,23 +8,23 @@ class HelpBook {
     }
 
     newPage(page) {
-        if (!(page instanceof HelpPage)) {
+        if (!(page instanceof HelpPage)) 
             throw new Error('[HelpBook] Page must be an instance of HelpPage');
-        }
+        
         this.helpPages[page.title] = page;
     }
 
     getPage(pageName) {
-        if (!this.helpPages[pageName]) {
+        if (!this.helpPages[pageName]) 
             throw new Error('[HelpBook] Page does not exist');
-        }
+        
         return this.helpPages[pageName];
     }
 
     addEntry(pageName, entry, player = false) {
-        if (!this.helpPages[pageName]) {
+        if (!this.helpPages[pageName]) 
             throw new Error('[HelpBook] Page does not exist');
-        }
+        
         if (pageName === 'InfoDisplay')
             this.helpPages[pageName].addEntry(entry, player);
         else
@@ -44,13 +44,13 @@ class HelpBook {
     }
 
     async print(player) {
-        for (let page of Object.values(this.helpPages)) {
+        for (const page of Object.values(this.helpPages)) 
             player.sendMessage(await page.toRawMessage());
-        }
+        
     }
 
     async printPage(pageName, player) {
-        for (let page of Object.values(this.helpPages)) {
+        for (const page of Object.values(this.helpPages)) {
             if (String(page.title).toLowerCase() === String(pageName).toLowerCase()) {
                 player.sendMessage(await page.toRawMessage());
                 return;
@@ -61,11 +61,11 @@ class HelpBook {
 
     async printSearchResults(searchTerm, player) {
         const results = [];
-        for (let page of Object.values(this.helpPages)) {
-            for (let entry of page.entries) {
-                if (entry.title.toLowerCase().includes(searchTerm.toLowerCase())) {
+        for (const page of Object.values(this.helpPages)) {
+            for (const entry of page.entries) {
+                if (entry.title.toLowerCase().includes(searchTerm.toLowerCase())) 
                     results.push(entry);
-                }
+                
             }
         }
 

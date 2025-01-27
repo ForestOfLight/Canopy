@@ -5,8 +5,9 @@ import { currentQuery } from 'src/commands/peek.js';
 class PeekInventory extends InfoDisplayElement {
     player;
 
-    constructor(player) {
-        super('peekInventory', { translate: 'rules.infoDisplay.peekInventory' }, 13, false, ['lookingAt']);
+    constructor(player, displayLine) {
+		const ruleData = { identifier: 'peekInventory', description: { translate: 'rules.infoDisplay.peekInventory', contingentRules: ['lookingAt'] } };
+        super(ruleData, displayLine, false);
         this.player = player;
     }
 
@@ -19,8 +20,7 @@ class PeekInventory extends InfoDisplayElement {
     }
 
     parsePeekInventory() {
-		let blockRayResult, entityRayResult;
-        ({ blockRayResult, entityRayResult } = Utils.getRaycastResults(this.player, 9));
+        const { blockRayResult, entityRayResult } = Utils.getRaycastResults(this.player, 9);
 		if (!blockRayResult && !entityRayResult) return '';
 		const target = Utils.getClosestTarget(this.player, blockRayResult, entityRayResult);
 		if (!target) return '';
@@ -36,13 +36,13 @@ class PeekInventory extends InfoDisplayElement {
 		let output = '';
 		const items = Utils.populateItems(inventory);
 		if (Object.keys(items).length > 0) {
-			for (let itemName in items) {
+			for (const itemName in items) {
 				if (itemName.includes(currentQuery[this.player.name]))
 					output += `§c${itemName}: ${items[itemName]}\n`;
 				else
 					output += `§r${itemName}: ${items[itemName]}\n`;
 			}
-		} else output = '§rEmpty';
+		} else {output = '§rEmpty';}
 				
 		return output;
 	}

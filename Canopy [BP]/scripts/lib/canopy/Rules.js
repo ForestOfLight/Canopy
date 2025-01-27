@@ -1,10 +1,9 @@
 export class Rules {
     static rules = {};
 
-    static add(rule) {
-        if (this.exists(rule.getID())) {
+    static register(rule) {
+        if (this.exists(rule.getID())) 
             throw new Error(`[Canopy] Rule with identifier '${rule.getID()}' already exists.`);
-        }
         this.rules[rule.getID()] = rule;
     }
 
@@ -57,7 +56,7 @@ export class Rules {
         const rule = this.get(identifier);
         if (!rule)
             throw new Error(`[Canopy] Rule with identifier '${identifier}' does not exist.`);
-        return Rules.getAll().filter(rule => rule.getContigentRuleIDs().includes(identifier)).map(rule => rule.getID());
+        return Rules.getAll().filter(r => r.getContigentRuleIDs().includes(identifier)).map(r => r.getID());
     }
 }
 

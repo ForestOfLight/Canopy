@@ -2,8 +2,9 @@ import InfoDisplayElement from './InfoDisplayElement.js';
 import { world } from '@minecraft/server';
 
 class MoonPhase extends InfoDisplayElement {
-    constructor() {
-        super('moonPhase', { translate: 'rules.infoDisplay.moonPhase' }, 8, true);
+    constructor(displayLine) {
+        const ruleData = { identifier: 'moonPhase', description: { translate: 'rules.infoDisplay.moonPhase' } };
+        super(ruleData, displayLine, true);
     }
 
     getFormattedDataOwnLine() {

@@ -6,12 +6,13 @@ class InfoDisplayElement {
     lineNumber;
     isWorldwide;
 
-    constructor(identifier, description, lineNumber, isWorldwide = false, contingentRules = []) {
-        if (this.constructor === InfoDisplayElement) {
+    constructor(ruleData, lineNumber, isWorldwide = false) {
+        if (this.constructor === InfoDisplayElement) 
             throw new TypeError("Abstract class 'InfoDisplayElement' cannot be instantiated directly.");
-        }
-        this.identifier = identifier;
-        this.rule = InfoDisplayRule.getRule(identifier) || new InfoDisplayRule({ identifier, description, contingentRules });
+        if (!ruleData.identifier || !ruleData.description) 
+            throw new Error("ruleData must have 'identifier' and 'description' properties.");
+        this.identifier = ruleData.identifier;
+        this.rule = InfoDisplayRule.getRule(this.identifier) || new InfoDisplayRule({ identifier: this.identifier, description: ruleData.description, contingentRules: ruleData.contingentRules });
         this.isWorldwide = isWorldwide;
         this.lineNumber = lineNumber;
     }

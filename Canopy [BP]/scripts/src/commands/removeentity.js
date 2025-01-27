@@ -26,10 +26,10 @@ function removeEntityCommand(sender, args) {
     } else if (target) {
         target.remove();
         sender.sendMessage({ translate: 'commands.removeentity.success', with: [target.typeId.replace('minecraft:', ''), target.id] });
-    } else if (id !== null) {
-        sender.sendMessage({ translate: 'commands.removeentity.fail.noid', with: [String(id)] });
-    } else {
+    } else if (id === null) {
         sender.sendMessage({ translate: 'generic.entity.notfound' });
+    } else {
+        sender.sendMessage({ translate: 'commands.removeentity.fail.noid', with: [String(id)] });
     }
 }
 

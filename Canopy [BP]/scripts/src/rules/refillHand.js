@@ -21,12 +21,10 @@ function captureEvent(event) {
 
 function processRefillHand(player, beforeItemStack, afterItemStack) {
     const playerInventory = player.getComponent('inventory')?.container;
-    if (beforeItemStack === undefined || !hasArrowInCorrectSlot(playerInventory)) {
-        return;
-    }
-    if (hasRunOutOfItems(beforeItemStack, afterItemStack)) {
+    if (beforeItemStack === undefined || !hasArrowInCorrectSlot(playerInventory)) return;
+    if (hasRunOutOfItems(beforeItemStack, afterItemStack)) 
         refillHand(player, playerInventory, beforeItemStack);
-    }
+    
 }
 
 function hasArrowInCorrectSlot(playerInventory) {

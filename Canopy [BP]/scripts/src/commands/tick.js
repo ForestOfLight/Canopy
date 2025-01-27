@@ -33,7 +33,7 @@ let shouldStep = 0;
 system.runInterval(() => {
     if (shouldStep > 0) {
         shouldStep--;
-        if (shouldStep == 0) 
+        if (shouldStep === 0) 
             world.sendMessage({ translate: 'commands.tick.step.done' });
         return;
     }
@@ -53,8 +53,7 @@ function tickCommand(sender, args) {
         return tickSleep(sender, steps);
     else if (Utils.isNumeric(arg))
         return tickSlow(sender, arg);
-    else
-        return cmd.sendUsage(sender);
+    return cmd.sendUsage(sender);
 }
 
 function tickSlow(sender, mspt) {
@@ -84,18 +83,18 @@ function tickSleep(sender, milliseconds) {
     if (milliseconds === null || milliseconds < 1)
         return sender.sendMessage({ translate: 'commands.tick.sleep.fail' });
     world.sendMessage({ translate: 'commands.tick.sleep.success', with: [sender.name, String(milliseconds)] });
-    let startTime = Date.now();
+    const startTime = Date.now();
     let waitTime = 0;
-    while (waitTime < milliseconds) {
+    while (waitTime < milliseconds) 
         waitTime = Date.now() - startTime;
-    }
+    
 }
 
 function tickSpeed(desiredMspt) {
     if (targetMSPT === 50.0) return;
     let currentMspt = Date.now() - DataTPS.lastTick;
 
-    while (currentMspt <= desiredMspt) {
+    while (currentMspt <= desiredMspt) 
         currentMspt = Date.now() - DataTPS.lastTick;
-    }
+    
 }

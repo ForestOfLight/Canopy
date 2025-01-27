@@ -5,8 +5,9 @@ import { getConfig, getLoadedChunksMessage } from '../../commands/simmap.js';
 class SimulationMap extends InfoDisplayElement {
     player;
 
-    constructor(player) {
-        super('simulationMap', { translate: 'rules.infoDisplay.simulationMap' }, 11);
+    constructor(player, displayLine) {
+        const ruleData = { identifier: 'simulationMap', description: { translate: 'rules.infoDisplay.simulationMap' } };
+        super(ruleData, displayLine);
         this.player = player;
     }
 
@@ -15,9 +16,9 @@ class SimulationMap extends InfoDisplayElement {
         if (config.isLocked) {
             const dimension = world.getDimension(config.dimension);
             return getLoadedChunksMessage(dimension, config.location, config.distance);
-        } else {
+        } 
             return getLoadedChunksMessage(this.player.dimension, this.player.location, config.distance);
-        }
+        
     }
 
     getFormattedDataSharedLine() {

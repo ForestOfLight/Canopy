@@ -17,27 +17,33 @@ new Command({
 
 function dataCommand(sender, args) {
     const targetId = args.id;
-    if (targetId !== null) {
-        const entity = world.getEntity(String(targetId));
-        if (entity)
-            sender.sendMessage(formatEntityOutput(entity));
-        else
-            sender.sendMessage({ translate: 'commands.data.notarget.id', with: [targetId] });
-    } else {
-        const blockRayResult = sender.getBlockFromViewDirection({ includeLiquidBlocks: true, includePassableBlocks: true, maxDistance: 7 });
-        const entityRayResult = sender.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: 7 });
-        const block = blockRayResult?.block;
-        const entity = entityRayResult[0]?.entity;
-        if (!block && !entity)
-            return sender.sendMessage({ translate: 'generic.target.notfound' });
+    let message;
+    if (targetId === null) 
+        message = getTargetedMessage(sender);
+    else 
+        message = getIdentifierMessage(targetId);
+    sender.sendMessage(message);
+}
 
-        let output;
-        if (entity)
-            output = formatEntityOutput(entity);
-        else if (block)
-            output = formatBlockOutput(block);
-        sender.sendMessage(output);
-    }
+function getTargetedMessage(sender) {
+    const blockRayResult = sender.getBlockFromViewDirection({ includeLiquidBlocks: true, includePassableBlocks: true, maxDistance: 7 });
+    const entityRayResult = sender.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: 7 });
+    const block = blockRayResult?.block;
+    const entity = entityRayResult[0]?.entity;
+    if (!block && !entity)
+        return sender.sendMessage({ translate: 'generic.target.notfound' });
+
+    if (entity)
+        return formatEntityOutput(entity);
+    else if (block)
+        return formatBlockOutput(block);
+}
+
+function getIdentifierMessage(targetId) {
+    const entity = world.getEntity(String(targetId));
+    if (entity)
+        return formatEntityOutput(entity);
+    return { translate: 'commands.data.notarget.id', with: [targetId] };
 }
 
 function formatBlockOutput(block) {
@@ -94,7 +100,7 @@ function formatEntityOutput(entity) {
 function formatProperties(target) {
     let output = '';
 
-    for (let key in target) {
+    for (const key in target) {
         try {
             let value = target[key];
             if (typeof value === 'function') 
@@ -115,7 +121,7 @@ function formatProperties(target) {
 }
 
 function tryGetBlockComponents(target) {
-    let components = [];
+    const components = [];
     
     for (const componentType of BLOCK_COMPONENTS) {
         try {
@@ -133,15 +139,15 @@ function formatComponents(target, components) {
     if (components.length === 0) 
         return 'none';
     let output = '';
-    for (const component of components) {
+    for (const component of components) 
         output += formatComponent(target, component);
-    }
+    
     return output;
 }
 
 function formatComponent(target, component) {
     let output = '';
-    for (let key in component) {
+    for (const key in component) {
         try {
             let value = component[key];
             if (typeof value === 'function')
@@ -163,13 +169,13 @@ function formatComponent(target, component) {
 
 function formatObject(target, object) {
     let output = '';
-    for (let key in object) {
+    for (const key in object) {
         try {
             if (typeof object[key] === 'function') continue;
-            let value = object[key];
-            if (typeof value === 'object') {
+            const value = object[key];
+            if (typeof value === 'object') 
                 formatObject(target, value);
-            }
+            
             output += `${key}=${JSON.stringify(value)}, `;
         } catch(error) {
             console.warn(error);

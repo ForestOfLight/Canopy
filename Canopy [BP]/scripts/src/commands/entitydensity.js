@@ -16,7 +16,8 @@ const cmd = new Command({
 });
 
 function entityDensityCommand(sender, args) {
-    let { firstArg, gridSize } = args;
+    const firstArg = args.firstArg;
+    let gridSize = args.gridSize;
     if (firstArg === null)
         return cmd.sendUsage(sender);
     const { validDimensionId, parsedGridSize, hasNoErrors } = parseArgs(sender, firstArg, gridSize);

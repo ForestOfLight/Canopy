@@ -42,14 +42,14 @@ describe('Extension', () => {
         });
 
         it('should handle description as an object', () => {
-            const extensionData = {
+            const extensionDataWithRawTextDescription = {
                 name: 'Test Extension',
                 version: '1.0.0',
                 author: 'Author Name',
                 description: { text: 'This is a test extension' }
             };
-            const extension = new Extension(extensionData);
-            expect(extension.getDescription()).toEqual({ text: 'This is a test extension' });
+            const extensionWithRawTextDescription = new Extension(extensionDataWithRawTextDescription);
+            expect(extensionWithRawTextDescription.getDescription()).toEqual({ text: 'This is a test extension' });
         });
     });
 
@@ -165,6 +165,6 @@ describe('Extension', () => {
             expect(extension.makeID({})).toBeNull();
             expect(extension.makeID(null)).toBeNull();
             expect(extension.makeID(undefined)).toBeNull();
-        });     
+        });
     });
 });

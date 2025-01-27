@@ -92,7 +92,7 @@ function addWarp(sender, name, warpMap) {
     if (warpMap.has(name)) return sender.sendMessage({ translate: 'commands.warp.exists', with: [name] });
     const { location, dimension } = sender;
 
-    let warps = JSON.parse(world.getDynamicProperty('warps'));
+    const warps = JSON.parse(world.getDynamicProperty('warps'));
     warps.warpList[name] = new Warp(name, location, dimension);
     world.setDynamicProperty(`warps`, JSON.stringify(warps));
     sender.sendMessage({ translate: 'commands.warp.add.success', with: [name] });
@@ -120,7 +120,7 @@ function warpTP(sender, name, warpMap) {
 function getWarpMapCopy() {
     let warps = world.getDynamicProperty('warps');
     if (warps === undefined || warps === false) {
-        let initWarps = new Warps();
+        const initWarps = new Warps();
         world.setDynamicProperty(`warps`, JSON.stringify(initWarps));
         warps = world.getDynamicProperty('warps');
     }
@@ -128,10 +128,10 @@ function getWarpMapCopy() {
 }
 
 function setWarpMap(newWarpMap) {
-    let warps = JSON.parse(world.getDynamicProperty('warps'));
-    let newWarpList = {};
+    const warps = JSON.parse(world.getDynamicProperty('warps'));
+    const newWarpList = {};
 
-    for (let key of Object.keys(warps.warpList)) {
+    for (const key of Object.keys(warps.warpList)) {
         if (!newWarpMap.has(key)) continue;
         newWarpList[key] = newWarpMap.get(key);
     }
@@ -143,7 +143,7 @@ async function warpListCommand(sender) {
     if (!await Rule.getValue('commandWarpSurvival') && sender.getGameMode() === 'survival')
         return sender.sendMessage({ translate: 'commands.generic.blocked.survival' });
     
-    let warpMap = getWarpMapCopy();
+    const warpMap = getWarpMapCopy();
 
     if (warpMap.size === 0)
         return sender.sendMessage({ translate: 'commands.warp.list.empty' });

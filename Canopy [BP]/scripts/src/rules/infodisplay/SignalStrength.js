@@ -1,11 +1,12 @@
-import InfoDisplayElement from './InfoDisplayElement.js';
-import Utils from 'include/utils';
+import InfoDisplayElement from "./InfoDisplayElement.js";
+import Utils from "../../../include/utils.js";
 
 class SignalStrength extends InfoDisplayElement {
     player;
 
-    constructor(player) {
-        super('signalStrength', { translate: 'rules.infoDisplay.signalStrength' }, 12, false, ['lookingAt']);
+    constructor(player, displayLine) {
+        const ruleData = { identifier: 'signalStrength', description: { translate: 'rules.infoDisplay.signalStrength' }, contingentRules: ['lookingAt'] };
+        super(ruleData, displayLine, false);
         this.player = player;
     }
 
@@ -19,8 +20,7 @@ class SignalStrength extends InfoDisplayElement {
     }
 
     getSignalStrength() {
-        let blockRayResult, entityRayResult;
-        ({ blockRayResult, entityRayResult } = Utils.getRaycastResults(this.player, 7));
+        const { blockRayResult, entityRayResult } = Utils.getRaycastResults(this.player, 7);
         if (entityRayResult[0]?.entity)
             return 0;
         if (blockRayResult?.block)

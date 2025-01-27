@@ -127,22 +127,22 @@ describe('Rule', () => {
             expect(Rules.get('test_rule').parseValue('{"test": "value"}')).toEqual({ test: 'value' });
             expect(Rules.get('test_rule').parseValue('["test", "value"]')).toEqual(['test', 'value']);
             expect(Rules.get('test_rule').parseValue('true')).toBe(true);
-            expect(Rules.get('test_rule').parseValue('null')).toBe(null);
+            expect(Rules.get('test_rule').parseValue('null')).toBeNull();
             expect(Rules.get('test_rule').parseValue('1')).toBe(1);
             expect(Rules.get('test_rule').parseValue('"test"')).toBe('test');
             expect(Rules.get('test_rule').parseValue(1)).toBe(1);
         });
     
         it('should return undefined if the value is \'undefined\'', () => {
-            expect(Rules.get('test_rule').parseValue('undefined')).toBe(undefined);
+            expect(Rules.get('test_rule').parseValue('undefined')).toBeUndefined();
         });
     
         it('should return NaN if the value is \'NaN\'', () => {
-            expect(Rules.get('test_rule').parseValue('NaN')).toBe(NaN);
+            expect(Rules.get('test_rule').parseValue('NaN')).toBeNaN();
         });
     
         it('should return null for invalid JSON strings', () => {
-            expect(Rules.get('test_rule').parseValue('invalid')).toBe(null);
+            expect(Rules.get('test_rule').parseValue('invalid')).toBeNull();
         });
     });
 
