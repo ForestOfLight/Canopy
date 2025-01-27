@@ -21,10 +21,9 @@ vi.mock('@minecraft/server', () => ({
 }));
 
 describe('Rule', () => {
-    let testRule;
     beforeEach(() => {
         Rules.clear();
-        testRule = new Rule({ 
+        new Rule({ 
             category: 'test', 
             identifier: 'test_rule',
             description: 'This is a test rule',
@@ -32,7 +31,6 @@ describe('Rule', () => {
             contingentRules: ['test_rule_2'],
             independentRules: ['test_rule_3']
         });
-        Rules.add(testRule);
     });
 
     describe('constructor', () => {

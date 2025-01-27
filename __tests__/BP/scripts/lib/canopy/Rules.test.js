@@ -32,34 +32,23 @@ describe('Rules', () => {
             contingentRules: ['test_rule_2'],
             independentRules: ['test_rule_3']
         });
-        Rules.add(testRule);
     });
 
-    describe('add', () => {
+    describe('register', () => {
         it('should add a new rule if it does not exist', () => {
-            const rule = new Rule({
-                category: 'test',
+            const ruleMock = {
                 identifier: 'test_rule_2',
-                description: 'This is a test rule',
-                extensionName: 'Test Extension',
-                contingentRules: ['test_rule_2'],
-                independentRules: ['test_rule_3']
-            });
-            Rules.add(rule);
-            expect(Rules.get('test_rule_2')).toBe(rule);
+                getID: () => 'test_rule_2'
+            }
+            Rules.register(ruleMock);
+            expect(Rules.get('test_rule_2')).toBe(ruleMock);
         });
 
         it('should not add a rule if it already exists', () => {
-            const rule = new Rule({ 
-                category: 'test', 
+            const ruleMock = {
                 identifier: 'test_rule',
-                description: 'This is a test rule',
-                extensionName: 'Test Extension',
-                contingentRules: ['test_rule_2'],
-                independentRules: ['test_rule_3']
-            });
-
-            expect(() => Rules.add(rule)).toThrow();
+            };
+            expect(() => Rules.register(ruleMock)).toThrow();
             expect(Rules.getAll().length).toBe(1);
         });
     });
@@ -85,7 +74,6 @@ describe('Rules', () => {
                 contingentRules: ['test_rule_1'],
                 independentRules: ['test_rule_3']
             });
-            Rules.add(rule2);
 
             const allRules = Rules.getAll();
             expect(allRules.length).toBe(2);
@@ -125,7 +113,7 @@ describe('Rules', () => {
 
     describe('clear', () => {
         it('should remove all rules', () => {
-            const rule1 = new Rule({
+            new Rule({
                 category: 'test',
                 identifier: 'test_rule_1',
                 description: 'This is a test rule 1',
@@ -133,13 +121,8 @@ describe('Rules', () => {
                 contingentRules: ['test_rule_2'],
                 independentRules: ['test_rule_3']
             });
-
-            Rules.add(rule1);
-
             expect(Rules.getAll().length).toBe(2);
-
             Rules.clear();
-
             expect(Rules.getAll().length).toBe(0);
             expect(Rules.get('test_rule_1')).toBeUndefined();
             expect(Rules.get('test_rule_2')).toBeUndefined();
@@ -192,7 +175,7 @@ describe('Rules', () => {
     
     describe('getDependentRuleIDs', () => {
         it('should return an array of dependent rule IDs if they exist', () => {
-            const rule1 = new Rule({
+            new Rule({
                 category: 'test',
                 identifier: 'test_rule_1',
                 description: 'This is a test rule 1',
@@ -200,8 +183,7 @@ describe('Rules', () => {
                 contingentRules: ['test_rule_2'],
                 independentRules: ['test_rule_3']
             });
-
-            const rule2 = new Rule({
+            new Rule({
                 category: 'test',
                 identifier: 'test_rule_2',
                 description: 'This is a test rule 2',
@@ -210,15 +192,12 @@ describe('Rules', () => {
                 independentRules: ['test_rule_3']
             });
 
-            Rules.add(rule1);
-            Rules.add(rule2);
-
             const dependentRuleIDs = Rules.getDependentRuleIDs('test_rule_2');
             expect(dependentRuleIDs).toEqual(['test_rule','test_rule_1']);
         });
 
         it('should return an empty array if no dependent rules exist', () => {
-            const rule1 = new Rule({
+            new Rule({
                 category: 'test',
                 identifier: 'test_rule_1',
                 description: 'This is a test rule 1',
@@ -226,8 +205,6 @@ describe('Rules', () => {
                 contingentRules: ['test_rule_2'],
                 independentRules: ['test_rule_3']
             });
-
-            Rules.add(rule1);
 
             const dependentRuleIDs = Rules.getDependentRuleIDs('test_rule');
             expect(dependentRuleIDs).toEqual([]);
