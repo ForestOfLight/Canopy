@@ -40,11 +40,7 @@ new Command({
 
 function generatorCommand(sender, args) {
     const { argOne, argTwo } = args;
-
-    if (argOne !== null && !GeneratorChannels.isValidColor(argOne) && argOne !== 'reset' && argOne !== 'realtime' && argOne !== 'all') 
-        return sender.sendMessage({ translate: 'commands.generator.channel.notfound', with: [argOne] });
     
-
     if (argOne === 'reset')
         resetAll(sender);
     else if (argOne === 'realtime')
@@ -57,6 +53,8 @@ function generatorCommand(sender, args) {
         query(sender, argOne, { useRealTime: true });
     else if (argOne && argTwo === 'reset')
         reset(sender, argOne);
+    else if (argOne && !GeneratorChannels.isValidColor(argOne))
+        sender.sendMessage({ translate: 'commands.generator.channel.notfound', with: [argOne] });
     else
         cmd.sendUsage(sender);
 }
