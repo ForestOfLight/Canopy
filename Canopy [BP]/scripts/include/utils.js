@@ -304,6 +304,10 @@ class Utils {
 			.map(word => word.charAt(0).toUpperCase() + word.slice(1))
 			.join(' ');
 	}
+
+	static formatColorStr(color) {
+		return `${Utils.getColorCode(color)}${color}§r`;
+	}
 }
 
 export default Utils;
