@@ -3,8 +3,8 @@ import InfoDisplayRuleHelpEntry from './InfoDisplayRuleHelpEntry';
 import InfoDisplayRule from '../InfoDisplayRule';
 
 class InfoDisplayRuleHelpPage extends RuleHelpPage {
-    constructor(title, description, usage, extensionName = false) {
-        super(title, description, usage, extensionName);
+    constructor({ title, description, usage }, extensionName = false) {
+        super({ title, description, usage }, extensionName);
     }
 
     addEntry(rule, player) {

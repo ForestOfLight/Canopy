@@ -3,8 +3,12 @@ import Command from "./Command";
 import Rules from "./Rules";
 import Rule from "./Rule";
 import InfoDisplayRule from "./InfoDisplayRule";
-import { RuleHelpEntry, CommandHelpEntry, InfoDisplayRuleHelpEntry } from "./help/HelpEntry";
-import { RuleHelpPage, CommandHelpPage, InfoDisplayRuleHelpPage } from "./help/HelpPage";
+import RuleHelpEntry from "./help/RuleHelpEntry";
+import CommandHelpEntry from "./help/CommandHelpEntry";
+import InfoDisplayRuleHelpEntry from "./help/InfoDisplayRuleHelpEntry";
+import RuleHelpPage from "./help/RuleHelpPage";
+import CommandHelpPage from "./help/CommandHelpPage";
+import InfoDisplayRuleHelpPage from "./help/InfoDisplayRuleHelpPage";
 import HelpBook from "./help/HelpBook";
 import Extensions from "./Extensions";
 

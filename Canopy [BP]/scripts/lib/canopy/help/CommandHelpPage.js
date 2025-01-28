@@ -3,12 +3,12 @@ import CommandHelpEntry from "./CommandHelpEntry";
 import Command from "../Command";
 
 class CommandHelpPage extends HelpPage {
-    constructor(title, description = null, extensionName = false) {
+    constructor({ title, description = null }, extensionName = false) {
         super(title, description, extensionName);
     }
 
     addEntry(command) {
-        if (!(command instanceof Command)) 
+        if (!(command instanceof Command))
             throw new Error('[HelpPage] Entry must be an instance of Command');
         
         if (this.hasEntry(command))

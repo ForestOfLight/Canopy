@@ -3,13 +3,13 @@ import RuleHelpEntry from './RuleHelpEntry';
 import Rule from '../Rule';
 
 class RuleHelpPage extends HelpPage {
-    constructor(title, description, usage, extensionName = false) {
-        super(title, description, extensionName);
+    constructor({ title, description, usage }, extensionId = false) {
+        super(title, description, extensionId);
         this.usage = usage;
     }
 
     addEntry(rule) {
-        if (!(rule instanceof Rule)) 
+        if (!(rule instanceof Rule))
             throw new Error('[HelpPage] Entry must be an instance of Rule');
         
         if (this.hasEntry(rule))
