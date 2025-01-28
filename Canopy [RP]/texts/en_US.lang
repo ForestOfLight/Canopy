@@ -4,7 +4,7 @@ entity.canopy:rideable.name=Canopy Rideable
 action.hint.exit.canopy:rideable=Sneak to stand
 
 ## generic
-generic.welcome.start=§7This server is running §l§aCanopy§r§7. Type ./help to get started.§r
+generic.welcome.start=§7This server is running §l§aCanopy§r §a%s§7. Type ./help to get started.§r
 generic.welcome.extensions=§7Loaded extensions: §a%s
 generic.player.notfound=§cPlayer '%s' not found.
 generic.target.notfound=§cTarget not found.
