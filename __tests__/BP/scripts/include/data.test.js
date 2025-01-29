@@ -13,10 +13,23 @@ vi.mock('@minecraft/server', {
     DimensionTypes: {}
 });
 
-const bedrockSamplesRawUrl = `https://raw.githubusercontent.com/Mojang/bedrock-samples/refs/tags/v${getMinecraftVersion()}/behavior_pack/entities/`;
+const bedrockSamplesRawUrl = `https://raw.githubusercontent.com/Mojang/bedrock-samples/refs/tags/v${getMinecraftVersion()}/behavior_pack/spawn_rules/`;
 
 async function fetchBedrockSamplesData(entityType) {
-    const response = await axios.get(bedrockSamplesRawUrl + entityType + '.json');
+    let response;
+    try {
+        response = await axios.get(bedrockSamplesRawUrl + entityType + '.json');
+    } catch (error) {
+        if (error.response.status === 404) {
+            return {
+                "minecraft:spawn_rules": {
+                    "description": {
+                        "population_control": "none"
+                    }
+                }
+            };
+        }
+    }
     if (typeof response.data == 'string') {
         const stringData = stripJsonComments(response.data);
         return JSON.parse(stringData);
@@ -29,14 +42,13 @@ describe.concurrent('categoryToMobMap', () => {
         const categoryMobs = categoryToMobMap[category];
         for (const mob of categoryMobs) {
 
-            it(`${mob} category should match bedrock-samples`, async () => {
+            it(`${mob} population should match bedrock-samples`, async () => {
                 const mobData = await fetchBedrockSamplesData(mob);
-                let mobCategory = mobData['minecraft:entity']['description']['spawn_category'];
+                let mobCategory = mobData["minecraft:spawn_rules"]["description"]["population_control"];
                 if (!mobCategory)
-                    mobCategory = 'other';
+                    mobCategory = 'none';
                 expect(mobCategory).toBe(category);
             });
-
         }
     }
 });
@@ -55,6 +67,5 @@ describe('intToBiomeMap', () => {
             const biomeInt = probeData['minecraft:entity']['events'][biomeId]['set_property']['canopy:biome'];
             expect(intToBiomeMap[biomeInt]).toBe(biomeName);
         });
-
     }
 });

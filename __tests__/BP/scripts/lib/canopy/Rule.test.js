@@ -76,51 +76,51 @@ describe('Rule', () => {
         });
     });
 
-    describe('getCategory()', () => {
+    describe('getCategory', () => {
         it('should return the category', () => {
             expect(Rules.get('test_rule').getCategory()).toBe('test');
         });
     });
 
-    describe('getID()', () => {
+    describe('getID', () => {
         it('should return the identifier', () => {
             expect(Rules.get('test_rule').getID()).toBe('test_rule');
         });
     });
 
-    describe('getDescription()', () => {
+    describe('getDescription', () => {
         it('should return the description', () => {
             expect(Rules.get('test_rule').getDescription()).toEqual({ text: 'This is a test rule' });
         });
     });
 
-    describe('getContigentRuleIDs()', () => {
+    describe('getContigentRuleIDs', () => {
         it('should return the contingent rule IDs', () => {
             expect(Rules.get('test_rule').getContigentRuleIDs()).toEqual(['test_rule_2']);
         });
     });
 
-    describe('getIndependentRuleIDs()', () => {
+    describe('getIndependentRuleIDs', () => {
         it('should return the independent rule IDs', () => {
             expect(Rules.get('test_rule').getIndependentRuleIDs()).toEqual(['test_rule_3']);
         });
     });
 
-    describe('getExtensionName()', () => {
+    describe('getExtensionName', () => {
         it('should return the extension name', () => {
             expect(Rules.get('test_rule').getExtensionName()).toBe('Test Extension');
         });
     });
 
-    describe.skip('getValue()', () => {
+    describe.skip('getValue', () => {
         // Gametest
     });
 
-    describe.skip('getNativeValue()', () => {
+    describe.skip('getNativeValue', () => {
         // Gametest
     });
 
-    describe('parseValue()', () => {
+    describe('parseValue', () => {
         it('should parse JSON strings to objects', () => {
             expect(Rules.get('test_rule').parseValue('{"test": "value"}')).toEqual({ test: 'value' });
             expect(Rules.get('test_rule').parseValue('["test", "value"]')).toEqual(['test', 'value']);
@@ -144,7 +144,7 @@ describe('Rule', () => {
         });
     });
 
-    describe.skip('setValue()', () => {
+    describe.skip('setValue', () => {
         // Gametest
     });
 });

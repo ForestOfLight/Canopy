@@ -51,7 +51,7 @@ export class Rule {
             // console.warn(`[Canopy] [Rule] Attempting to get value for ${this.#identifier} from extension ${this.#extensionName}.`);
             return await IPC.invoke(`canopyExtension:${this.#extensionName}:ruleValueRequest`, { ruleID: this.#identifier }).then(result => 
                 // console.warn(`[Canopy] [Rule] Received value for ${this.#identifier} from extension ${this.#extensionName}: ${result}`);
-                 result
+                this.parseValue(result)
             );
         }
         return this.parseValue(world.getDynamicProperty(this.#identifier));
@@ -61,6 +61,13 @@ export class Rule {
         if (this.#extensionName)
             throw new Error(`[Canopy] [Rule] Native value is not available for ${this.#identifier} from extension ${this.#extensionName}.`);
         return this.parseValue(world.getDynamicProperty(this.#identifier));
+    }
+    
+    setValue(value) {
+        if (this.#extensionName) 
+            IPC.send(`canopyExtension:${this.#extensionName}:ruleValueSet`, { extensionName: this.#extensionName, ruleID: this.#identifier, value: value });
+        else
+            world.setDynamicProperty(this.#identifier, value);
     }
 
     parseValue(value) {
@@ -72,14 +79,6 @@ export class Rule {
             console.warn(`[Canopy] [Rule] Failed to parse value for ${this.#identifier}: ${value}`);
         }
         return null;
-    }
-    
-    setValue(value) {
-        if (this.#extensionName) 
-            IPC.send(`canopyExtension:${this.#extensionName}:ruleValueSet`, { extensionName: this.#extensionName, ruleID: this.#identifier, value: value });
-         else 
-            world.setDynamicProperty(this.#identifier, value);
-        
     }
 }
 

@@ -125,46 +125,43 @@ describe('Extension', () => {
         });
     });
 
-    describe.skip('setupCommandRegistration', () => {
-        // Gametest
-    });
-
-    describe.skip('setupRuleRegistration', () => {
-        // Gametest
-    });
-
     describe('makeID()', () => {
         console.warn = vi.fn();
         it('should return a valid ID', () => {
-            expect(extension.makeID('TestExtension')).toBe('testextension');
+            const ext = new Extension({ name: 'TestExtension' });
+            expect(ext.getID()).toBe('testextension');
         });
 
         it('should handle special characters', () => {
-            expect(extension.makeID('Test Extension!')).toBe('test_extension');
+            const ext = new Extension({ name: 'Test Extension!' });
+            expect(ext.getID()).toBe('test_extension');
         });
 
         it('should handle spaces', () => {
-            expect(extension.makeID('Test Extension 2')).toBe('test_extension_2');
+            const ext = new Extension({ name: 'Test Extension 2' });
+            expect(ext.getID()).toBe('test_extension_2');
         });
 
         it('should handle numbers', () => {
-            expect(extension.makeID('Test Extension 3')).toBe('test_extension_3');
+            const ext = new Extension({ name: 'Test Extension 3' });
+            expect(ext.getID()).toBe('test_extension_3');
         });
 
         it('should handle mixed characters', () => {
-            expect(extension.makeID('Test E%t3nsion 4!')).toBe('test_et3nsion_4');
+            const ext = new Extension({ name: 'Test E%t3nsion 4!' });
+            expect(ext.getID()).toBe('test_et3nsion_4');
         });
 
         it('should handle empty string', () => {
-            expect(extension.makeID('')).toBe(null);
+            expect(() => new Extension({ name: '' })).toThrow();
         });
 
         it('should throw error for non strings', () => {
-            expect(extension.makeID(123)).toBeNull();
-            expect(extension.makeID([])).toBeNull();
-            expect(extension.makeID({})).toBeNull();
-            expect(extension.makeID(null)).toBeNull();
-            expect(extension.makeID(undefined)).toBeNull();
+            expect(() => new Extension({ name: 123 })).toThrow();
+            expect(() => new Extension({ name: [] })).toThrow();
+            expect(() => new Extension({ name: {} })).toThrow();
+            expect(() => new Extension({ name: null })).toThrow();
+            expect(() => new Extension({ name: undefined })).toThrow();
         });
     });
 });

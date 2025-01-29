@@ -1,34 +1,34 @@
 export class Rules {
-    static rules = {};
+    static #rules = {};
 
     static register(rule) {
         if (this.exists(rule.getID())) 
             throw new Error(`[Canopy] Rule with identifier '${rule.getID()}' already exists.`);
-        this.rules[rule.getID()] = rule;
+        this.#rules[rule.getID()] = rule;
     }
 
     static get(identifier) {
-        return this.rules[identifier];
+        return this.#rules[identifier];
     }
 
     static getAll() {
-        return Object.values(this.rules);
+        return Object.values(this.#rules);
     }
 
     static getIDs() {
-        return Object.keys(this.rules);
+        return Object.keys(this.#rules);
     }
 
     static exists(name) {
-        return this.rules[name] !== undefined;
+        return this.#rules[name] !== undefined;
     }
 
     static remove(name) {
-        delete this.rules[name];
+        delete this.#rules[name];
     }
 
     static clear() {
-        this.rules = {};
+        this.#rules = {};
     }
     
     static async getValue(identifier) {

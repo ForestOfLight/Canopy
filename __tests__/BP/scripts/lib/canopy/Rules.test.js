@@ -44,10 +44,11 @@ describe('Rules', () => {
             expect(Rules.get('test_rule_2')).toBe(ruleMock);
         });
 
-        it('should not add a rule if it already exists', () => {
+        it('should not add a rule if the rule already exists', () => {
             const ruleMock = {
-                identifier: 'test_rule',
-            };
+                identifier : 'test_rule',
+                getID: () => 'test_rule'
+            }
             expect(() => Rules.register(ruleMock)).toThrow();
             expect(Rules.getAll().length).toBe(1);
         });
@@ -84,6 +85,24 @@ describe('Rules', () => {
         it('should return an empty array if no rules exist', () => {
             Rules.clear();
             expect(Rules.getAll()).toEqual([]);
+        });
+    });
+
+    describe('getIDs', () => {
+        it('should return all rule IDs', () => {
+            new Rule({
+                category: 'test',
+                identifier: 'test_rule_2',
+                description: 'This is a test rule 2',
+                extensionName: 'Test Extension',
+                contingentRules: ['test_rule_1'],
+                independentRules: ['test_rule_3']
+            });
+
+            const ruleIDs = Rules.getIDs();
+            expect(ruleIDs.length).toBe(2);
+            expect(ruleIDs).toContain('test_rule');
+            expect(ruleIDs).toContain('test_rule_2');
         });
     });
 

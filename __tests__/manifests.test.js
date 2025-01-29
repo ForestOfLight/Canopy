@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import fs from 'fs';
-import { getCanopyVersion, manifestPathBP, manifestPathRP } from '../__tests__/utils';
+import { getCanopyVersion, manifestPathBP, manifestPathRP } from './utils';
 
 function getManifestObject(manifestPath) {
     const manifestContent = fs.readFileSync(manifestPath, 'utf-8');
