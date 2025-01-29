@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Rule from '../../../../../Canopy [BP]/scripts/lib/canopy/Rule.js';
 import Rules from '../../../../../Canopy [BP]/scripts/lib/canopy/Rules.js';
+import IPC from '../../../../../Canopy [BP]/scripts/lib/ipc/ipc.js';
 
 vi.mock('@minecraft/server', () => ({
     world: { 
@@ -112,12 +113,46 @@ describe('Rule', () => {
         });
     });
 
-    describe.skip('getValue', () => {
-        // Gametest
+    describe('getValue', () => {
+        it('should return the value from the extension if it exists', async () => {
+            const ipcInvokeMock = vi.spyOn(IPC, "invoke");
+            ipcInvokeMock.mockResolvedValue('{"test": "value"}');
+            expect(await Rules.get('test_rule').getValue()).toEqual({ test: 'value' });
+        });
+
+        it.skip('should return the value from the world if it does not exist in the extension', async () => {
+            // Gametest DP
+        });
     });
 
-    describe.skip('getNativeValue', () => {
-        // Gametest
+    describe('getNativeValue', () => {
+        it.skip('should return the value from the world if it exists', () => {
+            // Gametest DP
+        });
+
+        it('should throw an error if the rule is from an extension', () => {
+            expect(() => Rules.get('test_rule').getNativeValue()).toThrowError();
+        });
+    });
+
+    describe('setValue', () => {
+        it.skip('should set the value in the world', () => {
+            // Gametest DP
+        });
+
+        it('should should set the value in the extension if it exists', async () => {
+            const ipcSendMock = vi.spyOn(IPC, "send");
+            ipcSendMock.mockResolvedValue(true);
+            await Rules.get('test_rule').setValue(true);
+            expect(ipcSendMock).toHaveBeenCalledWith(
+                `canopyExtension:${Rules.get('test_rule').getExtensionName()}:ruleValueSet`,
+                { 
+                    extensionName: Rules.get('test_rule').getExtensionName(),
+                    ruleID: 'test_rule',
+                    value: true 
+                }
+            );
+        });
     });
 
     describe('parseValue', () => {
@@ -140,11 +175,11 @@ describe('Rule', () => {
         });
     
         it('should return null for invalid JSON strings', () => {
+            const warn = console.warn;
+            console.warn = vi.fn();
             expect(Rules.get('test_rule').parseValue('invalid')).toBeNull();
+            expect(console.warn).toHaveBeenCalled();
+            console.warn = warn;
         });
-    });
-
-    describe.skip('setValue', () => {
-        // Gametest
     });
 });

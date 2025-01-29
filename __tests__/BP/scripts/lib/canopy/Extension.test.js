@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 import Extension from '../../../../../Canopy [BP]/scripts/lib/canopy/Extension.js';
 import Command from '../../../../../Canopy [BP]/scripts/lib/canopy/Command.js';
 import Rule from '../../../../../Canopy [BP]/scripts/lib/canopy/Rule.js';
@@ -126,7 +126,15 @@ describe('Extension', () => {
     });
 
     describe('makeID()', () => {
-        console.warn = vi.fn();
+        const warn = console.warn;
+        beforeAll(() => {
+            console.warn = vi.fn();
+        })
+
+        afterAll(() => {
+            console.warn = warn;
+        });
+
         it('should return a valid ID', () => {
             const ext = new Extension({ name: 'TestExtension' });
             expect(ext.getID()).toBe('testextension');

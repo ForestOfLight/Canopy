@@ -1,3 +1,5 @@
+import Commands from "./Commands";
+
 class ArgumentParser {
     static regex = /(@[aepsr]\[|@"[^"]*"|"[^"]*"|\[[^\]]*\]|\S+)/g;
     static booleans = ['true', 'false'];
@@ -5,17 +7,27 @@ class ArgumentParser {
     static arrayRegEx = /^\[|\]$/g;
     static entityRegEx = /@[aepsr]\[/g;
 
-    static parseArgs(text) {
+    static parseCommandString(text) {
         const args = [];
         const raw = text.match(this.regex);
+        if (!raw)
+            return [];
 
-        if (!raw) return [];
         raw.forEach((arg, index) => {
             const argData = this.#argParser(arg, index, raw);
             args[index] = argData;
         });
 
-        return args.filter(_ => _ !== '$nll_');
+        return {
+            name: this.#extractName(args),
+            args: args.filter(_ => _ !== '$nll_')
+        };
+    }
+
+    static #extractName(args) {
+        let name = String(args.shift());
+        name = name.replace(Commands.getPrefix(), '');
+        return name;
     }
 
     static #argParser(char, idx, raw) {

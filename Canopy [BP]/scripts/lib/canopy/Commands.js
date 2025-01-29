@@ -45,73 +45,93 @@ export class Commands {
 		result.sort((a, b) => a.getName().localeCompare(b.getName()));
 		return result;
 	}
-	
-    static checkArg(value, type) {
-        let data;
-        if (type === 'array' && Array.isArray(value)) {
-            data = value;
-        } else if (type === 'identifier' && /@[aepsr]\[/g.test(value)) {
-            data = value;
-        } else if (type === 'identifier' && /@[aepsr]/g.test(value) && value.length === 2) {
-            data = value;
-        } else if (type === 'player' && value.startsWith('@"') && value.endsWith('"')) {
-            data = value;
-        } else if (type === 'player' && value.startsWith('@') && !value.includes(' ')) {
-            data = value;
-        } else if (type.includes('|')) {
-            const ts = type.split('|');
-            const tv = typeof value;
-            
-            if (ts.includes(tv)) data = value;
-            else data = null;
-        } else if (typeof value == type) {
-            data = value;
-        } else {
-            data = null;
-        }
+
+    static async executeCommand(sender, cmdName, args) {
+        if (!this.exists(cmdName))
+            return sender.sendMessage({ translate: 'commands.generic.unknown', with: [cmdName, this.getPrefix()] });
+        const command = this.get(cmdName);
+        if (command.isAdminOnly() && !this.#isAdmin(sender))
+            return sender.sendMessage({ translate: 'commands.generic.nopermission' });
         
-        return data;
+        await system.run(async () => {
+            const disabledContingentRules = await this.#getDisabledContingentRules(command);
+            for (const ruleID of disabledContingentRules)
+                sender.sendMessage({ translate: 'commands.generic.blocked', with: [ruleID] });
+            if (disabledContingentRules.length > 0)
+                return;
+            
+            const parsedArgs = this.#interpretArguments(command, args);
+            command.runCallback(sender, parsedArgs);
+        });
     }
 
-    static handleGetPrefixRequest() {
+    static #isAdmin(player) {
+        return player.hasTag(ADMIN_ONLY_TAG);
+    }
+
+    static async #getDisabledContingentRules(command) {
+        const disabledRules = [];
+        for (const ruleID of command.getContingentRules()) {
+            const ruleValue = await Rules.getValue(ruleID);
+            if (!ruleValue)
+                disabledRules.push(ruleID);
+        }
+        return disabledRules;
+    }
+
+    static #interpretArguments(command, args) {
+        const parsedArgs = {};
+        command.getArgs().forEach((argData, index) => {
+            parsedArgs[argData.name] = this.#interpretArgument(args[index], argData.type);
+        });
+        return parsedArgs;
+    }
+
+    static #interpretArgument(value, type) {
+        if (type.includes('|')) {
+            const typeList = type.split('|');
+            for (const t of typeList) {
+                if (this.#matchesExpectedType(value, t))
+                    return value;
+            }
+        } else if (this.#matchesExpectedType(value, type)) {
+            return value;
+        }
+        return null;
+    }
+
+    static #matchesExpectedType(value, type) {
+        switch (type) {
+            case 'array':
+                return Array.isArray(value);
+            case 'identifier':
+                return /@[aepsr]\[/g.test(value) || (/@[aepsr]/g.test(value) && value.length === 2);
+            case 'player':
+                return typeof value === 'string' && value.startsWith('@') && (value.endsWith('"') || !value.includes(' '));
+            default:
+                return typeof value === type;
+        }
+    }
+
+    static #handleGetPrefixRequest() {
         IPC.on('canopy:getCommandPrefix', () => this.#prefix);
     }
 
-    static handleChatCommands() {
+    static #handleChatCommands() {
         world.beforeEvents.chatSend.subscribe((event) => {
             const { sender, message } = event;
-            const [...args] = ArgumentParser.parseArgs(message);
-            let name = args.shift();
-            if (!String(name).startsWith(this.getPrefix()))
+            if (!message.startsWith(this.getPrefix()))
                 return;
-            name = name.replace(this.getPrefix(), '');
+            const parsed = ArgumentParser.parseCommandString(message);
             event.cancel = true;
-            if (!this.exists(name))
-                return sender.sendMessage({ translate: 'commands.generic.unknown', with: [name, this.getPrefix()] });
-            const command = this.get(name);
-            if (command.isAdminOnly() && !sender.hasTag(ADMIN_ONLY_TAG))
-                return sender.sendMessage({ translate: 'commands.generic.nopermission' });
-            
-            system.run(async () => {
-                for (const ruleID of command.getContingentRules()) {
-                    const ruleValue = await Rules.getValue(ruleID);
-                    if (!ruleValue) 
-                        return sender.sendMessage({ translate: 'rules.generic.blocked', with: [ruleID] });
-                    
-                }
-                
-                const parsedArgs = {};
-                command.getArgs().forEach((argData, index) => {
-                    parsedArgs[argData.name] = this.checkArg(args[index], argData.type);
-                });
-                
-                command.runCallback(sender, parsedArgs);
-            });
+            this.executeCommand(sender, parsed.name, parsed.args);
         });
     }
-}
 
-Commands.handleGetPrefixRequest();
-Commands.handleChatCommands();
+    static {
+        this.#handleGetPrefixRequest();
+        this.#handleChatCommands();
+    }
+}
 
 export default Commands;

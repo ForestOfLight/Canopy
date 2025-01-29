@@ -1,46 +1,96 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import ArgumentParser from '../../../../../Canopy [BP]/scripts/lib/canopy/ArgumentParser.js';
 
+vi.mock("@minecraft/server", () => ({
+    world: { 
+        beforeEvents: {
+            chatSend: {
+                subscribe: vi.fn()
+            }
+        }
+    },
+    system: {
+        afterEvents: {
+            scriptEventReceive: {
+                subscribe: vi.fn()
+            }
+        },
+        runJob: vi.fn()
+    }
+}));
+
 describe('ArgumentParser', () => {
-    it('should parse boolean arguments correctly', () => {
-        const resultTrue = ArgumentParser.parseArgs('true');
-        const resultFalse = ArgumentParser.parseArgs('false');
-        expect(resultTrue).toEqual([true]);
-        expect(resultFalse).toEqual([false]);
-    });
+    describe('parseCommandString', () => {
+        it('should parse a command string with a boolean argument', () => {
+            const commandString = 'command true';
+            const result = ArgumentParser.parseCommandString(commandString);
+            expect(result).toEqual({
+                name: 'command',
+                args: [true]
+            });
+        });
+        
+        it('should parse a command string with a number argument', () => {
+            const commandString = 'command 42';
+            const result = ArgumentParser.parseCommandString(commandString);
+            expect(result).toEqual({
+                name: 'command',
+                args: [42]
+            });
+        });
 
-    it('should parse number arguments correctly', () => {
-        const result = ArgumentParser.parseArgs('123');
-        expect(result).toEqual([123]);
-    });
+        it('should parse a command string with a string argument', () => {
+            const commandString = 'command test';
+            const result = ArgumentParser.parseCommandString(commandString);
+            expect(result).toEqual({
+                name: 'command',
+                args: ['test']
+            });
+        });
 
-    it('should parse string arguments correctly', () => {
-        const result = ArgumentParser.parseArgs('"hello"');
-        expect(result).toEqual(['hello']);
-    });
+        it('should parse a command string with a quoted string argument', () => {
+            const commandString = 'command "test string"';
+            const result = ArgumentParser.parseCommandString(commandString);
+            expect(result).toEqual({
+                name: 'command',
+                args: ['test string']
+            });
+        });
 
-    it('should parse array arguments correctly', () => {
-        const result = ArgumentParser.parseArgs('[1,2,3]');
-        expect(result).toEqual([[1, 2, 3]]);
-    });
+        it('should parse a command string with an array argument', () => {
+            const commandString = 'command [1,2,3]';
+            const result = ArgumentParser.parseCommandString(commandString);
+            expect(result).toEqual({
+                name: 'command',
+                args: [[1, 2, 3]]
+            });
+        });
 
-    it('should parse lone entity arguments correctly', () => {
-        const result = ArgumentParser.parseArgs('@e');
-        expect(result).toEqual(['@e']);
-    });
+        it('should parse a command string with an entity argument', () => {
+            const commandString = 'command @e[type=creeper]';
+            const result = ArgumentParser.parseCommandString(commandString);
+            expect(result).toEqual({
+                name: 'command',
+                args: ['@e[type=creeper]']
+            });
+        });
 
-    it('should parse entity arguments with filters correctly', () => {
-        const result = ArgumentParser.parseArgs('@e[type=creeper]');
-        expect(result).toEqual(['@e[type=creeper]']);
-    });
+        it('should return an empty array if no arguments are provided', () => {
+            const commandString = 'command';
+            const result = ArgumentParser.parseCommandString(commandString);
+            expect(result).toEqual({
+                name: 'command',
+                args: []
+            });
+        });
 
-    it('should parse mixed arguments correctly', () => {
-        const result = ArgumentParser.parseArgs('true 123 "hello" [1,2,3] @e[type=creeper]');
-        expect(result).toEqual([true, 123, 'hello', [1, 2, 3], '@e[type=creeper]']);
-    });
-
-    it('should handle empty input correctly', () => {
-        const result = ArgumentParser.parseArgs('');
-        expect(result).toEqual([]);
+        it('should handle mixed argument types', () => {
+            const commandString = 'command true 42 "test string" [1,2,3] @e[type=creeper]';
+            const result = ArgumentParser.parseCommandString(commandString);
+            expect(result).toEqual({
+                name: 'command',
+                args: [true, 42, 'test string', [1, 2, 3], '@e[type=creeper]']
+            });
+        });
     });
 });

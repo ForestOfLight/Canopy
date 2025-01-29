@@ -25,11 +25,11 @@ class Command {
 		this.#helpHidden = helpHidden;
 		this.#extensionName = extensionName;
 
-		this.checkMembers();
+		this.#checkMembers();
 		Commands.register(this);
 	}
 
-	checkMembers() {
+	#checkMembers() {
 		if (!this.#name) throw new Error('[Command] name is required.');
 		if (!this.#usage) throw new Error('[Command] usage is required.');
 		if (!Array.isArray(this.#args)) throw new Error('[Command] args must be an array.');
@@ -86,10 +86,6 @@ class Command {
 			return;
 		}
 		this.#callback(sender, args);
-	}
-	
-	setUsage(usage) {
-		this.#usage = usage;
 	}
 	
 	sendUsage(sender) {

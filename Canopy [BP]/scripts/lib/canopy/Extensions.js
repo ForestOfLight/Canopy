@@ -36,7 +36,7 @@ export class Extensions {
         return this.getAll().map(extension => `${extension.getName()} v${extension.getVersion()}`);
     }
 
-    static setupExtensionRegistration() {
+    static #setupExtensionRegistration() {
         IPC.on('canopyExtension:registerExtension', (extensionData) => {
             if (typeof extensionData.description === 'string')
                 extensionData.description = { text: extensionData.description };
@@ -44,8 +44,10 @@ export class Extensions {
             this.extensions[extension.getID()] = extension;
         });
     }
-}
 
-Extensions.setupExtensionRegistration();
+    static {
+        this.#setupExtensionRegistration();
+    }
+}
 
 export default Extensions;
