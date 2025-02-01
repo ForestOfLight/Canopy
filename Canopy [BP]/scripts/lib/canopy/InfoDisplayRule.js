@@ -1,4 +1,5 @@
 import Rule from './Rule';
+import Rules from './Rules';
 
 class InfoDisplayRule extends Rule {
     constructor({ identifier, description = '', contingentRules = [], independentRules = [], extensionName = false }) {
@@ -14,15 +15,15 @@ class InfoDisplayRule extends Rule {
     }
 
     static getValue(player, identifier) {
-        return this.getRule(identifier).getValue(player);
+        return this.getRule(identifier).getNativeValue(player);
     }
     
     static setValue(player, identifier, value) {
         this.getRule(identifier).setValue(player, value);
     }
     
-    static getRules() {
-        return Object.values(super.getRules()).filter(rule => rule.getCategory() === "InfoDisplay");
+    static getAll() {
+        return Object.values(Rules.getAll()).filter(rule => rule.getCategory() === "InfoDisplay");
     }
 }
 
