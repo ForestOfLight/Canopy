@@ -1,5 +1,5 @@
 import { HelpPage } from "./HelpPage";
-import Utils from "include/utils";
+import Utils from "../../../include/utils";
 
 class HelpBook {
     constructor() {

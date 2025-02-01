@@ -6,14 +6,14 @@ class RuleHelpEntry extends HelpEntry {
         this.rule = rule;
     }
     
-    async fetchColoredValue() {
-        const value = await this.rule.getValue();
-        return value ? '§atrue§r' : '§cfalse§r';
-    }
-    
     async toRawMessage() {
         const coloredValue = await this.fetchColoredValue().then(value => value);
         return { rawtext: [ { text: `§7${this.title}: ${coloredValue}§8 - ` }, this.description ] };
+    }
+
+    async fetchColoredValue() {
+        const value = await this.rule.getValue();
+        return value ? '§atrue§r' : '§cfalse§r';
     }
 }
 
