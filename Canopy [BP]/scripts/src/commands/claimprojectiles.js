@@ -23,7 +23,8 @@ new Command({
 });
 
 function claimProjectilesCommand(sender, args) {
-    let { playerName, radius } = args;
+    const playerName = args.playerName;
+    let radius = args.radius;
     let targetPlayer;
     if (playerName === null)
         targetPlayer = sender;
@@ -56,8 +57,7 @@ function getTargetPlayer(sender, playerName) {
         return players[0];
     else if (Utils.isNumeric(playerName))
         return playerName;
-    else
-        return undefined;
+    return undefined;
 }
 
 function getProjectilesInRange(sender, radius) {

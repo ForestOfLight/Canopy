@@ -40,7 +40,7 @@ class Probe {
     getProperty(property) {
         try {
             return this.entity.getProperty('canopy:' + property);
-        } catch (error) {
+        } catch {
             return -1;
         }
     }

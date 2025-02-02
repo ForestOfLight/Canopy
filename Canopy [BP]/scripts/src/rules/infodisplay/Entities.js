@@ -4,8 +4,9 @@ import { Vector } from 'src/classes/Vector';
 class Entities extends InfoDisplayElement {
     player;
 
-    constructor(player) {
-        super('entities', { translate: 'rules.infoDisplay.entities' }, 3);
+    constructor(player, displayLine) {
+        const ruleData = { identifier: 'entities', description: { translate: 'rules.infoDisplay.entities' } };
+        super(ruleData, displayLine);
         this.player = player;
     }
 

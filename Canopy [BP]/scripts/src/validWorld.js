@@ -1,11 +1,12 @@
-import { world, system } from '@minecraft/server';
-import ProbeManager from 'src/classes/ProbeManager';
-import { getLoadedExtensions } from 'lib/canopy/Canopy';
+import { world, system } from "@minecraft/server";
+import ProbeManager from "./classes/ProbeManager";
+import { Extensions } from "../lib/canopy/Canopy";
+import { PACK_VERSION } from "../constants";
 
-let hasShownWelcome = {};
+const hasShownWelcome = {};
 
 world.afterEvents.playerJoin.subscribe((event) => {
-    let runner = system.runInterval(() => {
+    const runner = system.runInterval(() => {
         const players = world.getPlayers({ name: event.playerName });
         players.forEach(player => {
             if (!player) return;
@@ -28,16 +29,16 @@ function onValidWorld(player) {
 }
 
 function displayWelcome(player) {
-    let graphic = '';
-    graphic += `§a   + ----- +\n`;
-    graphic += `§a /          / |\n`;
-    graphic += `§a+ ----- +  |\n`;
-    graphic += `§a |          |  +\n`;
-    graphic += `§a |          | /\n`;
-    graphic += `§a+ ----- +\n`;
-    player.sendMessage({ rawtext: [{ text: graphic }, { translate: 'generic.welcome.start' }] });
-    const extensions = getLoadedExtensions();
-    if (extensions.length > 0) {
-        player.sendMessage({ translate: 'generic.welcome.extensions', with: [extensions.join('§7, §a')] });
-    }
+    const graphic = [
+        '§a   + ----- +\n',
+        '§a /          / |\n',
+        '§a+ ----- +  |\n',
+        '§a |          |  +\n',
+        '§a |          | /\n',
+        '§a+ ----- +\n'
+    ].join('');
+    player.sendMessage({ rawtext: [{ text: graphic }, { translate: 'generic.welcome.start', with: [PACK_VERSION] }] });
+    const extensions = Extensions.getVersionedNames();
+    if (extensions.length > 0)
+        player.sendMessage({ translate: 'generic.welcome.extensions', with: [extensions.join('§r§7, §a§o')] });
 }

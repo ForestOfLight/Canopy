@@ -1,7 +1,7 @@
 import { system, world } from "@minecraft/server";
 import { Rule } from "lib/canopy/Canopy";
 
-const beaconRefreshOffset = new Map();
+const beaconRefreshOffset = {};
 const BEACON_REFRESH_RATE = 80;
 
 world.afterEvents.effectAdd.subscribe(event => {
@@ -21,9 +21,9 @@ class Instaminable {
             for (const player of world.getPlayers()) {
                 if (!player)
                     continue;
-                if (player.getEffect('haste')?.amplifier == 2 && this.isTickBeforeRefresh(player)) {
+                if (player.getEffect('haste')?.amplifier === 2 && this.isTickBeforeRefresh(player)) 
                     player.removeEffect('haste');
-                }
+                
             }
         });
 
@@ -33,7 +33,7 @@ class Instaminable {
             if (!this.litmusCallback(blockId)) return;
             const player = event.player;
             if (this.isEfficiencyFiveNetheritePick(event.itemStack) && this.hasHasteTwo(player)) {
-                let duration = player.getEffect('haste')?.duration;
+                const duration = player.getEffect('haste')?.duration;
                 if (duration > 0)
                     player.addEffect('haste', duration, { amplifier: 2 });
             }
@@ -54,7 +54,7 @@ class Instaminable {
 
     hasHasteTwo(player) {
         const haste = player.getEffect('haste');
-        return haste?.amplifier == 1;
+        return haste?.amplifier === 1;
     }
 }
 

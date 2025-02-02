@@ -60,20 +60,20 @@ class ProbeManager {
     }
 
     getProperty(player, property) {
-        let result = '?';
+        const result = '?';
 
         if (this.isDoingBannedAction(player)) {
             this.removeProbe(player);
             return result;
         }
 
-        let probe = this.getProbe(player);
+        const probe = this.getProbe(player);
         if (!probe) {
-            probe = this.addProbe(player);
+            this.addProbe(player);
             return result;
         } else if (probe.entityInvalid) {
             this.removeProbe(player);
-            probe = this.addProbe(player);
+            this.addProbe(player);
             return result;
         }
 
@@ -106,10 +106,7 @@ class ProbeManager {
         world.beforeEvents.playerLeave.subscribe((event) => {
             const player = event.player;
             system.run(() => {
-                try {
-                    if (player?.getDynamicProperty('light') || player?.getDynamicProperty('biome'))
-                        this.removeProbe(player);
-                } catch {}
+                    this.removeProbe(player);
             });
         });
 

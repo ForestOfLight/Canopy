@@ -1,6 +1,5 @@
 import { system, world } from '@minecraft/server';
 import { worldSpawns } from 'src/commands/spawn';
-import { channelMap } from 'src/commands/counter';
 import Utils from 'include/utils';
 
 system.afterEvents.scriptEventReceive.subscribe((event) => {

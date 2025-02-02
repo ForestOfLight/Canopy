@@ -48,7 +48,7 @@ class BlockRotator {
         if (!this.isValidId(structureId)) return console.warn('[BlockRotator] Invalid structure ID.');
         const mirroredDirection = DirectionStateFinder.getMirroredDirection(block);
         let axis;
-        let items = Utils.getInventory(block);
+        const items = Utils.getInventory(block);
         if ([StructureMirrorAxis.X, StructureMirrorAxis.Z].includes(mirroredDirection)) {
             axis = mirroredDirection;
         } else { // block data has to be rebuilt manually 🎉
@@ -86,9 +86,9 @@ class BlockRotator {
 
 world.afterEvents.worldInitialize.subscribe(() => {
     world.structureManager.getWorldStructureIds().forEach(id => {
-        if (id.startsWith(BlockRotator.idPrefix)) {
+        if (id.startsWith(BlockRotator.idPrefix)) 
             world.structureManager.delete(id);
-        }
+        
     });
 });
 

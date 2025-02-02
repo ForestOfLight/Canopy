@@ -1,5 +1,5 @@
 import { Command } from 'lib/canopy/Canopy';
-import { DimensionTypes, world } from '@minecraft/server';
+import { MinecraftDimensionTypes, world } from '@minecraft/server';
 import Utils from 'include/utils';
 
 const NUM_RESULTS = 10;
@@ -16,7 +16,8 @@ const cmd = new Command({
 });
 
 function entityDensityCommand(sender, args) {
-    let { firstArg, gridSize } = args;
+    const firstArg = args.firstArg;
+    let gridSize = args.gridSize;
     if (firstArg === null)
         return cmd.sendUsage(sender);
     const { validDimensionId, parsedGridSize, hasNoErrors } = parseArgs(sender, firstArg, gridSize);
@@ -74,14 +75,14 @@ function parseArgs(sender, firstArg, gridSize) {
 function printDimensionEntities(sender) {
     const dimensionColors = ['§a', '§c', '§d'];
     let totalEntities = 0;
-    const dimensionTypes = DimensionTypes.getAll()
+    const dimensionTypes = [ MinecraftDimensionTypes.overworld, MinecraftDimensionTypes.nether, MinecraftDimensionTypes.theEnd ];
     let output = '§7Dimension entities: '
     for (let i = 0; i < dimensionTypes.length; i++) {
-        const dimensionId = dimensionTypes[i].typeId;
+        const dimensionId = dimensionTypes[i];
         const color = dimensionColors[i];
         const dimensionEntities = world.getDimension(dimensionId).getEntities();
         totalEntities += dimensionEntities.length;
-        output += `${color}${count}§r`;
+        output += `${color}${dimensionEntities.length}§r`;
         if (i < dimensionTypes.length - 1) output += '/';
         else output += ` §7Total: §f${totalEntities}`;
     }
@@ -106,7 +107,9 @@ function findDenseAreas(dimensionId, gridSize, numResults = 10) {
             const key = `${cellX},${cellZ}`;
     
             grid.set(key, (grid.get(key) || 0) + 1);
-        } catch {}
+        } catch {
+            continue;
+        }
     }
     const sortedCells = Array.from(grid)
         .map(([key, count]) => ({ key, count }))

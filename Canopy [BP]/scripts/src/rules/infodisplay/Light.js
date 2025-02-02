@@ -4,8 +4,9 @@ import ProbeManager from 'src/classes/ProbeManager';
 class Light extends InfoDisplayElement {
     player;
 
-    constructor(player) {
-        super('light', { translate: 'rules.infoDisplay.light' }, 4);
+    constructor(player, displayLine) {
+        const ruleData = { identifier: 'light', description: { translate: 'rules.infoDisplay.light' } };
+        super(ruleData, displayLine);
         this.player = player;
     }
 

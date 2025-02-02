@@ -1,9 +1,10 @@
 import { system, world } from "@minecraft/server";
 import Utils from "include/utils";
+import { Rules } from "../../../lib/canopy/Canopy";
 
 system.afterEvents.scriptEventReceive.subscribe((event) => {
     if (event.id !== "canopy:tick") return;
-    if (!Rule.getNativeValue('commandTick')) 
+    if (!Rules.getNativeValue('commandTick')) 
         return Utils.broadcastActionBar({ translate: 'rules.generic.blocked', with: ['commandTick'] });
     const message = event.message;
     const args = message.split(' ');
@@ -15,9 +16,9 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
 function tickSleep(sourceName, milliseconds) {
     if (milliseconds === null || milliseconds < 1) return;
     world.sendMessage({ translate: 'command.tick.sleep.success', with: [sourceName, String(milliseconds)] });
-    let startTime = Date.now();
+    const startTime = Date.now();
     let waitTime = 0;
-    while (waitTime < milliseconds) {
+    while (waitTime < milliseconds) 
         waitTime = Date.now() - startTime;
-    }
+    
 }

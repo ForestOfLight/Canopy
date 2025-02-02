@@ -2,6 +2,8 @@ import { Rule } from 'lib/canopy/Canopy';
 import { system, world } from '@minecraft/server';
 import Utils from 'include/utils';
 
+const REMOVAL_DISTANCE = 2.5;
+
 new Rule({
     category: 'Rules',
     identifier: 'noTileDrops',
@@ -29,10 +31,12 @@ world.afterEvents.entitySpawn.subscribe(async (entityEvent) => {
 
     const item = entityEvent.entity;
     const brokenBlockEvents = brokenBlockEventsThisTick.concat(brokenBlockEventsLastTick);
-    const brokenBlockEvent = brokenBlockEvents.find(blockEvent => 
-        Utils.calcDistance(blockEvent.block.location, item.location) < 2.5
-    );
+    const brokenBlockEvent = brokenBlockEvents.find(blockEvent => isItemWithinRemovalDistance(blockEvent.block.location, item));
     if (!brokenBlockEvent) return;
 
     item.remove();
 });
+
+function isItemWithinRemovalDistance(location, item) {
+    return Utils.calcDistance(location, item.location) < REMOVAL_DISTANCE;
+}

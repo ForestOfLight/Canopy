@@ -22,7 +22,9 @@ world.beforeEvents.playerInteractWithEntity.subscribe(async (event) => {
         system.run(() => {
             try {
                 tameable.tame(event.player);
-            } catch {} // was already tamed
+            } catch {
+                // was already tamed
+            }
         });
     }
 });

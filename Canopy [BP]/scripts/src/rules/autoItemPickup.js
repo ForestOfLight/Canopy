@@ -28,8 +28,11 @@ world.afterEvents.entitySpawn.subscribe(async (entityEvent) => {
     let brokenBlockEvent;
     try {
         brokenBlockEvent = brokenBlockEventsThisTick.find(blockEvent => Utils.calcDistance(blockEvent.block.location, item.location) < 2);
-    } catch {}
-    if (!brokenBlockEvent) return;
+    } catch {
+        // Could not access block or item, ignore
+    }
+    if (!brokenBlockEvent)
+        return;
 
     const itemStack = item.getComponent('minecraft:item').itemStack;
     const inventory = brokenBlockEvent.player?.getComponent('minecraft:inventory').container;
@@ -56,9 +59,9 @@ function itemFitsInPartiallyFilledSlot(slot, itemStack) {
 
 function addItem(inventory, itemStack) {
     const isItemDeposited = partiallyFilledSlotPass(inventory, itemStack);
-    if (!isItemDeposited) {
+    if (!isItemDeposited) 
         emptySlotPass(inventory, itemStack);
-    }
+    
 }
 
 function partiallyFilledSlotPass(inventory, itemStack) {

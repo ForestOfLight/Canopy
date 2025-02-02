@@ -2,8 +2,9 @@ import InfoDisplayElement from './InfoDisplayElement.js';
 import { getInfoDisplayOutput } from 'src/commands/counter';
 
 class HopperCounterCounts extends InfoDisplayElement {
-    constructor() {
-        super('hopperCounterCounts', { translate: 'rules.infoDisplay.hopperCounterCounts' }, 9, true);
+    constructor(displayLine) {
+        const ruleData = { identifier: 'hopperCounterCounts', description: { translate: 'rules.infoDisplay.hopperCounterCounts' } };
+        super(ruleData, displayLine, true);
     }
 
     getFormattedDataOwnLine() {

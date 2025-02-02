@@ -43,9 +43,9 @@ function processHotbarSwitching(player) {
     } else if (lastSelectedSlots[player.id] === undefined && (!hasArrowInCorrectSlot(player) || !hasAppropriateGameMode(player))) {
         return;
     }
-    if (hasScrolled(player) && player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed) {
+    if (hasScrolled(player) && player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed) 
         switchToHotbar(player, player.selectedSlotIndex);
-    }
+    
     lastSelectedSlots[player.id] = player.selectedSlotIndex;
 }
 

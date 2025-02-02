@@ -3,13 +3,14 @@ import InfoDisplayElement from './InfoDisplayElement.js';
 class Facing extends InfoDisplayElement {
     player;
 
-    constructor(player) {
-        super('facing', { translate: 'rules.infoDisplay.facing' }, 2);
+    constructor(player, displayLine) {
+        const ruleData = { identifier: 'facing', description: { translate: 'rules.infoDisplay.facing' } };
+        super(ruleData, displayLine);
         this.player = player;
     }
 
     getFormattedDataOwnLine() {
-        let rotation = this.player.getRotation();
+        const rotation = this.player.getRotation();
 	    [ rotation.x, rotation.y ] = [ rotation.x.toFixed(2), rotation.y.toFixed(2) ];
 	    return { translate: 'rules.infoDisplay.facing.display', with: [rotation.x, rotation.y] };
     }

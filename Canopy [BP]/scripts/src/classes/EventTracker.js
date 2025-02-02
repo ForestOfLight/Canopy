@@ -13,13 +13,13 @@ class EventTracker {
     }
 
     setCallback(eventName, isAfterEvent = true) {
-        if (isAfterEvent && this.afterEvents[eventName]) {
+        if (isAfterEvent && this.afterEvents[eventName]) 
             this.callback = this.afterEvents[eventName];
-        } else if (this.beforeEvents[eventName]) {
+         else if (this.beforeEvents[eventName]) 
             this.callback = this.beforeEvents[eventName];
-        } else {
+         else 
             throw new Error(`[EventTracker] Event ${eventName} not found. Could not create new tracker.`);
-        }
+        
     }
 
     updateDynamicProperty() {
@@ -29,18 +29,18 @@ class EventTracker {
         let found = false;
         for (let i = 0; i < trackedEvents.length; i++) {
             if (trackedEvents[i].eventName === this.eventName && trackedEvents[i].isAfterEvent === this.isAfterEvent) {
-                if (this.isTracking) {
+                if (this.isTracking) 
                     trackedEvents[i].count = this.count;
-                } else {
+                 else 
                     trackedEvents.splice(i, 1);
-                }
+                
                 found = true;
                 break;
             }
         }
-        if (!found && this.isTracking) {
+        if (!found && this.isTracking) 
             trackedEvents.push(this.getInfo());
-        }
+        
 
         world.setDynamicProperty('trackedEvents', JSON.stringify(trackedEvents));
     }

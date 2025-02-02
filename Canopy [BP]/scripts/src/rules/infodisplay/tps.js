@@ -1,9 +1,11 @@
 import InfoDisplayElement from './InfoDisplayElement.js';
 import { DataTPS } from 'src/tps';
+import { TicksPerSecond } from '@minecraft/server';
 
 class TPS extends InfoDisplayElement {
-    constructor() {
-        super('tps', { translate: 'rules.infoDisplay.tps' }, 3, true);
+    constructor(displayLine) {
+        const ruleData = { identifier: 'tps', description: { translate: 'rules.infoDisplay.tps' } };
+        super(ruleData, displayLine, true);
     }
 
     getFormattedDataOwnLine() {
@@ -16,7 +18,7 @@ class TPS extends InfoDisplayElement {
 
     getTPS() {
         const tps = DataTPS.tps.toFixed(1);
-		return tps >= 20 ? `§a20.0` : `§c${tps}`;
+		return tps >= TicksPerSecond ? `§a${TicksPerSecond}.0` : `§c${tps}`;
 	}
 }
 

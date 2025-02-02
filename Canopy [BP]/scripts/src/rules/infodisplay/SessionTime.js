@@ -1,11 +1,11 @@
 import InfoDisplayElement from './InfoDisplayElement.js';
-import { world } from '@minecraft/server';
 
 class SessionTime extends InfoDisplayElement {
     player;
 
-    constructor(player) {
-        super('sessionTime', { translate: 'rules.infoDisplay.sessionTime' }, 6);
+    constructor(player, displayLine) {
+        const ruleData = { identifier: 'sessionTime', description: { translate: 'rules.infoDisplay.sessionTime' } };
+        super(ruleData, displayLine);
         this.player = player;
         player.setDynamicProperty('joinDate', Date.now());
     }
