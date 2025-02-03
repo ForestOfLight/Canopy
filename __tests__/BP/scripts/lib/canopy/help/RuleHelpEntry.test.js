@@ -12,7 +12,7 @@ describe('RuleHelpEntry', () => {
             const entry = new RuleHelpEntry(mockRule);
             expect(entry.rule).toBe(mockRule);
             expect(entry.title).toBe('testRule');
-            expect(entry.description).toBe('This is a test rule');
+            expect(entry.description).toEqual({ text: 'This is a test rule' });
         });
     });
 
@@ -28,7 +28,7 @@ describe('RuleHelpEntry', () => {
             expect(rawMessage).toEqual({
                 rawtext: [
                     { text: '§7testRule: §atrue§r§8 - ' },
-                    'This is a test rule'
+                    { text: 'This is a test rule' }
                 ]
             });
         });
@@ -44,7 +44,7 @@ describe('RuleHelpEntry', () => {
             expect(rawMessage).toEqual({
                 rawtext: [
                     { text: '§7testRule: §cfalse§r§8 - ' },
-                    'This is a test rule'
+                    { text: 'This is a test rule' }
                 ]
             });
         });

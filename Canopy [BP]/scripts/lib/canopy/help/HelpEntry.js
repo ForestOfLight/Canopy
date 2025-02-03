@@ -3,7 +3,10 @@ class HelpEntry {
         if (this.constructor === HelpEntry) 
             throw new TypeError('HelpEntry is an abstract class and cannot be instantiated.');
         this.title = title;
-        this.description = description;
+        if (typeof description === 'string')
+            this.description = { text: description };
+        else
+            this.description = description;
     }
 
     toRawMessage() {

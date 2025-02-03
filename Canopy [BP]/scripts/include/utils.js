@@ -110,6 +110,7 @@ class Utils {
 	}
 
 	static getColorCode(color) {
+		color = color.toLowerCase();
 		switch (color) {
 			case 'red': return '§c';
 			case 'orange': return '§6';

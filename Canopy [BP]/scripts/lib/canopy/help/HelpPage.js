@@ -6,7 +6,10 @@ class HelpPage {
             this.title = extensionName + ':' + title;
         else
             this.title = title;
-        this.description = description;
+        if (typeof description === 'string')
+            this.description = { text: description };
+        else
+            this.description = description;
         this.extensionName = extensionName;
     }
 

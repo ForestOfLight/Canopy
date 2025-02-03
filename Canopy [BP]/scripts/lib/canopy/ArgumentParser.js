@@ -11,7 +11,7 @@ class ArgumentParser {
         const args = [];
         const raw = text.match(this.regex);
         if (!raw)
-            return [];
+            throw new Error('Invalid command string');
 
         raw.forEach((arg, index) => {
             const argData = this.#argParser(arg, index, raw);

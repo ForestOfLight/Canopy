@@ -783,4 +783,14 @@ describe('Utils', () => {
 			expect(Utils.titleCase('string_with_123_numbers_and_$pecial_characters')).toBe('String With 123 Numbers And $pecial Characters');
 		});
 	});
+
+	describe('formatColorStr', () => {
+		it('returns the formatted color name', () => {
+			expect(Utils.formatColorStr('red')).toBe('§cred§r');
+		});
+
+		it('returns an uncolored name if the color is not found', () => {
+			expect(Utils.formatColorStr('unknown')).toBe('unknown§r');
+		});
+	});
 });

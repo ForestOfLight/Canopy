@@ -21,6 +21,11 @@ vi.mock("@minecraft/server", () => ({
 
 describe('ArgumentParser', () => {
     describe('parseCommandString', () => {
+        it('should throw an error for an empty command string', () => {
+            expect(() => ArgumentParser.parseCommandString('')).toThrow('Invalid command string');
+        });
+
+
         it('should parse a command string with a boolean argument', () => {
             const commandString = 'command true';
             const result = ArgumentParser.parseCommandString(commandString);

@@ -35,7 +35,7 @@ describe('CommandHelpEntry', () => {
         const entry = new CommandHelpEntry(mockCommand);
         expect(entry.command).toBe(mockCommand);
         expect(entry.title).toBe('testCommand');
-        expect(entry.description).toBe('This is a test command');
+        expect(entry.description).toEqual({ text: 'This is a test command' });
     });
 
     it('should generate the correct raw message', () => {
@@ -44,7 +44,7 @@ describe('CommandHelpEntry', () => {
         expect(rawMessage).toEqual({
             rawtext: [
                 { text: `§2${Commands.getPrefix()}test§8 - ` },
-                'This is a test command',
+                { text: 'This is a test command' },
                 { rawtext: [{ text: `\n  §7> §2${Commands.getPrefix()}subcommand1§8 - ` }, 'Description for subcommand1'] },
                 { rawtext: [{ text: `\n  §7> §2${Commands.getPrefix()}subcommand2§8 - ` }, 'Description for subcommand2'] }
             ]
