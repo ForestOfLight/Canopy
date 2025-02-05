@@ -4,12 +4,17 @@ import ProbeManager from 'src/classes/ProbeManager';
 const cmd = new Command({
     name: 'info',
     description: { translate: 'commands.info' },
-    usage: 'info <rule/all> <true/false>',
+    usage: 'info <rule/all> [true/false]',
     args: [
-        { type: 'string', name: 'ruleID' },
+        { type: 'string|array', name: 'ruleIDs' },
         { type: 'boolean', name: 'enable' }
     ],
-    callback: infoCommand
+    callback: infoCommand,
+    helpEntries: [
+        { usage: 'info <rule> [true/false]', description: { translate: 'commands.info.single' } },
+        { usage: 'info <[rule1,rule2,...]> [true/false]', description: { translate: 'commands.info.multiple' } },
+        { usage: 'info all [true/false]', description: { translate: 'commands.info.all' } }
+    ]
 });
 
 new Command({
@@ -17,7 +22,7 @@ new Command({
     description: { translate: 'commands.info' },
     usage: 'i',
     args: [
-        { type: 'string', name: 'ruleID' },
+        { type: 'string|array', name: 'ruleIDs' },
         { type: 'boolean', name: 'enable' }
     ],
     callback: infoCommand,
@@ -25,14 +30,21 @@ new Command({
 });
 
 function infoCommand(sender, args) {
-    const { ruleID, enable } = args;
-    if (ruleID === null && enable === null) return cmd.sendUsage(sender);
+    const { ruleIDs, enable } = args;
+    if (ruleIDs === null && enable === null) return cmd.sendUsage(sender);
     
-    if (ruleID === 'all') {
+    if (ruleIDs === 'all') {
         changeAll(sender, enable);
         return;
     }
     
+    if (typeof ruleIDs === 'string')
+        return handleRuleChange(sender, ruleIDs, enable);
+    for (const ruleID of ruleIDs)
+        handleRuleChange(sender, ruleID, enable);
+}
+
+function handleRuleChange(sender, ruleID, enable) {
     if (!InfoDisplayRule.exists(ruleID)) 
         return sender.sendMessage({ rawtext: [ { translate: 'rules.generic.unknown', with: [ruleID, Commands.getPrefix()] }, { text: '§r§7.' } ] });
     

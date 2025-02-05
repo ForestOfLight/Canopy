@@ -4,22 +4,33 @@ import { resetCounterMap } from 'src/commands/counter';
 const cmd = new Command({
     name: 'canopy',
     description: { translate: 'commands.canopy' },
-    usage: 'canopy <rule> <true/false>',
+    usage: 'canopy <rule> [true/false]',
     args: [
-        { type: 'string', name: 'ruleID' },
+        { type: 'string|array', name: 'ruleIDs' },
         { type: 'boolean', name: 'enable' },
     ],
     callback: canopyCommand,
+    helpEntries: [
+        { usage: 'canopy <rule> [true/false]', description: { translate: 'commands.canopy.single' } },
+        { usage: 'canopy <[rule1,rule2,...]> [true/false]', description: { translate: 'commands.canopy.multiple' } },
+    ],
     adminOnly: true
-})
+});
 
 async function canopyCommand(sender, args) {
-    const { ruleID, enable } = args;
-    if (ruleID === null && enable === null)
+    const { ruleIDs, enable } = args;
+    if (ruleIDs === null && enable === null)
         return cmd.sendUsage(sender);
-    if (!Rule.exists(ruleID)) 
-        return sender.sendMessage({ translate: 'rules.generic.unknown', with: [ruleID, Command.prefix] });
 
+    if (typeof ruleIDs === 'string')
+        return handleRuleChange(sender, ruleIDs, enable);
+    for (const ruleID of ruleIDs)
+        await handleRuleChange(sender, ruleID, enable);
+}
+
+async function handleRuleChange(sender, ruleID, enable) {
+    if (!Rule.exists(ruleID))
+        return sender.sendMessage({ translate: 'rules.generic.unknown', with: [ruleID, Command.prefix] });
     const rule = Rule.getRule(ruleID);
     if (rule instanceof InfoDisplayRule)
         return sender.sendMessage({ translate: 'commands.canopy.infodisplayRule', with: [ruleID, Command.prefix] });
