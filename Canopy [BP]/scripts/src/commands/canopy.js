@@ -1,16 +1,19 @@
 import { Rule, Command, InfoDisplayRule } from 'lib/canopy/Canopy';
 import { resetCounterMap } from 'src/commands/counter';
+import { PACK_VERSION } from "../../constants";
+import { Extensions } from "../../lib/canopy/Canopy";
 
 const cmd = new Command({
     name: 'canopy',
     description: { translate: 'commands.canopy' },
-    usage: 'canopy <rule> [true/false]',
+    usage: 'canopy <rule/version> [true/false]',
     args: [
         { type: 'string|array', name: 'ruleIDs' },
         { type: 'boolean', name: 'enable' },
     ],
     callback: canopyCommand,
     helpEntries: [
+        { usage: 'canopy version', description: { translate: 'commands.canopy.version' } },
         { usage: 'canopy <rule> [true/false]', description: { translate: 'commands.canopy.single' } },
         { usage: 'canopy <[rule1,rule2,...]> [true/false]', description: { translate: 'commands.canopy.multiple' } },
     ],
@@ -22,10 +25,26 @@ async function canopyCommand(sender, args) {
     if (ruleIDs === null && enable === null)
         return cmd.sendUsage(sender);
 
-    if (typeof ruleIDs === 'string')
+    if (typeof ruleIDs === 'string' && ruleIDs === 'version')
+        return sender.sendMessage(getVersionMessage());
+    else if (typeof ruleIDs === 'string')
         return handleRuleChange(sender, ruleIDs, enable);
     for (const ruleID of ruleIDs)
         await handleRuleChange(sender, ruleID, enable);
+}
+
+function getVersionMessage() {
+    const message = { rawtext: [
+        { translate: 'commands.canopy.version.message', with: [PACK_VERSION] },
+        { text: '§r§7.' }
+    ]};
+    const extensionNames = Extensions.getVersionedNames();
+    if (extensionNames.length === 0) return message;
+    message.rawtext.push({ translate: 'commands.canopy.version.extensions' });
+    for (const extensionName of extensionNames)
+        message.rawtext.push({ text: ` ${extensionName}` });
+    message.rawtext.push({ text: '§r§7.' });
+    return message;
 }
 
 async function handleRuleChange(sender, ruleID, enable) {

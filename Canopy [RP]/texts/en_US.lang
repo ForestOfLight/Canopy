@@ -43,6 +43,9 @@ commands.camera.spectate.started=§aSpectating
 commands.camera.spectate.ended=§7Spectating ended
 
 commands.canopy=Enable or disable a rule.
+commands.canopy.version=Displays the current version of Canopy and all loaded extensions.
+commands.canopy.version.message=§7This server is running §l§aCanopy§r §a%s
+commands.canopy.version.extensions=§7Loaded extensions: §a%s
 commands.canopy.single=Enables or disables a single rule.
 commands.canopy.multiple=Enables or disables multiple rules.
 commands.canopy.infodisplayRule=§cThe rule '%1' is part of the InfoDisplay, and must be toggled using %2info. Use %2help for more information.
