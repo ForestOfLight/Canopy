@@ -2,6 +2,8 @@ class HelpPage {
     entries = [];
 
     constructor(title, description = '', extensionName = false) {
+        if (new.target === HelpPage)
+            throw new TypeError("HelpPage is an abstract class and cannot be instantiated");
         if (extensionName)
             this.title = extensionName + ':' + title;
         else
@@ -15,6 +17,18 @@ class HelpPage {
 
     getEntries() {
         return this.entries;
+    }
+
+    addEntry() {
+        throw new Error('[HelpPage] addEntry must be implemented in subclass');
+    }
+
+    hasEntry() {
+        throw new Error('[HelpPage] hasEntry must be implemented in subclass');
+    }
+
+    toRawMessage() {
+        throw new Error('[HelpPage] toRawMessage must be implemented in subclass');
     }
 
     getPrintStarter() {

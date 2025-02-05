@@ -26,6 +26,7 @@ class Command {
 		this.#extensionName = extensionName;
 
 		this.#checkMembers();
+		this.#helpEntries = this.#helpEntries.map(entry => { if (typeof entry.description === 'string') entry.description = { text: entry.description }; return entry; });
 		Commands.register(this);
 	}
 
