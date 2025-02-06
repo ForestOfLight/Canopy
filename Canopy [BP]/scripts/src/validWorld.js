@@ -1,44 +1,29 @@
 import { world, system } from "@minecraft/server";
 import ProbeManager from "./classes/ProbeManager";
-import { Extensions } from "../lib/canopy/Canopy";
-import { PACK_VERSION } from "../constants";
+import { displayWelcome } from "./rules/noWelcomeMessage";
 
-const hasShownWelcome = {};
+let worldIsValid = false;
 
 world.afterEvents.playerJoin.subscribe((event) => {
     const runner = system.runInterval(() => {
         const players = world.getPlayers({ name: event.playerName });
         players.forEach(player => {
             if (!player) return;
-            if (!hasShownWelcome[player.id] && player?.isValid()) {
+            if (player?.isValid()) {
                 system.clearRun(runner);
-                hasShownWelcome[player.id] = true;
-                onValidWorld(player);
+                onValidPlayer(player);
+                if (!worldIsValid)
+                    onValidWorld();
+                worldIsValid = true;
             }
         });
     });
 });
 
-world.afterEvents.playerLeave.subscribe((event) => {
-    hasShownWelcome[event.playerId] = false;
-});
-
-function onValidWorld(player) {
+function onValidPlayer(player) {
     displayWelcome(player);
-    ProbeManager.startCleanupCycle();
 }
 
-function displayWelcome(player) {
-    const graphic = [
-        '§a   + ----- +\n',
-        '§a /          / |\n',
-        '§a+ ----- +  |\n',
-        '§a |          |  +\n',
-        '§a |          | /\n',
-        '§a+ ----- +\n'
-    ].join('');
-    player.sendMessage({ rawtext: [{ text: graphic }, { translate: 'generic.welcome.start', with: [PACK_VERSION] }] });
-    const extensions = Extensions.getVersionedNames();
-    if (extensions.length > 0)
-        player.sendMessage({ translate: 'generic.welcome.extensions', with: [extensions.join('§r§7, §a§o')] });
+function onValidWorld() {
+    ProbeManager.startCleanupCycle();
 }

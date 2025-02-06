@@ -158,18 +158,7 @@ describe('Utils', () => {
         });
     });
 
-    describe('getClosestTarget()', () => {
-        it('returns the closest entity when both entity and block are present', () => {
-            const player = {
-                getHeadLocation: () => ({ x: 0, y: 0, z: 0 })
-            };
-            const entity = { location: { x: 1, y: 1, z: 1 } };
-            const block = { location: { x: 2, y: 2, z: 2 } };
-            const entityRayResult = [{ entity }];
-            const blockRayResult = { block };
-            expect(Utils.getClosestTarget(player, blockRayResult, entityRayResult)).toBe(entity);
-        });
-    
+    describe('getClosestTarget()', () => {    
         it('returns the block when only block is present', () => {
             const player = {
                 getHeadLocation: () => ({ x: 0, y: 0, z: 0 })
@@ -205,6 +194,28 @@ describe('Utils', () => {
             const blockRayResult = { block };
             expect(Utils.getClosestTarget(player, blockRayResult, entityRayResult)).toBe(entity);
         });
+
+		it('returns the entity when both entity and block are present and the entity is closer', () => {
+            const player = {
+                getHeadLocation: () => ({ x: 0, y: 0, z: 0 })
+            };
+            const entity = { location: { x: 1, y: 1, z: 1 } };
+            const block = { location: { x: 2, y: 2, z: 2 } };
+            const entityRayResult = [{ entity }];
+            const blockRayResult = { block };
+            expect(Utils.getClosestTarget(player, blockRayResult, entityRayResult)).toBe(entity);
+        });
+
+		it('returns the block when both entity and block are present and the block is closer', () => {
+			const player = {
+				getHeadLocation: () => ({ x: 0, y: 0, z: 0 })
+			};
+			const entity = { location: { x: 2, y: 2, z: 2 } };
+			const block = { location: { x: 1, y: 1, z: 1 } };
+			const entityRayResult = [{ entity }];
+			const blockRayResult = { block };
+			expect(Utils.getClosestTarget(player, blockRayResult, entityRayResult)).toBe(block);
+		});
     });
 
     describe('parseName()', () => {
