@@ -1,4 +1,4 @@
-import { Rule } from 'lib/canopy/Canopy';
+import { Rule, Rules} from "../../lib/canopy/Canopy";
 import { world, GameMode } from '@minecraft/server';
 
 const ACTIVE_DURABILITY = 2;
@@ -15,7 +15,7 @@ world.afterEvents.playerInteractWithBlock.subscribe((event) => durabilityClink(e
 world.afterEvents.playerInteractWithEntity.subscribe((event) => durabilityClink(event.player, event.beforeItemStack, event.itemStack));
 
 function durabilityClink(player, beforeItemStack, itemStack) {
-    if (!Rule.getNativeValue(rule.getID()) || !player || !itemStack || !beforeItemStack
+    if (!Rules.getNativeValue(rule.getID()) || !player || !itemStack || !beforeItemStack
         || player.getGameMode() === GameMode.creative
         || !usedDurability(beforeItemStack, itemStack)
     ) return;

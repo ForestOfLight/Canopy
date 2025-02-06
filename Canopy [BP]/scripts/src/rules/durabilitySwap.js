@@ -1,4 +1,4 @@
-import { Rule } from 'lib/canopy/Canopy';
+import { Rule, Rules} from "../../lib/canopy/Canopy";
 import { world, GameMode } from '@minecraft/server';
 import { usedDurability, getRemainingDurability } from 'src/rules/durabilityNotifier';
 
@@ -13,7 +13,7 @@ world.afterEvents.playerInteractWithBlock.subscribe((event) => durabilitySwap(ev
 world.afterEvents.playerInteractWithEntity.subscribe((event) => durabilitySwap(event.player, event.beforeItemStack, event.itemStack));
 
 function durabilitySwap(player, beforeItemStack, itemStack) {
-    if (!Rule.getNativeValue(rule.getID()) || !player || !itemStack || !beforeItemStack
+    if (!Rules.getNativeValue(rule.getID()) || !player || !itemStack || !beforeItemStack
         || player.getGameMode() === GameMode.creative
         || !usedDurability(beforeItemStack, itemStack)
     ) return;

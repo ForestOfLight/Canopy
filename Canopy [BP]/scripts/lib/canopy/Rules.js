@@ -19,12 +19,12 @@ export class Rules {
         return Object.keys(this.#rules);
     }
 
-    static exists(name) {
-        return this.#rules[name] !== undefined;
+    static exists(identifier) {
+        return this.#rules[identifier] !== undefined;
     }
 
-    static remove(name) {
-        delete this.#rules[name];
+    static remove(identifier) {
+        delete this.#rules[identifier];
     }
 
     static clear() {
@@ -57,6 +57,10 @@ export class Rules {
         if (!rule)
             throw new Error(`[Canopy] Rule with identifier '${identifier}' does not exist.`);
         return Rules.getAll().filter(r => r.getContigentRuleIDs().includes(identifier)).map(r => r.getID());
+    }
+
+    static getByCategory(category) {
+        return this.getAll().filter(rule => rule.getCategory() === category);
     }
 }
 

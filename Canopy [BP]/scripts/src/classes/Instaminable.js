@@ -1,5 +1,5 @@
+import { Rules} from "../../lib/canopy/Canopy";
 import { system, world } from "@minecraft/server";
-import { Rule } from "lib/canopy/Canopy";
 
 const beaconRefreshOffset = {};
 const BEACON_REFRESH_RATE = 80;
@@ -29,7 +29,7 @@ class Instaminable {
 
         world.beforeEvents.playerBreakBlock.subscribe(async event => {
             const blockId = event.block.typeId;
-            if (await Rule.getValue(this.ruleId) !== true) return;
+            if (Rules.getNativeValue(this.ruleId) !== true) return;
             if (!this.litmusCallback(blockId)) return;
             const player = event.player;
             if (this.isEfficiencyFiveNetheritePick(event.itemStack) && this.hasHasteTwo(player)) {

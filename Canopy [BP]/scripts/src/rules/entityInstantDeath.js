@@ -1,4 +1,4 @@
-import { Rule } from "lib/canopy/Canopy";
+import { Rule, Rules } from "../../lib/canopy/Canopy";
 import { world } from "@minecraft/server";
 
 new Rule({
@@ -8,7 +8,7 @@ new Rule({
 });
 
 world.afterEvents.entityDie.subscribe(async (event) => {
-    if (!await Rule.getNativeValue('entityInstantDeath')) return;
+    if (!await Rules.getNativeValue('entityInstantDeath')) return;
     try {
         event.deadEntity.remove();
     } catch {

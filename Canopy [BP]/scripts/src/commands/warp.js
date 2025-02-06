@@ -1,4 +1,4 @@
-import { Rule, Command, Rules } from 'lib/canopy/Canopy';
+import { Rule, Command, Rules } from "../../lib/canopy/Canopy";
 import Warps from '../classes/Warps';
 
 new Rule({
@@ -106,7 +106,7 @@ function warpTP(sender, name) {
 }
 
 function warpListCommand(sender) {
-    if (!Rule.getNativeValue('commandWarpSurvival') && sender.getGameMode() === 'survival')
+    if (!Rules.getNativeValue('commandWarpSurvival') && sender.getGameMode() === 'survival')
         return sender.sendMessage({ translate: 'commands.generic.blocked.survival' });
     sender.sendMessage(getWarpListMessage());
 }
@@ -115,8 +115,8 @@ function getWarpListMessage() {
     if (Warps.isEmpty())
         return { translate: 'commands.warp.list.empty' };
     const message = { rawtext: [{ translate: 'commands.warp.list.header' }] };
-    Warps.getNames().forEach((currWarp) => {
-        message.rawtext.push({ text: `\n§7- ${currWarp.name}` });
-    });
+    const warpNames = Warps.getNames();
+    for (const warpName of warpNames)
+        message.rawtext.push({ text: `\n§7- ${warpName}` });
     return message;
 }

@@ -28,7 +28,6 @@ class InfoDisplay {
 	elements = [];
 	infoMessage = { rawtext: [] };
 
-	 
 	constructor(player) {
 		this.player = player;
 		this.elements = [
@@ -113,7 +112,7 @@ class InfoDisplay {
 	}
 
 	trimTrailingWhitespace() {
-		this.infoMessage.rawtext[this.infoMessage.rawtext.length - 1]?.text.trim();
+		this.infoMessage.rawtext[this.infoMessage.rawtext.length - 1]?.text?.trim();
 	}
 
 	sendInfoMessage() {

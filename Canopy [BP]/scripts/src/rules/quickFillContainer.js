@@ -1,5 +1,5 @@
 import { system, world } from "@minecraft/server";
-import { Rule } from "lib/canopy/Canopy";
+import { Rule, Rules } from "../../lib/canopy/Canopy";
 
 new Rule({
     category: 'Rules',
@@ -11,7 +11,7 @@ const ARROW_SLOT = 9;
 const BANNED_CONTAINERS = ['minecraft:beacon', 'minecraft:jukebox', 'minecraft:lectern'];
 
 world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
-    if (!Rule.getNativeValue('quickFillContainer')) return;
+    if (!Rules.getNativeValue('quickFillContainer')) return;
     const player = event.player;
     if (!player) return;
     const block = event.block;

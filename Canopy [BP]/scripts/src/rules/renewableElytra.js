@@ -1,4 +1,4 @@
-import { Rule } from "lib/canopy/Canopy";
+import { Rule, Rules } from "lib/canopy/Canopy";
 import { ItemStack, world } from "@minecraft/server";
 
 const DROP_CHANCE = 0.01;
@@ -10,7 +10,7 @@ new Rule({
 });
 
 world.afterEvents.entityDie.subscribe((event) => {
-    if (!Rule.getValue('renewableElytra')) return;
+    if (!Rules.getNativeValue('renewableElytra')) return;
     const entity = event.deadEntity;
     if (entity?.typeId === 'minecraft:phantom' && event.damageSource.damagingProjectile?.typeId === 'minecraft:shulker_bullet') {
         if (Math.random() > DROP_CHANCE) return;

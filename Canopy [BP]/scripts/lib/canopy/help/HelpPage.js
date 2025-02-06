@@ -2,7 +2,7 @@ class HelpPage {
     entries = [];
 
     constructor(title, description = '', extensionName = false) {
-        if (new.target === HelpPage)
+        if (this.constructor === HelpPage)
             throw new TypeError("HelpPage is an abstract class and cannot be instantiated");
         if (extensionName)
             this.title = extensionName + ':' + title;

@@ -70,7 +70,7 @@ export class Commands {
     }
 
     static async #getDisabledContingentRules(command) {
-        const disabledRules = [];
+        const disabledRules = new Array();
         for (const ruleID of command.getContingentRules()) {
             const ruleValue = await Rules.getValue(ruleID);
             if (!ruleValue)

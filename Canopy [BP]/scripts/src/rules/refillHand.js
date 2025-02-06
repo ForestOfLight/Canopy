@@ -1,5 +1,5 @@
+import { Rule, Rules} from "../../lib/canopy/Canopy";
 import { GameMode, world } from "@minecraft/server";
-import { Rule } from "lib/canopy/Canopy";
 
 new Rule({
     category: 'Rules',
@@ -13,7 +13,7 @@ world.afterEvents.playerInteractWithBlock.subscribe((event) => captureEvent(even
 world.afterEvents.playerInteractWithEntity.subscribe((event) => captureEvent(event));
 
 function captureEvent(event) {
-    if (!Rule.getNativeValue('refillHand')) return;
+    if (!Rules.getNativeValue('refillHand')) return;
     const player = event.player;
     if (!player || player.getGameMode() !== GameMode.survival) return;
     processRefillHand(player, event.beforeItemStack, event.itemStack);

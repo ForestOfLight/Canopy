@@ -14,12 +14,23 @@ class InfoDisplayRule extends Rule {
         player.setDynamicProperty(super.getID(), value);
     }
 
+    static get(identifier) {
+        const rule = Rules.get(identifier);
+        if (rule?.getCategory() === "InfoDisplay")
+            return rule;
+        return undefined;
+    }
+
+    static exists(identifier) {
+        return Rules.exists(identifier) && Rules.get(identifier).getCategory() === "InfoDisplay";
+    }
+
     static getValue(player, identifier) {
-        return this.getRule(identifier).getNativeValue(player);
+        return this.get(identifier).getValue(player);
     }
     
     static setValue(player, identifier, value) {
-        this.getRule(identifier).setValue(player, value);
+        this.get(identifier).setValue(player, value);
     }
     
     static getAll() {

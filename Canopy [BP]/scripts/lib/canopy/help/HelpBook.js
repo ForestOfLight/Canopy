@@ -3,6 +3,7 @@ import Utils from "../../../include/utils";
 
 class HelpBook {
     #helpPages;
+    numNativeCommandPages = 0;
 
     constructor() {
         this.#helpPages = [];

@@ -2,7 +2,7 @@ import { system } from "@minecraft/server";
 
 class EntityLog {
     constructor(type, { main, secondary, tertiary }) {
-        if (this instanceof EntityLog)
+        if (this.constructor === EntityLog)
             throw new Error("Cannot instantiate abstract class 'EntityLog'.");
         this.type = type;
         this.colors = { main, secondary, tertiary };

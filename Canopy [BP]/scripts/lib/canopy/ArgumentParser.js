@@ -34,7 +34,7 @@ class ArgumentParser {
         const isBoolean = this.booleans.includes(char);
         const isNumber = !isNaN(Number(char));
         const isString = this.stringRegEx.test(char);
-        const isArray = idx < raw.length - 1 && this.arrayRegEx.test(raw[idx + 1]);
+        const isArray = this.arrayRegEx.test(char);
         const isEntity = this.entityRegEx.test(char);
         
         let data;
@@ -47,8 +47,13 @@ class ArgumentParser {
         } else if (isEntity && isArray) {
             data = raw[idx] += raw[idx + 1];
             raw[idx + 1] = '$nll_';
-        } else if (char.match(this.arrayRegEx)) {
-            data = JSON.parse(char);
+        } else if (isArray) {
+            const array = [];
+            const arrayData = char.replace(this.arrayRegEx, '');
+            const arrayValues = arrayData.split(',');
+            for (const value of arrayValues)
+                array.push(this.#argParser(value, idx, raw));
+            data = array;
         } else {
             data = char.trim();
         }

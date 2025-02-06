@@ -1,4 +1,4 @@
-import { Rule } from "lib/canopy/Canopy";
+import { Rule, Rules } from "../../lib/canopy/Canopy";
 import { system, world, StructureMirrorAxis, BlockPistonState } from "@minecraft/server";
 import BlockRotator from 'src/classes/BlockRotator';
 import DirectionStateFinder from 'src/classes/DirectionState';
@@ -26,8 +26,8 @@ system.runInterval(() => {
     
 });
 
-world.beforeEvents.playerPlaceBlock.subscribe(async (event) => {
-    if (!await Rule.getValue('flippinArrows')) return;
+world.beforeEvents.playerPlaceBlock.subscribe((event) => {
+    if (!Rules.getNativeValue('flippinArrows')) return;
     const player = event.player;
     if (!player) return;
     const offhandStack = player.getComponent('equippable').getEquipment("Offhand");
@@ -41,8 +41,8 @@ world.beforeEvents.playerPlaceBlock.subscribe(async (event) => {
     }
 });
 
-world.beforeEvents.itemUseOn.subscribe(async (event) => {
-    if (event.source === undefined || !await Rule.getValue('flippinArrows')) return;
+world.beforeEvents.itemUseOn.subscribe((event) => {
+    if (event.source === undefined || !Rules.getNativeValue('flippinArrows')) return;
     if (event.itemStack.typeId !== 'minecraft:arrow') return;
     const block = event.block;
     if (needsCooldown(block)) return;

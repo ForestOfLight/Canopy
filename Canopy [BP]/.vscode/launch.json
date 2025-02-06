@@ -1,16 +1,13 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
+    "version": "0.3.0",
     "configurations": [
         {
             "type": "minecraft-js",
             "request": "attach",
-            "name": "Attach to Minecraft",
-            "mode": "connect",
+            "name": "Debug with Minecraft",
+            "mode": "listen",
+            "targetModuleUuid": "7f6b23df-a583-476b-b0e4-87457e65f7c0",
             "localRoot": "${workspaceFolder}/scripts",
-            "host": "localhost",
             "port": 19144
         }
     ]

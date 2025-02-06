@@ -49,7 +49,7 @@ class Command {
 	}
 	
 	getUsage() {
-		return Command.prefix + this.#usage;
+		return Commands.getPrefix() + this.#usage;
 	}
 	
 	getArgs() {

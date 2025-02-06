@@ -1,4 +1,4 @@
-import { Rule } from "lib/canopy/Canopy";
+import { Rule, Rules } from "lib/canopy/Canopy";
 import { system, world, DimensionTypes, ItemStack, FluidType } from "@minecraft/server";
 
 const CONVERSION_TIME = 20*7;
@@ -11,7 +11,7 @@ new Rule({
 });
 
 world.afterEvents.entitySpawn.subscribe((event) => {
-    if (!Rule.getNativeValue('cauldronConcreteConversion') || event.entity?.typeId !== "minecraft:item" || !event.entity.hasComponent('item')) return;
+    if (!Rules.getNativeValue('cauldronConcreteConversion') || event.entity?.typeId !== "minecraft:item" || !event.entity.hasComponent('item')) return;
     const itemStack = event.entity.getComponent('item').itemStack;
     if (itemStack && itemStack.typeId.includes('concrete_powder')) 
         event.entity.addTag('concrete_powder');
@@ -25,7 +25,7 @@ world.afterEvents.entityRemove.subscribe((event) => {
 });
 
 system.runInterval(() => {
-    if (!Rule.getNativeValue('cauldronConcreteConversion')) return;
+    if (!Rules.getNativeValue('cauldronConcreteConversion')) return;
     DimensionTypes.getAll().forEach((dimensionType) => {
         const dimension = world.getDimension(dimensionType.typeId);
         const concretePowderItems = dimension.getEntities({ type: 'minecraft:item', tags: ['concrete_powder'] });

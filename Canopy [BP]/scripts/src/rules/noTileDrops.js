@@ -1,6 +1,6 @@
-import { Rule } from 'lib/canopy/Canopy';
 import { system, world } from '@minecraft/server';
-import Utils from 'include/utils';
+import { Rule, Rules } from "../../lib/canopy/Canopy";
+import Utils from "../../include/utils";
 
 const REMOVAL_DISTANCE = 2.5;
 
@@ -20,14 +20,14 @@ system.runInterval(() => {
 
 world.afterEvents.playerBreakBlock.subscribe(async (blockEvent) => {
     if (blockEvent.player?.getGameMode() !== 'creative' 
-        || !await Rule.getValue('noTileDrops')) 
+        || !Rules.getNativeValue('noTileDrops')) 
         return;
     brokenBlockEventsThisTick.push(blockEvent);
 });
 
 world.afterEvents.entitySpawn.subscribe(async (entityEvent) => {
     if (entityEvent.cause !== 'Spawned' || entityEvent.entity.typeId !== 'minecraft:item') return;
-    if (!await Rule.getValue('noTileDrops')) return;
+    if (!Rules.getNativeValue('noTileDrops')) return;
 
     const item = entityEvent.entity;
     const brokenBlockEvents = brokenBlockEventsThisTick.concat(brokenBlockEventsLastTick);

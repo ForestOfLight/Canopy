@@ -1,6 +1,6 @@
-import { Rule } from 'lib/canopy/Canopy';
 import { ItemStack, system, world } from '@minecraft/server';
-import Utils from 'include/utils';
+import { Rule, Rules } from "../../lib/canopy/Canopy";
+import Utils from "../../include/utils";
 
 new Rule({
     category: 'Rules',
@@ -14,15 +14,15 @@ system.runInterval(() => {
     brokenBlockEventsThisTick = [];
 });
 
-world.afterEvents.playerBreakBlock.subscribe(async (blockEvent) => {
-    if (!await Rule.getValue('autoItemPickup')) return;
+world.afterEvents.playerBreakBlock.subscribe((blockEvent) => {
+    if (!Rules.getNativeValue('autoItemPickup')) return;
     if (blockEvent.player?.getGameMode() === 'creative') return;
     brokenBlockEventsThisTick.push(blockEvent);
 });
 
-world.afterEvents.entitySpawn.subscribe(async (entityEvent) => {
+world.afterEvents.entitySpawn.subscribe((entityEvent) => {
     if (entityEvent.cause !== 'Spawned' || entityEvent.entity?.typeId !== 'minecraft:item') return;
-    if (!await Rule.getValue('autoItemPickup')) return;
+    if (!Rules.getNativeValue('autoItemPickup')) return;
 
     const item = entityEvent.entity;
     let brokenBlockEvent;

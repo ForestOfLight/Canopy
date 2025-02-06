@@ -141,22 +141,6 @@ class Utils {
 		return { startTime, endTime };
 	}
 
-	static calculatePerTime(totalCount, deltaTicks, mode = 'countMode') {
-		const ticksPerHour = 72000;
-		let itemsPerHour = totalCount / (deltaTicks / ticksPerHour);
-		let unit = 'h';
-		if (mode === 'perminuteMode') {
-			itemsPerHour /= 60;
-			unit = 'm';
-		}
-		if (mode === 'persecondMode') {
-			itemsPerHour /= 3600;
-			unit = 's';
-		}
-		if (isNaN(itemsPerHour) || itemsPerHour === Infinity) return '?/?';
-		return `${itemsPerHour.toFixed(1)}/${unit}`;
-	}
-
 	static getInventory(block) {
         const container = block.getComponent('inventory')?.container;
         if (container === undefined) return {};

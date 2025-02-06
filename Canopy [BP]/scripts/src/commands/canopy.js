@@ -1,7 +1,6 @@
-import { Rule, Command, InfoDisplayRule } from 'lib/canopy/Canopy';
-import { resetCounterMap } from 'src/commands/counter';
+import { Command, InfoDisplayRule, Extensions, Rules, Commands } from "../../lib/canopy/Canopy";
 import { PACK_VERSION } from "../../constants";
-import { Extensions } from "../../lib/canopy/Canopy";
+import CounterChannels from '../classes/CounterChannels';
 
 const cmd = new Command({
     name: 'canopy',
@@ -48,11 +47,11 @@ function getVersionMessage() {
 }
 
 async function handleRuleChange(sender, ruleID, enable) {
-    if (!Rule.exists(ruleID))
-        return sender.sendMessage({ translate: 'rules.generic.unknown', with: [ruleID, Command.prefix] });
-    const rule = Rule.getRule(ruleID);
+    if (!Rules.exists(ruleID))
+        return sender.sendMessage({ translate: 'rules.generic.unknown', with: [ruleID, Commands.getPrefix()] });
+    const rule = Rules.get(ruleID);
     if (rule instanceof InfoDisplayRule)
-        return sender.sendMessage({ translate: 'commands.canopy.infodisplayRule', with: [ruleID, Command.prefix] });
+        return sender.sendMessage({ translate: 'commands.canopy.infodisplayRule', with: [ruleID, Commands.getPrefix()] });
     const ruleValue = await rule.getValue();
     const enabledRawText = ruleValue ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' }
     if (enable === null)
@@ -61,7 +60,7 @@ async function handleRuleChange(sender, ruleID, enable) {
         return sender.sendMessage({ rawtext: [{ translate: 'rules.generic.nochange', with: [rule.getID()] }, enabledRawText, { text: '§r§7.' }] });
 
     if (ruleID === 'hopperCounters' && !enable)
-        resetCounterMap();
+        CounterChannels.resetAllCounts();
 
     if (enable)
         await updateRules(sender, rule.getContigentRuleIDs(), enable);
@@ -73,9 +72,9 @@ async function handleRuleChange(sender, ruleID, enable) {
 }
 
 async function updateRule(sender, ruleID, enable) {
-    const ruleValue = await Rule.getValue(ruleID);
+    const ruleValue = await Rules.getValue(ruleID);
     if (ruleValue === enable) return;
-    Rule.getRule(ruleID).setValue(enable);
+    Rules.get(ruleID).setValue(enable);
     const enabledRawText = enable ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' };
     return sender.sendMessage({ rawtext: [{ translate: 'rules.generic.updated', with: [ruleID] }, enabledRawText, { text: '§r§7.' }] });
 }

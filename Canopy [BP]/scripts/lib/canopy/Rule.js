@@ -71,11 +71,13 @@ export class Rule {
     }
 
     parseValue(value) {
+        if (value === 'undefined' || value === undefined)
+            return undefined;
         try {
             return JSON.parse(value);
         } catch {
-            if (value === 'undefined') return undefined;
-            if (value === 'NaN') return NaN;
+            if (value === 'NaN')
+                return NaN;
             console.warn(`[Canopy] [Rule] Failed to parse value for ${this.#identifier}: ${value}`);
         }
         return null;

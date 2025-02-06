@@ -1,4 +1,4 @@
-import { Rule } from "lib/canopy/Canopy";
+import { Rules, Rule } from "lib/canopy/Canopy";
 import { system, world, InputButton, ButtonState } from '@minecraft/server';
 import HotbarManager from 'src/classes/HotbarManager';
 
@@ -21,7 +21,7 @@ const lastLoadedSlots = {};
 const hotbarManagers = {};
 
 system.runInterval(() => {
-    if (!Rule.getNativeValue('hotbarSwitching')) return;
+    if (!Rules.getNativeValue('hotbarSwitching')) return;
     const players = world.getAllPlayers();
     for (const player of players) {
         if (!player) continue;
@@ -33,7 +33,7 @@ system.runInterval(() => {
 });
 
 function hasAppropriateGameMode(player) {
-    return Rule.getNativeValue('hotbarSwitchingSurvival') || player.getGameMode() === 'creative';
+    return Rules.getNativeValue('hotbarSwitchingSurvival') || player.getGameMode() === 'creative';
 }
 
 function processHotbarSwitching(player) {

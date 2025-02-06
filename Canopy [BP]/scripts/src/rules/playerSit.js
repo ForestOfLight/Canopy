@@ -1,5 +1,5 @@
 import { DimensionTypes, system, world } from '@minecraft/server';
-import { Rule } from 'lib/canopy/Canopy';
+import { Rules, Rule } from 'lib/canopy/Canopy';
 
 const SNEAK_COUNT = 3;
 const SNEAK_SPEED = 4;
@@ -13,7 +13,7 @@ new Rule({
 const playerSneaks = {};
 
 system.runInterval(() => {
-    if (!Rule.getNativeValue('playerSit')) return;
+    if (!Rules.getNativeValue('playerSit')) return;
     world.getAllPlayers().forEach(player => {
         if (player?.isSneaking) {
             const currentTime = system.currentTick;

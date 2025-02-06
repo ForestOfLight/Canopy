@@ -1,5 +1,5 @@
-import { Command, InfoDisplayRule, Commands } from 'lib/canopy/Canopy';
-import ProbeManager from 'src/classes/ProbeManager';
+import { Command, InfoDisplayRule, Commands, Rules } from "../../lib/canopy/Canopy";
+import ProbeManager from "../classes/ProbeManager";
 
 const cmd = new Command({
     name: 'info',
@@ -45,10 +45,10 @@ function infoCommand(sender, args) {
 }
 
 function handleRuleChange(sender, ruleID, enable) {
-    if (!InfoDisplayRule.exists(ruleID)) 
-        return sender.sendMessage({ rawtext: [ { translate: 'rules.generic.unknown', with: [ruleID, Commands.getPrefix()] }, { text: '§r§7.' } ] });
+    if (!InfoDisplayRule.exists(ruleID))
+        return sender.sendMessage({ rawtext: [ { translate: 'rules.generic.unknown', with: [ruleID, Commands.getPrefix()] } ] });
     
-    if (!(InfoDisplayRule.getRule(ruleID) instanceof InfoDisplayRule))
+    if (!(InfoDisplayRule.get(ruleID) instanceof InfoDisplayRule))
         return sender.sendMessage({ translate: 'commands.info.canopyRule', with: [ruleID, Command.getPrefix()] });
 
     const ruleValue = InfoDisplayRule.getValue(sender, ruleID);
@@ -67,7 +67,7 @@ function handleRuleChange(sender, ruleID, enable) {
     if (ruleID === 'showDisplay' && !enable)
         clearInfoDisplay(sender);
     
-    const rule = InfoDisplayRule.getRule(ruleID);
+    const rule = InfoDisplayRule.get(ruleID);
     if (enable)
         updateRules(sender, rule.getContigentRuleIDs(), enable);
     else
@@ -78,7 +78,7 @@ function handleRuleChange(sender, ruleID, enable) {
 }
 
 function changeAll(sender, enable) {
-    for (const entry of InfoDisplayRule.getRules()) 
+    for (const entry of InfoDisplayRule.getAll()) 
         entry.setValue(sender, enable);
     
     if (!enable) clearInfoDisplay(sender);

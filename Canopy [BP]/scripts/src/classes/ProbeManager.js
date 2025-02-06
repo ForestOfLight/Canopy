@@ -27,12 +27,12 @@ class ProbeManager {
     }
 
     removeProbe(player) {
-        const probe = this.probeMap[player.id];
+        const probe = this.probeMap[player?.id];
         if (!probe) return;
         probe.detachFromPlayer();
         if (probe.entity.isValid())
             probe.entity.remove();
-        delete this.probeMap[player.id];
+        delete this.probeMap[player?.id];
     }
 
     getProbe(player) {
@@ -60,6 +60,7 @@ class ProbeManager {
     }
 
     getProperty(player, property) {
+        if (!player) return '?';
         const result = '?';
 
         if (this.isDoingBannedAction(player)) {
@@ -106,7 +107,7 @@ class ProbeManager {
         world.beforeEvents.playerLeave.subscribe((event) => {
             const player = event.player;
             system.run(() => {
-                    this.removeProbe(player);
+                this.removeProbe(player);
             });
         });
 

@@ -4,23 +4,22 @@ import Rules from "../../lib/canopy/Rules";
 class ItemCounterChannels {
     static colors = Object.freeze(new Array('red', 'orange', 'yellow', 'lime', 'green', 'cyan', 'lightBlue', 'blue', 'purple', 
         'pink', 'magenta', 'brown', 'black', 'white', 'lightGray', 'gray'));
-    static channels = [];
-    static ChannelClass;
-    static controllingRule;
+    static modes = Object.freeze(new Array('count', 'hr', 'min', 'sec'));
+    static channels = {};
+    static controllingRuleID;
 
-    static init(channelClass, controllingRuleId) {
-        if (this instanceof ItemCounterChannels)
+    static init(ChannelClass, controllingRuleID) {
+        if (this === ItemCounterChannels)
             throw new Error("Cannot instantiate abstract class 'ItemCounterChannels'");
-        this.controllingRule = Rules.get(controllingRuleId);
-        this.channelClass = channelClass;
+        this.controllingRuleID = controllingRuleID;
         for (const color of this.colors) {
-            const channel = new this.ChannelClass(color);
+            const channel = new ChannelClass(color);
             const channelData = channel.getData();
             this.channels[color] = channel;
             if (channelData)
                 channel.setData(channelData);
         }
-        this.#initEvents();
+        this.initEvents();
     }
 
     static tryCreateHopperBlockPair() {
@@ -45,8 +44,23 @@ class ItemCounterChannels {
             channel.reset();
     }
 
+    static setMode(color, mode) {
+        if (!this.isValidColor(color) || !this.isValidMode(mode)) return;
+        this.channels[color].mode = mode;
+    }
+
+    static setAllModes(mode) {
+        if (!this.isValidMode(mode)) return;
+        for (const channel of this.channels)
+            channel.mode = mode;
+    }
+
     static isValidColor(color) {
         return this.colors.includes(color);
+    }
+
+    static isValidMode(mode) {
+        return this.modes.includes(mode);
     }
 
     static getQueryOutput(color, useRealTime = false) {
@@ -65,19 +79,23 @@ class ItemCounterChannels {
         return message;
     }
 
-    static #initEvents() {
-        world.afterEvents.playerPlaceBlock.subscribe((event) => this.#onPlayerPlaceBlock(event.block));
-        system.runInterval(() => this.#onTick(), 1);
+    static getActiveChannels() {
+        return Object.values(this.channels).filter(channel => channel.hopperList.length > 0);
     }
 
-    static #onPlayerPlaceBlock(placedBlock) {
-        if (this.controllingRule.getNativeValue()) return;
+    static initEvents() {
+        world.afterEvents.playerPlaceBlock.subscribe((event) => this.onPlayerPlaceBlock(event.block));
+        system.runInterval(() => this.onTick(), 1);
+    }
+
+    static onPlayerPlaceBlock(placedBlock) {
+        if (!Rules.getNativeValue(this.controllingRuleID)) return;
         this.tryCreateHopperBlockPair(placedBlock);
     }
 
-    static #onTick() {
-        if (!this.controllingRule.getNativeValue()) return;
-        for (const channel of this.channels)
+    static onTick() {
+        if (!Rules.getNativeValue(this.controllingRuleID)) return;
+        for (const channel of Object.values(this.channels))
             channel.onTick();
     }
 }

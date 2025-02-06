@@ -3,7 +3,7 @@ import Utils from "../../include/utils";
 
 class ItemCounterChannel {
     constructor(color, dpIdentifier) {
-        if (this instanceof ItemCounterChannel)
+        if (this.constructor === ItemCounterChannel)
             throw new Error("Cannot instantiate abstract class 'ItemCounterChannel'");
         this.color = color;
         this.dpIdentifier = dpIdentifier;
@@ -12,6 +12,7 @@ class ItemCounterChannel {
         this.itemMap = new Map();
         this.startTickTime = system.currentTick;
         this.startRealTime = Date.now();
+        this.mode = 'count';
         world.setDynamicProperty(this.dpIdentifier, JSON.stringify(this));
     }
 
@@ -73,6 +74,10 @@ class ItemCounterChannel {
         }, 0);
     }
 
+    isEmpty() {
+        return this.hopperList.length === 0;
+    }
+
     getQueryOutput(translatableQueryHeaderStr, useRealTime = false) {
         const realtimeText = useRealTime ? 'realtime: ' : '';
         const message = { rawtext: [
@@ -81,7 +86,7 @@ class ItemCounterChannel {
                 realtimeText, 
                 String(this.#getMinutesSinceStart(this)), 
                 String(this.totalCount), 
-                Utils.calculatePerTime(this.totalCount, this.#getDeltaTime())
+                this.#calculatePerTime(this.totalCount, this.#getDeltaTime())
             ]}
         ]};
         for (const item of Object.keys(this.itemMap))
@@ -90,7 +95,7 @@ class ItemCounterChannel {
     }
 
     onTick(getItemCountsCallback) {
-        if (this.#isEmpty())
+        if (this.isEmpty())
             return;
         this.#removeDestroyed();
         this.#updateCount(getItemCountsCallback());
@@ -98,6 +103,38 @@ class ItemCounterChannel {
 
     getAttachedBlockFromHopper() {
         throw new Error("Method 'getValidBlockFromHopper' must be implemented");
+    }
+
+    getModedTotalCount() {
+        return this.#calculatePerTime(this.totalCount, this.#getDeltaTime(), this.mode);
+    }
+
+    #calculatePerTime(totalCount, deltaTicks, mode = 'count') {
+		const ticksPerHour = 72000;
+		let itemsPerHour = totalCount / (deltaTicks / ticksPerHour);
+		let unit = 'h';
+		if (mode === 'min') {
+			itemsPerHour /= 60;
+			unit = 'm';
+		}
+		if (mode === 'sec') {
+			itemsPerHour /= 3600;
+			unit = 's';
+		}
+		if (isNaN(itemsPerHour) || itemsPerHour === Infinity)
+            return '?/?';
+		return `${itemsPerHour.toFixed(1)}/${unit}`;
+	}
+
+    #getDeltaTime(useRealTime) {
+        const millisecondsPerTick = 50.0;
+        let deltaTicks;
+        if (useRealTime)
+            deltaTicks = (Date.now() - this.startRealTime) / millisecondsPerTick;
+        else
+            deltaTicks = system.currentTick - this.startTickTime;
+        deltaTicks = Math.floor(deltaTicks / 8) * 8; // normalize to hopper speed
+        return deltaTicks;
     }
     
     #updateCount(itemStacks) {
@@ -120,27 +157,15 @@ class ItemCounterChannel {
 
     #getAllModeOutput(item) {
         let output = '';
-        const rateModes = ['perhourMode', 'perminuteMode', 'persecondMode'];
     
         output += `${Utils.getColorCode(this.color)}${this.itemMap[item]}`;
-        for (let i = 0; i < rateModes.length; i++) {
+        for (let i = 0; i < RATE_MODES.length; i++) {
             if (i === 0) output += ' §7(';
             else output += '§7, ';
-            output += `${Utils.calculatePerTime(this.itemMap[item], this.#getDeltaTime(), rateModes[i])}`;
+            output += `${this.#calculatePerTime(this.itemMap[item], this.#getDeltaTime(), RATE_MODES[i])}`;
         }
         output += '§7)';
         return output;
-    }
-
-    #getDeltaTime(useRealTime) {
-        const millisecondsPerTick = 50.0;
-        let deltaTicks;
-        if (useRealTime)
-            deltaTicks = (Date.now() - this.startRealTime) / millisecondsPerTick;
-        else
-            deltaTicks = system.currentTick - this.startTickTime;
-        deltaTicks = Math.floor(deltaTicks / 8) * 8; // normalize to hopper speed
-        return deltaTicks;
     }
 
     #getMinutesSinceStart() {
@@ -150,10 +175,6 @@ class ItemCounterChannel {
 
     #updateData() {
         world.setDynamicProperty(this.dpIdentifier, JSON.stringify(this));
-    }
-
-    #isEmpty() {
-        return this.hopperList.length === 0;
     }
 }
 

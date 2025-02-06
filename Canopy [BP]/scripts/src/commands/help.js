@@ -1,6 +1,6 @@
-import { Commands, Command, Rule, InfoDisplayRule, Extensions, HelpBook, CommandHelpPage, RuleHelpPage, InfoDisplayRuleHelpPage } from '../../lib/canopy/Canopy';
+import { Commands, Command, InfoDisplayRule, Extensions, HelpBook, CommandHelpPage, RuleHelpPage, InfoDisplayRuleHelpPage, Rules } from '../../lib/canopy/Canopy';
 
-const COMMANDS_PER_PAGE = 8;
+const COMMANDS_PER_PAGE = 7;
 
 new Command({
     name: 'help',
@@ -32,7 +32,6 @@ function populateNativeCommandPages(helpBook) {
     commands = commands.filter(cmd => !cmd.isHelpHidden());
     if (helpBook.numNativeCommandPages >= commands.length / COMMANDS_PER_PAGE)
         return;
-
     for (let i = 0; i < commands.length; i++) {;
         if (i % COMMANDS_PER_PAGE === 0) {
             helpBook.numNativeCommandPages++;
@@ -45,18 +44,16 @@ function populateNativeCommandPages(helpBook) {
 
 function populateNativeRulePages(helpBook, player) {
     const infoDisplayPage = new InfoDisplayRuleHelpPage({ title: 'InfoDisplay', description: { translate: 'commands.help.infodisplay' }, usage: Commands.getPrefix() + 'info <rule/all> <true/false>' });
-    const infoDisplayRules = InfoDisplayRule.getRules();
+    const infoDisplayRules = InfoDisplayRule.getAll();
     helpBook.newPage(infoDisplayPage);
-    for (const infoDisplayRule of infoDisplayRules) 
+    for (const infoDisplayRule of infoDisplayRules)
         helpBook.addEntry(infoDisplayRule.getCategory(), infoDisplayRule, player);
-    
 
     const rulesPage = new RuleHelpPage({ title: 'Rules', description: { translate: 'commands.help.rules' }, usage: Commands.getPrefix() + 'canopy <rule> <true/false>' });
-    const globalRules = Rule.getRulesByCategory('Rules');
+    const globalRules = Rules.getByCategory('Rules').sort((a, b) => a.getID().localeCompare(b.getID()));
     helpBook.newPage(rulesPage);
-    for (const rule of globalRules) 
+    for (const rule of globalRules)
         helpBook.addEntry(rule.getCategory(), rule);
-    
 }
 
 function populateExtensionPages(helpBook) {
@@ -73,7 +70,6 @@ function populateExtensionRulePages(helpBook) {
             helpBook.newPage(rulePage);
             for (const rule of rules) 
                 helpBook.addEntry(rulePage.title, rule);
-            
         }
     }
 }
@@ -87,7 +83,6 @@ function populateExtensionCommandPages(helpBook) {
             helpBook.newPage(commandPage);
             for (const command of commands) 
                 helpBook.addEntry(commandPage.title, command);
-            
         }
     }
 }
