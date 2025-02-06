@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Rules from '../../../../../Canopy [BP]/scripts/lib/canopy/Rules.js';
 import InfoDisplayRule from '../../../../../Canopy [BP]/scripts/lib/canopy/InfoDisplayRule.js';
+import Rule from '../../../../../Canopy [BP]/scripts/lib/canopy/Rule.js';
 
 vi.mock('@minecraft/server', () => ({
     world: { 
@@ -69,6 +70,64 @@ describe('InfoDisplayRule', () => {
             const player = { setDynamicProperty: vi.fn() };
             rule.setValue(player, 'test_value');
             expect(player.setDynamicProperty).toHaveBeenCalledWith('test_rule', 'test_value');
+        });
+    });
+
+    describe('get', () => {
+        it('should return the rule if it exists as an InfoDisplay rule', () => {
+            const fetchedRule = InfoDisplayRule.get('test_rule');
+            expect(fetchedRule).toBe(rule);
+        });
+
+        it('should return undefined if the rule does not exist', () => {
+            const fetchedRule = InfoDisplayRule.get('non_existent_rule');
+            expect(fetchedRule).toBeUndefined();
+        });
+
+        it('should return undefined if the rule exists but is not an InfoDisplay rule', () => {
+            new Rule({ 
+                category: 'test', 
+                identifier: 'non_info_display_rule',
+                description: 'This is a test rule',
+                contingentRules: ['test_rule_2']
+            });
+            const fetchedRule = InfoDisplayRule.get('non_info_display_rule');
+            expect(fetchedRule).toBeUndefined();
+        });
+    });
+
+    describe('getValue', () => {
+        it('should get the value from the InfoDisplayRule', () => {
+            const player = { getDynamicProperty: vi.fn(() => 'test_value') };
+            expect(InfoDisplayRule.getValue(player, 'test_rule')).toBe('test_value');
+        });
+    });
+
+    describe('setValue', () => {
+        it('should set the value on the InfoDisplayRule', () => {
+            const player = { setDynamicProperty: vi.fn() };
+            InfoDisplayRule.setValue(player, 'test_rule', 'test_value');
+            expect(player.setDynamicProperty).toHaveBeenCalledWith('test_rule', 'test_value');
+        });
+    });
+
+    describe('exists', () => {
+        it('should return true if the rule exists and is an InfoDisplay rule', () => {
+            expect(InfoDisplayRule.exists('test_rule')).toBe(true);
+        });
+
+        it('should return false if the rule does not exist', () => {
+            expect(InfoDisplayRule.exists('non_existent_rule')).toBe(false);
+        });
+
+        it('should return false if the rule exists but is not an InfoDisplay rule', () => {
+            new Rule({ 
+                category: 'test', 
+                identifier: 'non_info_display_rule',
+                description: 'This is a test rule',
+                contingentRules: ['test_rule_2']
+            });
+            expect(InfoDisplayRule.exists('non_info_display_rule')).toBe(false);
         });
     });
 

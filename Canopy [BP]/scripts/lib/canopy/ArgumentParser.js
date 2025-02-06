@@ -8,19 +8,19 @@ class ArgumentParser {
     static entityRegEx = /@[aepsr]\[/g;
 
     static parseCommandString(text) {
-        const args = [];
-        const raw = text.match(this.regex);
-        if (!raw)
+        const parsedArgs = [];
+        const rawArguments = text.match(this.regex);
+        if (!rawArguments)
             throw new Error('Invalid command string');
 
-        raw.forEach((arg, index) => {
-            const argData = this.#argParser(arg, index, raw);
-            args[index] = argData;
+        rawArguments.forEach((arg, currIdx) => {
+            const argData = this.#argParser(arg, currIdx, rawArguments);
+            parsedArgs[currIdx] = argData;
         });
 
         return {
-            name: this.#extractName(args),
-            args: args.filter(_ => _ !== '$nll_')
+            name: this.#extractName(parsedArgs),
+            args: parsedArgs.filter(_ => _ !== '$nll_')
         };
     }
 
@@ -30,32 +30,33 @@ class ArgumentParser {
         return name;
     }
 
-    static #argParser(char, idx, raw) {
-        const isBoolean = this.booleans.includes(char);
-        const isNumber = !isNaN(Number(char));
-        const isString = this.stringRegEx.test(char);
-        const isArray = this.arrayRegEx.test(char);
-        const isEntity = this.entityRegEx.test(char);
+    static #argParser(arg, currIdx, rawArguments) {
+        const isBoolean = this.booleans.includes(arg);
+        const isNumber = !isNaN(Number(arg));
+        const isString = this.stringRegEx.test(arg);
+        const isArray = this.arrayRegEx.test(arg);
+        const isEntity = this.entityRegEx.test(arg);
         
         let data;
         if (isBoolean) {
-            data = char === 'true';
+            data = arg === 'true';
         } else if (isNumber) {
-            data = Number(char);
+            data = Number(arg);
         } else if (isString) {
-            data = char.replace(this.stringRegEx, '');
-        } else if (isEntity && isArray) {
-            data = raw[idx] += raw[idx + 1];
-            raw[idx + 1] = '$nll_';
+            data = arg.replace(this.stringRegEx, '');
+        } else if (isEntity && this.arrayRegEx.test(rawArguments[currIdx+1])) {
+            rawArguments[currIdx] += rawArguments[currIdx + 1];
+            rawArguments[currIdx + 1] = '$nll_';
+            data = rawArguments[currIdx];
         } else if (isArray) {
             const array = [];
-            const arrayData = char.replace(this.arrayRegEx, '');
+            const arrayData = arg.replace(this.arrayRegEx, '');
             const arrayValues = arrayData.split(',');
             for (const value of arrayValues)
-                array.push(this.#argParser(value, idx, raw));
+                array.push(this.#argParser(value, currIdx, rawArguments));
             data = array;
         } else {
-            data = char.trim();
+            data = arg.trim();
         }
         return data;
     }

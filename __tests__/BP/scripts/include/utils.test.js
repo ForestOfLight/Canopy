@@ -395,53 +395,6 @@ describe('Utils', () => {
 		});
 	});
 
-	describe('calculatePerTime()', () => {
-		it('returns correct items per hour in count mode', () => {
-			const result = Utils.calculatePerTime(3600, 3600, 'countMode');
-			expect(result).toBe('72000.0/h');
-		});
-
-		it('returns correct items per minute in perminute mode', () => {
-			const result = Utils.calculatePerTime(3600, 3600, 'perminuteMode');
-			expect(result).toBe('1200.0/m');
-		});
-
-		it('returns correct items per second in persecond mode', () => {
-			const result = Utils.calculatePerTime(3600, 3600, 'persecondMode');
-			expect(result).toBe('20.0/s');
-		});
-
-		it('returns correct items per hour when deltaTime is less than an hour', () => {
-			const result = Utils.calculatePerTime(1800, 1800, 'countMode');
-			expect(result).toBe('72000.0/h');
-		});
-
-		it('returns correct items per minute when deltaTime is less than a minute', () => {
-			const result = Utils.calculatePerTime(60, 60, 'perminuteMode');
-			expect(result).toBe('1200.0/m');
-		});
-
-		it('returns correct items per second when deltaTime is less than a second', () => {
-			const result = Utils.calculatePerTime(1, 1, 'persecondMode');
-			expect(result).toBe('20.0/s');
-		});
-
-		it('returns ?/? when totalCount is NaN', () => {
-			const result = Utils.calculatePerTime(NaN, 3600, 'countMode');
-			expect(result).toBe('?/?');
-		});
-
-		it('returns ?/? when totalCount is Infinity', () => {
-			const result = Utils.calculatePerTime(Infinity, 3600, 'countMode');
-			expect(result).toBe('?/?');
-		});
-
-		it('returns ?/? when deltaTime is 0', () => {
-			const result = Utils.calculatePerTime(3600, 0, 'countMode');
-			expect(result).toBe('?/?');
-		});
-	});
-
 	describe('getInventory()', () => {
 		it('returns correct inventory items', () => {
 			const block = {

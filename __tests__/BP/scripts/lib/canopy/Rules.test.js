@@ -233,4 +233,45 @@ describe('Rules', () => {
             expect(() => Rules.getDependentRuleIDs('non_existent_rule')).toThrow();
         });
     });
+
+    describe('getByCategory', () => {
+        it('should return all rules of a specific category', () => {
+            new Rule({
+                category: 'test',
+                identifier: 'test_rule_1',
+                description: 'This is a test rule 1',
+                extensionName: 'Test Extension',
+                contingentRules: ['test_rule_2'],
+                independentRules: ['test_rule_3']
+            });
+            new Rule({
+                category: 'test',
+                identifier: 'test_rule_2',
+                description: 'This is a test rule 2',
+                extensionName: 'Test Extension',
+                contingentRules: [],
+                independentRules: ['test_rule_3']
+            });
+
+            const testRules = Rules.getByCategory('test');
+            expect(testRules.length).toBe(3);
+            expect(testRules).toContain(Rules.get('test_rule'));
+            expect(testRules).toContain(Rules.get('test_rule_1'));
+            expect(testRules).toContain(Rules.get('test_rule_2'));
+        });
+
+        it('should return an empty array if no rules of that category exist', () => {
+            new Rule({
+                category: 'other',
+                identifier: 'other_rule_1',
+                description: 'This is a test rule 1',
+                extensionName: 'Test Extension',
+                contingentRules: ['other_rule_2'],
+                independentRules: ['other_rule_3']
+            });
+
+            const testRules = Rules.getByCategory('unusedCategory');
+            expect(testRules.length).toBe(0);
+        });
+    });
 });

@@ -49,7 +49,7 @@ function counterCommand(sender, args) {
     else if ((argOne === 'reset') || (argOne === 'all' && argTwo === 'reset'))
         resetAll(sender);
     else if (argOne === 'all' && CounterChannels.isValidMode(argTwo))
-        modeAll(sender, argTwo);
+        setAllMode(sender, argTwo);
     else if (CounterChannels.isValidColor(argOne) && !argTwo)
         query(sender, argOne);
     else if (CounterChannels.isValidColor(argOne) && argTwo === 'realtime')
@@ -57,7 +57,7 @@ function counterCommand(sender, args) {
     else if (CounterChannels.isValidColor(argOne) && argTwo === 'reset')
         reset(sender, argOne);
     else if (CounterChannels.isValidColor(argOne) && CounterChannels.isValidMode(argTwo))
-        mode(sender, argOne, argTwo);
+        setMode(sender, argOne, argTwo);
     else if (argOne && !CounterChannels.isValidColor(argOne))
         sender.sendMessage({ translate: 'commands.counter.channel.notfound', with: [argOne] });
     else
@@ -84,13 +84,13 @@ function resetAll(sender) {
     Utils.broadcastActionBar({ translate: 'commands.counter.reset.all.actionbar', with: [sender.name] }, sender);
 }
 
-function mode(sender, color, mode) {
+function setMode(sender, color, mode) {
     CounterChannels.setMode(color, mode);
     sender.sendMessage({ translate: 'commands.counter.mode', with: [Utils.formatColorStr(color), mode] });
     Utils.broadcastActionBar({ translate: 'commands.counter.mode.actionbar', with: [sender.name, Utils.formatColorStr(color), mode] }, sender);
 }
 
-function modeAll(sender, mode) {
+function setAllMode(sender, mode) {
     CounterChannels.setAllModes(mode);
     sender.sendMessage({ translate: 'commands.counter.mode.all', with: [mode] });
     Utils.broadcastActionBar({ translate: 'commands.counter.mode.all.actionbar', with: [sender.name, mode] }, sender);

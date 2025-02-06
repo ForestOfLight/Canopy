@@ -27,7 +27,7 @@ class Instaminable {
             }
         });
 
-        world.beforeEvents.playerBreakBlock.subscribe(async event => {
+        world.beforeEvents.playerBreakBlock.subscribe((event) => {
             const blockId = event.block.typeId;
             if (Rules.getNativeValue(this.ruleId) !== true) return;
             if (!this.litmusCallback(blockId)) return;

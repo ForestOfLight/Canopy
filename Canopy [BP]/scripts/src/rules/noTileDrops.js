@@ -18,14 +18,14 @@ system.runInterval(() => {
     brokenBlockEventsThisTick = [];
 });
 
-world.afterEvents.playerBreakBlock.subscribe(async (blockEvent) => {
+world.afterEvents.playerBreakBlock.subscribe((blockEvent) => {
     if (blockEvent.player?.getGameMode() !== 'creative' 
         || !Rules.getNativeValue('noTileDrops')) 
         return;
     brokenBlockEventsThisTick.push(blockEvent);
 });
 
-world.afterEvents.entitySpawn.subscribe(async (entityEvent) => {
+world.afterEvents.entitySpawn.subscribe((entityEvent) => {
     if (entityEvent.cause !== 'Spawned' || entityEvent.entity.typeId !== 'minecraft:item') return;
     if (!Rules.getNativeValue('noTileDrops')) return;
 

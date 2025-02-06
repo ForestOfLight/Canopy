@@ -1,4 +1,4 @@
-import { Command, InfoDisplayRule, Commands, Rules } from "../../lib/canopy/Canopy";
+import { Command, InfoDisplayRule, Commands } from "../../lib/canopy/Canopy";
 import ProbeManager from "../classes/ProbeManager";
 
 const cmd = new Command({

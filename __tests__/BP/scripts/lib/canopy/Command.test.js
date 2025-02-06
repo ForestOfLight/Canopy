@@ -87,7 +87,7 @@ describe("Command", () => {
         });
 
         it("should return the correct usage", () => {
-            expect(command.getUsage()).toBe(Command.prefix + "test");
+            expect(command.getUsage()).toBe(Commands.getPrefix() + "test");
         });
 
         it("should return the correct args", () => {

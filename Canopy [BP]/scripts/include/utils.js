@@ -1,4 +1,4 @@
-/* eslint-disable max-lines */
+ 
 import { world, ItemStack, DimensionTypes } from '@minecraft/server';
 
 class Utils {

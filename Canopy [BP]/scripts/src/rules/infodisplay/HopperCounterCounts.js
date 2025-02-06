@@ -14,7 +14,7 @@ class HopperCounterCounts extends InfoDisplayElement {
         if (activeChannels.length > 0 && activeChannels.length <= 4)
             output += 'Counters: ';
         for (let i = 0; i < activeChannels.length; i++) {
-            if (i != 0 && (i % 4) == 0)
+            if (i !== 0 && (i % 4) === 0)
                 output += '\n';
             const channel = activeChannels[i];
             output += Utils.getColorCode(channel.color);

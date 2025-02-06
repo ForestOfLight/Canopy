@@ -147,7 +147,7 @@ describe('CommandHelpPage', () => {
                     { rawtext:  [
                         { text: "\n  " },
                         { rawtext:  [
-                            { text: "§2undefinedtestCommand§8 - " },
+                            { text: `§2${Commands.getPrefix()}testCommand§8 - ` },
                             { text: "Test Command" },
                         ]}
                     ]}

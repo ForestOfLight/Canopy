@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import axios from 'axios';
-import { getMinecraftVersion } from '../../../utils';
+import { MC_VERSION } from '../../../../Canopy [BP]/scripts/constants.js';
 import { categoryToMobMap, intToBiomeMap } from 'Canopy [BP]/scripts/include/data.js';
 import stripJsonComments from 'strip-json-comments';
 import fs from 'fs';
@@ -13,7 +13,7 @@ vi.mock('@minecraft/server', {
     DimensionTypes: {}
 });
 
-const bedrockSamplesRawUrl = `https://raw.githubusercontent.com/Mojang/bedrock-samples/refs/tags/v${getMinecraftVersion()}/behavior_pack/spawn_rules/`;
+const bedrockSamplesRawUrl = `https://raw.githubusercontent.com/Mojang/bedrock-samples/refs/tags/v${MC_VERSION}/behavior_pack/spawn_rules/`;
 
 async function fetchBedrockSamplesData(entityType) {
     let response;

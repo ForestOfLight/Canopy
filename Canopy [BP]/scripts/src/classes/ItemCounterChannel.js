@@ -1,5 +1,6 @@
 import { system, world } from "@minecraft/server";
 import Utils from "../../include/utils";
+import ItemCounterChannels from "./ItemCounterChannels";
 
 class ItemCounterChannel {
     constructor(color, dpIdentifier) {
@@ -156,13 +157,14 @@ class ItemCounterChannel {
     }
 
     #getAllModeOutput(item) {
-        let output = '';
-    
-        output += `${Utils.getColorCode(this.color)}${this.itemMap[item]}`;
-        for (let i = 0; i < RATE_MODES.length; i++) {
-            if (i === 0) output += ' §7(';
-            else output += '§7, ';
-            output += `${this.#calculatePerTime(this.itemMap[item], this.#getDeltaTime(), RATE_MODES[i])}`;
+        let output = `${Utils.getColorCode(this.color)}${this.itemMap[item]}`;
+        const rateModes = ItemCounterChannels.modes.slice(1);
+        for (let i = 0; i < rateModes.length; i++) {
+            if (i === 0)
+                output += ' §7(';
+            else
+                output += '§7, ';
+            output += this.#calculatePerTime(this.itemMap[item], this.#getDeltaTime(), rateModes[i]);
         }
         output += '§7)';
         return output;
