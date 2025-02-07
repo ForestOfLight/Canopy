@@ -1,5 +1,5 @@
-import { Command } from 'lib/canopy/Canopy';
-import  { printDimensionEntities } from 'src/commands/entitydensity';
+import { Command } from "../../lib/canopy/Canopy";
+import  { printDimensionEntities } from "../commands/entitydensity";
 import Profiler from '../classes/Profiler';
 
 new Command({
@@ -9,7 +9,7 @@ new Command({
     callback: healthCommand
 })
 
-async function healthCommand(sender) {
+export async function healthCommand(sender) {
     sender.sendMessage(`§7Profiling tick time...`);
     const profile = await Profiler.profile();
     printDimensionEntities(sender);

@@ -1,6 +1,6 @@
-import { Command } from 'lib/canopy/Canopy';
+import { Command } from "../../lib/canopy/Canopy";
 import { MinecraftDimensionTypes, world } from '@minecraft/server';
-import Utils from 'include/utils';
+import Utils from "../../include/utils";
 
 const NUM_RESULTS = 10;
 

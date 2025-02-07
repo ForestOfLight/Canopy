@@ -7,7 +7,6 @@ const NUM_SAMPLES = 50;
 
 class Profiler {
     static lastTickDate = Date.now();
-    static lastMSPTProfile = 0;
     static tickMs = 0;
     static tickTps = 0;
     static tps = 0;
@@ -19,7 +18,6 @@ class Profiler {
     get tickMs() { return this.tickMs; }
     get tickTps() { return this.tickTps; }
     get tps() { return this.tps; }
-    get lastMSPTProfile() { return this.lastMSPTProfile; }
 
     static start() {
         if (this.#isRunning) return;
@@ -63,9 +61,8 @@ class Profiler {
             system.clearRun(runner);
             resolve();
         }, SAMPLE_INTERVAL * NUM_SAMPLES));
-        this.lastMSPTProfile = msptValues.reduce((a, b) => a + b, 0) / msptValues.length;
         const result = {
-            result: this.lastMSPTProfile,
+            result: msptValues.reduce((a, b) => a + b, 0) / msptValues.length,
             min: msptValues.reduce((a, b) => Math.min(a, b)),
             max: msptValues.reduce((a, b) => Math.max(a, b)),
             values: msptValues
