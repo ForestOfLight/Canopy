@@ -10,7 +10,7 @@ new Rule({
 
 const MAX_VELOCITY = 0.019600000232548116; // From vanilla TNT: 49/2500 with some floating point error
 
-world.afterEvents.entitySpawn.subscribe(async (event) => {
+world.afterEvents.entitySpawn.subscribe((event) => {
     if (event.entity.typeId !== 'minecraft:tnt' || !Rules.getNativeValue('tntPrimeMaxMomentum')) return;
     const entity = event.entity;
     if (Rules.getNativeValue('dupeTnt')) {

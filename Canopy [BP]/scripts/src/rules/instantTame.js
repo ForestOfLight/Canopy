@@ -14,7 +14,7 @@ new Rule({
     contingentRules: ['instantTame'],
 });
 
-world.beforeEvents.playerInteractWithEntity.subscribe(async (event) => {
+world.beforeEvents.playerInteractWithEntity.subscribe((event) => {
     if (!Rules.getNativeValue('instantTame')) return;
     if (!Rules.getNativeValue('instantTameSurvival') && event.player?.getGameMode() === 'survival') return;
     const tameable = event.target?.getComponent('tameable');

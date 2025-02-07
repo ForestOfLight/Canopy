@@ -21,7 +21,7 @@ new Command({
     helpHidden: true
 })
 
-async function jumpCommand(sender) {
+function jumpCommand(sender) {
     if (!Rules.getNativeValue('commandJumpSurvival') && sender.getGameMode() === 'survival')
         return sender.sendMessage({ translate: 'rules.generic.blocked', with: ['commandJumpSurvival'] });
     

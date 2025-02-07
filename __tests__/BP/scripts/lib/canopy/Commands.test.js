@@ -165,8 +165,8 @@ describe('Commands', () => {
             rule2.getValue = vi.fn(() => false);
             await Commands.executeCommand(sender, 'test', []);
             expect(sender.sendMessage).toHaveBeenCalledTimes(2);
-            expect(sender.sendMessage).toHaveBeenCalledWith({ translate: 'commands.generic.blocked', with: ['rule1'] });
-            expect(sender.sendMessage).toHaveBeenCalledWith({ translate: 'commands.generic.blocked', with: ['rule2'] });
+            expect(sender.sendMessage).toHaveBeenCalledWith({ translate: 'rules.generic.blocked', with: ['rule1'] });
+            expect(sender.sendMessage).toHaveBeenCalledWith({ translate: 'rules.generic.blocked', with: ['rule2'] });
         });
 
         it('should not run the command if there are disabled contingent rules', async () => {

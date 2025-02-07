@@ -7,7 +7,7 @@ class Warps {
         const warps = world.getDynamicProperty('warps');
         try {
             this.warps = JSON.parse(warps);
-        } catch (e) {
+        } catch {
             this.warps = {};
         }
     }

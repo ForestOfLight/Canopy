@@ -9,7 +9,7 @@ new Rule({
     independentRules: ['tntPrimeMaxMomentum'],
 });
 
-world.afterEvents.entitySpawn.subscribe(async (event) => {
+world.afterEvents.entitySpawn.subscribe((event) => {
     if (event.entity.typeId !== 'minecraft:tnt' || !Rules.getNativeValue('tntPrimeNoMomentum')) return;
     const entity = event.entity;
     if (Rules.getNativeValue('dupeTnt')) {

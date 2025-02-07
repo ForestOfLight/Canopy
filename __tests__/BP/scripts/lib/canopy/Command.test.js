@@ -160,7 +160,7 @@ describe("Command", () => {
 
             command.sendUsage(sender);
 
-            expect(sendMessageMock).toHaveBeenCalledWith({ translate: 'commands.generic.usage', with: [Command.prefix + "test"] });
+            expect(sendMessageMock).toHaveBeenCalledWith({ translate: 'commands.generic.usage', with: [Commands.getPrefix() + "test"] });
         });
     });
 });
