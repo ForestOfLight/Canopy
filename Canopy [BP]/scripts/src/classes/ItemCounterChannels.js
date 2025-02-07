@@ -40,7 +40,7 @@ class ItemCounterChannels {
     }
 
     static resetAllCounts() {
-        for (const channel of this.channels)
+        for (const channel of Object.values(this.channels))
             channel.reset();
     }
 
@@ -51,7 +51,7 @@ class ItemCounterChannels {
 
     static setAllModes(mode) {
         if (!this.isValidMode(mode)) return;
-        for (const channel of this.channels)
+        for (const channel of Object.values(this.channels))
             channel.mode = mode;
     }
 
@@ -69,7 +69,7 @@ class ItemCounterChannels {
 
     static getAllQueryOutput(translatableFailString, useRealTime = false) {
         let message = { rawtext: [] };
-        for (const channel of this.channels) {
+        for (const channel of Object.values(this.channels)) {
             if (channel.hopperList.length === 0)
                 return;
             message.rawtext.push({ rawtext: [this.getQueryOutput(useRealTime), { text: '\n' }] });

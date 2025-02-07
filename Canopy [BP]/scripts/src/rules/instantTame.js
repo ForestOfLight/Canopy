@@ -1,4 +1,4 @@
-import { Rule } from "lib/canopy/Canopy";
+import { Rule, Rules } from "../../lib/canopy/Canopy";
 import { system, world } from "@minecraft/server";
 
 new Rule({
@@ -15,8 +15,8 @@ new Rule({
 });
 
 world.beforeEvents.playerInteractWithEntity.subscribe(async (event) => {
-    if (!await Rule.getValue('instantTame')) return;
-    if (!await Rule.getValue('instantTameSurvival') && event.player?.getGameMode() === 'survival') return;
+    if (!Rules.getNativeValue('instantTame')) return;
+    if (!Rules.getNativeValue('instantTameSurvival') && event.player?.getGameMode() === 'survival') return;
     const tameable = event.target?.getComponent('tameable');
     if (tameable !== undefined && isUsingTameItem(tameable.getTameItems, event.itemStack)) {
         system.run(() => {

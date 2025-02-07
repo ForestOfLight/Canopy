@@ -29,8 +29,8 @@ function posCommand(sender, args) {
 
     const message = {
         rawtext: [
-            getPositionText(player, target),
-            getDimensionText(target),
+            getPositionText(player, target), { text: '\n' },
+            getDimensionText(target), { text: '\n' },
             getRelativeDimensionPositionText(target)
         ]
     };

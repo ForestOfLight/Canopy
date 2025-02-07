@@ -76,10 +76,10 @@ function updateLocation(sender, dimensionLocation) {
     const { dimension, x, z } = dimensionLocation;
     const config = getConfig(sender);
     config.isLocked = true;
-    config.dimension = dimension.id;
+    config.dimension = dimension;
     config.location = { x, z };
     sender.setDynamicProperty('simulationMapConfig', JSON.stringify(config));
-    sender.sendMessage({ translate: 'commands.simmap.config.location', with: [`[${x}, ${z}]`, Utils.getColoredDimensionName(dimension.id)] });
+    sender.sendMessage({ translate: 'commands.simmap.config.location', with: [`[${x}, ${z}]`, Utils.getColoredDimensionName(dimension)] });
 }
 
 function resetLocation(sender) {
@@ -145,7 +145,7 @@ function printLoadedChunks(player, dimensionLocation, distance) {
 function formatChunkMapHeader(dimensionChunkLocation, distance, loadedChunks) {
     return { rawtext: [
         { translate: 'commands.simmap.header', with: [Utils.getColoredDimensionName(dimensionChunkLocation.dimension.id), `[${dimensionChunkLocation.x.toFixed(0)}, ${dimensionChunkLocation.z.toFixed(0)}]`] },
-        { text: ` §7(${distance}x${distance}): §a${loadedChunks.length}\n` }
+        { text: ` §7(r${distance}): §a${loadedChunks.length}\n` }
     ] };
 }
 

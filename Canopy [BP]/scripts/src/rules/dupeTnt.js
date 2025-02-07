@@ -1,4 +1,4 @@
-import { Rule } from 'lib/canopy/Canopy';
+import { Rule, Rules } from '../../lib/canopy/Canopy';
 import { system, world } from '@minecraft/server';
 
 new Rule({
@@ -16,7 +16,7 @@ system.runInterval(() => {
 }, 1);
 
 world.afterEvents.entitySpawn.subscribe((event) => {
-	if (event.entity.typeId !== 'minecraft:tnt' || !Rule.getNativeValue('dupeTnt')) return;
+	if (event.entity.typeId !== 'minecraft:tnt' || !Rules.getNativeValue('dupeTnt')) return;
     const entity = event.entity;
     spawnedEntitiesThisTick.push(entity);
 });

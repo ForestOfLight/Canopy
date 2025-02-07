@@ -90,7 +90,7 @@ class Command {
 	}
 	
 	sendUsage(sender) {
-		sender.sendMessage({ translate: 'commands.generic.usage', with: [Command.prefix + this.#usage] });
+		sender.sendMessage({ translate: 'commands.generic.usage', with: [this.getUsage()] });
 	}
 }
 

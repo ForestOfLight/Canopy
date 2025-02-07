@@ -25,7 +25,7 @@ class HopperCounterCounts extends InfoDisplayElement {
             output += '§r ';
         }
         output += '\n';
-        return { text: output };
+        return { text: output.trim() };
     }
 
     getFormattedDataSharedLine() {

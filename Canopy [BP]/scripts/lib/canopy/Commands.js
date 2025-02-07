@@ -56,7 +56,7 @@ export class Commands {
         await system.run(async () => {
             const disabledContingentRules = await this.#getDisabledContingentRules(command);
             for (const ruleID of disabledContingentRules)
-                sender.sendMessage({ translate: 'commands.generic.blocked', with: [ruleID] });
+                sender.sendMessage({ translate: 'rules.generic.blocked', with: [ruleID] });
             if (disabledContingentRules.length > 0)
                 return;
             

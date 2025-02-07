@@ -23,8 +23,13 @@ class SignalStrength extends InfoDisplayElement {
         const { blockRayResult, entityRayResult } = Utils.getRaycastResults(this.player, 7);
         if (entityRayResult[0]?.entity)
             return 0;
-        if (blockRayResult?.block)
-            return blockRayResult.block.getRedstonePower();
+        try {
+            return blockRayResult?.block?.getRedstonePower();
+        } catch (error) {
+            if (error.name === 'LocationInUnloadedChunkError')
+                return 0;
+            throw error;
+        }
     }
 }
 

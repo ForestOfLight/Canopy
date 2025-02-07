@@ -1,4 +1,4 @@
-import { Rule, Rules } from "lib/canopy/Canopy";
+import { Rule, Rules } from "../../lib/canopy/Canopy";
 import { world, system } from '@minecraft/server';
 
 new Rule({
@@ -11,7 +11,7 @@ new Rule({
 const MAX_VELOCITY = 0.019600000232548116; // From vanilla TNT: 49/2500 with some floating point error
 
 world.afterEvents.entitySpawn.subscribe(async (event) => {
-    if (event.entity.typeId !== 'minecraft:tnt' || !await Rule.getValue('tntPrimeMaxMomentum')) return;
+    if (event.entity.typeId !== 'minecraft:tnt' || !Rules.getNativeValue('tntPrimeMaxMomentum')) return;
     const entity = event.entity;
     if (Rules.getNativeValue('dupeTnt')) {
         system.runTimeout(() => {

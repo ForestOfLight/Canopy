@@ -1,4 +1,4 @@
-import { Rule } from "lib/canopy/Canopy";
+import { Rule, Rules } from "../../lib/canopy/Canopy";
 import { world } from "@minecraft/server";
 
 new Rule({
@@ -9,6 +9,6 @@ new Rule({
 });
 
 world.beforeEvents.explosion.subscribe((event) => {
-    if (!Rule.getNativeValue('explosionOff')) return;
+    if (!Rules.getNativeValue('explosionOff')) return;
     event.cancel = true;
 });

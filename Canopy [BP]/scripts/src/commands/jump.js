@@ -1,4 +1,4 @@
-import { Rule, Command } from 'lib/canopy/Canopy';
+import { Rule, Rules, Command } from "../../lib/canopy/Canopy";
 
 new Rule({
     category: 'Rules',
@@ -22,7 +22,7 @@ new Command({
 })
 
 async function jumpCommand(sender) {
-    if (!await Rule.getValue('commandJumpSurvival') && sender.getGameMode() === 'survival')
+    if (!Rules.getNativeValue('commandJumpSurvival') && sender.getGameMode() === 'survival')
         return sender.sendMessage({ translate: 'rules.generic.blocked', with: ['commandJumpSurvival'] });
     
     const blockRayResult = sender.getBlockFromViewDirection({ includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: 64*16 });

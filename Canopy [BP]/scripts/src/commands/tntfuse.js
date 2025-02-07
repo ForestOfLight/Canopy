@@ -1,5 +1,5 @@
+import { Rule, Rules, Command } from "../../lib/canopy/Canopy";
 import { system, world } from '@minecraft/server'
-import { Rule, Command } from 'lib/canopy/Canopy'
 
 const MIN_FUSE_TICKS = 1;
 const MAX_FUSE_TICKS = 72000;
@@ -25,7 +25,7 @@ world.afterEvents.entitySpawn.subscribe((event) => {
     if (event.entity?.typeId !== 'minecraft:tnt') return;
     const fuseTimeProperty = world.getDynamicProperty('tntFuseTime');
     let fuseTime = 80;
-    if (fuseTimeProperty !== undefined && Rule.getNativeValue('commandTntFuse'))
+    if (fuseTimeProperty !== undefined && Rules.getNativeValue('commandTntFuse'))
         fuseTime = fuseTimeProperty;
 
     if (fuseTime === 1) {

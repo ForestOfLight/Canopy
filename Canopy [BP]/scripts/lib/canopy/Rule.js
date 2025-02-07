@@ -42,6 +42,10 @@ export class Rule {
         return this.#independentRules;
     }
 
+    getDependentRuleIDs() {
+        return Rules.getDependentRuleIDs(this.#identifier);
+    }
+
     getExtensionName() {
         return this.#extensionName;
     }

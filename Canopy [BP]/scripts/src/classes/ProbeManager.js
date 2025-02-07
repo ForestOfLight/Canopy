@@ -95,6 +95,10 @@ class ProbeManager {
         const riding = player.getComponent(EntityComponentTypes.Riding);
         if (riding?.entityRidingOn)
             return true;
+        // Portal nearby
+        const block = player.dimension.getBlock(player.location);
+        if (block?.typeId === 'minecraft:nether_portal')
+            return true;
         return false;
     }
 
@@ -120,13 +124,13 @@ class ProbeManager {
         system.runInterval(() => {
             const probeEntities = Utils.getEntitiesByType('canopy:probe');
             let count = 0;
-            for (const probe of probeEntities) {
-                if (probe.isValid() && !this.includesProbe(probe)) {
+            for (const probeEntity of probeEntities) {
+                if (probeEntity.isValid()) {
                     try {
-                        probe.remove();
+                        probeEntity.remove();
                         count++;
                     } catch(error) {
-                        console.warn(`[Probe Manager] Failed to remove unused probe ${probe.id}. Error: ${error.message()}`);
+                        console.warn(`[Probe Manager] Failed to remove unused probe ${probeEntity.id}. Error: ${error.message()}`);
                     }
                 }
             }

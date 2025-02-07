@@ -20,7 +20,7 @@ class PeekInventory extends InfoDisplayElement {
     }
 
     parsePeekInventory() {
-        const { blockRayResult, entityRayResult } = Utils.getRaycastResults(this.player, 9);
+        const { blockRayResult, entityRayResult } = Utils.getRaycastResults(this.player, 7);
 		if (!blockRayResult && !entityRayResult) return '';
 		const target = Utils.getClosestTarget(this.player, blockRayResult, entityRayResult);
 		if (!target) return '';

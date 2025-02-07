@@ -8,13 +8,6 @@ new Rule({
     description: { translate: 'rules.hotbarSwitching' },
 });
 
-new Rule({
-    category: 'Rules',
-    identifier: 'hotbarSwitchingSurvival',
-    description: { translate: 'rules.hotbarSwitchingSurvival' },
-    contingentRules: ['hotbarSwitching'],
-});
-
 const ARROW_SLOT = 17;
 const lastSelectedSlots = {};
 const lastLoadedSlots = {};
@@ -33,7 +26,7 @@ system.runInterval(() => {
 });
 
 function hasAppropriateGameMode(player) {
-    return Rules.getNativeValue('hotbarSwitchingSurvival') || player.getGameMode() === 'creative';
+    return player.getGameMode() === 'creative';
 }
 
 function processHotbarSwitching(player) {

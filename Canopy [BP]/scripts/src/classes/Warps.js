@@ -1,11 +1,15 @@
 import { world } from "@minecraft/server";
 
 class Warps {
-    static warps = {};
+    static warps;
 
     static init() {
         const warps = world.getDynamicProperty('warps');
-        this.warps = JSON.parse(warps);
+        try {
+            this.warps = JSON.parse(warps);
+        } catch (e) {
+            this.warps = {};
+        }
     }
 
     static updateDP() {

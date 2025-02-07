@@ -15,7 +15,6 @@ world.afterEvents.entitySpawn.subscribe((event) => {
     const itemStack = event.entity.getComponent('item').itemStack;
     if (itemStack && itemStack.typeId.includes('concrete_powder')) 
         event.entity.addTag('concrete_powder');
-    
 });
 
 world.afterEvents.entityRemove.subscribe((event) => {

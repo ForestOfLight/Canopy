@@ -16,8 +16,8 @@ class SimulationMap extends InfoDisplayElement {
         if (config.isLocked) {
             const dimension = world.getDimension(config.dimension);
             return getLoadedChunksMessage(dimension, config.location, config.distance);
-        } 
-            return getLoadedChunksMessage(this.player.dimension, this.player.location, config.distance);
+        }
+        return getLoadedChunksMessage(this.player.dimension, this.player.location, config.distance);
         
     }
 

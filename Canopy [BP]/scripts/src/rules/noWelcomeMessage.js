@@ -15,7 +15,7 @@ world.afterEvents.playerLeave.subscribe((event) => {
 });
 
 function displayWelcome(player) {
-    if (!Rules.get('noWelcomeMessage') && !hasShownWelcome[player?.id]) return;
+    if (Rules.getNativeValue('noWelcomeMessage') || hasShownWelcome[player?.id]) return;
     hasShownWelcome[player.id] = true;
     const graphic = [
         '§a   + ----- +\n',
