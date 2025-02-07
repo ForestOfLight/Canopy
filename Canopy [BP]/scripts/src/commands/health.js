@@ -1,8 +1,6 @@
-import { system } from '@minecraft/server'
-import { Command } from 'lib/canopy/Canopy'
-import { DataTPS } from 'src/tps'
-import  { printDimensionEntities } from 'src/commands/entitydensity'
-import Utils from 'include/utils'
+import { Command } from 'lib/canopy/Canopy';
+import  { printDimensionEntities } from 'src/commands/entitydensity';
+import Profiler from '../classes/Profiler';
 
 new Command({
     name: 'health',
@@ -11,24 +9,17 @@ new Command({
     callback: healthCommand
 })
 
-function healthCommand(sender) {
-    system.runTimeout(() => {
-        printRealMspt(sender);
-    }, 0);
+async function healthCommand(sender) {
+    sender.sendMessage(`§7Profiling tick time...`);
+    const profile = await Profiler.profile();
     printDimensionEntities(sender);
-    const tpsFormatted = DataTPS.tps > 20.0 ? `§a20.0` : `§c${DataTPS.tps.toFixed(1)}`;
-    sender.sendMessage(`§7TPS:§r ${tpsFormatted}`);
+    sender.sendMessage(formatProfileMessage(profile));
 }
 
-function printRealMspt(sender) {
-    const lastTick = system.currentTick;
-    const { startTime, endTime } = Utils.wait(50);
-    system.runTimeout(() => {
-        if (system.currentTick - lastTick !== 1)
-            return sender.sendMessage({ translate: 'commands.health.fail.mspt' });
-        
-        const realMspt = Date.now() - startTime - (endTime - startTime);
-        const realMsptFormatted = realMspt > 50.0 ? `§c${realMspt}` : `§a${realMspt}`;
-        sender.sendMessage(`§7MSPT:§r ${realMsptFormatted}`)
-    }, 1);
+function formatProfileMessage(profile) {
+    let message = `§7Tps:§r ${profile.tps.result >= 20.0 ? `§a20.0` : `§c${profile.tps.result.toFixed(1)}`}`;
+    message += ` §7Range: ${profile.tps.min.toFixed(1)}-${profile.tps.max.toFixed(1)}\n`;
+    message += `§7Mspt:§r ${profile.mspt.result < 50 ? '§a' : '§c'}${profile.mspt.result.toFixed(1)}`;
+    message += ` §7Range: ${profile.mspt.min.toFixed(1)}-${profile.mspt.max.toFixed(1)}`;
+    return message;
 }

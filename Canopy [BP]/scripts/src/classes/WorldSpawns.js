@@ -1,5 +1,6 @@
 import { world, DimensionTypes, MolangVariableMap, system } from '@minecraft/server';
-import { categoryToMobMap, SpawnTracker } from 'src/classes/SpawnTracker';
+import { SpawnTracker } from 'src/classes/SpawnTracker';
+import { categoryToMobMap } from '../../include/data';
 import Utils from 'include/utils';
 
 const categories = Object.keys(categoryToMobMap);

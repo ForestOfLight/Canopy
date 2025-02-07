@@ -22,7 +22,7 @@ world.afterEvents.entitySpawn.subscribe((event) => {
 });
 
 world.afterEvents.pistonActivate.subscribe((event) => {
-    if (!Rule.getNativeValue('dupeTnt')) return;
+    if (!Rules.getNativeValue('dupeTnt')) return;
     const block = event.block;
     const direction = block.permutation.getState('facing_direction');
     let pistonState;
@@ -37,7 +37,8 @@ world.afterEvents.pistonActivate.subscribe((event) => {
             for (let i = 0; i < attachedLocations.length; i++) {
                 const tntBlock = event.dimension.getBlock(attachedLocations[i]);
                 const tntEntity = getEntityAtLocation(spawnedEntitiesThisTick, attachedLocations[i]);
-                if (tntBlock && tntEntity) dupeTnt(tntBlock, tntEntity);
+                if (tntBlock && tntEntity)
+                    dupeTnt(tntBlock, tntEntity);
             }
         }
     }, 4);
@@ -64,7 +65,9 @@ function isOverlapping(entityList, locationList) {
 }
 
 function getEntityAtLocation(entityList, location) {
-    return entityList.find((entity) => Math.floor(entity.location.x) === location.x && Math.floor(entity.location.y) === location.y && Math.floor(entity.location.z) === location.z);
+    return entityList.find((entity) => Math.floor(entity.location.x) === location.x 
+                                    && Math.floor(entity.location.y) === location.y
+                                    && Math.floor(entity.location.z) === location.z);
 }
 
 function dupeTnt(block, tntEntity) {

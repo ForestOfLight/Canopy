@@ -1,8 +1,8 @@
-import { system, world } from "@minecraft/server";
+import { system, TicksPerSecond, world } from "@minecraft/server";
 import Utils from "../../include/utils";
 import { categoryToMobMap } from "../../include/data";
 
-const CLEAR_RECENTS_THRESHOLD = 600; // 600 ticks = 30 seconds
+const CLEAR_RECENTS_THRESHOLD = 30 * TicksPerSecond;
 let wasTrackingLastTick = false;
 
 class SpawnTracker {
@@ -156,4 +156,4 @@ class SpawnTracker {
     }
 }
 
-export { categoryToMobMap, SpawnTracker }
+export { SpawnTracker }

@@ -1,7 +1,7 @@
 import { system, world } from '@minecraft/server';
 import { Rule, Command } from 'lib/canopy/Canopy';
 import Utils from 'include/utils';
-import { DataTPS } from 'src/tps';
+import Profiler from '../classes/Profiler';
 
 new Rule({
     category: 'Rules',
@@ -92,9 +92,7 @@ function tickSleep(sender, milliseconds) {
 
 function tickSpeed(desiredMspt) {
     if (targetMSPT === 50.0) return;
-    let currentMspt = Date.now() - DataTPS.lastTick;
-
+    let currentMspt = Date.now() - Profiler.lastTickDate;
     while (currentMspt <= desiredMspt) 
-        currentMspt = Date.now() - DataTPS.lastTick;
-    
+        currentMspt = Date.now() - Profiler.lastTickDate;
 }

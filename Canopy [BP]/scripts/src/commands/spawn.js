@@ -1,8 +1,8 @@
-import { world, DimensionTypes } from '@minecraft/server'
-import { Rule, Command } from 'lib/canopy/Canopy'
-import Utils from 'include/utils'
-import WorldSpawns from 'src/classes/WorldSpawns'
-import { categoryToMobMap } from 'src/classes/SpawnTracker';
+import { world, DimensionTypes } from "@minecraft/server";
+import { Rule, Command, Rules } from "../../lib/canopy/Canopy";
+import Utils from "../../include/utils";
+import WorldSpawns from "../classes/WorldSpawns";
+import { categoryToMobMap } from "../../include/data";
 
 const thisRule = new Rule({
     category: 'Rules',
@@ -41,17 +41,18 @@ let isMocking = false;
 let currMobIds = [];
 let currActiveArea = null;
 
-world.afterEvents.entitySpawn.subscribe(async (event) => {
+world.afterEvents.entitySpawn.subscribe((event) => {
     const entity = event.entity;
     if (worldSpawns && entity.typeId !== 'minecraft:item')
         worldSpawns.sendMobToTrackers(event.entity);
 
-    if (!isMocking || event.cause === 'Loaded' || !await Rule.getValue('commandSpawnMocking')) return;
+    if (!isMocking || event.cause === 'Loaded' || !Rules.getNativeValue('commandSpawnMocking')) return;
     let shouldCancelSpawn = false;
     for (const category in categoryToMobMap) 
-        if (categoryToMobMap[category].includes(event.entity.typeId.replace('minecraft:', ''))) shouldCancelSpawn = true;
-    
-    if (shouldCancelSpawn && event.entity) event.entity.remove();
+        {if (categoryToMobMap[category].includes(event.entity.typeId.replace('minecraft:', '')))
+            shouldCancelSpawn = true;}
+    if (shouldCancelSpawn && event.entity)
+        event.entity.remove();
 });
 
 function spawnCommand(sender, args) {
@@ -85,7 +86,7 @@ function printAllEntities(sender) {
 }
 
 async function handleMockingCmd(sender, enable) {
-    if (!await Rule.getValue('commandSpawnMocking'))
+    if (!await Rules.getNativeValue('commandSpawnMocking'))
         return sender.sendMessage({ translate: 'rules.generic.blocked', with: [thisRule.getID()] });
     if (enable === null)
         return sender.sendMessage({ translate: 'commands.generic.usage', with: [`${Command.prefix}spawn mocking <true/false>`] });

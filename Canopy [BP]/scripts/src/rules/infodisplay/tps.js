@@ -1,5 +1,5 @@
 import InfoDisplayElement from './InfoDisplayElement.js';
-import { DataTPS } from 'src/tps';
+import Profiler from '../../classes/Profiler.js';
 import { TicksPerSecond } from '@minecraft/server';
 
 class TPS extends InfoDisplayElement {
@@ -17,7 +17,7 @@ class TPS extends InfoDisplayElement {
     }
 
     getTPS() {
-        const tps = DataTPS.tps.toFixed(1);
+        const tps = Profiler.tps.toFixed(1);
 		return tps >= TicksPerSecond ? `§a${TicksPerSecond}.0` : `§c${tps}`;
 	}
 }
