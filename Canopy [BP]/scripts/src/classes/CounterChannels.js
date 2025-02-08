@@ -2,37 +2,55 @@ import ItemCounterChannels from "./ItemCounterChannels.js";
 import CounterChannel from "./CounterChannel";
 
 class CounterChannels extends ItemCounterChannels {
-    static init() {
-        super.init(CounterChannel, 'hopperCounters');
+    constructor() {
+        super(CounterChannel, 'hopperCounters');
     }
 
-    static tryCreateHopperBlockPair(placedBlock) {
+    tryCreateHopperBlockPair(placedBlock) {
         if (this.isHopper(placedBlock)) {
-            const potentialWool = this.getHopperFacingBlock(placedBlock);
-            if (this.#isWool(potentialWool))
-                this.addHopper(this.#getColorFromWool(potentialWool), placedBlock);
-        } else if (this.#isWool(placedBlock)) {
+            const potentialWool = this.getAttachedBlockFromHopper(placedBlock);
+            if (this.isWool(potentialWool))
+                this.addHopper(placedBlock, this.getColorFromWool(potentialWool));
+        } else if (this.isWool(placedBlock)) {
             const potentialHoppers = [placedBlock.above(), placedBlock.north(), placedBlock.south(), placedBlock.west(), placedBlock.east()];
             for (const potentialHopper of potentialHoppers) {
-                if (this.isHopper(potentialHopper) && this.getHopperFacingBlock(potentialHopper)?.typeId === placedBlock.typeId)
-                    this.addHopper(this.#getColorFromWool(placedBlock), potentialHopper);
+                if (this.isHopper(potentialHopper) && this.getAttachedBlockFromHopper(potentialHopper)?.typeId === placedBlock.typeId)
+                    this.addHopper(potentialHopper, this.getColorFromWool(placedBlock));
             }
         }
     }
 
-    static #getColorFromWool(wool) {
+    getAttachedBlockFromHopper(hopper) {
+        const facing = hopper.permutation.getState("facing_direction");
+        switch (facing) {
+            case 0:
+                return hopper.below();
+            case 2:
+                return hopper.north();
+            case 3:
+                return hopper.south();
+            case 4:
+                return hopper.west();
+            case 5:
+                return hopper.east();
+            default:
+                return undefined;
+        }
+    }
+
+    getColorFromWool(wool) {
         return wool.typeId.replace('minecraft:', '').replace('_wool', '');
     }
 
-    static #isWool(block) {
+    isWool(block) {
         return block?.typeId?.slice(-4) === 'wool';
     }
 
-    static getAllQueryOutput(useRealTime = false) {
-        super.getAllQueryOutput('commands.counter.query.empty', useRealTime);
+    getAllQueryOutput(useRealTime = false) {
+        return super.getAllQueryOutput('commands.counter.query.empty', useRealTime);
     }
 }
 
-CounterChannels.init();
+const counterChannels = new CounterChannels();
 
-export default CounterChannels;
+export default counterChannels;

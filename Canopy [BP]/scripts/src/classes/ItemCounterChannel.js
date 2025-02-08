@@ -14,7 +14,6 @@ class ItemCounterChannel {
         this.startTickTime = system.currentTick;
         this.startRealTime = Date.now();
         this.mode = 'count';
-        world.setDynamicProperty(this.dpIdentifier, JSON.stringify(this));
     }
 
     getData() {
@@ -22,6 +21,11 @@ class ItemCounterChannel {
         if (!channelJSON) 
             throw new Error(`No channel found for color ${this.color}`);
         return JSON.parse(channelJSON);
+    }
+
+    initData(channelData) {
+        this.hopperList = channelData.hopperList;
+        this.mode = channelData.mode;
     }
 
     setData(channelData) {
@@ -33,7 +37,12 @@ class ItemCounterChannel {
         this.itemMap = new Map();
         this.startTickTime = system.currentTick;
         this.startRealTime = Date.now();
-        world.setDynamicProperty(this.dpIdentifier, JSON.stringify(this));
+        this.#updateData();
+    }
+
+    disable() {
+        this.hopperList = [];
+        this.reset();
     }
 
     addHopper(hopper) {
@@ -107,24 +116,26 @@ class ItemCounterChannel {
     }
 
     getModedTotalCount() {
+        if (this.mode === 'count')
+            return this.totalCount;
         return this.#calculatePerTime(this.totalCount, this.#getDeltaTime(), this.mode);
     }
 
-    #calculatePerTime(totalCount, deltaTicks, mode = 'count') {
+    #calculatePerTime(totalCount, deltaTicks, mode) {
 		const ticksPerHour = 72000;
-		let itemsPerHour = totalCount / (deltaTicks / ticksPerHour);
+		let itemsPerUnit = totalCount / (deltaTicks / ticksPerHour);
 		let unit = 'h';
 		if (mode === 'min') {
-			itemsPerHour /= 60;
+			itemsPerUnit /= 60;
 			unit = 'm';
 		}
 		if (mode === 'sec') {
-			itemsPerHour /= 3600;
+			itemsPerUnit /= 3600;
 			unit = 's';
 		}
-		if (isNaN(itemsPerHour) || itemsPerHour === Infinity)
-            return '?/?';
-		return `${itemsPerHour.toFixed(1)}/${unit}`;
+		if (isNaN(itemsPerUnit) || itemsPerUnit === Infinity)
+            return '?/' + unit;
+		return `${itemsPerUnit.toFixed(1)}/${unit}`;
 	}
 
     #getDeltaTime(useRealTime) {

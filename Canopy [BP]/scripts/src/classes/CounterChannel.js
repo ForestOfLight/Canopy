@@ -7,23 +7,11 @@ class CounterChannel extends ItemCounterChannel {
     }
 
     getQueryOutput(useRealTime = false) {
-        super.getQueryOutput('commands.counter.query.channel', useRealTime);
+        return super.getQueryOutput('commands.counter.query.channel', useRealTime);
     }
 
     onTick() {
         super.onTick(() => this.#getItemStacks());
-    }
-
-    getAttachedBlockFromHopper(hopper) {
-        const facing = hopper.permutation.getState("facing_direction");
-        switch (facing) {
-            case 0: return hopper.below();
-            case 2: return hopper.north();
-            case 3: return hopper.south();
-            case 4: return hopper.west();
-            case 5: return hopper.east();
-            default: return undefined;
-        }
     }
 
     #getItemStacks() {
@@ -39,6 +27,24 @@ class CounterChannel extends ItemCounterChannel {
             hopperContainer.setItem(0, new ItemStack('minecraft:air', 1));
         }
         return countedItems;
+    }
+
+    getAttachedBlockFromHopper(hopper) {
+        const facing = hopper.permutation.getState("facing_direction");
+        switch (facing) {
+            case 0:
+                return hopper.below();
+            case 2:
+                return hopper.north();
+            case 3:
+                return hopper.south();
+            case 4:
+                return hopper.west();
+            case 5:
+                return hopper.east();
+            default:
+                return undefined;
+        }
     }
 }
 

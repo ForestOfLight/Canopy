@@ -10,7 +10,6 @@ new Rule({
 
 const ARROW_SLOT = 17;
 const lastSelectedSlots = {};
-const lastLoadedSlots = {};
 const hotbarManagers = {};
 
 system.runInterval(() => {
@@ -43,12 +42,9 @@ function processHotbarSwitching(player) {
 }
 
 function switchToHotbar(player, index) {
-    if (lastLoadedSlots[player.id] === undefined) 
-        lastLoadedSlots[player.id] = lastSelectedSlots[player.id];    
     const hotbarMgr = hotbarManagers[player.id];
-    hotbarMgr.saveHotbar(lastLoadedSlots[player.id]);
-    hotbarMgr.loadHotbar(index)
-    lastLoadedSlots[player.id] = index;
+    hotbarMgr.saveHotbar();
+    hotbarMgr.loadHotbar(index);
     player.onScreenDisplay.setActionBar(`§a${index + 1}`);
 }
 

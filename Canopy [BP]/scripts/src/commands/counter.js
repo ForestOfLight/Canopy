@@ -1,5 +1,5 @@
 import { Rule, Command } from "../../lib/canopy/Canopy";
-import CounterChannels from "../classes/CounterChannels";
+import counterChannels from "../classes/CounterChannels";
 import Utils from "../../include/utils";
 
 new Rule({
@@ -48,50 +48,50 @@ function counterCommand(sender, args) {
         queryAll(sender, { useRealTime: true });
     else if ((argOne === 'reset') || (argOne === 'all' && argTwo === 'reset'))
         resetAll(sender);
-    else if (argOne === 'all' && CounterChannels.isValidMode(argTwo))
+    else if (argOne === 'all' && counterChannels.isValidMode(argTwo))
         setAllMode(sender, argTwo);
-    else if (CounterChannels.isValidColor(argOne) && !argTwo)
+    else if (counterChannels.isValidColor(argOne) && !argTwo)
         query(sender, argOne);
-    else if (CounterChannels.isValidColor(argOne) && argTwo === 'realtime')
+    else if (counterChannels.isValidColor(argOne) && argTwo === 'realtime')
         query(sender, argOne, { useRealTime: true });
-    else if (CounterChannels.isValidColor(argOne) && argTwo === 'reset')
+    else if (counterChannels.isValidColor(argOne) && argTwo === 'reset')
         reset(sender, argOne);
-    else if (CounterChannels.isValidColor(argOne) && CounterChannels.isValidMode(argTwo))
+    else if (counterChannels.isValidColor(argOne) && counterChannels.isValidMode(argTwo))
         setMode(sender, argOne, argTwo);
-    else if (argOne && !CounterChannels.isValidColor(argOne))
+    else if (argOne && !counterChannels.isValidColor(argOne))
         sender.sendMessage({ translate: 'commands.counter.channel.notfound', with: [argOne] });
     else
         cmd.sendUsage(sender);
 }
 
 function query(sender, color, { useRealTime = false } = {}) {
-    sender.sendMessage(CounterChannels.getQueryOutput(color, useRealTime));
+    sender.sendMessage(counterChannels.getQueryOutput(color, useRealTime));
 }
 
 function queryAll(sender, { useRealTime = false } = {}) {
-    sender?.sendMessage(CounterChannels.getAllQueryOutput(useRealTime));
+    sender?.sendMessage(counterChannels.getAllQueryOutput(useRealTime));
 }
 
 function reset(sender, color) {
-    CounterChannels.resetCounts(color);
+    counterChannels.resetCounts(color);
     sender.sendMessage({ translate: 'commands.counter.reset.single', with: [Utils.formatColorStr(color)] });
     Utils.broadcastActionBar({ translate: 'commands.counter.reset.single.actionbar', with: [sender.name, Utils.formatColorStr(color)]}, sender);
 }
 
 function resetAll(sender) {
-    CounterChannels.resetAllCounts();
+    counterChannels.resetAllCounts();
     sender.sendMessage({ translate: 'commands.counter.reset.all' });
     Utils.broadcastActionBar({ translate: 'commands.counter.reset.all.actionbar', with: [sender.name] }, sender);
 }
 
 function setMode(sender, color, mode) {
-    CounterChannels.setMode(color, mode);
-    sender.sendMessage({ translate: 'commands.counter.mode', with: [Utils.formatColorStr(color), mode] });
-    Utils.broadcastActionBar({ translate: 'commands.counter.mode.actionbar', with: [sender.name, Utils.formatColorStr(color), mode] }, sender);
+    counterChannels.setMode(color, mode);
+    sender.sendMessage({ translate: 'commands.counter.mode.single', with: [Utils.formatColorStr(color), mode] });
+    Utils.broadcastActionBar({ translate: 'commands.counter.mode.single.actionbar', with: [sender.name, Utils.formatColorStr(color), mode] }, sender);
 }
 
 function setAllMode(sender, mode) {
-    CounterChannels.setAllModes(mode);
+    counterChannels.setAllModes(mode);
     sender.sendMessage({ translate: 'commands.counter.mode.all', with: [mode] });
     Utils.broadcastActionBar({ translate: 'commands.counter.mode.all.actionbar', with: [sender.name, mode] }, sender);
 }

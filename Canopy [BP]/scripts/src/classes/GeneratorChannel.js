@@ -7,7 +7,7 @@ class GeneratorChannel extends ItemCounterChannel {
     }
 
     getQueryOutput(useRealTime = false) {
-        super.getQueryOutput('commands.generator.query.channel', useRealTime);
+        return super.getQueryOutput('commands.generator.query.channel', useRealTime);
     }
 
     onTick() {
@@ -19,7 +19,7 @@ class GeneratorChannel extends ItemCounterChannel {
     }
     
     #generateItems() {
-        const generatedItems = {};
+        const generatedItems = [];
         for (const hopperGenerator of this.hopperList) {
             const hopper = world.getDimension(hopperGenerator.dimensionId).getBlock(hopperGenerator.location);
             if (!hopper) continue;

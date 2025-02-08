@@ -2,11 +2,11 @@ import ItemCounterChannels from "./ItemCounterChannels.js";
 import GeneratorChannel from "./GeneratorChannel";
 
 class GeneratorChannels extends ItemCounterChannels {
-    static init() {
-        super.init(GeneratorChannel, 'hopperGenerators');
+    constructor() {
+        super(GeneratorChannel, 'hopperGenerators');
     }
 
-    static tryCreateHopperBlockPair(placedBlock) {
+    tryCreateHopperBlockPair(placedBlock) {
         if (this.isHopper(placedBlock)) {
             const potentialWool = placedBlock.above();
             if (this.#isWool(potentialWool)) {
@@ -22,19 +22,19 @@ class GeneratorChannels extends ItemCounterChannels {
         }
     }
 
-    static #getColorFromWool(wool) {
+    #getColorFromWool(wool) {
         return wool.typeId.replace('minecraft:', '').replace('_wool', '');
     }
 
-    static #isWool(block) {
+    #isWool(block) {
         return block?.typeId?.slice(-4) === 'wool';
     }
 
-    static getAllQueryOutput(useRealTime = false) {
-        super.getAllQueryOutput('commands.generator.query.empty', useRealTime);
+    getAllQueryOutput(useRealTime = false) {
+        return super.getAllQueryOutput('commands.generator.query.empty', useRealTime);
     }
 }
 
-GeneratorChannels.init();
+const generatorChannels = new GeneratorChannels();
 
-export default GeneratorChannels;
+export default generatorChannels;

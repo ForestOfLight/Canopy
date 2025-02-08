@@ -5,6 +5,7 @@ class HotbarManager {
         this.player = player;
         const tableName = 'bar' + player.id.toString().substr(0, 9);
         this.itemDatabase = new SRCItemDatabase(tableName);
+        this.lastLoadedHotbar = this.#getLastLoadedHotbar();
     }
 
     getActiveHotbarItems() {
@@ -19,14 +20,13 @@ class HotbarManager {
         return hotbarItems;
     }
 
-    saveHotbar(index) {
-        if (index === undefined) throw new Error('Index must be provided to save hotbar');
+    saveHotbar() {
+        const index = this.#getLastLoadedHotbar();
         const items = this.getActiveHotbarItems().map(item => ({ ...item, key: `${index}-${item.key}` }));
         this.itemDatabase.setMany(items);
         for (let slotIndex = 0; slotIndex < 9; slotIndex++) {
             if (!items.some(item => item.key === `${index}-${slotIndex}`)) 
                 this.itemDatabase.delete(`${index}-${slotIndex}`);
-            
         }
     }
 
@@ -39,6 +39,7 @@ class HotbarManager {
             else
                 playerInventory.setItem(slotIndex, null);
         }
+        this.player.setDynamicProperty('lastLoadedHotbar', index);
     }
 
     getItemsString(items) {
@@ -48,6 +49,13 @@ class HotbarManager {
             output += `\n${itemStruct.key}: ${itemStruct.item.typeId} x${itemStruct.item.count}`;
         }
         return output;
+    }
+
+    #getLastLoadedHotbar() {
+        const lastLoadedHotbar = this.player.getDynamicProperty('lastLoadedHotbar');
+        if (lastLoadedHotbar === undefined) 
+            return 0;
+        return parseInt(lastLoadedHotbar);
     }
 }
 

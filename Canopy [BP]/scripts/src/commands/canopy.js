@@ -1,6 +1,7 @@
 import { Command, InfoDisplayRule, Extensions, Rules, Commands } from "../../lib/canopy/Canopy";
 import { PACK_VERSION } from "../../constants";
-import CounterChannels from '../classes/CounterChannels';
+import counterChannels from '../classes/CounterChannels';
+import generatorChannels from "../classes/GeneratorChannels";
 
 const cmd = new Command({
     name: 'canopy',
@@ -60,7 +61,9 @@ async function handleRuleChange(sender, ruleID, enable) {
         return sender.sendMessage({ rawtext: [{ translate: 'rules.generic.nochange', with: [rule.getID()] }, enabledRawText, { text: '§r§7.' }] });
 
     if (ruleID === 'hopperCounters' && !enable)
-        CounterChannels.resetAllCounts();
+        counterChannels.disable();
+    if (ruleID === 'generatorCounters' && !enable)
+        generatorChannels.disable();
 
     if (enable)
         await updateRules(sender, rule.getContigentRuleIDs(), enable);

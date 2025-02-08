@@ -1,6 +1,6 @@
-import { Rule } from 'lib/canopy/Canopy';
+import { Rule, Rules } from "../../lib/canopy/Canopy";
 import { BlockPermutation, ItemStack, world } from '@minecraft/server';
-import DirectionStateFinder from 'src/classes/DirectionState';
+import DirectionStateFinder from "../classes/DirectionState";
 
 new Rule({
     category: 'Rules',
@@ -11,7 +11,7 @@ new Rule({
 const insideBedrockPistonList = [];
 
 world.afterEvents.pistonActivate.subscribe(async (event) => {
-    if (!await Rule.getNativeValue('pistonBedrockBreaking') || !['Expanding', 'Retracting'].includes(event.piston.state)) return;
+    if (!Rules.getNativeValue('pistonBedrockBreaking') || !['Expanding', 'Retracting'].includes(event.piston.state)) return;
     const piston = event.piston;
     const block = event.block;
     const directionState = DirectionStateFinder.getDirectionState(block.permutation);
