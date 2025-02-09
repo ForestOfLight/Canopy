@@ -6,8 +6,8 @@ const REMOVAL_DISTANCE = 2.5;
 
 new Rule({
     category: 'Rules',
-    identifier: 'noTileDrops',
-    description: { translate: 'rules.noTileDrops' },
+    identifier: 'creativeNoTileDrops',
+    description: { translate: 'rules.creativeNoTileDrops' },
 });
 
 let brokenBlockEventsThisTick = [];
@@ -20,14 +20,14 @@ system.runInterval(() => {
 
 world.afterEvents.playerBreakBlock.subscribe((blockEvent) => {
     if (blockEvent.player?.getGameMode() !== 'creative' 
-        || !Rules.getNativeValue('noTileDrops')) 
+        || !Rules.getNativeValue('creativeNoTileDrops')) 
         return;
     brokenBlockEventsThisTick.push(blockEvent);
 });
 
 world.afterEvents.entitySpawn.subscribe((entityEvent) => {
     if (entityEvent.cause !== 'Spawned' || entityEvent.entity.typeId !== 'minecraft:item') return;
-    if (!Rules.getNativeValue('noTileDrops')) return;
+    if (!Rules.getNativeValue('creativeNoTileDrops')) return;
 
     const item = entityEvent.entity;
     const brokenBlockEvents = brokenBlockEventsThisTick.concat(brokenBlockEventsLastTick);

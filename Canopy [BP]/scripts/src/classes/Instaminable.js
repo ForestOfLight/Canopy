@@ -35,7 +35,7 @@ class Instaminable {
             if (this.isEfficiencyFiveNetheritePick(event.itemStack) && this.hasHasteTwo(player)) {
                 const duration = player.getEffect('haste')?.duration;
                 if (duration > 0)
-                    player.addEffect('haste', duration, { amplifier: 2 });
+                    system.run(() => player.addEffect('haste', duration, { amplifier: 2 }));
             }
         });
     }

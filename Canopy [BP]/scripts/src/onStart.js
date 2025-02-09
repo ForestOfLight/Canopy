@@ -1,9 +1,29 @@
-import { world } from '@minecraft/server';
-import Utils from "../include/utils";
+import { world, system } from "@minecraft/server";
 import ProbeManager from "./classes/ProbeManager";
+import { displayWelcome } from "./rules/noWelcomeMessage";
 
-const players = world.getAllPlayers();
-if (players[0]?.isValid()) {
-    Utils.broadcastActionBar('§aBehavior packs have been reloaded.');
+let worldIsValid = false;
+
+world.afterEvents.playerJoin.subscribe((event) => {
+    const runner = system.runInterval(() => {
+        const players = world.getPlayers({ name: event.playerName });
+        players.forEach(player => {
+            if (!player) return;
+            if (player?.isValid()) {
+                system.clearRun(runner);
+                onValidPlayer(player);
+                if (!worldIsValid)
+                    onValidWorld();
+                worldIsValid = true;
+            }
+        });
+    });
+});
+
+function onValidPlayer(player) {
+    displayWelcome(player);
+}
+
+function onValidWorld() {
     ProbeManager.startCleanupCycle();
 }

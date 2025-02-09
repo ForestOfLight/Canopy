@@ -1,5 +1,5 @@
-import { DimensionTypes, system, world } from '@minecraft/server';
-import { Rules, Rule } from 'lib/canopy/Canopy';
+import { DimensionTypes, system, world } from "@minecraft/server";
+import { Rules, Rule } from "../../lib/canopy/Canopy";
 
 const SNEAK_COUNT = 3;
 const SNEAK_SPEED = 4;
@@ -49,7 +49,7 @@ function sit(player) {
 function cleanupRideableEntities() {
     DimensionTypes.getAll().forEach((dimensionType) => {
         world.getDimension(dimensionType.typeId).getEntities({ type: 'canopy:rideable' }).forEach(entity => {
-            if (!entity.getComponent('rideable').getRiders().length > 0)
+            if (entity.getComponent('rideable').getRiders().length === 0)
                 entity.remove();
         });
     });

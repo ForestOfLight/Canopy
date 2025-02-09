@@ -1,5 +1,5 @@
-import { Rule } from 'lib/canopy/Canopy';
-import { world } from '@minecraft/server';
+import { Rule, Rules } from "../../lib/canopy/Canopy";
+import { world } from "@minecraft/server";
 
 new Rule({
     category: 'Rules',
@@ -7,7 +7,7 @@ new Rule({
     description: { translate: 'rules.universalChunkLoading' },
 });
 
-world.afterEvents.entitySpawn.subscribe(async (event) => {
-    if (event.entity.typeId !== 'minecraft:minecart' || !await Rule.getValue('universalChunkLoading')) return;
+world.afterEvents.entitySpawn.subscribe((event) => {
+    if (event.entity.typeId !== 'minecraft:minecart' || !Rules.getNativeValue('universalChunkLoading')) return;
     event.entity.triggerEvent('canopy:tick_tenSeconds');
 });

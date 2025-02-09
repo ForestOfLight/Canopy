@@ -4,7 +4,7 @@ entity.canopy:rideable.name=Canopy Rideable
 action.hint.exit.canopy:rideable=Sneak to stand
 
 ## generic
-generic.welcome.start=§7This server is running §l§aCanopy§r §a%s§7. Type ./help to get started.§r
+generic.welcome.start=§7This server is running §l§aCanopy§r §av%s§7. Type ./help to get started.§r
 generic.welcome.extensions=§7Loaded extensions: §a%s
 generic.player.notfound=§cPlayer '%s' not found.
 generic.target.notfound=§cTarget not found.
@@ -286,6 +286,8 @@ rules.armorStandRespawning=Armor stands respawn when hit by a projectile, droppi
 rules.autoItemPickup=Automatically picks up items when breaking blocks.
 rules.beeNoDrown=Enables bees healing from drowning damage.
 rules.cauldronConcreteConversion=Concrete powder items inside a cauldron filled with water will convert to concrete items.
+rules.creativeInstantTame=Instantly tames animals with their respective food in creative mode.
+rules.creativeNoTileDrops=Prevents items dropping from blocks broken in creative mode.
 rules.creativeOneHitKill=Allows creative players to one hit kill any entity. If sneaking, it will also kill nearby entities.
 rules.dupeTnt=TNT can be duplicated when moved by a piston and powered next to a note blocks.
 rules.durabilitySwap=Swaps 0 durability items out of your hand.
@@ -300,9 +302,6 @@ rules.hotbarSwitching=Allows for quick switching between multiple hotbars. Put a
 rules.hotbarSwitchingSurvival=Enables hotbarSwitching for survival mode.
 rules.instaminableDeepslate=Makes deepslate instaminable while using netherite, efficiency 5, and haste 2.
 rules.instaminableEndstone=Makes endstone instaminable while using netherite, efficiency 5, and haste 2.
-rules.instantTame=Instantly tames animals with their respective food.
-rules.instantTameSurvival=Enables instantTame for survival mode.
-rules.noTileDrops=Prevents items dropping from blocks broken in creative mode.
 rules.noWelcomeMessage=Disables the §lCanopy§r§8 welcome message.
 rules.pistonBedrockBreaking=Allows pistons to break bedrock when facing away from a bedrock block and expanding.
 rules.playerSit=Allows players to sit down after %s quick sneaks.
