@@ -1,6 +1,6 @@
 import RuleHelpPage from './RuleHelpPage';
 import InfoDisplayRuleHelpEntry from './InfoDisplayRuleHelpEntry';
-import InfoDisplayRule from '../InfoDisplayRule';
+import { InfoDisplayRule } from '../InfoDisplayRule';
 
 class InfoDisplayRuleHelpPage extends RuleHelpPage {
     constructor({ title, description, usage }, extensionName = false) {

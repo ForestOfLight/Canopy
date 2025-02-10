@@ -1,8 +1,8 @@
 import IPC from "../ipc/ipc";
-import Command from "./Command.js";
-import Rule from "./Rule.js";
+import { Command } from "./Command.js";
+import { Rule } from "./Rule.js";
 
-export class Extension {
+class Extension {
     id = null;
     commands = [];
     rules = [];
@@ -86,4 +86,4 @@ export class Extension {
     }
 }
 
-export default Extension;
+export { Extension };

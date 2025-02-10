@@ -1,5 +1,5 @@
 import IPC from "../ipc/ipc";
-import Commands from "./Commands";
+import { Commands } from "./Commands";
 
 class Command {
     #name;
@@ -94,4 +94,4 @@ class Command {
 	}
 }
 
-export default Command;
+export { Command };

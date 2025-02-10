@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import Command from "../../../../../Canopy [BP]/scripts/lib/canopy/Command";
-import Commands from "../../../../../Canopy [BP]/scripts/lib/canopy/Commands";
+import { Command } from "../../../../../Canopy [BP]/scripts/lib/canopy/Command";
+import { Commands } from "../../../../../Canopy [BP]/scripts/lib/canopy/Commands";
 import IPC from "../../../../../Canopy [BP]/scripts/lib/ipc/ipc";
 
 vi.mock("@minecraft/server", () => ({

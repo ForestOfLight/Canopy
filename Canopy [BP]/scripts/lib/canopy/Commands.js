@@ -1,12 +1,12 @@
 import { world, system } from "@minecraft/server";
 import IPC from "../ipc/ipc";
-import ArgumentParser from "./ArgumentParser";
-import Rules from "./Rules";
+import { ArgumentParser } from "./ArgumentParser";
+import { Rules } from "./Rules";
 
 const ADMIN_ONLY_TAG = 'CanopyAdmin';
 const COMMAND_PREFIX = './';
 
-export class Commands {
+class Commands {
     static #commands = {};
     static #prefix = COMMAND_PREFIX;
 
@@ -134,4 +134,4 @@ export class Commands {
     }
 }
 
-export default Commands;
+export { Commands };

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
-import Extension from '../../../../../Canopy [BP]/scripts/lib/canopy/Extension.js';
-import Command from '../../../../../Canopy [BP]/scripts/lib/canopy/Command.js';
-import Rule from '../../../../../Canopy [BP]/scripts/lib/canopy/Rule.js';
+import { Extension } from '../../../../../Canopy [BP]/scripts/lib/canopy/Extension.js';
+import { Command } from '../../../../../Canopy [BP]/scripts/lib/canopy/Command.js';
+import { Rule } from '../../../../../Canopy [BP]/scripts/lib/canopy/Rule.js';
 
 vi.mock('@minecraft/server', () => ({
     world: { 

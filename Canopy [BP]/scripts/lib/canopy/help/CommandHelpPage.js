@@ -1,6 +1,6 @@
 import HelpPage from "./HelpPage";
 import CommandHelpEntry from "./CommandHelpEntry";
-import Command from "../Command";
+import { Command } from "../Command";
 
 class CommandHelpPage extends HelpPage {
     constructor({ title, description = null }, extensionName = false) {

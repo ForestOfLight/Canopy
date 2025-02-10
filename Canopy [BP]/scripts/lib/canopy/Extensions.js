@@ -1,7 +1,7 @@
 import IPC from "../ipc/ipc";
-import Extension from "./Extension";
+import { Extension } from "./Extension";
 
-export class Extensions {
+class Extensions {
     static extensions = {};
 
     static get(id) {
@@ -50,4 +50,4 @@ export class Extensions {
     }
 }
 
-export default Extensions;
+export { Extensions };

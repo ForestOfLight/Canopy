@@ -1,5 +1,5 @@
-import Rule from './Rule';
-import Rules from './Rules';
+import { Rule } from './Rule';
+import { Rules } from './Rules';
 
 class InfoDisplayRule extends Rule {
     constructor({ identifier, description = '', contingentRules = [], independentRules = [], extensionName = false }) {
@@ -38,4 +38,4 @@ class InfoDisplayRule extends Rule {
     }
 }
 
-export default InfoDisplayRule;
+export { InfoDisplayRule };

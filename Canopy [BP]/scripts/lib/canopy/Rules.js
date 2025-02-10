@@ -1,4 +1,4 @@
-export class Rules {
+class Rules {
     static #rules = {};
 
     static register(rule) {
@@ -64,4 +64,4 @@ export class Rules {
     }
 }
 
-export default Rules;
+export { Rules };

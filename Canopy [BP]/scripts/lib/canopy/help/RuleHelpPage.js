@@ -1,6 +1,6 @@
 import HelpPage from './HelpPage';
 import RuleHelpEntry from './RuleHelpEntry';
-import Rule from '../Rule';
+import { Rule } from '../Rule';
 
 class RuleHelpPage extends HelpPage {
     constructor({ title, description, usage }, extensionId = false) {

@@ -1,8 +1,8 @@
 import { world } from '@minecraft/server';
 import IPC from "../ipc/ipc";
-import Rules from "./Rules";
+import { Rules } from "./Rules";
 
-export class Rule {
+class Rule {
     #category;
     #identifier;
     #description;
@@ -88,4 +88,4 @@ export class Rule {
     }
 }
 
-export default Rule;
+export { Rule };

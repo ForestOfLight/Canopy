@@ -1,4 +1,4 @@
-import Commands from "./Commands";
+import { Commands } from "./Commands";
 
 class ArgumentParser {
     static regex = /(@[aepsr]\[|@"[^"]*"|"[^"]*"|\[[^\]]*\]|\S+)/g;
@@ -62,4 +62,4 @@ class ArgumentParser {
     }
 }
 
-export default ArgumentParser;
+export { ArgumentParser };
