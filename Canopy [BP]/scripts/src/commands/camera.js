@@ -1,6 +1,6 @@
-import { Rule, Command } from 'lib/canopy/Canopy';
-import { system, world } from '@minecraft/server';
-import Utils from 'include/utils';
+import { Rule, Command } from "../../lib/canopy/Canopy";
+import { system, world } from "@minecraft/server";
+import { stringifyLocation } from "../../include/utils";
 
 new Rule({
     category: 'Rules',
@@ -121,7 +121,7 @@ function placeCameraAction(sender) {
 
 function placeCamera(sender, cameraSettings) {
     sender.setDynamicProperty('placedCamera', JSON.stringify(cameraSettings));
-    sender.sendMessage({ translate: 'commands.camera.place.success', with: [Utils.stringifyLocation(cameraSettings.location, 0)] });
+    sender.sendMessage({ translate: 'commands.camera.place.success', with: [stringifyLocation(cameraSettings.location, 0)] });
 }
 
 function viewCameraAction(sender, option) {

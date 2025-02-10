@@ -1,6 +1,6 @@
-import { ItemStack, system, world } from '@minecraft/server';
 import { Rule, Rules } from "../../lib/canopy/Canopy";
-import Utils from "../../include/utils";
+import { ItemStack, system, world } from "@minecraft/server";
+import { calcDistance } from "../../include/utils";
 
 new Rule({
     category: 'Rules',
@@ -27,7 +27,7 @@ world.afterEvents.entitySpawn.subscribe((entityEvent) => {
     const item = entityEvent.entity;
     let brokenBlockEvent;
     try {
-        brokenBlockEvent = brokenBlockEventsThisTick.find(blockEvent => Utils.calcDistance(blockEvent.block.location, item.location) < 2);
+        brokenBlockEvent = brokenBlockEventsThisTick.find(blockEvent => calcDistance(blockEvent.block.location, item.location) < 2);
     } catch {
         // Could not access block or item, ignore
     }

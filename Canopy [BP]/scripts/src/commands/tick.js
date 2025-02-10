@@ -1,7 +1,7 @@
-import { system, world } from '@minecraft/server';
-import { Rule, Command } from 'lib/canopy/Canopy';
-import Utils from 'include/utils';
-import Profiler from '../classes/Profiler';
+import { Rule, Command } from "../../lib/canopy/Canopy";
+import { system, world } from "@minecraft/server";
+import { isNumeric } from "../../include/utils";
+import Profiler from "../classes/Profiler";
 
 new Rule({
     category: 'Rules',
@@ -51,7 +51,7 @@ function tickCommand(sender, args) {
         return tickStep(sender, steps);
     else if (arg === 'sleep')
         return tickSleep(sender, steps);
-    else if (Utils.isNumeric(arg))
+    else if (isNumeric(arg))
         return tickSlow(sender, arg);
     return cmd.sendUsage(sender);
 }

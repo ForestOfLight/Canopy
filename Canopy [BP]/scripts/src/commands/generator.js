@@ -1,6 +1,6 @@
 import { Rule, Command } from "../../lib/canopy/Canopy";
 import GeneratorChannels from "../classes/GeneratorChannels";
-import Utils from "../../include/utils";
+import { formatColorStr, broadcastActionBar } from "../../include/utils";
 
 new Rule({
     category: 'Rules',
@@ -61,14 +61,14 @@ function generatorCommand(sender, args) {
 
 function reset(sender, color) {
     GeneratorChannels.resetCounts(color);
-    sender.sendMessage({ translate: 'commands.generator.reset.single', with: [Utils.formatColorStr(color)] });
-    Utils.broadcastActionBar({ translate: 'commands.generator.reset.single.actionbar', with: [sender.name, Utils.formatColorStr(color)]}, sender);
+    sender.sendMessage({ translate: 'commands.generator.reset.single', with: [formatColorStr(color)] });
+    broadcastActionBar({ translate: 'commands.generator.reset.single.actionbar', with: [sender.name, formatColorStr(color)]}, sender);
 }
 
 function resetAll(sender) {
     GeneratorChannels.resetAllCounts();
     sender.sendMessage({ translate: 'commands.generator.reset.all' });
-    Utils.broadcastActionBar({ translate: 'commands.generator.reset.all.actionbar', with: [sender.name] }, sender);
+    broadcastActionBar({ translate: 'commands.generator.reset.all.actionbar', with: [sender.name] }, sender);
 }
 
 function query(sender, color, { useRealTime = false } = {}) {

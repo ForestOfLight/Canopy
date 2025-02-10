@@ -1,5 +1,5 @@
-import InfoDisplayElement from "./InfoDisplayElement.js";
-import Utils from "../../../include/utils.js";
+import InfoDisplayElement from "./InfoDisplayElement";
+import { getRaycastResults } from "../../../include/utils";
 
 class SignalStrength extends InfoDisplayElement {
     player;
@@ -20,7 +20,7 @@ class SignalStrength extends InfoDisplayElement {
     }
 
     getSignalStrength() {
-        const { blockRayResult, entityRayResult } = Utils.getRaycastResults(this.player, 7);
+        const { blockRayResult, entityRayResult } = getRaycastResults(this.player, 7);
         if (entityRayResult[0]?.entity)
             return 0;
         try {

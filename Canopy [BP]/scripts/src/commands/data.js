@@ -1,6 +1,6 @@
-import { Command } from 'lib/canopy/Canopy'
-import Utils from 'include/utils'
-import { world } from '@minecraft/server'
+import { Command } from "../../lib/canopy/Canopy";
+import { world } from "@minecraft/server";
+import { parseName, stringifyLocation } from "../../include/utils";
 
 const BLOCK_COMPONENTS = ['minecraft:inventory', 'minecraft:lavaContainer', 'minecraft:piston', 'minecraft:potionContainer', 'minecraft:record_player',
     'minecraft:sign', 'minecraft:snowContainer', 'minecraft:waterContainer'];
@@ -55,7 +55,7 @@ function formatBlockOutput(block) {
 
     const message = {
         rawtext: [
-            { text: `§l§a${Utils.parseName(block)}§r: ${Utils.stringifyLocation(block.location, 0)}, ${dimensionId}\n` },
+            { text: `§l§a${parseName(block)}§r: ${stringifyLocation(block.location, 0)}, ${dimensionId}\n` },
             { rawtext: [
                 { translate: 'commands.data.properties', with: [properties] }, { text: '\n' },
                 { translate: 'commands.data.states', with: [states] }, { text: '\n' },
@@ -76,14 +76,14 @@ function formatEntityOutput(entity) {
     const dynamicProperties = JSON.stringify(entity.getDynamicPropertyIds());
     const effects = JSON.stringify(entity.getEffects());
     const tags = JSON.stringify(entity.getTags());
-    const headLocationStr = entity.getHeadLocation() ? Utils.stringifyLocation(entity.getHeadLocation(), 2) : 'none';
+    const headLocationStr = entity.getHeadLocation() ? stringifyLocation(entity.getHeadLocation(), 2) : 'none';
     const rotation = entity.getRotation();
-    const velocityStr = entity.getVelocity() ? Utils.stringifyLocation(entity.getVelocity(), 3) : 'none';
-    const viewDirectionStr = entity.getViewDirection() ? Utils.stringifyLocation(entity.getViewDirection(), 2) : 'none';
+    const velocityStr = entity.getVelocity() ? stringifyLocation(entity.getVelocity(), 3) : 'none';
+    const viewDirectionStr = entity.getViewDirection() ? stringifyLocation(entity.getViewDirection(), 2) : 'none';
     
     const message = {
         rawtext: [
-            { text: `§l§a${Utils.parseName(entity)}${nameTag}§r: §2id:${entity.id}§r, ${Utils.stringifyLocation(entity.location, 2)}, ${dimensionId}\n` },
+            { text: `§l§a${parseName(entity)}${nameTag}§r: §2id:${entity.id}§r, ${stringifyLocation(entity.location, 2)}, ${dimensionId}\n` },
             { rawtext: [
                 { translate: 'commands.data.properties', with: [properties] }, { text: '\n' },
                 { translate: 'commands.data.components', with: [components] }, { text: '\n' },

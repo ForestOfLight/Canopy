@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import Utils from '../../../../Canopy [BP]/scripts/include/utils.js';
+import * as Utils from '../../../../Canopy [BP]/scripts/include/utils.js';
 
 vi.mock('@minecraft/server', {
     world: {},

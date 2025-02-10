@@ -1,6 +1,6 @@
-import { Rule, Command } from 'lib/canopy/Canopy';
-import { world } from '@minecraft/server';
-import Utils from 'include/utils';
+import { Rule, Command } from "../../lib/canopy/Canopy";
+import { world } from "@minecraft/server";
+import { stringifyLocation, getColoredDimensionName } from "../../include/utils";
 
 const NETHER_SCALE_FACTOR = 8;
 
@@ -39,19 +39,19 @@ function posCommand(sender, args) {
 
 function getPositionText(player, target) {
     if (player === null)
-        return { translate: 'commands.pos.self', with: [Utils.stringifyLocation(target.location, 2)] };
-    return { translate: 'commands.pos.other', with: [target.name, Utils.stringifyLocation(target.location, 2)] };
+        return { translate: 'commands.pos.self', with: [stringifyLocation(target.location, 2)] };
+    return { translate: 'commands.pos.other', with: [target.name, stringifyLocation(target.location, 2)] };
 }
 
 function getDimensionText(target) {
-    return { translate: 'commands.pos.dimension', with: [Utils.getColoredDimensionName(target.dimension.id)] };
+    return { translate: 'commands.pos.dimension', with: [getColoredDimensionName(target.dimension.id)] };
 }
 
 function getRelativeDimensionPositionText(target) {
     if (target.dimension.id === 'minecraft:nether')
-        return { translate: 'commands.pos.relative.overworld', with: [Utils.stringifyLocation(netherPosToOverworld(target.location), 2)] };
+        return { translate: 'commands.pos.relative.overworld', with: [stringifyLocation(netherPosToOverworld(target.location), 2)] };
     else if (target.dimension.id === 'minecraft:overworld')
-        return { translate: 'commands.pos.relative.nether', with: [Utils.stringifyLocation(overworldPosToNether(target.location), 2)] };
+        return { translate: 'commands.pos.relative.nether', with: [stringifyLocation(overworldPosToNether(target.location), 2)] };
 }
 
 function netherPosToOverworld(pos) {

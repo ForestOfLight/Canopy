@@ -1,6 +1,6 @@
-import { Command } from "lib/canopy/Canopy";
+import { Command } from "../../lib/canopy/Canopy";
 import { MinecraftDimensionTypes, world } from "@minecraft/server";
-import Utils from "include/utils";
+import { isNumeric, getColoredDimensionName } from "../../include/utils";
 
 const DEFAULT_CHUNK_DISTANCE = 7;
 const MAX_CHUNK_DISTANCE = 30;
@@ -48,12 +48,12 @@ function simmapCommand(sender, args) {
 
 function handleInfoDisplayConfig(sender, args) {
     const { argTwo, argThree: x, argFour: z } = args;
-    if (Utils.isNumeric(argTwo) && (argTwo < 1 || argTwo > MAX_CHUNK_DISTANCE)) {
+    if (isNumeric(argTwo) && (argTwo < 1 || argTwo > MAX_CHUNK_DISTANCE)) {
         sender.sendMessage({ translate: 'commands.simmap.invalidDistance', with: [String(argTwo), String(MAX_CHUNK_DISTANCE)] });
         return;
     }
 
-    if (Utils.isNumeric(argTwo)) {
+    if (isNumeric(argTwo)) {
         updateDistance(sender, argTwo);
     } else if (validDimensions[argTwo] && x !== null && z !== null) {
         const dimensionLocation = { dimension: validDimensions[argTwo], x, z };
@@ -79,7 +79,7 @@ function updateLocation(sender, dimensionLocation) {
     config.dimension = dimension;
     config.location = { x, z };
     sender.setDynamicProperty('simulationMapConfig', JSON.stringify(config));
-    sender.sendMessage({ translate: 'commands.simmap.config.location', with: [`[${x}, ${z}]`, Utils.getColoredDimensionName(dimension)] });
+    sender.sendMessage({ translate: 'commands.simmap.config.location', with: [`[${x}, ${z}]`, getColoredDimensionName(dimension)] });
 }
 
 function resetLocation(sender) {
@@ -107,7 +107,7 @@ function getConfig(player) {
 
 function handleChatCommand(sender, args) {
     const { argOne, argTwo, argThree, argFour } = args;
-    if (Utils.isNumeric(argOne) && (argOne < 1 || argOne > MAX_CHUNK_DISTANCE)) {
+    if (isNumeric(argOne) && (argOne < 1 || argOne > MAX_CHUNK_DISTANCE)) {
         sender.sendMessage({ translate: 'commands.simmap.invalidDistance', with: [String(argOne), String(MAX_CHUNK_DISTANCE)] });
         return;
     }
@@ -115,15 +115,15 @@ function handleChatCommand(sender, args) {
     const dimensionLocation = { dimension: sender.dimension, location: sender.location };
     if (argOne === null) {
         printLoadedChunks(sender, dimensionLocation, DEFAULT_CHUNK_DISTANCE);
-    } else if (Utils.isNumeric(argOne) && argTwo === null) {
+    } else if (isNumeric(argOne) && argTwo === null) {
         printLoadedChunks(sender, dimensionLocation, argOne);
     } else if (argOne !== null && argTwo !== null && argThree === null) {
         return cmd.sendUsage(sender);
-    } else if (Utils.isNumeric(argOne) && argTwo !== null && argThree !== null && argFour !== null) {
+    } else if (isNumeric(argOne) && argTwo !== null && argThree !== null && argFour !== null) {
         dimensionLocation.dimension = world.getDimension(validDimensions[argTwo]);
         dimensionLocation.location = { x: argThree, z: argFour };
         printLoadedChunks(sender, dimensionLocation, argOne);
-    } else if (!Utils.isNumeric(argOne) && Utils.isNumeric(argTwo) && argThree !== null) {
+    } else if (!isNumeric(argOne) && isNumeric(argTwo) && argThree !== null) {
         dimensionLocation.dimension = world.getDimension(validDimensions[argOne]);
         dimensionLocation.location = { x: argTwo, z: argThree };
         printLoadedChunks(sender, dimensionLocation, DEFAULT_CHUNK_DISTANCE);
@@ -144,7 +144,7 @@ function printLoadedChunks(player, dimensionLocation, distance) {
 
 function formatChunkMapHeader(dimensionChunkLocation, distance, loadedChunks) {
     return { rawtext: [
-        { translate: 'commands.simmap.header', with: [Utils.getColoredDimensionName(dimensionChunkLocation.dimension.id), `[${dimensionChunkLocation.x.toFixed(0)}, ${dimensionChunkLocation.z.toFixed(0)}]`] },
+        { translate: 'commands.simmap.header', with: [getColoredDimensionName(dimensionChunkLocation.dimension.id), `[${dimensionChunkLocation.x.toFixed(0)}, ${dimensionChunkLocation.z.toFixed(0)}]`] },
         { text: ` §7(r${distance}): §a${loadedChunks.length}\n` }
     ] };
 }

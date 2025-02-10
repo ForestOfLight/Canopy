@@ -5,7 +5,7 @@ import { categoryToMobMap, intToBiomeMap } from 'Canopy [BP]/scripts/include/dat
 import stripJsonComments from 'strip-json-comments';
 import fs from 'fs';
 import path from 'path';
-import Utils from '../../../../Canopy [BP]/scripts/include/utils.js';
+import { titleCase } from '../../../../Canopy [BP]/scripts/include/utils.js';
 
 vi.mock('@minecraft/server', {
     world: {},
@@ -62,7 +62,7 @@ describe('intToBiomeMap', () => {
             continue;
 
         it(`${biomeId} should be valid in the intToBiomeMap`, () => {
-            const biomeName = Utils.titleCase(biomeId.replace('canopy:', ''));
+            const biomeName = titleCase(biomeId.replace('canopy:', ''));
             expect(Object.values(intToBiomeMap)).toContain(biomeName);
             const biomeInt = probeData['minecraft:entity']['events'][biomeId]['set_property']['canopy:biome'];
             expect(intToBiomeMap[biomeInt]).toBe(biomeName);

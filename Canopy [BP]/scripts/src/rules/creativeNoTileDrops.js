@@ -1,6 +1,6 @@
-import { system, world } from '@minecraft/server';
 import { Rule, Rules } from "../../lib/canopy/Canopy";
-import Utils from "../../include/utils";
+import { system, world } from "@minecraft/server";
+import { calcDistance } from "../../include/utils";
 
 const REMOVAL_DISTANCE = 2.5;
 
@@ -38,5 +38,5 @@ world.afterEvents.entitySpawn.subscribe((entityEvent) => {
 });
 
 function isItemWithinRemovalDistance(location, item) {
-    return Utils.calcDistance(location, item.location) < REMOVAL_DISTANCE;
+    return calcDistance(location, item.location) < REMOVAL_DISTANCE;
 }

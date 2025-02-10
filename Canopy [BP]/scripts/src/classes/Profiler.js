@@ -1,5 +1,5 @@
 import { system, TicksPerSecond } from "@minecraft/server";
-import Utils from "../../include/utils";
+import { wait } from "../../include/utils";
 
 const MS_PER_SECOND = 1000;
 const SAMPLE_INTERVAL = 2;
@@ -82,7 +82,7 @@ class Profiler {
 
     static #getRealMspt() {
         const lastTick = system.currentTick;
-        const { startTime, endTime } = Utils.wait(50);
+        const { startTime, endTime } = wait(50);
         return new Promise(resolve => {
             system.runTimeout(() => {
                 if (system.currentTick - lastTick === 1)

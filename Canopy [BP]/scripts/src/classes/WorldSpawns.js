@@ -1,7 +1,7 @@
-import { world, DimensionTypes, MolangVariableMap, system } from '@minecraft/server';
-import { SpawnTracker } from 'src/classes/SpawnTracker';
+import { world, DimensionTypes, MolangVariableMap, system } from "@minecraft/server";
+import { SpawnTracker } from "../classes/SpawnTracker";
 import { categoryToMobMap } from '../../include/data';
-import Utils from 'include/utils';
+import { getColoredDimensionName, stringifyLocation } from "../../include/utils";
 
 const categories = Object.keys(categoryToMobMap);
 const dimensionIds = DimensionTypes.getAll().map(({ typeId }) => typeId);
@@ -112,12 +112,12 @@ class WorldSpawns {
         let output = `Recent spawns (last 30s):`;
         const recents = this.getRecents(mobname);
         for (const dimensionId in recents) {
-            output += `\n${Utils.getColoredDimensionName(dimensionId)}§7:`;
+            output += `\n${getColoredDimensionName(dimensionId)}§7:`;
             for (const category in recents[dimensionId]) {
                 if (!recents[dimensionId][category] || Object.keys(recents[dimensionId][category])?.length === 0) continue;
                 output += `\n§7 > ${category.toUpperCase()}:`;
                 for (const mobType in recents[dimensionId][category]) {
-                    const recentLocations = recents[dimensionId][category][mobType].map(location => Utils.stringifyLocation(location)).join(', ')
+                    const recentLocations = recents[dimensionId][category][mobType].map(location => stringifyLocation(location)).join(', ')
                     output += `\n§7  - ${mobType}: ${recentLocations}`;
                 }
             }
@@ -143,7 +143,7 @@ class WorldSpawns {
         let output = `Spawn statistics (${this.getMinutesSinceStart().toFixed(2)} min.):`;
         for (const dimensionId in this.trackers) {
             if (this.getTotalMobs(this.getMobsPerTick(dimensionId)) === 0) continue;
-            output += `\n${Utils.getColoredDimensionName(dimensionId)}§7: ${this.getFormattedDimensionValues(dimensionId)}`;
+            output += `\n${getColoredDimensionName(dimensionId)}§7: ${this.getFormattedDimensionValues(dimensionId)}`;
             for (const category in this.trackers[dimensionId]) {
                 const tracker = this.trackers[dimensionId][category];
                 output += `${tracker.getOutput()}`;

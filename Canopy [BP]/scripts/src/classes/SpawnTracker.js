@@ -1,5 +1,5 @@
 import { system, TicksPerSecond, world } from "@minecraft/server";
-import Utils from "../../include/utils";
+import { locationInArea } from "../../include/utils";
 import { categoryToMobMap } from "../../include/data";
 
 const CLEAR_RECENTS_THRESHOLD = 30 * TicksPerSecond;
@@ -54,7 +54,7 @@ class SpawnTracker {
         if (entity.dimension.id !== this.dimensionId || !this.isTracking(entity.typeId.replace('minecraft:', ''))) return;
 
         const position = { location: entity.location, dimensionId: entity.dimension.id };
-        if (this.activeArea && !Utils.locationInArea(this.activeArea, position)) return;
+        if (this.activeArea && !locationInArea(this.activeArea, position)) return;
         this.countMob(entity);
     }
 

@@ -1,7 +1,7 @@
-import { world } from '@minecraft/server';
-import { Command } from 'lib/canopy/Canopy';
-import EventTracker from 'src/classes/EventTracker';
-import Utils from 'include/utils';
+import { Command } from "../../lib/canopy/Canopy";
+import { world } from "@minecraft/server";
+import EventTracker from "../classes/EventTracker";
+import { broadcastActionBar } from "../../include/utils";
 
 const cmd = new Command({
     name: 'trackevent',
@@ -60,7 +60,7 @@ function stopTracking(sender, eventName, isAfterEvent) {
     delete trackers[isAfterEvent ? 'after' : 'before'][eventName];
     const eventFullName = eventName + (isAfterEvent ? 'After' : 'Before') + 'Event';
     sender.sendMessage({ translate: 'commands.trackevent.stop', with: [eventFullName] });
-    Utils.broadcastActionBar({ rawtext: [{ text: `[${sender.name}] `},{ translate: 'commands.trackevent.stop', with: [eventFullName] }] });
+    broadcastActionBar({ rawtext: [{ text: `[${sender.name}] `},{ translate: 'commands.trackevent.stop', with: [eventFullName] }] });
 }
 
 function startTracking(sender, eventName, isAfterEvent) {
@@ -71,7 +71,7 @@ function startTracking(sender, eventName, isAfterEvent) {
     trackers[isAfterEvent ? 'after' : 'before'][eventName] = tracker;
     const eventFullName = eventName + (isAfterEvent ? 'After' : 'Before') + 'Event';
     sender.sendMessage({ translate: 'commands.trackevent.start', with: [eventFullName] });
-    Utils.broadcastActionBar({ rawtext: [{ text: `[${sender.name}] `},{ translate: 'commands.trackevent.start', with: [eventFullName] }] });
+    broadcastActionBar({ rawtext: [{ text: `[${sender.name}] `},{ translate: 'commands.trackevent.start', with: [eventFullName] }] });
 }
 
 function isValidEvent(sender, eventName, isAfterEvent) {

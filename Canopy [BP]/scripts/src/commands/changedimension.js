@@ -1,6 +1,6 @@
-import { Rule, Command } from 'lib/canopy/Canopy';
-import Utils from 'include/utils';
-import { world } from '@minecraft/server';
+import { Rule, Command } from "../../lib/canopy/Canopy";
+import { isNumeric, stringifyLocation } from "../../include/utils";
+import { world } from "@minecraft/server";
 
 const validDimensions = {
     'o': 'overworld',
@@ -45,10 +45,10 @@ function changedimensionCommand(player, args) {
     
     const fromDimensionId = player.dimension.id.replace('minecraft:', '');
     const toDimension = world.getDimension(toDimensionId);
-    if ((x !== null && y !== null && z !== null) && (Utils.isNumeric(x) && Utils.isNumeric(y) && Utils.isNumeric(z))) {
+    if ((x !== null && y !== null && z !== null) && (isNumeric(x) && isNumeric(y) && isNumeric(z))) {
         const location = { x, y, z };
         player.teleport(location, { dimension: toDimension } );
-        player.sendMessage({ translate: 'commands.changedimension.success.coords', with: [Utils.stringifyLocation(location), toDimensionId] });
+        player.sendMessage({ translate: 'commands.changedimension.success.coords', with: [stringifyLocation(location), toDimensionId] });
     } else if (x === null && y === null && z === null) {
         player.teleport(convertCoords(fromDimensionId, toDimensionId, player.location), { dimension: toDimension });
         player.sendMessage({ translate: 'commands.changedimension.success', with: [toDimensionId] });

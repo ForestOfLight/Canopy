@@ -1,5 +1,5 @@
-import { system, world, MinecraftDimensionTypes, Block } from '@minecraft/server';
-import Utils from 'include/utils';
+import { system, world, MinecraftDimensionTypes, Block } from "@minecraft/server";
+import { getScriptEventSourceObject, isNumeric } from "../../../include/utils";
 
 system.afterEvents.scriptEventReceive.subscribe((event) => {
     if (event.id !== "canopy:loop") return;
@@ -7,7 +7,7 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
     const args = message.match(/(\d+)\s+"([^"]+)"/)?.slice(1);
     if (!args) return;
     
-    const source = Utils.getScriptEventSourceObject(event);
+    const source = getScriptEventSourceObject(event);
     let runLocation = source;
     if (source === 'Server')
         runLocation = world.getDimension(MinecraftDimensionTypes.overworld);
@@ -19,7 +19,7 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
 });
 
 function loopCommand(times, command, runLocation) {
-    if (!Utils.isNumeric(times))
+    if (!isNumeric(times))
         return 'Invalid arguments. Usage: loop <times> <command>';
 
     for (let i = 0; i < times; i++) 

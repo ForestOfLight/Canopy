@@ -1,6 +1,6 @@
 import { Command } from "../../lib/canopy/Canopy";
 import { MinecraftDimensionTypes, world } from '@minecraft/server';
-import Utils from "../../include/utils";
+import { isString } from "../../include/utils";
 
 const NUM_RESULTS = 10;
 
@@ -54,7 +54,7 @@ function parseArgs(sender, firstArg, gridSize) {
         'the_end': 'the_end',
     };
 
-    if (Utils.isString(firstArg)) {
+    if (isString(firstArg)) {
         validDimensionId = validDimensions[firstArg.toLowerCase()];
     } else if (Number.isInteger(firstArg)) {
         parsedGridSize = firstArg;

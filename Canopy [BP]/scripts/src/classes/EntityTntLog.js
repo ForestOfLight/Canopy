@@ -1,6 +1,6 @@
 import EntityLog from "./EntityLog";
 import { world, system } from "@minecraft/server";
-import Utils from "../../include/utils";
+import { stringifyLocation } from "../../include/utils";
 
 class EntityTntLog extends EntityLog {
     constructor(type, { main, secondary, tertiary }) {
@@ -55,8 +55,8 @@ class EntityTntLog extends EntityLog {
     getLogBody(precision) {
         let output = '';
         for (const tntEntity of this.removedTntThisTick) {
-            const startLocation = Utils.stringifyLocation(this.tntSpawnLocations[tntEntity.id], precision);
-            const endLocation = Utils.stringifyLocation(tntEntity.location, precision);
+            const startLocation = stringifyLocation(this.tntSpawnLocations[tntEntity.id], precision);
+            const endLocation = stringifyLocation(tntEntity.location, precision);
             output += `§a${startLocation}§7 --> §c${endLocation}, `;
             delete this.tntSpawnLocations[tntEntity.id];
         }

@@ -24,7 +24,7 @@ export const categoryToMobMap = {
         'squid',
         'strider',
         'turtle',
-        'wolf',
+        'wolf'
     ],
     'ambient' : [ 'bat' ],
     'cat' : [ 'cat' ],
@@ -47,16 +47,16 @@ export const categoryToMobMap = {
         'witch',
         'wither_skeleton',
         'zombie_pigman',
-        'zombie',
+        'zombie'
     ],
     'pillager' : [
-        'pillager',
+        'pillager'
     ],
     'water_animal' : [
         'axolotl',
         'pufferfish',
         'salmon',
-        'tropicalfish',
+        'tropicalfish'
     ],
     'none' : [
         'allay',
@@ -94,7 +94,7 @@ export const categoryToMobMap = {
         'zoglin',
         'zombie_horse',
         'zombie_villager',
-        'zombie_villager_v2',
+        'zombie_villager_v2'
     ]
 }
 

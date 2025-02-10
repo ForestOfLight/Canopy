@@ -1,6 +1,6 @@
-import InfoDisplayElement from './InfoDisplayElement.js';
-import Utils from 'include/utils';
-import { currentQuery } from 'src/commands/peek.js';
+import InfoDisplayElement from "./InfoDisplayElement";
+import { getRaycastResults, getClosestTarget, populateItems } from "../../../include/utils";
+import { currentQuery } from "../../commands/peek";
 
 class PeekInventory extends InfoDisplayElement {
     player;
@@ -20,9 +20,9 @@ class PeekInventory extends InfoDisplayElement {
     }
 
     parsePeekInventory() {
-        const { blockRayResult, entityRayResult } = Utils.getRaycastResults(this.player, 7);
+        const { blockRayResult, entityRayResult } = getRaycastResults(this.player, 7);
 		if (!blockRayResult && !entityRayResult) return '';
-		const target = Utils.getClosestTarget(this.player, blockRayResult, entityRayResult);
+		const target = getClosestTarget(this.player, blockRayResult, entityRayResult);
 		if (!target) return '';
 		
         let inventory;
@@ -34,7 +34,7 @@ class PeekInventory extends InfoDisplayElement {
 		if (!inventory) return '';
 	
 		let output = '';
-		const items = Utils.populateItems(inventory);
+		const items = populateItems(inventory);
 		if (Object.keys(items).length > 0) {
 			for (const itemName in items) {
 				if (itemName.includes(currentQuery[this.player.name]))

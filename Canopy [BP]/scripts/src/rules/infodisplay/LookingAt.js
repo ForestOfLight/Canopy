@@ -1,5 +1,5 @@
-import InfoDisplayElement from './InfoDisplayElement.js';
-import Utils from 'include/utils';
+import InfoDisplayElement from "./InfoDisplayElement";
+import { getRaycastResults, parseLookingAtEntity, parseLookingAtBlock } from "../../../include/utils";
 
 class LookingAt extends InfoDisplayElement {
     constructor(player, displayLine) {
@@ -17,8 +17,8 @@ class LookingAt extends InfoDisplayElement {
     }
 
     getLookingAtName() {
-        const { blockRayResult, entityRayResult } = Utils.getRaycastResults(this.player, 7);
-        return Utils.parseLookingAtEntity(entityRayResult).LookingAtName || Utils.parseLookingAtBlock(blockRayResult).LookingAtName;
+        const { blockRayResult, entityRayResult } = getRaycastResults(this.player, 7);
+        return parseLookingAtEntity(entityRayResult).LookingAtName || parseLookingAtBlock(blockRayResult).LookingAtName;
     }
 }
 

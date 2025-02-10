@@ -1,5 +1,5 @@
 import HelpPage from "./HelpPage";
-import Utils from "../../../include/utils";
+import { recolor } from "../../../include/utils";
 
 class HelpBook {
     #helpPages;
@@ -87,7 +87,7 @@ class HelpBook {
 
     async #formatEntryHeader(entry, searchTerm, message) {
         const entryRawMessage = await entry.toRawMessage();
-        const newEntryTitle = Utils.recolor(entryRawMessage.rawtext[0].text, searchTerm, '§a');
+        const newEntryTitle = recolor(entryRawMessage.rawtext[0].text, searchTerm, '§a');
         const newEntry = {
             rawtext: [
                 { text: '\n  ' }, { text: newEntryTitle }
@@ -112,7 +112,7 @@ class HelpBook {
 
     #formatEntryHelp(entryRawMessage, searchTerm, message) {
         for (let i = 2; i < entryRawMessage.rawtext.length; i++) {
-            const newEntryText = Utils.recolor(entryRawMessage.rawtext[i].rawtext[0].text, searchTerm, '§a');
+            const newEntryText = recolor(entryRawMessage.rawtext[i].rawtext[0].text, searchTerm, '§a');
             const newEntry = { rawtext: [{ text: newEntryText }] };
 
             const description = entryRawMessage.rawtext[i].rawtext[1];

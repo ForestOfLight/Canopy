@@ -1,6 +1,6 @@
 import InfoDisplayElement from "./InfoDisplayElement";
 import CounterChannels from "../../classes/CounterChannels";
-import Utils from "../../../include/utils";
+import { getColorCode } from "../../../include/utils";
 
 class HopperCounterCounts extends InfoDisplayElement {
     constructor(displayLine) {
@@ -17,7 +17,7 @@ class HopperCounterCounts extends InfoDisplayElement {
             if (i !== 0 && (i % 4) === 0)
                 output += '\n';
             const channel = activeChannels[i];
-            output += Utils.getColorCode(channel.color);
+            output += getColorCode(channel.color);
             if (channel.isEmpty())
                 output += 'N/A';
             else

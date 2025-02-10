@@ -1,6 +1,6 @@
 import { Rule, Command } from "../../lib/canopy/Canopy";
 import counterChannels from "../classes/CounterChannels";
-import Utils from "../../include/utils";
+import { broadcastActionBar, formatColorStr } from "../../include/utils";
 
 new Rule({
     category: 'Rules',
@@ -74,26 +74,26 @@ function queryAll(sender, { useRealTime = false } = {}) {
 
 function reset(sender, color) {
     counterChannels.resetCounts(color);
-    sender.sendMessage({ translate: 'commands.counter.reset.single', with: [Utils.formatColorStr(color)] });
-    Utils.broadcastActionBar({ translate: 'commands.counter.reset.single.actionbar', with: [sender.name, Utils.formatColorStr(color)]}, sender);
+    sender.sendMessage({ translate: 'commands.counter.reset.single', with: [formatColorStr(color)] });
+    broadcastActionBar({ translate: 'commands.counter.reset.single.actionbar', with: [sender.name, formatColorStr(color)]}, sender);
 }
 
 function resetAll(sender) {
     counterChannels.resetAllCounts();
     sender.sendMessage({ translate: 'commands.counter.reset.all' });
-    Utils.broadcastActionBar({ translate: 'commands.counter.reset.all.actionbar', with: [sender.name] }, sender);
+    broadcastActionBar({ translate: 'commands.counter.reset.all.actionbar', with: [sender.name] }, sender);
 }
 
 function setMode(sender, color, mode) {
     counterChannels.setMode(color, mode);
-    sender.sendMessage({ translate: 'commands.counter.mode.single', with: [Utils.formatColorStr(color), mode] });
-    Utils.broadcastActionBar({ translate: 'commands.counter.mode.single.actionbar', with: [sender.name, Utils.formatColorStr(color), mode] }, sender);
+    sender.sendMessage({ translate: 'commands.counter.mode.single', with: [formatColorStr(color), mode] });
+    broadcastActionBar({ translate: 'commands.counter.mode.single.actionbar', with: [sender.name, formatColorStr(color), mode] }, sender);
 }
 
 function setAllMode(sender, mode) {
     counterChannels.setAllModes(mode);
     sender.sendMessage({ translate: 'commands.counter.mode.all', with: [mode] });
-    Utils.broadcastActionBar({ translate: 'commands.counter.mode.all.actionbar', with: [sender.name, mode] }, sender);
+    broadcastActionBar({ translate: 'commands.counter.mode.all.actionbar', with: [sender.name, mode] }, sender);
 }
 
 export { query, queryAll };

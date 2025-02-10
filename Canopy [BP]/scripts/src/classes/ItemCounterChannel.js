@@ -1,5 +1,5 @@
 import { system, world } from "@minecraft/server";
-import Utils from "../../include/utils";
+import { formatColorStr, getColorCode } from "../../include/utils";
 import ItemCounterChannels from "./ItemCounterChannels";
 
 class ItemCounterChannel {
@@ -92,7 +92,7 @@ class ItemCounterChannel {
         const realtimeText = useRealTime ? 'realtime: ' : '';
         const message = { rawtext: [
             { translate: translatableQueryHeaderStr, with: [
-                Utils.formatColorStr(this.color),
+                formatColorStr(this.color),
                 realtimeText, 
                 String(this.#getMinutesSinceStart(this)), 
                 String(this.totalCount), 
@@ -168,7 +168,7 @@ class ItemCounterChannel {
     }
 
     #getAllModeOutput(item) {
-        let output = `${Utils.getColorCode(this.color)}${this.itemMap[item]}`;
+        let output = `${getColorCode(this.color)}${this.itemMap[item]}`;
         const rateModes = ItemCounterChannels.modes.slice(1);
         for (let i = 0; i < rateModes.length; i++) {
             if (i === 0)

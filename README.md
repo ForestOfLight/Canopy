@@ -22,8 +22,9 @@ With **Canopy**, you gain access to new commands and gamerules designed to help 
 Explore everything **Canopy** offers in the [Wiki](https://github.com/ForestOfLight/Canopy/wiki)!
 
 ## Key Features
+
 - **InfoDisplay** – On-screen display shows light TPS, levels, biome info, block & entity details, and more.
-- **Farm tracking & spawn monitoring** – Hopper counters and spawn tracking tools help you measure rates and fine-tune efficiency.
+- **Farm tracking & spawn monitoring** - Hopper counters and spawn tracking tools help you measure rates and fine-tune efficiency.
 - **Tick speed control** – Slow down ticks to analyze mechanics in detail.
 - **Expandable with extensions** – Community-created addons to further enhance your experience.
 - **And much, much more!**
@@ -48,14 +49,17 @@ We welcome contributions to **Canopy** from the community!
 If you want to improve the Technical Bedrock Edition experience for yourself and others, here are a few ways you can contribute:
 
 ### Reporting Bugs
+
 If you encounter any bugs while using **Canopy**, please open an [issue](https://github.com/ForestOfLight/Canopy/issues) in our GitHub repository. Ensure to include a detailed description of the bug and steps to reproduce it.
 
 ### Submitting a Pull Request
+
 We appreciate code contributions.
 If you've fixed a bug or implemented a new feature, please submit a pull request!
 Please ensure your code follows our coding standards and include tests where possible.
 
 ## An Amelix Foundation Project
+
 <div align="center">
   <a href="https://discord.gg/FabqwVzgyD">
     <img src="./amelix-logo.gif" alt="Amelix Foundation Logo" width="80" height="80">

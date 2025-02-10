@@ -1,7 +1,7 @@
 import { system, world, EquipmentSlot, EntityComponentTypes, ItemComponentTypes } from "@minecraft/server";
-import Probe from "src/classes/Probe";
-import Utils from "include/utils";
-import { intToBiomeMap } from "include/data";
+import Probe from "../classes/Probe";
+import { getEntitiesByType } from "../../include/utils";
+import { intToBiomeMap } from "../../include/data";
 
 const CLEANUP_INTERVAL = 10 * 20;
 
@@ -122,7 +122,7 @@ class ProbeManager {
         });
 
         system.runInterval(() => {
-            const probeEntities = Utils.getEntitiesByType('canopy:probe');
+            const probeEntities = getEntitiesByType('canopy:probe');
             let count = 0;
             for (const probeEntity of probeEntities) {
                 if (probeEntity.isValid()) {
