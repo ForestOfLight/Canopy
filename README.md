@@ -1,31 +1,67 @@
 ![Canopy Logo](./canopylogo_banner.jpg)
 
+<div align="center">
+<p>
+  <b>Gain insight and control in your worlds.</b>
+</p>
+
+[![CI](https://github.com/ForestOfLight/Canopy/actions/workflows/ci.yml/badge.svg)](https://github.com/ForestOfLight/Canopy/actions/workflows/ci.yml)
 [![GitHub Downloads](https://img.shields.io/github/downloads/ForestOfLight/Canopy/total?label=Github%20downloads&logo=github)](https://github.com/ForestOfLight/Canopy/releases/latest)
 [![Curseforge Downloads](https://cf.way2muchnoise.eu/full_1062078_downloads.svg)](https://www.curseforge.com/minecraft-bedrock/addons/canopy)
+[![Minecraft - Version](https://img.shields.io/badge/Minecraft-v1.21.50_(Bedrock)-brightgreen)](https://feedback.minecraft.net/hc/en-us/sections/360001186971-Release-Changelogs)
+[![GitHub License](https://img.shields.io/github/license/forestoflight/canopy)](LICENSE)
 [![Discord](https://badgen.net/discord/members/9KGche8fxm?icon=discord&label=Discord&list=what)](https://discord.gg/9KGche8fxm)
+</div>
 
-This pack brings technical informatics, new features, and quality-of-life changes to Minecraft Bedrock Edition, similar to the Carpet Mod for Minecraft: Java Edition.
+**Canopy** is a powerful addon for Minecraft Bedrock Edition that gives you greater insight and control over the game’s technical aspects.
 
-# What is Canopy?
+Whether you're optimizing farms, gathering more in-depth game data, or just looking for tools to make survival more intuitive—without losing the vanilla feel—**Canopy** provides the solutions you need.
 
-**Canopy** is an addon for vanilla Minecraft Bedrock Edition that allows more control over what matters from a technical perspective of the game. With it, you can:
+With **Canopy**, you gain access to new commands and gamerules designed to help you understand, refine, and optimize your world.
 
-- View useful information in the top right of your screen, including light level, TPS, biome, the number of entities in view, the name of the block in front of you, its inventory, and more.
-- Receive a detailed breakdown of the items your farms and machines produce using hopper counters.
-- Get statistics on the performance of your farms with spawn tracking.
-- Analyze your builds in slow motion using the tick command.
-- much, much more!
+Explore everything **Canopy** offers in the [Wiki](https://github.com/ForestOfLight/Canopy/wiki)!
 
-## Usage
-
-Learn about how to install and use **Canopy** in the [Wiki](https://github.com/ForestOfLight/Canopy/wiki).
+## Key Features
+- **InfoDisplay** – On-screen display shows light TPS, levels, biome info, block & entity details, and more.
+- **Farm tracking & spawn monitoring** – Hopper counters and spawn tracking tools help you measure rates and fine-tune efficiency.
+- **Tick speed control** – Slow down ticks to analyze mechanics in detail.
+- **Expandable with extensions** – Community-created addons to further enhance your experience.
+- **And much, much more!**
 
 ## Looking for Simulated Players?
 
 Check out **[Understudy](https://github.com/ForestOfLight/Understudy)**, a **Canopy** extension addon that gives you full control over simulated players in your world.
 
-## More Help
+## Getting Started
 
-1. [**Canopy** Discord server](https://discord.gg/9KGche8fxm)
+Installing **Canopy** is quick and easy—simply download the latest version from the [Releases](https://github.com/ForestOfLight/Canopy/releases) page and import it into your world.
 
-2. [Amelix Foundation Discord server](https://discord.gg/FabqwVzgyD)
+For detailed setup instructions and usage tips, visit the [Wiki](https://github.com/ForestOfLight/Canopy/wiki).
+
+## Need Help?
+
+Join our community on Discord for support, updates, and discussions: **https://discord.gg/9KGche8fxm**
+
+## Contributing
+
+We welcome contributions to **Canopy** from the community!
+If you want to improve the Technical Bedrock Edition experience for yourself and others, here are a few ways you can contribute:
+
+### Reporting Bugs
+If you encounter any bugs while using **Canopy**, please open an [issue](https://github.com/ForestOfLight/Canopy/issues) in our GitHub repository. Ensure to include a detailed description of the bug and steps to reproduce it.
+
+### Submitting a Pull Request
+We appreciate code contributions.
+If you've fixed a bug or implemented a new feature, please submit a pull request!
+Please ensure your code follows our coding standards and include tests where possible.
+
+## An Amelix Foundation Project
+<div align="center">
+  <a href="https://discord.gg/FabqwVzgyD">
+    <img src="./amelix-logo.gif" alt="Amelix Foundation Logo" width="80" height="80">
+  </a>
+</div>
+
+For more information about the **Amelix Foundation** and its projects:
+
+[**Join the Amelix Foundation Discord server!**](https://discord.gg/FabqwVzgyD)
