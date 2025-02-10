@@ -172,8 +172,10 @@ function formatObject(target, object) {
     for (const key in object) {
         try {
             if (typeof object[key] === 'function') continue;
-            const value = object[key];
-            if (typeof value === 'object') 
+            let value = object[key];
+            if (target === value)
+                value = 'this';
+            else if (typeof value === 'object')
                 formatObject(target, value);
             
             output += `${key}=${JSON.stringify(value)}, `;

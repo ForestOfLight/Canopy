@@ -10,7 +10,7 @@ new Rule({
 
 const insideBedrockPistonList = [];
 
-world.afterEvents.pistonActivate.subscribe(async (event) => {
+world.afterEvents.pistonActivate.subscribe((event) => {
     if (!Rules.getNativeValue('pistonBedrockBreaking') || !['Expanding', 'Retracting'].includes(event.piston.state)) return;
     const piston = event.piston;
     const block = event.block;
