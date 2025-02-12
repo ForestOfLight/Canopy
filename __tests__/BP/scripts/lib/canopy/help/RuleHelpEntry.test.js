@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import RuleHelpEntry from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/RuleHelpEntry";
+import { RuleHelpEntry } from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/RuleHelpEntry";
 
 describe('RuleHelpEntry', () => {
     describe('constructor', () => {

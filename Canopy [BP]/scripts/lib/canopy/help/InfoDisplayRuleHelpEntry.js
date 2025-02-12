@@ -1,4 +1,4 @@
-import RuleHelpEntry from "./RuleHelpEntry";
+import { RuleHelpEntry } from "./RuleHelpEntry";
 import { InfoDisplayRule } from "../InfoDisplayRule";
 
 class InfoDisplayRuleHelpEntry extends RuleHelpEntry {
@@ -15,4 +15,4 @@ class InfoDisplayRuleHelpEntry extends RuleHelpEntry {
     }
 }
 
-export default InfoDisplayRuleHelpEntry;
+export { InfoDisplayRuleHelpEntry };

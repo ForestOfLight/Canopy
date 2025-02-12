@@ -1,5 +1,5 @@
-import HelpPage from './HelpPage';
-import RuleHelpEntry from './RuleHelpEntry';
+import { HelpPage } from './HelpPage';
+import { RuleHelpEntry } from './RuleHelpEntry';
 import { Rule } from '../Rule';
 
 class RuleHelpPage extends HelpPage {
@@ -31,4 +31,4 @@ class RuleHelpPage extends HelpPage {
     }
 }
 
-export default RuleHelpPage;
+export { RuleHelpPage };

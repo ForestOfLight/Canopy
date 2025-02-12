@@ -1,4 +1,4 @@
-import HelpEntry from "./HelpEntry";
+import { HelpEntry } from "./HelpEntry";
 
 class RuleHelpEntry extends HelpEntry {
     constructor(rule) {
@@ -17,4 +17,4 @@ class RuleHelpEntry extends HelpEntry {
     }
 }
 
-export default RuleHelpEntry;
+export { RuleHelpEntry };

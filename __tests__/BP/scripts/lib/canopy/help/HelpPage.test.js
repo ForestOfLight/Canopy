@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { describe, it, expect } from 'vitest';
-import HelpPage from '../../../../../../Canopy [BP]/scripts/lib/canopy/help/HelpPage';
+import { HelpPage } from '../../../../../../Canopy [BP]/scripts/lib/canopy/help/HelpPage';
 
 describe('HelpPage', () => {
     describe('constructor', () => {

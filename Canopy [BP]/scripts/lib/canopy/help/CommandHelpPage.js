@@ -1,5 +1,5 @@
-import HelpPage from "./HelpPage";
-import CommandHelpEntry from "./CommandHelpEntry";
+import { HelpPage } from "./HelpPage";
+import { CommandHelpEntry } from "./CommandHelpEntry";
 import { Command } from "../Command";
 
 class CommandHelpPage extends HelpPage {
@@ -31,4 +31,4 @@ class CommandHelpPage extends HelpPage {
     }
 }
 
-export default CommandHelpPage;
+export { CommandHelpPage };

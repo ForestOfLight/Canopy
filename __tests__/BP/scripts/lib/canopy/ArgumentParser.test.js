@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import ArgumentParser from '../../../../../Canopy [BP]/scripts/lib/canopy/ArgumentParser.js';
+import { ArgumentParser } from '../../../../../Canopy [BP]/scripts/lib/canopy/ArgumentParser.js';
 
 vi.mock("@minecraft/server", () => ({
     world: { 

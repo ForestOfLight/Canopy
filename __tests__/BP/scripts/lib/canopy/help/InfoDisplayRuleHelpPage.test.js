@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import InfoDisplayRuleHelpPage from '../../../../../../Canopy [BP]/scripts/lib/canopy/help/InfoDisplayRuleHelpPage';
+import { InfoDisplayRuleHelpPage } from '../../../../../../Canopy [BP]/scripts/lib/canopy/help/InfoDisplayRuleHelpPage';
 import { InfoDisplayRule } from '../../../../../../Canopy [BP]/scripts/lib/canopy/InfoDisplayRule';
-import InfoDisplayRuleHelpEntry from '../../../../../../Canopy [BP]/scripts/lib/canopy/help/InfoDisplayRuleHelpEntry';
+import { InfoDisplayRuleHelpEntry } from '../../../../../../Canopy [BP]/scripts/lib/canopy/help/InfoDisplayRuleHelpEntry';
 import { Rules } from '../../../../../../Canopy [BP]/scripts/lib/canopy/Rules';
 
 vi.mock("@minecraft/server", () => ({

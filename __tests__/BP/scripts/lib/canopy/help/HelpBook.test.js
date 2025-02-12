@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import HelpBook from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/HelpBook";
-import RuleHelpPage from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/RuleHelpPage";
+import { HelpBook } from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/HelpBook";
+import { RuleHelpPage } from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/RuleHelpPage";
 import { Rule } from "../../../../../../Canopy [BP]/scripts/lib/canopy/Rule";
 import { Rules } from "../../../../../../Canopy [BP]/scripts/lib/canopy/Rules";
-import CommandHelpPage from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/CommandHelpPage";
+import { CommandHelpPage } from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/CommandHelpPage";
 import { Command } from "../../../../../../Canopy [BP]/scripts/lib/canopy/Command";
 import { Commands } from "../../../../../../Canopy [BP]/scripts/lib/canopy/Commands";
 

@@ -1,5 +1,5 @@
-import RuleHelpPage from './RuleHelpPage';
-import InfoDisplayRuleHelpEntry from './InfoDisplayRuleHelpEntry';
+import { RuleHelpPage } from './RuleHelpPage';
+import { InfoDisplayRuleHelpEntry } from './InfoDisplayRuleHelpEntry';
 import { InfoDisplayRule } from '../InfoDisplayRule';
 
 class InfoDisplayRuleHelpPage extends RuleHelpPage {
@@ -17,4 +17,4 @@ class InfoDisplayRuleHelpPage extends RuleHelpPage {
     }
 }
 
-export default InfoDisplayRuleHelpPage;
+export { InfoDisplayRuleHelpPage };

@@ -1,4 +1,4 @@
-import HelpPage from "./HelpPage";
+import { HelpPage } from "./HelpPage";
 import { recolor } from "../../../include/utils";
 
 class HelpBook {
@@ -133,4 +133,4 @@ class HelpBook {
     }
 }
 
-export default HelpBook;
+export { HelpBook };

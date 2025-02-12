@@ -27,12 +27,12 @@ class Profiler {
     }
 
     static async profile() {
-        const mspt = await this.profileMSPT();
-        const tps = await this.profileTPS();
+        const mspt = await this.#profileMSPT();
+        const tps = await this.#profileTPS();
         return { tps, mspt };
     }
 
-    static async profileTPS() {
+    static async #profileTPS() {
         const tpsValues = [];
         const runner = system.runInterval(() => {
             tpsValues.push(this.tickTps);
@@ -50,7 +50,7 @@ class Profiler {
         return result;
     }
 
-    static async profileMSPT() {
+    static async #profileMSPT() {
         const msptValues = [];
         const runner = system.runInterval( async () => {
             const mspt = await this.#getRealMspt();

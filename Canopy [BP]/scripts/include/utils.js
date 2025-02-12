@@ -17,49 +17,6 @@ export function isNumeric(str) {
 	return !isNaN(Number(str)) && str !== null && typeof str !== 'boolean';
 }
 
-export function parseLookingAtBlock(lookingAtBlock) {
-	let blockName = '';
-	let raycastHitFace;
-	const block = lookingAtBlock?.block ?? undefined;
-	if (block) {
-		raycastHitFace = lookingAtBlock.face;
-		try {
-			blockName = `§a${parseName(block)}`;
-		} catch (error) {
-			if (error.message.includes('loaded')) 
-				blockName = `§c${stringifyLocation(block.location, 0)} Unloaded`;
-				else if (error.message.includes('undefined')) 
-				blockName = '§7Undefined';
-			
-		}
-	}
-
-	return { LookingAtName: blockName, LookingAtFace: raycastHitFace, LookingAtLocation: block?.location, LookingAtBlock: block };
-}
-
-export function parseLookingAtEntity(lookingAtEntities) {
-	let entityName;
-
-	const entity = lookingAtEntities[0]?.entity ?? undefined;
-	if (entity) {
-		try {
-			entityName = `§a${parseName(entity)}`;
-
-			if (entity.typeId === 'minecraft:player') 
-				entityName = `§a§o${entity.name}§r`;
-			
-		} catch (error) {
-			if (error.message.includes('loaded')) 
-				entityName = `§c${stringifyLocation(entity.location, 0)} Unloaded`;
-				else if (error.message.includes('undefined')) 
-				entityName = '§7Undefined';
-			
-		}
-	}
-
-	return { LookingAtName: entityName, LookingAtEntity: entity }
-}
-
 export function getClosestTarget(player, blockRayResult, entityRayResult) {
 	let entity;
 	let block;
@@ -73,7 +30,6 @@ export function getClosestTarget(player, blockRayResult, entityRayResult) {
 		return entity;
 	const entityDist = calcDistance(player.getHeadLocation(), entity.location);
 	const blockDist = calcDistance(player.getHeadLocation(), block.location);
-
 	return entityDist <= blockDist ? entity : block;
 }
 
@@ -154,18 +110,22 @@ export function getInventory(block) {
 
 export function restoreInventory(block, items) {
 	const container = block.getComponent('inventory')?.container;
-	if (container === undefined) return;
+	if (container === undefined)
+		return;
 	for (let i = 0; i < container.size; i++) {
 		const item = items[i];
-		if (item === undefined) continue;
+		if (item === undefined)
+			continue;
 		container.getSlot(i).setItem(new ItemStack(item.typeId, item.amount));
 	}
 }
 
 export function broadcastActionBar(message, sender) {
 	let players;
-	if (sender) players = world.getPlayers({ excludeNames: [sender.name] });
-	else players = world.getAllPlayers();
+	if (sender)
+		players = world.getPlayers({ excludeNames: [sender.name] });
+	else
+		players = world.getAllPlayers();
 	players.forEach(player => player?.onScreenDisplay.setActionBar(message));
 }
 

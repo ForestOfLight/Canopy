@@ -14,4 +14,4 @@ class HelpEntry {
     }
 }
 
-export default HelpEntry;
+export { HelpEntry };

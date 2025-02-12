@@ -1,4 +1,4 @@
-import HelpEntry from './HelpEntry';
+import { HelpEntry } from './HelpEntry';
 import { Commands } from '../Commands';
 
 class CommandHelpEntry extends HelpEntry {
@@ -16,4 +16,4 @@ class CommandHelpEntry extends HelpEntry {
     }
 }
 
-export default CommandHelpEntry;
+export { CommandHelpEntry };

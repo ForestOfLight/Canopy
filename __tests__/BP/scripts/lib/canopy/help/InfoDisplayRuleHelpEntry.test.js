@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import InfoDisplayRuleHelpEntry from '../../../../../../Canopy [BP]/scripts/lib/canopy/help/InfoDisplayRuleHelpEntry';
+import { InfoDisplayRuleHelpEntry } from '../../../../../../Canopy [BP]/scripts/lib/canopy/help/InfoDisplayRuleHelpEntry';
 import { InfoDisplayRule } from '../../../../../../Canopy [BP]/scripts/lib/canopy/InfoDisplayRule';
 import { Rules } from '../../../../../../Canopy [BP]/scripts/lib/canopy/Rules';
 

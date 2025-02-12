@@ -42,4 +42,4 @@ class HelpPage {
     }
 }
 
-export default HelpPage;
+export { HelpPage };
