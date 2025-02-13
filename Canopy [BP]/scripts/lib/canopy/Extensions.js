@@ -8,6 +8,10 @@ class Extensions {
         return this.extensions[id];
     }
 
+    static getFromName(name) {
+        return Object.values(this.extensions).find(extension => extension.getName() === name);
+    }
+
     static remove(id) {
         delete this.extensions[id];
     }
@@ -33,13 +37,11 @@ class Extensions {
     }
 
     static getVersionedNames() {
-        return this.getAll().map(extension => `${extension.getName()} v${extension.getVersion()}`);
+        return this.getAll().map(extension => ({ name: extension.getName(), version: extension.getVersion() }));
     }
 
     static #setupExtensionRegistration() {
         IPC.on('canopyExtension:registerExtension', (extensionData) => {
-            if (typeof extensionData.description === 'string')
-                extensionData.description = { text: extensionData.description };
             const extension = new Extension(extensionData);
             this.extensions[extension.getID()] = extension;
         });

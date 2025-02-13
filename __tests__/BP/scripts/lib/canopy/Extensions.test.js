@@ -92,7 +92,7 @@ describe("Extensions", () => {
 
     describe('getVersionedNames()', () => {
         it('should return all extension names with versions', () => {
-            expect(Extensions.getVersionedNames()).toEqual(['Test Extension v1.0.0']);
+            expect(Extensions.getVersionedNames()).toEqual([{ name: 'Test Extension', version: '1.0.0' }]);
         });
     });
 

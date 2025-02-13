@@ -26,9 +26,13 @@ function displayWelcome(player) {
         '§a+ ----- +\n'
     ].join('');
     player.sendMessage({ rawtext: [{ text: graphic }, { translate: 'generic.welcome.start', with: [PACK_VERSION] }] });
+    
     const extensions = Extensions.getVersionedNames();
-    if (extensions.length > 0)
-        player.sendMessage({ translate: 'generic.welcome.extensions', with: [extensions.join('§r§7, §a§o')] });
+    if (extensions.length === 0) return;
+    const extensionsMessage = { rawtext: [{ translate: 'generic.welcome.extensions' }] };
+    for (const extensionName of extensions)
+        extensionsMessage.rawtext.push({ text: `§r§7, §a§o${extensionName.name} §7v${extensionName.version}` });
+    player.sendMessage(extensionsMessage);
 }
 
 export { displayWelcome };

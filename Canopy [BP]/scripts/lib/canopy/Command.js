@@ -1,5 +1,6 @@
 import IPC from "../ipc/ipc";
 import { Commands } from "./Commands";
+import { Extensions } from "./Extensions";
 
 class Command {
     #name;
@@ -11,7 +12,7 @@ class Command {
 	#adminOnly;
 	#helpEntries;
 	#helpHidden;
-	#extensionName;
+	#extension;
 
 	constructor({ name, description = { text: '' }, usage, callback, args = [], contingentRules = [], adminOnly = false, helpEntries = [], helpHidden = false, extensionName = undefined }) {
 		this.#name = name;
@@ -23,21 +24,27 @@ class Command {
 		this.#adminOnly = adminOnly;
 		this.#helpEntries = helpEntries;
 		this.#helpHidden = helpHidden;
-		this.#extensionName = extensionName;
-
-		this.#checkMembers();
-		this.#helpEntries = this.#helpEntries.map(entry => { if (typeof entry.description === 'string') entry.description = { text: entry.description }; return entry; });
+		this.#extension = Extensions.getFromName(extensionName);
+		
+		this.#checkMembers(extensionName);
+		if (typeof this.#description === 'string')
+			this.#description = { text: this.#description };
+		this.#helpEntries = this.#helpEntries.map(entry => {
+			if (typeof entry.description === 'string')
+				entry.description = { text: entry.description };
+			return entry;
+		});
 		Commands.register(this);
 	}
 
-	#checkMembers() {
+	#checkMembers(extensionName) {
 		if (!this.#name) throw new Error('[Command] name is required.');
 		if (!this.#usage) throw new Error('[Command] usage is required.');
 		if (!Array.isArray(this.#args)) throw new Error('[Command] args must be an array.');
 		if (!Array.isArray(this.#contingentRules)) throw new Error('[Command] contingentRules must be an array.');
 		if (typeof this.#adminOnly !== 'boolean') throw new Error('[Command] adminOnly must be a boolean.');
 		if (!Array.isArray(this.#helpEntries)) throw new Error('[Command] helpEntries must be an array.');
-		if (this.#extensionName && typeof this.#extensionName !== 'string') throw new Error('[Command] extensionName must be a string.');
+		if (extensionName && !this.#extension) throw new Error('[Command] extensionName must be a valid Extension.');
 	}
 	
 	getName() {
@@ -68,8 +75,8 @@ class Command {
 		return this.#helpEntries;
 	}
 	
-	getExtensionName() {
-		return this.#extensionName;
+	getExtension() {
+		return this.#extension;
 	}
 
 	isHelpHidden() {
@@ -77,9 +84,9 @@ class Command {
 	}
 	
 	runCallback(sender, args) {
-		if (this.#extensionName) {
+		if (this.#extension) {
 			// console.warn(`[Canopy] Sending ${this.#extensionName} command callback from ${sender?.name}: '${this.#name} ${JSON.stringify(args)}'`);
-			IPC.send(`canopyExtension:${this.#extensionName}:commandCallbackRequest`, { 
+			IPC.send(`canopyExtension:${this.#extension.getID()}:commandCallbackRequest`, { 
 				commandName: this.#name,
 				senderName: sender?.name,
 				args: args

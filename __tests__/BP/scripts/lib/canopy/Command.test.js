@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Command } from "../../../../../Canopy [BP]/scripts/lib/canopy/Command";
 import { Commands } from "../../../../../Canopy [BP]/scripts/lib/canopy/Commands";
 import IPC from "../../../../../Canopy [BP]/scripts/lib/ipc/ipc";
+import { Extension } from "../../../../../Canopy [BP]/scripts/lib/canopy/Extension";
+import { Extensions } from "../../../../../Canopy [BP]/scripts/lib/canopy/Extensions";
 
 vi.mock("@minecraft/server", () => ({
     world: { 
@@ -51,8 +53,8 @@ describe("Command", () => {
             expect(() => new Command({ name: "test", usage: "test", helpEntries: "notArray" })).toThrow('[Command] helpEntries must be an array.');
         });
 
-        it("should throw an error if extensionName is not a string", () => {
-            expect(() => new Command({ name: "test", usage: "test", extensionName: 123 })).toThrow('[Command] extensionName must be a string.');
+        it("should throw an error if extensionName is not a valid extension", () => {
+            expect(() => new Command({ name: "test", usage: "test", extensionName: "invalidExtension" })).toThrow('[Command] extensionName must be a valid Extension.');
         });
 
         it("should register the command", () => {
@@ -74,7 +76,7 @@ describe("Command", () => {
                 adminOnly: true,
                 helpEntries: ["entry1"],
                 helpHidden: true,
-                extensionName: "extension"
+                extensionName: undefined
             });
         });
 
@@ -107,7 +109,7 @@ describe("Command", () => {
         });
 
         it("should return the correct extensionName", () => {
-            expect(command.getExtensionName()).toBe("extension");
+            expect(command.getExtension()).toBeUndefined();
         });
 
         it("should return the correct helpHidden status", () => {
@@ -133,6 +135,12 @@ describe("Command", () => {
 
         it("should send an IPC message when part of an extension", () => {
             const ipcSendMock = vi.spyOn(IPC, "send");
+            Extensions.extensions["extension"] = new Extension({
+                name: "extension",
+                version: "1.0.0",
+                author: "author",
+                description: { text: "description" }
+            });
             const command = new Command({
                 name: "test",
                 usage: "test",

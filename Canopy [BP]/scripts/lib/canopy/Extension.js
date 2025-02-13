@@ -16,8 +16,20 @@ class Extension {
             description = { text: description };
         this.description = description;
 
+        this.#checkArgs();
         this.#setupCommandRegistration();
         this.#setupRuleRegistration();
+    }
+
+    #checkArgs() {
+        if (typeof this.name !== 'string' || this.name.length === 0 || this.name.length > 32)
+            throw new Error('[Canopy] Extension name must be a string, contain at least one alphanumeric character, and be less than 32 characters.');
+        if (!/^\d+\.\d+\.\d+$/.test(this.version))
+            throw new Error('[Canopy] Version must be in format #.#.#');
+        if (typeof this.author !== 'string' || this.author.length === 0 || this.author.length > 32)
+            throw new Error('[Canopy] Extension author must be a string, contain at least one alphanumeric character, and be less than 32 characters.');
+        if (typeof this.description !== 'object' || this.description === null)
+            throw new Error('[Canopy] Extension description cannot be null.');
     }
 
     getID() {
@@ -58,20 +70,12 @@ class Extension {
 
     #setupCommandRegistration() {
         IPC.on(`canopyExtension:${this.id}:registerCommand`, (cmdData) => {
-            if (typeof cmdData.description === 'string')
-                cmdData.description = { text: cmdData.description };
-            for (const helpEntry of cmdData.helpEntries) {
-                if (typeof helpEntry.description === 'string')
-                    helpEntry.description = { text: helpEntry.description };
-            }
             this.commands.push(new Command(cmdData));
         });
     }
 
     #setupRuleRegistration() {
         IPC.on(`canopyExtension:${this.id}:registerRule`, (ruleData) => {
-            if (typeof ruleData.description === 'string')
-                ruleData.description = { text: ruleData.description };
             this.rules.push(new Rule(ruleData));
         });
     }

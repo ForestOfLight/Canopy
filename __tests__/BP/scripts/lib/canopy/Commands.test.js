@@ -103,16 +103,16 @@ describe('Commands', () => {
 
     describe('getNativeCommands', () => {
         it('should return all commands without an extension name', () => {
-            const command1 = { name: 'test1', getName: () => 'test1', getExtensionName: () => false };
-            const command2 = { name: 'test2', getName: () => 'test2', getExtensionName: () => 'extension' };
+            const command1 = { name: 'test1', getName: () => 'test1', getExtension: () => undefined };
+            const command2 = { name: 'test2', getName: () => 'test2', getExtension: () => 'extension' };
             Commands.register(command1);
             Commands.register(command2);
             expect(Commands.getNativeCommands()).toEqual([command1]);
         });
 
         it('should sort the commands alphabetically', () => {
-            const command1 = { name: 'b', getName: () => 'b', getExtensionName: () => false };
-            const command2 = { name: 'a', getName: () => 'a',  getExtensionName: () => false };
+            const command1 = { name: 'b', getName: () => 'b', getExtension: () => undefined };
+            const command2 = { name: 'a', getName: () => 'a',  getExtension: () => undefined };
             Commands.register(command1);
             Commands.register(command2);
             expect(Commands.getNativeCommands()).toEqual([command2, command1]);

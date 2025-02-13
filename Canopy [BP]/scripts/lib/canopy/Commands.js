@@ -41,7 +41,7 @@ class Commands {
     }
 
     static getNativeCommands() {
-		const result = Object.values(this.#commands).filter(cmd => !cmd.getExtensionName());
+		const result = Object.values(this.#commands).filter(cmd => !cmd.getExtension());
 		result.sort((a, b) => a.getName().localeCompare(b.getName()));
 		return result;
 	}
@@ -114,7 +114,7 @@ class Commands {
     }
 
     static #handleGetPrefixRequest() {
-        IPC.on('canopy:getCommandPrefix', () => this.#prefix);
+        IPC.handle('canopyExtension:getCommandPrefix', () => this.#prefix);
     }
 
     static #handleChatCommands() {

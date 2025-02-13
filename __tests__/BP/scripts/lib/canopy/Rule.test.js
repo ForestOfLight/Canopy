@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Rule } from '../../../../../Canopy [BP]/scripts/lib/canopy/Rule.js';
 import { Rules } from '../../../../../Canopy [BP]/scripts/lib/canopy/Rules.js';
 import IPC from '../../../../../Canopy [BP]/scripts/lib/ipc/ipc.js';
+import { Extensions } from '../../../../../Canopy [BP]/scripts/lib/canopy/Extensions.js';
+import { Extension } from '../../../../../Canopy [BP]/scripts/lib/canopy/Extension.js';
 
 vi.mock('@minecraft/server', () => ({
     world: { 
@@ -24,6 +26,12 @@ vi.mock('@minecraft/server', () => ({
 describe('Rule', () => {
     beforeEach(() => {
         Rules.clear();
+        Extensions.extensions['Test Extension'] = new Extension({
+            name: 'Test Extension',
+            version: '1.0.0',
+            author: 'Author Name',
+            description: 'This is a test extension'
+        });
         new Rule({ 
             category: 'test', 
             identifier: 'test_rule',
@@ -51,7 +59,7 @@ describe('Rule', () => {
             expect(rule.getDescription()).toEqual({ text: ruleData.description });
             expect(rule.getContigentRuleIDs()).toEqual(ruleData.contingentRules);
             expect(rule.getIndependentRuleIDs()).toEqual(ruleData.independentRules);
-            expect(rule.getExtensionName()).toBe(ruleData.extensionName);
+            expect(rule.getExtension()).toBe(ruleData.extension);
         });
 
         it('should set description to a rawtext object if it is a string', () => {
@@ -73,7 +81,7 @@ describe('Rule', () => {
             expect(rule.getDescription()).toEqual({ text: '' });
             expect(rule.getContigentRuleIDs()).toEqual([]);
             expect(rule.getIndependentRuleIDs()).toEqual([]);
-            expect(rule.getExtensionName()).toBe(false);
+            expect(rule.getExtension()).toBe(undefined);
         });
     });
 
@@ -107,9 +115,9 @@ describe('Rule', () => {
         });
     });
 
-    describe('getExtensionName', () => {
-        it('should return the extension name', () => {
-            expect(Rules.get('test_rule').getExtensionName()).toBe('Test Extension');
+    describe('getExtension', () => {
+        it('should return the extension', () => {
+            expect(Rules.get('test_rule').getExtension()).toBe(Extensions.extensions['Test Extension']);
         });
     });
 
@@ -145,9 +153,8 @@ describe('Rule', () => {
             ipcSendMock.mockResolvedValue(true);
             await Rules.get('test_rule').setValue(true);
             expect(ipcSendMock).toHaveBeenCalledWith(
-                `canopyExtension:${Rules.get('test_rule').getExtensionName()}:ruleValueSet`,
+                `canopyExtension:${Rules.get('test_rule').getExtension().getID()}:ruleValueSet`,
                 { 
-                    extensionName: Rules.get('test_rule').getExtensionName(),
                     ruleID: 'test_rule',
                     value: true 
                 }

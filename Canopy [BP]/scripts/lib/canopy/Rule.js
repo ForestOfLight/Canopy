@@ -1,6 +1,7 @@
 import { world } from '@minecraft/server';
 import IPC from "../ipc/ipc";
 import { Rules } from "./Rules";
+import { Extensions } from './Extensions';
 
 class Rule {
     #category;
@@ -8,7 +9,7 @@ class Rule {
     #description;
     #contingentRules;
     #independentRules;
-    #extensionName;
+    #extension;
 
     constructor({ category, identifier, description = '', contingentRules = [], independentRules = [], extensionName = false }) {
         this.#category = category;
@@ -18,7 +19,7 @@ class Rule {
         this.#description = description;
         this.#contingentRules = contingentRules;
         this.#independentRules = independentRules;
-        this.#extensionName = extensionName;
+        this.#extension = Extensions.getFromName(extensionName);
         Rules.register(this);
     }
 
@@ -46,14 +47,14 @@ class Rule {
         return Rules.getDependentRuleIDs(this.#identifier);
     }
 
-    getExtensionName() {
-        return this.#extensionName;
+    getExtension() {
+        return this.#extension;
     }
 
     async getValue() {
-        if (this.#extensionName) {
+        if (this.#extension) {
             // console.warn(`[Canopy] [Rule] Attempting to get value for ${this.#identifier} from extension ${this.#extensionName}.`);
-            return await IPC.invoke(`canopyExtension:${this.#extensionName}:ruleValueRequest`, { ruleID: this.#identifier }).then(result => 
+            return await IPC.invoke(`canopyExtension:${this.#extension.getID()}:ruleValueRequest`, { ruleID: this.#identifier }).then(result => 
                 // console.warn(`[Canopy] [Rule] Received value for ${this.#identifier} from extension ${this.#extensionName}: ${result}`);
                 this.parseValue(result)
             );
@@ -62,14 +63,14 @@ class Rule {
     }
 
     getNativeValue() {
-        if (this.#extensionName)
-            throw new Error(`[Canopy] [Rule] Native value is not available for ${this.#identifier} from extension ${this.#extensionName}.`);
+        if (this.#extension)
+            throw new Error(`[Canopy] [Rule] Native value is not available for ${this.#identifier} from extension ${this.#extension.getName()}.`);
         return this.parseValue(world.getDynamicProperty(this.#identifier));
     }
     
     setValue(value) {
-        if (this.#extensionName) 
-            IPC.send(`canopyExtension:${this.#extensionName}:ruleValueSet`, { extensionName: this.#extensionName, ruleID: this.#identifier, value: value });
+        if (this.#extension)
+            IPC.send(`canopyExtension:${this.#extension.getID()}:ruleValueSet`, { ruleID: this.#identifier, value: value });
         else
             world.setDynamicProperty(this.#identifier, value);
     }

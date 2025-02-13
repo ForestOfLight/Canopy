@@ -136,27 +136,27 @@ describe('Extension', () => {
         });
 
         it('should return a valid ID', () => {
-            const ext = new Extension({ name: 'TestExtension' });
+            const ext = new Extension({ name: 'TestExtension', version: '1.0.0', author: 'Author', description: 'Test' });
             expect(ext.getID()).toBe('testextension');
         });
 
         it('should handle special characters', () => {
-            const ext = new Extension({ name: 'Test Extension!' });
+            const ext = new Extension({ name: 'Test Extension!', version: '1.0.0', author: 'Author', description: 'Test' });
             expect(ext.getID()).toBe('test_extension');
         });
 
         it('should handle spaces', () => {
-            const ext = new Extension({ name: 'Test Extension 2' });
+            const ext = new Extension({ name: 'Test Extension 2', version: '1.0.0', author: 'Author', description: 'Test' });
             expect(ext.getID()).toBe('test_extension_2');
         });
 
         it('should handle numbers', () => {
-            const ext = new Extension({ name: 'Test Extension 3' });
+            const ext = new Extension({ name: 'Test Extension 3', version: '1.0.0', author: 'Author', description: 'Test' });
             expect(ext.getID()).toBe('test_extension_3');
         });
 
         it('should handle mixed characters', () => {
-            const ext = new Extension({ name: 'Test E%t3nsion 4!' });
+            const ext = new Extension({ name: 'Test E%t3nsion 4!', version: '1.0.0', author: 'Author', description: 'Test' });
             expect(ext.getID()).toBe('test_et3nsion_4');
         });
 

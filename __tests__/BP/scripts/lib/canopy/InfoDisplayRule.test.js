@@ -49,7 +49,7 @@ describe('InfoDisplayRule', () => {
             expect(rule.getDescription()).toEqual({ text: ruleData.description });
             expect(rule.getContigentRuleIDs()).toEqual(ruleData.contingentRules);
             expect(rule.getIndependentRuleIDs()).toEqual(ruleData.independentRules);
-            expect(rule.getExtensionName()).toBe(ruleData.extensionName);
+            expect(rule.getExtension()).toBe(ruleData.extension);
         });
 
         it('should set description to a rawtext object if it is a string', () => {
