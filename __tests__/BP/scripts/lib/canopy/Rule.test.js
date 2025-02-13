@@ -115,6 +115,30 @@ describe('Rule', () => {
         });
     });
 
+    describe('getDependentRuleIDs', () => {
+        it('should return the dependent rule IDs', () => {
+            new Rule({
+                category: 'test_category',
+                identifier: 'test_rule_2',
+                description: 'test_description',
+                contingentRules: [],
+                independentRules: []
+            });
+            expect(Rules.get('test_rule_2').getDependentRuleIDs()).toEqual(['test_rule']);
+        });
+
+        it('should return an empty array if there are no dependent rules', () => {
+            const rule = new Rule({
+                category: 'test_category',
+                identifier: 'test_identifier',
+                description: 'test_description',
+                contingentRules: [],
+                independentRules: []
+            });
+            expect(rule.getDependentRuleIDs()).toEqual([]);
+        });
+    });
+
     describe('getExtension', () => {
         it('should return the extension', () => {
             expect(Rules.get('test_rule').getExtension()).toBe(Extensions.extensions['Test Extension']);
