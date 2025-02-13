@@ -41,7 +41,7 @@ For detailed setup instructions and usage tips, visit the [Wiki](https://github.
 
 ## Need Help?
 
-Join our community on Discord for support, updates, and discussions: **https://discord.gg/9KGche8fxm**
+[**Join our community on Discord**](https://discord.gg/9KGche8fxm) for support, updates, and discussions.
 
 ## Contributing
 
@@ -66,6 +66,4 @@ Please ensure your code follows our coding standards and include tests where pos
   </a>
 </div>
 
-For more information about the **Amelix Foundation** and its projects:
-
-[**Join the Amelix Foundation Discord server!**](https://discord.gg/FabqwVzgyD)
+For more information about the **Amelix Foundation** and its projects, [**join the Amelix Foundation Discord server!**](https://discord.gg/FabqwVzgyD)
