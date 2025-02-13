@@ -19,8 +19,6 @@ Whether you're optimizing farms, gathering more in-depth game data, or just look
 
 With **Canopy**, you gain access to new commands and gamerules designed to help you understand, refine, and optimize your world.
 
-Explore everything **Canopy** offers in the [Wiki](https://github.com/ForestOfLight/Canopy/wiki)!
-
 ## Key Features
 
 - **InfoDisplay** – On-screen display shows light TPS, levels, biome info, block & entity details, and more.
@@ -28,6 +26,8 @@ Explore everything **Canopy** offers in the [Wiki](https://github.com/ForestOfLi
 - **Tick speed control** – Slow down ticks to analyze mechanics in detail.
 - **Expandable with extensions** – Community-created addons to further enhance your experience.
 - **And much, much more!**
+
+Explore everything **Canopy** offers in the [Wiki](https://github.com/ForestOfLight/Canopy/wiki)!
 
 ## Looking for Simulated Players?
 
