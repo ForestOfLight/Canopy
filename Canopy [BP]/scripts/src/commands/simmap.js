@@ -88,6 +88,7 @@ function resetLocation(sender) {
     config.dimension = sender.dimension.id;
     config.location = { x: 0, z: 0 };
     sender.setDynamicProperty('simulationMapConfig', JSON.stringify(config));
+    sender.sendMessage({ translate: 'commands.simmap.config.reset' });
 }
 
 function getConfig(player) {

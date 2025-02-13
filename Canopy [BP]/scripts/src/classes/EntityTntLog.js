@@ -7,12 +7,13 @@ class EntityTntLog extends EntityLog {
         super(type, { main, secondary, tertiary });
         this.tntSpawnLocations = {};
         this.removedTntThisTick = [];
-        this.subscribeToEvents();
+        this.initEvents();
     }
 
-    subscribeToEvents() {
+    initEvents() {
         world.afterEvents.entitySpawn.subscribe((event) => this.onSpawn(event.entity));
         world.beforeEvents.entityRemove.subscribe((event) => this.onRemove(event.removedEntity));
+        system.runInterval(() => this.onTick());
     }
 
     onSpawn(entity) {
@@ -21,15 +22,11 @@ class EntityTntLog extends EntityLog {
     }
 
     onRemove(entity) {
-        if (entity?.typeId === 'minecraft:tnt') {
-            this.subscribedPlayers.forEach(loggingPlayer => {
-                if (loggingPlayer.types.includes('tnt'))
-                    this.removedTntThisTick.push(entity);
-            });
-        }
+        if (entity?.typeId === 'minecraft:tnt' && this.subscribedPlayers.length > 0)
+            this.removedTntThisTick.push({ id: entity.id, location: entity.location });
     }
 
-    update() {
+    onTick() {
         for (const player of this.subscribedPlayers) {
             if (this.isPrintable()) {
                 const precision = player.getDynamicProperty('logPrecision');
@@ -45,19 +42,25 @@ class EntityTntLog extends EntityLog {
     }
 
     getLogHeader() {
+        const maxTick = 1000;
+        const shiftedTick = String(system.currentTick % maxTick).padStart(2, '0');
+        const coloredTick = `${shiftedTick.slice(0, -2)}${this.colors.secondary}${shiftedTick.slice(-2)}${this.colors.main}`;
         return { rawtext: [
             { text: `${this.colors.tertiary}----- ` },
             { translate: 'generic.total' },
-            { text: `: ${this.removedTntThisTick.length} ${this.colors.main}(tick: ${system.currentTick}${this.colors.main})${this.colors.tertiary} -----`}
+            { text: `: ${this.removedTntThisTick.length} ${this.colors.main}(tick: ${coloredTick}${this.colors.main})${this.colors.tertiary} -----`}
         ]};
     }
 
     getLogBody(precision) {
         let output = '';
-        for (const tntEntity of this.removedTntThisTick) {
+        for (let i = 0; i < this.removedTntThisTick.length; i++) {
+            const tntEntity = this.removedTntThisTick[i];
             const startLocation = stringifyLocation(this.tntSpawnLocations[tntEntity.id], precision);
             const endLocation = stringifyLocation(tntEntity.location, precision);
-            output += `§a${startLocation}§7 --> §c${endLocation}, `;
+            output += `§a${startLocation}§7 --> §c${endLocation}`;
+            if (i < this.removedTntThisTick.length - 1)
+                output += ', ';
             delete this.tntSpawnLocations[tntEntity.id];
         }
         if (output.length > 0)

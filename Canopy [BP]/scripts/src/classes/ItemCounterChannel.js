@@ -19,17 +19,42 @@ class ItemCounterChannel {
     getData() {
         const channelJSON = world.getDynamicProperty(this.dpIdentifier);
         if (!channelJSON) 
-            throw new Error(`No channel found for color ${this.color}`);
+            throw new Error(`No saved channel found for color ${this.color}`);
         return JSON.parse(channelJSON);
     }
 
-    initData(channelData) {
-        this.hopperList = channelData.hopperList;
-        this.mode = channelData.mode;
+    setData(channelData) {
+        this.hopperList = channelData?.hopperList || this.hopperList;
+        this.mode = ItemCounterChannels.modes.includes(channelData?.mode) ? channelData.mode : this.mode;
+        this.totalCount = channelData?.totalCount || this.totalCount;
+        this.itemMap = channelData?.itemMap || this.itemMap;
+        this.startTickTime = channelData?.startTickTime || this.startTickTime;
+        this.startRealTime = channelData?.startRealTime || this.startRealTime;
+        this.color = channelData?.color || this.color;
+        this.dpIdentifier = channelData?.dpIdentifier || this.dpIdentifier;
+        this.#updateData();
     }
 
-    setData(channelData) {
-        world.setDynamicProperty(this.dpIdentifier, JSON.stringify(channelData));
+    #updateData() {
+        world.setDynamicProperty(this.dpIdentifier, JSON.stringify(this));
+    }
+
+    loadSavedData() {
+        try {
+            const channelData = this.getData();
+            this.setData({
+                hopperList: channelData.hopperList || new Array(),
+                mode: channelData.mode || this.mode
+            });
+        } catch (error) {
+            if (error.message !== `No saved channel found for color ${this.color}`)
+                throw error;
+        }
+    }
+
+    disable() {
+        this.hopperList = new Array();
+        this.reset();
     }
 
     reset() {
@@ -38,11 +63,6 @@ class ItemCounterChannel {
         this.startTickTime = system.currentTick;
         this.startRealTime = Date.now();
         this.#updateData();
-    }
-
-    disable() {
-        this.hopperList = [];
-        this.reset();
     }
 
     addHopper(hopper) {
@@ -184,10 +204,6 @@ class ItemCounterChannel {
     #getMinutesSinceStart() {
         const minutes = this.#getDeltaTime() / 1200;
         return minutes.toFixed(2);
-    }
-
-    #updateData() {
-        world.setDynamicProperty(this.dpIdentifier, JSON.stringify(this));
     }
 }
 

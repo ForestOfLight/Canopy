@@ -1,5 +1,3 @@
-import { system } from "@minecraft/server";
-
 class EntityLog {
     constructor(type, { main, secondary, tertiary }) {
         if (this.constructor === EntityLog)
@@ -7,17 +5,14 @@ class EntityLog {
         this.type = type;
         this.colors = { main, secondary, tertiary };
         this.subscribedPlayers = [];
-        this.onTick();
+    }
+
+    initEvents() {
+        throw new Error("Method 'initEvents' must be implemented.");
     }
 
     onTick() {
-        system.runInterval(() => {
-            this.update();
-        });
-    }
-
-    update() {
-        throw new Error("Method 'update' must be implemented.");
+        throw new Error("Method 'onTick' must be implemented.");
     }
 
     isPrintable() {

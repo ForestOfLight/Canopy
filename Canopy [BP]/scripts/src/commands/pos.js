@@ -1,4 +1,4 @@
-import { Rule, Command } from "../../lib/canopy/Canopy";
+import { Rule, Command, Rules } from "../../lib/canopy/Canopy";
 import { world } from "@minecraft/server";
 import { stringifyLocation, getColoredDimensionName } from "../../include/utils";
 
@@ -6,8 +6,8 @@ const NETHER_SCALE_FACTOR = 8;
 
 new Rule({
     category: 'Rules',
-    identifier: 'commandPos',
-    description: { translate: 'rules.commandPos' },
+    identifier: 'commandPosOthers',
+    description: { translate: 'rules.commandPosOthers' }
 });
 
 new Command({
@@ -17,12 +17,13 @@ new Command({
     args: [
         { type: 'string|number', name: 'player' },
     ],
-    callback: posCommand,
-    contingentRules: ['commandPos']
+    callback: posCommand
 });
 
 function posCommand(sender, args) {
     const { player } = args;
+    if (!Rules.getNativeValue('commandPosOthers') && player !== null)
+        return sender.sendMessage({ translate: 'rules.generic.blocked', with: ['commandPosOthers'] });
     const target = player === null ? sender : world.getPlayers({ name: String(player) })[0];
     if (!target)
         return sender.sendMessage({ translate: 'generic.player.notfound', with: [player] });

@@ -1,6 +1,6 @@
 import { Commands, Command, InfoDisplayRule, Extensions, HelpBook, CommandHelpPage, RuleHelpPage, InfoDisplayRuleHelpPage, Rules } from '../../lib/canopy/Canopy';
 
-const COMMANDS_PER_PAGE = 7;
+const COMMANDS_PER_PAGE = 6;
 
 new Command({
     name: 'help',

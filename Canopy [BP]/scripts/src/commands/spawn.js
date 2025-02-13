@@ -1,5 +1,5 @@
 import { world, DimensionTypes } from "@minecraft/server";
-import { Rule, Command, Rules } from "../../lib/canopy/Canopy";
+import { Rule, Command, Rules, Commands } from "../../lib/canopy/Canopy";
 import { getColoredDimensionName, stringifyLocation, broadcastActionBar } from "../../include/utils";
 import WorldSpawns from "../classes/WorldSpawns";
 import { categoryToMobMap } from "../../include/data";
@@ -62,16 +62,26 @@ function spawnCommand(sender, args) {
         posTwo: { x: x2, y: y2, z: z2 }
     };
 
-    if (action === 'entities') printAllEntities(sender);
-    else if (action === 'mocking') handleMockingCmd(sender, actionTwo);
-    else if (action === 'test') resetSpawnCounters(sender);
-    else if (action === 'recent') recentSpawns(sender, actionTwo);
-    else if (action === 'tracking' && actionTwo === null) printTrackingStatus(sender);
-    else if (action === 'tracking' && actionTwo !== null && x1 !== null && z2 === null) sender.sendMessage({ translate: 'commands.generic.usage', with: [`${Command.prefix}spawn tracking <start/stop/mobname> [x1 y1 z1] [x2 y2 z2]`] });
-    else if (action === 'tracking' && actionTwo === 'start') startTracking(sender, area);
-    else if (action === 'tracking' && actionTwo === 'stop') stopTracking(sender);
-    else if (action === 'tracking' && actionTwo !== null) trackMob(sender, actionTwo, area);
-    else return cmd.sendUsage(sender);
+    if (action === 'entities')
+        printAllEntities(sender);
+    else if (action === 'mocking')
+        handleMockingCmd(sender, actionTwo);
+    else if (action === 'test')
+        resetSpawnCounters(sender);
+    else if (action === 'recent')
+        recentSpawns(sender, actionTwo);
+    else if (action === 'tracking' && actionTwo === null)
+        printTrackingStatus(sender);
+    else if (action === 'tracking' && actionTwo !== null && x1 !== null && z2 === null)
+        sender.sendMessage({ translate: 'commands.generic.usage', with: [`${Commands.getPrefix()}spawn tracking <start/stop/mobname> [x1 y1 z1] [x2 y2 z2]`] });
+    else if (action === 'tracking' && actionTwo === 'start')
+        startTracking(sender, area);
+    else if (action === 'tracking' && actionTwo === 'stop')
+        stopTracking(sender);
+    else if (action === 'tracking' && actionTwo !== null)
+        trackMob(sender, actionTwo, area);
+    else
+        return cmd.sendUsage(sender);
 }
 
 function printAllEntities(sender) {
@@ -89,7 +99,7 @@ async function handleMockingCmd(sender, enable) {
     if (!await Rules.getNativeValue('commandSpawnMocking'))
         return sender.sendMessage({ translate: 'rules.generic.blocked', with: [thisRule.getID()] });
     if (enable === null)
-        return sender.sendMessage({ translate: 'commands.generic.usage', with: [`${Command.prefix}spawn mocking <true/false>`] });
+        return sender.sendMessage({ translate: 'commands.generic.usage', with: [`${Commands.getPrefix()}spawn mocking <true/false>`] });
     isMocking = enable;
     if (enable) {
         sender.sendMessage({ translate: 'commands.spawn.mocking.enable' });

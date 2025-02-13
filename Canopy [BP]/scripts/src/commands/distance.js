@@ -1,4 +1,4 @@
-import { Command } from "../../lib/canopy/Canopy";
+import { Command, Commands } from "../../lib/canopy/Canopy";
 import { stringifyLocation, getRaycastResults, getClosestTarget, calcDistance } from "../../include/utils";
 
 let savedLocation = { x: undefined, y: undefined, z: undefined };
@@ -7,7 +7,7 @@ const MAX_DISTANCE = 64*16;
 const cmd = new Command({
     name: 'distance',
     description: { translate: 'commands.distance' },
-    usage: `distance [from [x y z]] [to [x y z]] OR ${Command.prefix}distance target`,
+    usage: `distance [from [x y z]] [to [x y z]] OR ${Commands.getPrefix()}distance target`,
     args: [
         { type: 'string', name: 'actionArgOne' },
         { type: 'number', name: 'fromArgX' },
@@ -40,7 +40,7 @@ new Command({
         { type: 'number', name: 'toArgY' },
         { type: 'number', name: 'toArgZ' }
     ],
-    usage: `d to [from [x y z]] [to [x y z]] OR ${Command.prefix}d target`,
+    usage: `d to [from [x y z]] [to [x y z]] OR ${Commands.getPrefix()}d target`,
     callback: distanceCommand,
     helpHidden: true
 });
@@ -69,7 +69,7 @@ function trySaveLocation(sender, args) {
     else if (areDefined(fromArgX, fromArgY, fromArgZ))
         savedLocation = { x: fromArgX, y: fromArgY, z: fromArgZ };
     else
-        return { translate: 'commands.generic.usage', with: [`${Command.prefix}distance from [x y z]`] }
+        return { translate: 'commands.generic.usage', with: [`${Commands.getPrefix()}distance from [x y z]`] }
 
     return { translate: 'commands.distance.from.success', with: [stringifyLocation(savedLocation)] };
 }
@@ -78,7 +78,7 @@ function tryCalculateDistanceFromSave(sender, args) {
     const { fromArgX, fromArgY, fromArgZ } = args;
     
     if (!hasSavedLocation() || (savedLocation.x === null && savedLocation.y === null && savedLocation.z === null))
-        return { translate: 'commands.distance.to.fail.nosave', with: [Command.prefix] };
+        return { translate: 'commands.distance.to.fail.nosave', with: [Commands.getPrefix()] };
     const fromLocation = savedLocation;
     
     let toLocation;
@@ -87,7 +87,7 @@ function tryCalculateDistanceFromSave(sender, args) {
     else if (areUndefined(fromArgX, fromArgY, fromArgZ))
         toLocation = sender.location;
     else
-        return { translate: 'commands.generic.usage', with: [`${Command.prefix}distance to [x y z]`] };
+        return { translate: 'commands.generic.usage', with: [`${Commands.getPrefix()}distance to [x y z]`] };
 
     return getCompleteOutput(fromLocation, toLocation);
 }
@@ -105,7 +105,7 @@ function tryCalculateDistance(sender, args) {
         fromLocation = { x: fromArgX, y: fromArgY, z: fromArgZ };
         toLocation = { x: toArgX, y: toArgY, z: toArgZ };
     } else {
-        return { translate: 'commands.generic.usage', with: [`${Command.prefix}distance from <x y z> to [x y z]`] };
+        return { translate: 'commands.generic.usage', with: [`${Commands.getPrefix()}distance from <x y z> to [x y z]`] };
     }
 
     return getCompleteOutput(fromLocation, toLocation);

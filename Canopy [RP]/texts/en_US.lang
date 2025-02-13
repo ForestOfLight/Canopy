@@ -9,7 +9,7 @@ generic.welcome.extensions=§7Loaded extensions: §a%s
 generic.player.notfound=§cPlayer '%s' not found.
 generic.target.notfound=§cTarget not found.
 generic.entity.notfound=§cEntity not found.
-generic.total='Total'
+generic.total=Total
 
 ## commands
 commands.generic.unknown=§cInvalid command: '%1'. Use %2help for more information.
@@ -18,7 +18,7 @@ commands.generic.usage=§cUsage: %s
 commands.generic.blocked.survival=§cThis command can only be used in creative mode or spectator mode.
 
 commands.help=Displays help pages.
-commands.help.search.noresult=§cNo results found for '%s'
+commands.help.search.noresult=§cNo results found for '%s'.
 commands.help.search.results=§l§aCanopy§r §2Help search results for '§r%1§2':%2
 commands.help.page.header=§l§aCanopy§r§2 Help Page: §f%1
 commands.help.infodisplay=Togglable rules for your InfoDisplay.
@@ -53,8 +53,8 @@ commands.canopy.infodisplayRule=§cThe rule '%1' is part of the InfoDisplay, and
 
 commands.changedimension=Teleports you to the specified dimension.
 commands.changedimension.notfound=§cInvalid dimension. Please use one of these: %s
-commands.changedimension.success.coords=§7Teleported to %1 in %2 dimension.
-commands.changedimension.success=§7Changed to %s dimension.
+commands.changedimension.success.coords=§7Teleported to %1 in the %2§7.
+commands.changedimension.success=§7Changed to the %s§7.
 commands.changedimension.fail.coords=§cInvalid coordinates. Please provide all x, y, z numeric values or none.
 
 commands.claimprojectiles=Changes the owner of all projectiles within a radius.
@@ -182,6 +182,7 @@ commands.simmap.header=§7Loaded chunks in %1§7 around §2%2§7
 commands.simmap.invalidDistance=§cDistance '%1' is invalid. Please use a value between 1 and %2.
 commands.simmap.config.distance=§7InfoDisplay Simulation Map distance updated to %s.
 commands.simmap.config.location=§7InfoDisplay Simulation Map location updated to %1 in %2.
+commands.simmap.config.reset=§7InfoDisplay Simulation Map location updated to follow your current location.
 
 commands.sit=Makes your player sit down.
 commands.sit.busy=§cYou are busy and cannot sit down.
@@ -273,7 +274,7 @@ rules.hopperCounters=Enables counter command & hopper counter functionality.
 rules.hopperGenerators=Enables generator command & hopper generator functionality.
 rules.commandGamemode=Enables shortened gamemode commands (e.g. `./s` for survival), including without OP.
 rules.commandJumpSurvival=Enables jump command in survival mode.
-rules.commandPos=Enables pos command.
+rules.commandPosOthers=Enables using the pos command on other players.
 rules.commandRemoveEntity=Enables removeentity command.
 rules.commandSpawnMocking=Enables spawn mocking command.
 rules.commandSummonTnt=Enables summontnt command.

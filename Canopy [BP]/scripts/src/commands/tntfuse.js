@@ -1,5 +1,6 @@
 import { Rule, Rules, Command } from "../../lib/canopy/Canopy";
-import { system, world } from '@minecraft/server'
+import { system, world } from "@minecraft/server";
+import { isNumeric } from "../../include/utils";
 
 const MIN_FUSE_TICKS = 1;
 const MAX_FUSE_TICKS = 72000;
@@ -46,9 +47,9 @@ function tntfuseCommand(sender, args) {
     } else if (ticks === 'reset') {
         ticks = 80;
         sender.sendMessage({ translate: 'commands.tntfuse.reset.success' });
-    } else if (ticks < MIN_FUSE_TICKS || ticks > MAX_FUSE_TICKS)
-        {return sender.sendMessage({ translate: 'commands.tntfuse.set.fail', with: [String(ticks), String(MIN_FUSE_TICKS), String(MAX_FUSE_TICKS)] });}
-    else {
+    } else if (!isNumeric(ticks) || ticks < MIN_FUSE_TICKS || ticks > MAX_FUSE_TICKS) {
+        return sender.sendMessage({ translate: 'commands.tntfuse.set.fail', with: [String(ticks), String(MIN_FUSE_TICKS), String(MAX_FUSE_TICKS)] });
+    } else {
         sender.sendMessage({ translate: 'commands.tntfuse.set.success', with: [String(ticks)] });
     }
     world.setDynamicProperty('tntFuseTime', ticks);

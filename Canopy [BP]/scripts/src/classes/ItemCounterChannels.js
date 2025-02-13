@@ -13,10 +13,8 @@ class ItemCounterChannels {
 
         for (const color of this.colors) {
             const channel = new ChannelClass(color);
-            const channelData = channel.getData();
+            channel.loadSavedData();
             this.channels[color] = channel;
-            if (channelData)
-                channel.initData(channelData);
         }
         this.initEvents();
     }

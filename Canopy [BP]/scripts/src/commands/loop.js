@@ -26,7 +26,7 @@ function loop(times, command, runLocation) {
             runLocation.runCommand(command);
         } catch (error) {
             if (error instanceof CommandError)
-                return runLocation.sendMessage(`§cLooped command error: ${error.message}`);
+                return runLocation.sendMessage(`§cLoop error (Iteration ${i+1}): ${error.message}`);
         }
     }
 }

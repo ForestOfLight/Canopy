@@ -8,9 +8,14 @@ class EntityMovementLog extends EntityLog {
         this.movingEntities = [];
         this.thisTickEntities = [];
         this.lastTickEntities = [];
+        this.initEvents();
     }
 
-    update() {
+    initEvents() {
+        system.runInterval(() => this.onTick());
+    }
+
+    onTick() {
         if (this.subscribedPlayers.length === 0) return;
         this.updateEntityLists();
         for (const player of this.subscribedPlayers) {
@@ -18,11 +23,11 @@ class EntityMovementLog extends EntityLog {
                 const precision = player.getDynamicProperty('logPrecision');
                 player.sendMessage(this.getLogHeader());
                 player.sendMessage(this.getLogBody(precision));
-            } else {
-                this.reinitializeTracking();
             }
         }
         this.updateLastTickEntities();
+        if (!this.isPrintable())
+            this.startTick = system.currentTick;
     }
 
     isPrintable() {
@@ -69,22 +74,23 @@ class EntityMovementLog extends EntityLog {
     }
 
     hasMovedSinceLastTick(entity) {
-        const lastTickEntity = this.lastTickEntities.find(e => 
-            e.id === entity.id &&
-            e.location.x === entity.location.x &&
-            e.location.y === entity.location.y &&
-            e.location.z === entity.location.z &&
-            e.dimension.id === entity.dimension.id
-        );
-        return lastTickEntity === undefined;
+        const lastTickEntity = this.lastTickEntities.find(e => e.id === entity.id);
+        if (lastTickEntity) {
+            return !(lastTickEntity.location.x === entity.location.x &&
+                 lastTickEntity.location.y === entity.location.y &&
+                 lastTickEntity.location.z === entity.location.z &&
+                 lastTickEntity.dimension.id === entity.dimension.id);
+        }
+        return false;
     }
 
     getLogHeader() {
-        const absoluteTimeStr = (system.currentTick - this.startTick).toString().padStart(2, '0');
+        const shiftedTick = (system.currentTick - this.startTick).toString().padStart(2, '0');
+        const coloredTick = `${shiftedTick.slice(0, -2)}${this.colors.secondary}${shiftedTick.slice(-2)}${this.colors.main}`;
         return { rawtext: [
             { text: `${this.colors.tertiary}----- ` },
             { translate: 'generic.total' },
-            { text: `: ${this.movingEntities.length}${this.colors.main} (tick: ${absoluteTimeStr.slice(0, -2)}${this.colors.secondary}${absoluteTimeStr.slice(-2)}${this.colors.main})${this.colors.tertiary} -----`}
+            { text: `: ${this.movingEntities.length} ${this.colors.main}(tick: ${coloredTick}${this.colors.main})${this.colors.tertiary} -----`}
         ]};
     }
 
@@ -92,7 +98,7 @@ class EntityMovementLog extends EntityLog {
         const formattedTypeMap = this.createFormattedTypeMap(precision);
         let output = '';
         for (const typeId of Object.keys(formattedTypeMap)) 
-            output += `${this.colors.tertiary}${typeId}\n${this.colors.main} - ${formattedTypeMap[typeId].join(', ')}\n`;
+            output += `${this.colors.tertiary}${typeId}\n${this.colors.main} > ${formattedTypeMap[typeId].join(', ')}\n`;
         return output;
     }
 
@@ -116,12 +122,6 @@ class EntityMovementLog extends EntityLog {
         const yColor = lastTickEntity.location.y === entity.location.y ? this.colors.main : this.colors.secondary;
         const zColor = lastTickEntity.location.z === entity.location.z ? this.colors.main : this.colors.secondary;
         return `${this.colors.main}[${xColor}${x}${this.colors.main}, ${yColor}${y}${this.colors.main}, ${zColor}${z}${this.colors.main}]`;
-    }
-
-    reinitializeTracking() {
-        this.movingEntities = [];
-        this.lastTickEntities = [];
-        this.startTick = system.currentTick;
     }
 }
 

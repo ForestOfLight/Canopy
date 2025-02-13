@@ -9,7 +9,7 @@ const TERTIARY_COLOR = '§a';
 const entityLogs = {
     "projectiles": new EntityMovementLog('projectiles', { main: MAIN_COLOR, secondary: SECONDARY_COLOR, tertiary: TERTIARY_COLOR }),
     "falling_blocks": new EntityMovementLog('falling_blocks', { main: MAIN_COLOR, secondary: SECONDARY_COLOR, tertiary: TERTIARY_COLOR }),
-    "tnt": new EntityTntLog('tnt', { main: '§a', secondary: SECONDARY_COLOR, tertiary: TERTIARY_COLOR })
+    "tnt": new EntityTntLog('tnt', { main: MAIN_COLOR, secondary: SECONDARY_COLOR, tertiary: TERTIARY_COLOR })
 };
 
 const cmd = new Command({
