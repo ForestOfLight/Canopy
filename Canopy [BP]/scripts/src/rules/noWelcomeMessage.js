@@ -30,8 +30,12 @@ function displayWelcome(player) {
     const extensions = Extensions.getVersionedNames();
     if (extensions.length === 0) return;
     const extensionsMessage = { rawtext: [{ translate: 'generic.welcome.extensions' }] };
-    for (const extensionName of extensions)
-        extensionsMessage.rawtext.push({ text: `§r§7, §a§o${extensionName.name} §7v${extensionName.version}` });
+    for (let i = 0; i < extensions.length; i++) {
+        const extensionName = extensions[i];
+        if (i > 0)
+            extensionsMessage.rawtext.push({ text: '§r§7,' });
+        extensionsMessage.rawtext.push({ text: ` §a§o${extensionName.name}§7 v${extensionName.version}` });
+    }
     player.sendMessage(extensionsMessage);
 }
 

@@ -35,14 +35,18 @@ async function canopyCommand(sender, args) {
 
 function getVersionMessage() {
     const message = { rawtext: [
-        { translate: 'commands.canopy.version.message', with: [PACK_VERSION] },
-        { text: '§r§7.\n' }
+        { translate: 'commands.canopy.version.message' },
+        { text: ` §av${PACK_VERSION}§r§7.\n` }
     ]};
     const extensionNames = Extensions.getVersionedNames();
     if (extensionNames.length === 0) return message;
     message.rawtext.push({ translate: 'commands.canopy.version.extensions' });
-    for (const extensionName of extensionNames)
-        message.rawtext.push({ text: ` ${extensionName.name} §7v${extensionName.version}` });
+    for (let i = 0; i < extensionNames.length; i++) {
+        const extensionName = extensionNames[i];
+        if (i > 0)
+            message.rawtext.push({ text: '§r§7,' });
+        message.rawtext.push({ text: ` §a§o${extensionName.name}§7 v${extensionName.version}` });
+    }
     message.rawtext.push({ text: '§r§7.' });
     return message;
 }

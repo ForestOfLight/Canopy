@@ -29,19 +29,16 @@ class EventTracker {
         let found = false;
         for (let i = 0; i < trackedEvents.length; i++) {
             if (trackedEvents[i].eventName === this.eventName && trackedEvents[i].isAfterEvent === this.isAfterEvent) {
-                if (this.isTracking) 
+                if (this.isTracking)
                     trackedEvents[i].count = this.count;
-                 else 
+                else
                     trackedEvents.splice(i, 1);
-                
                 found = true;
                 break;
             }
         }
-        if (!found && this.isTracking) 
+        if (!found && this.isTracking)
             trackedEvents.push(this.getInfo());
-        
-
         world.setDynamicProperty('trackedEvents', JSON.stringify(trackedEvents));
     }
 

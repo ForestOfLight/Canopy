@@ -55,7 +55,7 @@ function alreadyTracking(eventName, isAfterEvent) {
 function stopTracking(sender, eventName, isAfterEvent) {
     if (!isValidEvent(sender, eventName, isAfterEvent))
         return;
-    const tracker = new EventTracker(eventName, isAfterEvent);
+    const tracker = trackers[isAfterEvent ? 'after' : 'before'][eventName];
     tracker.stop();
     delete trackers[isAfterEvent ? 'after' : 'before'][eventName];
     const eventFullName = eventName + (isAfterEvent ? 'After' : 'Before') + 'Event';

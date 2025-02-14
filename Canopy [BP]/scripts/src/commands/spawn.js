@@ -48,11 +48,17 @@ world.afterEvents.entitySpawn.subscribe((event) => {
 
     if (!isMocking || event.cause === 'Loaded' || !Rules.getNativeValue('commandSpawnMocking')) return;
     let shouldCancelSpawn = false;
-    for (const category in categoryToMobMap) 
-        {if (categoryToMobMap[category].includes(event.entity.typeId.replace('minecraft:', '')))
-            shouldCancelSpawn = true;}
+    for (const category in categoryToMobMap) {
+        if (categoryToMobMap[category].includes(event.entity.typeId.replace('minecraft:', '')))
+            shouldCancelSpawn = true;
+    }
     if (shouldCancelSpawn && event.entity)
-        event.entity.remove();
+        try {
+            event.entity.remove();
+        } catch (error) {
+            if (error.message !== "Failed to call function 'remove'")
+                throw error;
+        }
 });
 
 function spawnCommand(sender, args) {
