@@ -70,13 +70,15 @@ class Extension {
 
     #setupCommandRegistration() {
         IPC.on(`canopyExtension:${this.id}:registerCommand`, (cmdData) => {
+            console.warn(`[Canopy] Registering command: ${cmdData.name}`);
             this.commands.push(new Command(cmdData));
         });
     }
 
     #setupRuleRegistration() {
         IPC.on(`canopyExtension:${this.id}:registerRule`, (ruleData) => {
-            this.rules.push(new Rule(ruleData));
+            console.warn(`[Canopy] Registering rule: ${ruleData.identifier}`);
+            this.rules.push(new Rule({ category: "Rules", ...ruleData }));
         });
     }
 

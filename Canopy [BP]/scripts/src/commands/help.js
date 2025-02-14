@@ -64,7 +64,7 @@ function populateExtensionPages(helpBook) {
 function populateExtensionRulePages(helpBook) {
     const extensions = Extensions.getAll();
     for (const extension of extensions) {
-        const rules = extensions.getRules();
+        const rules = extension.getRules();
         if (rules.length > 0) {
             const rulePage = new RuleHelpPage({ title: `Rules`, description: { translate: 'commands.help.extension.rules', with: [extension.getName()] }, usage: Commands.getPrefix() + `canopy <rule> <true/false>` }, extension.getName());
             helpBook.newPage(rulePage);
@@ -77,7 +77,7 @@ function populateExtensionRulePages(helpBook) {
 function populateExtensionCommandPages(helpBook) {
     const extensions = Extensions.getAll();
     for (const extension of extensions) {
-        const commands = extensions.getCommands();
+        const commands = extension.getCommands();
         if (commands.length > 0) {
             const commandPage = new CommandHelpPage({ title: `Commands`, description: { translate: 'commands.help.extension.commands', with: [extension.getName()] } }, extension.getName());
             helpBook.newPage(commandPage);
