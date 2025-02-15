@@ -1,4 +1,4 @@
-import { Rule } from "lib/canopy/Canopy";
+import { Rule, Rules } from "../../lib/canopy/Canopy";
 import { world } from "@minecraft/server";
 
 new Rule({
@@ -7,8 +7,8 @@ new Rule({
     description: { translate: 'rules.armorStandRespawning' },
 });
 
-world.afterEvents.projectileHitEntity.subscribe(async (event) => {
-    if (!await Rule.getValue('armorStandRespawning') || event.projectile.typeId === "minecraft:fishing_hook") return;
+world.afterEvents.projectileHitEntity.subscribe((event) => {
+    if (!Rules.getNativeValue('armorStandRespawning') || event.projectile.typeId === "minecraft:fishing_hook") return;
     const entity = event.getEntityHit().entity;
     if (entity?.typeId === "minecraft:armor_stand") {
         const hasCleanedItem = cleanDroppedItem(event);

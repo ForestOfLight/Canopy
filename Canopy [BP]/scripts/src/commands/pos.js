@@ -1,13 +1,13 @@
-import { Rule, Command } from 'lib/canopy/Canopy';
-import { world } from '@minecraft/server';
-import Utils from 'stickycore/utils';
+import { Rule, Command, Rules } from "../../lib/canopy/Canopy";
+import { world } from "@minecraft/server";
+import { stringifyLocation, getColoredDimensionName } from "../../include/utils";
 
 const NETHER_SCALE_FACTOR = 8;
 
 new Rule({
     category: 'Rules',
-    identifier: 'commandPos',
-    description: { translate: 'rules.commandPos' },
+    identifier: 'commandPosOthers',
+    description: { translate: 'rules.commandPosOthers' }
 });
 
 new Command({
@@ -17,34 +17,42 @@ new Command({
     args: [
         { type: 'string|number', name: 'player' },
     ],
-    callback: posCommand,
-    contingentRules: ['commandPos']
+    callback: posCommand
 });
 
 function posCommand(sender, args) {
     const { player } = args;
+    if (!Rules.getNativeValue('commandPosOthers') && player !== null)
+        return sender.sendMessage({ translate: 'rules.generic.blocked', with: ['commandPosOthers'] });
     const target = player === null ? sender : world.getPlayers({ name: String(player) })[0];
     if (!target)
         return sender.sendMessage({ translate: 'generic.player.notfound', with: [player] });
 
-    let output = `§a${player !== null ? `${target.name}'s` : 'Your'} position: §f${Utils.stringifyLocation(target.location, 2)}`;
-    output += `\n§7Dimension: §f${Utils.getColoredDimensionName(target.dimension.id)}`;
-    if (target.dimension.id === 'minecraft:nether')
-        output += `\n§7Relative Overworld position: §a${Utils.stringifyLocation(netherPosToOverworld(target.location), 2)}`;
-    else if (target.dimension.id === 'minecraft:overworld')
-        output += `\n§7Relative Nether position: §c${Utils.stringifyLocation(overworldPosToNether(target.location), 2)}`;
-    sender.sendMessage(output);
+    const message = {
+        rawtext: [
+            getPositionText(player, target), { text: '\n' },
+            getDimensionText(target), { text: '\n' },
+            getRelativeDimensionPositionText(target)
+        ]
+    };
+    sender.sendMessage(message);
+}
 
-    const message = { rawtext: [] }
-    if (player !== null)
-        message.rawtext.push({ translate: 'commands.pos.other', with: [target.name, Utils.stringifyLocation(target.location, 2)] });
-    else
-        message.rawtext.push({ translate: 'commands.pos.self', with: [Utils.stringifyLocation(target.location, 2)] });
-    message.rawtext.push({ translate: 'commands.pos.dimension', with: [Utils.getColoredDimensionName(netherPosToOverworld(target.location), 2)] });
+function getPositionText(player, target) {
+    if (player === null)
+        return { translate: 'commands.pos.self', with: [stringifyLocation(target.location, 2)] };
+    return { translate: 'commands.pos.other', with: [target.name, stringifyLocation(target.location, 2)] };
+}
+
+function getDimensionText(target) {
+    return { translate: 'commands.pos.dimension', with: [getColoredDimensionName(target.dimension.id)] };
+}
+
+function getRelativeDimensionPositionText(target) {
     if (target.dimension.id === 'minecraft:nether')
-        message.rawtext.push({ translate: 'commands.pos.relative.overworld', with: [Utils.stringifyLocation(netherPosToOverworld(target.location), 2)] });
+        return { translate: 'commands.pos.relative.overworld', with: [stringifyLocation(netherPosToOverworld(target.location), 2)] };
     else if (target.dimension.id === 'minecraft:overworld')
-        message.rawtext.push({ translate: 'commands.pos.relative.nether', with: [Utils.stringifyLocation(overworldPosToNether(target.location), 2)]});
+        return { translate: 'commands.pos.relative.nether', with: [stringifyLocation(overworldPosToNether(target.location), 2)] };
 }
 
 function netherPosToOverworld(pos) {

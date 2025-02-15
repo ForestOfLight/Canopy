@@ -1,9 +1,6 @@
-import { system } from '@minecraft/server'
-import { Command } from 'lib/canopy/Canopy'
-import { DataTPS } from 'src/tps'
-import  { Entities } from 'src/entities'
-import Data from 'stickycore/data'
-import Utils from 'stickycore/utils'
+import { Command } from "../../lib/canopy/Canopy";
+import  { printDimensionEntities } from "../commands/entitydensity";
+import Profiler from '../classes/Profiler';
 
 new Command({
     name: 'health',
@@ -12,29 +9,17 @@ new Command({
     callback: healthCommand
 })
 
-function healthCommand(sender) {
-    system.runTimeout(() => {
-        printRealMspt(sender);
-    }, 0);
-    Entities.printDimensionEntities(sender);
-    const tpsFormatted = DataTPS.tps > 20.0 ? `§a20.0` : `§c${DataTPS.tps.toFixed(1)}`;
-    sender.sendMessage(`§7TPS:§r ${tpsFormatted}`);
+export async function healthCommand(sender) {
+    sender.sendMessage(`§7Profiling tick time...`);
+    const profile = await Profiler.profile();
+    printDimensionEntities(sender);
+    sender.sendMessage(formatProfileMessage(profile));
 }
 
-function printRealMspt(sender) {
-    let lastTick;
-    let startTime;
-    let endTime;
-    let realMspt;
-
-    lastTick = Data.getAbsoluteTime();
-    ({ startTime, endTime } = Utils.wait(50));
-    system.runTimeout(() => {
-        if (Data.getAbsoluteTime() - lastTick != 1)
-            return sender.sendMessage({ translate: 'commands.health.fail.mspt' });
-        
-        realMspt = Date.now() - startTime - (endTime - startTime);
-        const realMsptFormatted = realMspt > 50.0 ? `§c${realMspt}` : `§a${realMspt}`;
-        sender.sendMessage(`§7MSPT:§r ${realMsptFormatted}`)
-    }, 1);
+function formatProfileMessage(profile) {
+    let message = `§7Tps:§r ${profile.tps.result >= 20.0 ? `§a20.0` : `§c${profile.tps.result.toFixed(1)}`}`;
+    message += ` §7Range: ${profile.tps.min.toFixed(1)}-${profile.tps.max.toFixed(1)}\n`;
+    message += `§7Mspt:§r ${profile.mspt.result < 50 ? '§a' : '§c'}${profile.mspt.result.toFixed(1)}`;
+    message += ` §7Range: ${profile.mspt.min.toFixed(1)}-${profile.mspt.max.toFixed(1)}`;
+    return message;
 }

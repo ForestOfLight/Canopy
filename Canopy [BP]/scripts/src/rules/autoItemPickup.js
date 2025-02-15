@@ -1,6 +1,6 @@
-import { Rule } from 'lib/canopy/Canopy';
-import { ItemStack, system, world } from '@minecraft/server';
-import Utils from 'stickycore/utils';
+import { Rule, Rules } from "../../lib/canopy/Canopy";
+import { ItemStack, system, world } from "@minecraft/server";
+import { calcDistance } from "../../include/utils";
 
 new Rule({
     category: 'Rules',
@@ -14,22 +14,25 @@ system.runInterval(() => {
     brokenBlockEventsThisTick = [];
 });
 
-world.afterEvents.playerBreakBlock.subscribe(async (blockEvent) => {
-    if (!await Rule.getValue('autoItemPickup')) return;
+world.afterEvents.playerBreakBlock.subscribe((blockEvent) => {
+    if (!Rules.getNativeValue('autoItemPickup')) return;
     if (blockEvent.player?.getGameMode() === 'creative') return;
     brokenBlockEventsThisTick.push(blockEvent);
 });
 
-world.afterEvents.entitySpawn.subscribe(async (entityEvent) => {
+world.afterEvents.entitySpawn.subscribe((entityEvent) => {
     if (entityEvent.cause !== 'Spawned' || entityEvent.entity?.typeId !== 'minecraft:item') return;
-    if (!await Rule.getValue('autoItemPickup')) return;
+    if (!Rules.getNativeValue('autoItemPickup')) return;
 
     const item = entityEvent.entity;
     let brokenBlockEvent;
     try {
-        brokenBlockEvent = brokenBlockEventsThisTick.find(blockEvent => Utils.calcDistance(blockEvent.block.location, item.location) < 2);
-    } catch {}
-    if (!brokenBlockEvent) return;
+        brokenBlockEvent = brokenBlockEventsThisTick.find(blockEvent => calcDistance(blockEvent.block.location, item.location) < 2);
+    } catch {
+        // Could not access block or item, ignore
+    }
+    if (!brokenBlockEvent)
+        return;
 
     const itemStack = item.getComponent('minecraft:item').itemStack;
     const inventory = brokenBlockEvent.player?.getComponent('minecraft:inventory').container;
@@ -56,9 +59,9 @@ function itemFitsInPartiallyFilledSlot(slot, itemStack) {
 
 function addItem(inventory, itemStack) {
     const isItemDeposited = partiallyFilledSlotPass(inventory, itemStack);
-    if (!isItemDeposited) {
+    if (!isItemDeposited) 
         emptySlotPass(inventory, itemStack);
-    }
+    
 }
 
 function partiallyFilledSlotPass(inventory, itemStack) {

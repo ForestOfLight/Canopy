@@ -1,4 +1,4 @@
-import { Rule } from "lib/canopy/Canopy";
+import { Rules, Rule } from "lib/canopy/Canopy";
 import { system, world, InputButton, ButtonState } from '@minecraft/server';
 import HotbarManager from 'src/classes/HotbarManager';
 
@@ -8,20 +8,12 @@ new Rule({
     description: { translate: 'rules.hotbarSwitching' },
 });
 
-new Rule({
-    category: 'Rules',
-    identifier: 'hotbarSwitchingSurvival',
-    description: { translate: 'rules.hotbarSwitchingSurvival' },
-    contingentRules: ['hotbarSwitching'],
-});
-
 const ARROW_SLOT = 17;
 const lastSelectedSlots = {};
-const lastLoadedSlots = {};
 const hotbarManagers = {};
 
 system.runInterval(() => {
-    if (!Rule.getNativeValue('hotbarSwitching')) return;
+    if (!Rules.getNativeValue('hotbarSwitching')) return;
     const players = world.getAllPlayers();
     for (const player of players) {
         if (!player) continue;
@@ -33,7 +25,7 @@ system.runInterval(() => {
 });
 
 function hasAppropriateGameMode(player) {
-    return Rule.getNativeValue('hotbarSwitchingSurvival') || player.getGameMode() === 'creative';
+    return player.getGameMode() === 'creative';
 }
 
 function processHotbarSwitching(player) {
@@ -43,19 +35,16 @@ function processHotbarSwitching(player) {
     } else if (lastSelectedSlots[player.id] === undefined && (!hasArrowInCorrectSlot(player) || !hasAppropriateGameMode(player))) {
         return;
     }
-    if (hasScrolled(player) && player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed) {
+    if (hasScrolled(player) && player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed) 
         switchToHotbar(player, player.selectedSlotIndex);
-    }
+    
     lastSelectedSlots[player.id] = player.selectedSlotIndex;
 }
 
 function switchToHotbar(player, index) {
-    if (lastLoadedSlots[player.id] === undefined) 
-        lastLoadedSlots[player.id] = lastSelectedSlots[player.id];    
     const hotbarMgr = hotbarManagers[player.id];
-    hotbarMgr.saveHotbar(lastLoadedSlots[player.id]);
-    hotbarMgr.loadHotbar(index)
-    lastLoadedSlots[player.id] = index;
+    hotbarMgr.saveHotbar();
+    hotbarMgr.loadHotbar(index);
     player.onScreenDisplay.setActionBar(`§a${index + 1}`);
 }
 

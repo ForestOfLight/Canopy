@@ -1,128 +1,32 @@
-import { system, world } from '@minecraft/server'
-import Utils from 'stickycore/utils'
+import { system, TicksPerSecond, world } from "@minecraft/server";
+import { locationInArea } from "../../include/utils";
+import { categoryToMobMap } from "../../include/data";
 
-const categoryToMobMap = {
-    'creature' : [
-        'allay',
-        'armadillo',
-        'bee',
-        'camel',
-        'cat',
-        'chicken',
-        'cow',
-        'donkey',
-        'fox',
-        'frog',
-        'goat',
-        'horse',
-        'llama',
-        'mooshroom',
-        'mule',
-        'npc',
-        'ocelot',
-        'panda',
-        'parrot',
-        'pig',
-        'player',
-        'polar_bear',
-        'rabbit',
-        'sheep',
-        'skeleton_horse',
-        'sniffer',
-        'strider',
-        'tadpole',
-        'trader_llama',
-        'turtle',
-        'wandering_trader',
-        'wolf',
-        'zombie_horse',
-    ],
-    'axolotls' : [ 'axolotl' ],
-    'ambient' : [ 'bat' ],
-    'monster' : [
-        'blaze',
-        'bogged',
-        'breeze',
-        'cave_spider',
-        'creeper',
-        'drowned',
-        'elder_guardian',
-        'ender_dragon',
-        'enderman',
-        'endermite',
-        'evokcation_illager',
-        'ghast',
-        'guardian',
-        'hoglin',
-        'husk',
-        'magma_cube',
-        'phantom',
-        'piglin_brute',
-        'piglin',
-        'pillager',
-        'ravager',
-        'shulker',
-        'silverfish',
-        'skeleton',
-        'slime',
-        'spider',
-        'stray',
-        'vex',
-        'vindicator',
-        'warden',
-        'witch',
-        'wither_skeleton',
-        'wither',
-        'zoglin',
-        'zombie_villager',
-        'zombie',
-    ],
-    'water_creature' : [
-        'dolphin',
-        'squid',
-    ],
-    'water_ambient' : [
-        'cod',
-        'pufferfish',
-        'salmon',
-        'tropicalfish',
-    ],
-    'underground_water_creature' : [
-        'glow_squid',
-    ],
-    'misc' : [
-        'llama_spit',
-    ],
-    'other' : [
-        'iron_golem',
-        'lightning_bolt',
-        'snow_golem',
-        'villager_v2',
-        'villager',
-        'zombie_pigman',
-        'zombie_villager_v2',
-    ],
-}
-
-const CLEAR_RECENTS_THRESHOLD = 600; // 600 ticks = 30 seconds
+const CLEAR_RECENTS_THRESHOLD = 30 * TicksPerSecond;
 let wasTrackingLastTick = false;
 
 class SpawnTracker {
-    constructor(dimensionId, category = null, mobIds = [], activeArea = null) {
-        if (category !== null && mobIds.length > 0) {
-            throw new Error("SpawnTracker constructor should be called with either 'category' or 'mobIds', but not both.");
-        }
-
-        this.category = category;
+    constructor(dimensionId, mobIds = [], activeArea = null ) {
         this.dimensionId = dimensionId;
-        this.startTick = system.currentTick;
-        this.activeArea = activeArea;
+        this.mobs = mobIds || [];
+        this.category = this.getCategory();
+        this.activeArea = activeArea || null;
         this.spawns = {};
         this.recents = {};
         this.mobsPerTick = {};
         this.recentsClearRunner = null;
-        this.mobs = category ? categoryToMobMap[category] : mobIds;
+        this.startTick = system.currentTick;
         this.startTracking();
+    }
+
+    getCategory() {
+        for (const [category, mobs] of Object.entries(categoryToMobMap)) {
+            for (const mob of this.mobs) {
+                if (mobs.includes(mob))
+                    return category;
+            }
+        }
+        return null;
     }
 
     getMobsPerTickMap() {
@@ -150,7 +54,7 @@ class SpawnTracker {
         if (entity.dimension.id !== this.dimensionId || !this.isTracking(entity.typeId.replace('minecraft:', ''))) return;
 
         const position = { location: entity.location, dimensionId: entity.dimension.id };
-        if (this.activeArea && !Utils.locationInArea(this.activeArea, position)) return;
+        if (this.activeArea && !locationInArea(this.activeArea, position)) return;
         this.countMob(entity);
     }
 
@@ -173,11 +77,9 @@ class SpawnTracker {
     }
 
     clearOldMobs(tickThreshold) {
-        for (const mobType in this.recents) {
-            this.recents[mobType] = this.recents[mobType].filter((timedLocation) => {
-                return system.currentTick - timedLocation.time < tickThreshold;
-            });
-        }
+        for (const mobType in this.recents) 
+            this.recents[mobType] = this.recents[mobType].filter((timedLocation) => system.currentTick - timedLocation.time < tickThreshold);
+        
     }
 
     reset() {
@@ -217,9 +119,9 @@ class SpawnTracker {
 
     getRecents() {
         const recents = {};
-        for (const mobType in this.recents) {
+        for (const mobType in this.recents) 
             recents[mobType] = this.recents[mobType].map((timedLocation) => timedLocation.location);
-        }
+        
         return recents;
     }
 
@@ -254,4 +156,4 @@ class SpawnTracker {
     }
 }
 
-export { categoryToMobMap, SpawnTracker }
+export { SpawnTracker }

@@ -1,5 +1,5 @@
-import { Command } from 'lib/canopy/Canopy';
-import { sit } from 'src/rules/playerSit';
+import { Command } from "../../lib/canopy/Canopy";
+import { sit } from "../rules/playerSit";
 
 new Command({
     name: 'sit',

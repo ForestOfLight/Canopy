@@ -1,8 +1,8 @@
-import { DimensionTypes, system, world } from '@minecraft/server';
-import { Rule } from 'lib/canopy/Canopy';
+import { DimensionTypes, system, world, InputButton, ButtonState } from "@minecraft/server";
+import { Rules, Rule } from "../../lib/canopy/Canopy";
 
 const SNEAK_COUNT = 3;
-const SNEAK_SPEED = 10;
+const SNEAK_SPEED = 4*50;
 
 new Rule({
     category: 'Rules',
@@ -13,13 +13,14 @@ new Rule({
 const playerSneaks = {};
 
 system.runInterval(() => {
-    if (!Rule.getNativeValue('playerSit')) return;
+    if (!Rules.getNativeValue('playerSit')) return;
     world.getAllPlayers().forEach(player => {
-        if (player?.isSneaking) {
-            const currentTime = system.currentTick;
-            const sneakInfo = playerSneaks[player.id] || { count: 0, lastTime: currentTime };
-            if (sneakInfo.lastTime === currentTime - 1) {
+        if (player?.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed) {
+            const currentTime = Date.now();
+            const sneakInfo = playerSneaks[player.id] || { count: 0, lastTime: currentTime, lastTick: system.currentTick };
+            if (sneakInfo.lastTick === system.currentTick - 1) {
                 sneakInfo.lastTime = currentTime;
+                sneakInfo.lastTick = system.currentTick;
                 return;
             }
             if (player.isOnGround && currentTime - sneakInfo.lastTime < SNEAK_SPEED) {
@@ -32,6 +33,7 @@ system.runInterval(() => {
                 sneakInfo.count = 1;
             }
             sneakInfo.lastTime = currentTime;
+            sneakInfo.lastTick = system.currentTick;
             playerSneaks[player.id] = sneakInfo;
         }
     });
@@ -39,7 +41,9 @@ system.runInterval(() => {
 });
 
 function sit(player) {
-    const rideableEntity = player.dimension.spawnEntity('canopy:rideable', { x: player.location.x, y: player.location.y - 0.12, z: player.location.z });
+    const heightAdjustment = -0.12;
+    const entityLocation = { x: player.location.x, y: player.location.y + heightAdjustment, z: player.location.z };
+    const rideableEntity = player.dimension.spawnEntity('canopy:rideable', entityLocation);
     rideableEntity.setRotation(player.getRotation());
     rideableEntity.getComponent('rideable').addRider(player);
 }
@@ -47,9 +51,8 @@ function sit(player) {
 function cleanupRideableEntities() {
     DimensionTypes.getAll().forEach((dimensionType) => {
         world.getDimension(dimensionType.typeId).getEntities({ type: 'canopy:rideable' }).forEach(entity => {
-            if (!entity.getComponent('rideable').getRiders().length > 0) {
+            if (entity.getComponent('rideable').getRiders().length === 0)
                 entity.remove();
-            }
         });
     });
 }

@@ -1,6 +1,6 @@
-import { world } from '@minecraft/server';
-import { Rule, Command } from 'lib/canopy/Canopy';
-import Utils from 'stickycore/utils';
+import { world } from "@minecraft/server";
+import { Rule, Command } from "../../lib/canopy/Canopy";
+import { isNumeric } from "../../include/utils";
 
 const CLAIM_RADIUS = 25;
 
@@ -23,7 +23,8 @@ new Command({
 });
 
 function claimProjectilesCommand(sender, args) {
-    let { playerName, radius } = args;
+    const playerName = args.playerName;
+    let radius = args.radius;
     let targetPlayer;
     if (playerName === null)
         targetPlayer = sender;
@@ -31,7 +32,7 @@ function claimProjectilesCommand(sender, args) {
         targetPlayer = getTargetPlayer(sender, String(playerName));
     if (!targetPlayer)
         return sender.sendMessage({ translate: 'generic.player.notfound', with: [String(playerName)] });
-    if (Utils.isNumeric(playerName)) {
+    if (isNumeric(playerName)) {
         radius = playerName;
         targetPlayer = sender;
     }
@@ -54,10 +55,9 @@ function getTargetPlayer(sender, playerName) {
     const players = world.getPlayers({ name: playerName });
     if (players.length === 1)
         return players[0];
-    else if (Utils.isNumeric(playerName))
+    else if (isNumeric(playerName))
         return playerName;
-    else
-        return undefined;
+    return undefined;
 }
 
 function getProjectilesInRange(sender, radius) {

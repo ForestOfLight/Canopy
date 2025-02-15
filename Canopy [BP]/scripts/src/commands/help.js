@@ -1,10 +1,8 @@
-import { Command, Rule, InfoDisplayRule } from 'lib/canopy/Canopy';
-import { HelpBook, CommandHelpPage, RuleHelpPage, InfoDisplayRuleHelpPage } from 'lib/canopy/Canopy';
+import { Commands, Command, InfoDisplayRule, Extensions, HelpBook, CommandHelpPage, RuleHelpPage, InfoDisplayRuleHelpPage, Rules } from '../../lib/canopy/Canopy';
 
-const COMMANDS_PER_PAGE = 8;
-const helpBook = new HelpBook();
+const COMMANDS_PER_PAGE = 6;
 
-const cmd = new Command({
+new Command({
     name: 'help',
     description: { translate: 'commands.help' },
     usage: 'help [page/searchTerm]',
@@ -15,6 +13,7 @@ const cmd = new Command({
 });
 
 function helpCommand(sender, args) {
+    const helpBook = new HelpBook();
     populateNativeCommandPages(helpBook);
     populateNativeRulePages(helpBook, sender);
     populateExtensionPages(helpBook);
@@ -29,15 +28,14 @@ function helpCommand(sender, args) {
 }
 
 function populateNativeCommandPages(helpBook) {
-    let commands = Command.getNativeCommands();
+    let commands = Commands.getNativeCommands();
     commands = commands.filter(cmd => !cmd.isHelpHidden());
     if (helpBook.numNativeCommandPages >= commands.length / COMMANDS_PER_PAGE)
         return;
-
     for (let i = 0; i < commands.length; i++) {;
         if (i % COMMANDS_PER_PAGE === 0) {
             helpBook.numNativeCommandPages++;
-            helpBook.newPage(new CommandHelpPage(helpBook.numNativeCommandPages));
+            helpBook.newPage(new CommandHelpPage({ title: helpBook.numNativeCommandPages }));
         }
         const command = commands[i];
         helpBook.addEntry(helpBook.numNativeCommandPages, command);
@@ -45,41 +43,46 @@ function populateNativeCommandPages(helpBook) {
 }
 
 function populateNativeRulePages(helpBook, player) {
-    const infoDisplayPage = new InfoDisplayRuleHelpPage('InfoDisplay', { translate: 'commands.help.infodisplay' }, Command.prefix + 'info <rule/all> <true/false>');
-    const infoDisplayRules = InfoDisplayRule.getRules();
+    const infoDisplayPage = new InfoDisplayRuleHelpPage({ title: 'InfoDisplay', description: { translate: 'commands.help.infodisplay' }, usage: Commands.getPrefix() + 'info <rule/all> <true/false>' });
+    const infoDisplayRules = InfoDisplayRule.getAll();
     helpBook.newPage(infoDisplayPage);
-    for (let infoDisplayRule of infoDisplayRules) {
+    for (const infoDisplayRule of infoDisplayRules)
         helpBook.addEntry(infoDisplayRule.getCategory(), infoDisplayRule, player);
-    }
 
-    const rulesPage = new RuleHelpPage('Rules', { translate: 'commands.help.rules' }, Command.prefix + 'canopy <rule> <true/false>');
-    const globalRules = Rule.getRulesByCategory('Rules');
+    const rulesPage = new RuleHelpPage({ title: 'Rules', description: { translate: 'commands.help.rules' }, usage: Commands.getPrefix() + 'canopy <rule> <true/false>' });
+    const globalRules = Rules.getByCategory('Rules').sort((a, b) => a.getID().localeCompare(b.getID()));
     helpBook.newPage(rulesPage);
-    for (let rule of globalRules) {
+    for (const rule of globalRules)
         helpBook.addEntry(rule.getCategory(), rule);
-    }
 }
 
 function populateExtensionPages(helpBook) {
-    const ruleExtensions = Rule.getExtensionNames();
-    const commandExtensions = Command.getExtensionNames();
+    populateExtensionRulePages(helpBook);
+    populateExtensionCommandPages(helpBook);
+}
 
-    for (const extensionName of ruleExtensions) {
-        const rulePage = new RuleHelpPage(`Rules`, { translate: 'commands.help.extension.rules', with: [extensionName] }, Command.prefix + `canopy <rule> <true/false>`, extensionName);
-        const rules = Rule.getRulesByExtension(extensionName);
-        helpBook.newPage(rulePage);
-        for (let rule of rules) {
-            helpBook.addEntry(rulePage.title, rule);
+function populateExtensionRulePages(helpBook) {
+    const extensions = Extensions.getAll();
+    for (const extension of extensions) {
+        const rules = extension.getRules();
+        if (rules.length > 0) {
+            const rulePage = new RuleHelpPage({ title: `Rules`, description: { translate: 'commands.help.extension.rules', with: [extension.getName()] }, usage: Commands.getPrefix() + `canopy <rule> <true/false>` }, extension.getName());
+            helpBook.newPage(rulePage);
+            for (const rule of rules) 
+                helpBook.addEntry(rulePage.title, rule);
         }
     }
+}
 
-    for (const extensionName of commandExtensions) {
-        const commandPage = new CommandHelpPage(`Commands`, { translate: 'commands.help.extension.commands', with: [extensionName] }, extensionName);
-        let commands = Command.getCommandsByExtension(extensionName);
-        commands = commands.filter(cmd => !cmd.isHelpHidden());
-        helpBook.newPage(commandPage);
-        for (let command of commands) {
-            helpBook.addEntry(commandPage.title, command);
+function populateExtensionCommandPages(helpBook) {
+    const extensions = Extensions.getAll();
+    for (const extension of extensions) {
+        const commands = extension.getCommands();
+        if (commands.length > 0) {
+            const commandPage = new CommandHelpPage({ title: `Commands`, description: { translate: 'commands.help.extension.commands', with: [extension.getName()] } }, extension.getName());
+            helpBook.newPage(commandPage);
+            for (const command of commands) 
+                helpBook.addEntry(commandPage.title, command);
         }
     }
 }

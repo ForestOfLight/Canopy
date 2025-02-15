@@ -1,4 +1,4 @@
-import { Rule } from "lib/canopy/Canopy";
+import { Rule, Rules } from "../../lib/canopy/Canopy";
 import { system, world, StructureMirrorAxis, BlockPistonState } from "@minecraft/server";
 import BlockRotator from 'src/classes/BlockRotator';
 import DirectionStateFinder from 'src/classes/DirectionState';
@@ -11,7 +11,7 @@ new Rule({
 
 const WAIT_TIME_BETWEEN_USE = 5; // in ticks
 
-let previousBlocks = new Array(WAIT_TIME_BETWEEN_USE).fill(null);
+const previousBlocks = new Array(WAIT_TIME_BETWEEN_USE).fill(null);
 const flipOnPlaceIds = ['piston', 'sticky_piston', 'dropper', 'dispenser', 'observer', 'crafter', 'unpowered_repeater', 'unpowered_comparator', 
     'powered_repeater', 'powered_comparator','hopper', 'end_rod', 'lightning_rod'];
 const flipIds = ['piston', 'sticky_piston', 'observer', 'end_rod', 'lightning_rod'];
@@ -21,13 +21,13 @@ const noInteractBlockIds = ['piston_arm_collision', 'sticky_piston_arm_collision
 
 system.runInterval(() => {
     previousBlocks.shift();
-    if (previousBlocks.length < WAIT_TIME_BETWEEN_USE) {
+    if (previousBlocks.length < WAIT_TIME_BETWEEN_USE) 
         previousBlocks.push(null);
-    }
+    
 });
 
-world.beforeEvents.playerPlaceBlock.subscribe(async (event) => {
-    if (!await Rule.getValue('flippinArrows')) return;
+world.beforeEvents.playerPlaceBlock.subscribe((event) => {
+    if (!Rules.getNativeValue('flippinArrows')) return;
     const player = event.player;
     if (!player) return;
     const offhandStack = player.getComponent('equippable').getEquipment("Offhand");
@@ -41,8 +41,8 @@ world.beforeEvents.playerPlaceBlock.subscribe(async (event) => {
     }
 });
 
-world.beforeEvents.itemUseOn.subscribe(async (event) => {
-    if (event.source === undefined || !await Rule.getValue('flippinArrows')) return;
+world.beforeEvents.itemUseOn.subscribe((event) => {
+    if (event.source === undefined || !Rules.getNativeValue('flippinArrows')) return;
     if (event.itemStack.typeId !== 'minecraft:arrow') return;
     const block = event.block;
     if (needsCooldown(block)) return;
@@ -76,7 +76,7 @@ function rotate(block) {
 }
 
 function open(player, block) {
-    let directionState = {
+    const directionState = {
         name: 'open_bit',
         value: block.permutation.getState('open_bit')
     }
@@ -104,7 +104,13 @@ function open(player, block) {
             'door_hinge_bit': hingeBit
         };
     }
-    safeSetblock(player, block, directionState, openPermutation, otherPermutations);
+    const blockData = {
+        block,
+        directionState,
+        openPermutation,
+        otherPermutations
+    }
+    safeSetblock(player, blockData);
 }
 
 function flipWhenVertical(block) {
@@ -122,13 +128,16 @@ function checkForAbort(block, blockId) {
     return false;
 }
 
-function safeSetblock(player, block, directionState, permutationValue, otherPermutations = {}) {
-    if (Object.keys(otherPermutations).length === 0) otherPermutations = '';
-    else otherPermutations = ',' + Object.entries(otherPermutations).map(([key, value]) => `\"${key}\"=${value}`).join(',');
+function safeSetblock(player, blockData) {
+    const { block, directionState, permutationValue } = blockData;
+    let otherPermutations = blockData.otherPermutations;
+    if (Object.keys(otherPermutations).length === 0)
+        otherPermutations = '';
+    else otherPermutations = ',' + Object.entries(otherPermutations).map(([key, value]) => `"${key}"=${value}`).join(',');
     const setblockCmd = `setblock ${block.location.x} ${block.location.y} ${block.location.z} ${block.typeId} ["${directionState.name}"=${permutationValue}${otherPermutations}] replace`;
     (async () => {
-        player.runCommandAsync(`setblock ${block.location.x} ${block.location.y} ${block.location.z} air replace`);
-        player.runCommandAsync(setblockCmd);
+        await player.runCommandAsync(`setblock ${block.location.x} ${block.location.y} ${block.location.z} air replace`);
+        await player.runCommandAsync(setblockCmd);
     })();
     return block.dimension.getBlock(block.location);
 }

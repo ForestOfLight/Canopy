@@ -1,7 +1,7 @@
 import { world } from '@minecraft/server';
-import IPC from "lib/ipc/ipc";
-
-const rules = {};
+import IPC from "../ipc/ipc";
+import { Rules } from "./Rules";
+import { Extensions } from './Extensions';
 
 class Rule {
     #category;
@@ -9,19 +9,18 @@ class Rule {
     #description;
     #contingentRules;
     #independentRules;
-    #extensionName;
+    #extension;
 
     constructor({ category, identifier, description = '', contingentRules = [], independentRules = [], extensionName = false }) {
         this.#category = category;
         this.#identifier = identifier;
+        if (typeof description == 'string')
+            description = { text: description };
         this.#description = description;
         this.#contingentRules = contingentRules;
         this.#independentRules = independentRules;
-        this.#extensionName = extensionName;
-        if (Rule.exists(identifier)) {
-            throw new Error(`Rule with identifier '${identifier}' already exists.`);
-        }
-        rules[identifier] = this;
+        this.#extension = Extensions.getFromName(extensionName);
+        Rules.register(this);
     }
 
     getCategory() {
@@ -44,84 +43,50 @@ class Rule {
         return this.#independentRules;
     }
 
-    getExtensionName() {
-        return this.#extensionName;
+    getDependentRuleIDs() {
+        return Rules.getDependentRuleIDs(this.#identifier);
+    }
+
+    getExtension() {
+        return this.#extension;
     }
 
     async getValue() {
-        if (this.#extensionName) {
+        if (this.#extension) {
             // console.warn(`[Canopy] [Rule] Attempting to get value for ${this.#identifier} from extension ${this.#extensionName}.`);
-            return await IPC.invoke(`canopyExtension:${this.#extensionName}:ruleValueRequest`, { ruleID: this.#identifier }).then(result => {
+            return await IPC.invoke(`canopyExtension:${this.#extension.getID()}:ruleValueRequest`, { ruleID: this.#identifier }).then(result => 
                 // console.warn(`[Canopy] [Rule] Received value for ${this.#identifier} from extension ${this.#extensionName}: ${result}`);
-                return result;
-            });
+                this.parseValue(result)
+            );
         }
-        return this.parseString(world.getDynamicProperty(this.#identifier));
+        return this.parseValue(world.getDynamicProperty(this.#identifier));
     }
 
-    parseString(value) {
-        try {
-            return JSON.parse(value);
-        } catch (error) {
-            if (value === 'undefined') return undefined;
-            if (value === 'NaN') return NaN;
-        }
-        return null;
+    getNativeValue() {
+        if (this.#extension)
+            throw new Error(`[Canopy] [Rule] Native value is not available for ${this.#identifier} from extension ${this.#extension.getName()}.`);
+        return this.parseValue(world.getDynamicProperty(this.#identifier));
     }
     
     setValue(value) {
-        if (this.#extensionName) {
-            IPC.send(`canopyExtension:${this.#extensionName}:ruleValueSet`, { extensionName: this.#extensionName, ruleID: this.#identifier, value: value });
-        } else {
+        if (this.#extension)
+            IPC.send(`canopyExtension:${this.#extension.getID()}:ruleValueSet`, { ruleID: this.#identifier, value: value });
+        else
             world.setDynamicProperty(this.#identifier, value);
+    }
+
+    parseValue(value) {
+        if (value === 'undefined' || value === undefined)
+            return undefined;
+        try {
+            return JSON.parse(value);
+        } catch {
+            if (value === 'NaN')
+                return NaN;
+            console.warn(`[Canopy] [Rule] Failed to parse value for ${this.#identifier}: ${value}`);
         }
-    }
-
-    getDependentRuleIDs() {
-        return Object.values(rules).filter(rule => rule.#contingentRules.includes(this.#identifier)).map(rule => rule.#identifier);
-    }
-
-    static exists(identifier) {
-        return rules[identifier] !== undefined;
-    }
-    
-    static async getValue(identifier) {
-        return await Rule.getRule(identifier).getValue();
-    }
-
-    static getNativeValue(identifier) {
-        return Rule.getRule(identifier).parseString(world.getDynamicProperty(identifier));
-    }
-
-    static setValue(identifier, value) {
-        Rule.getRule(identifier).setValue(value);
-    }
-
-    static getRules() {
-        return rules;
-    }
-
-    static getCategories() {
-        return [...new Set(Object.values(rules).map(rule => rule.#category))];
-    }
-
-    static getRulesByCategory(category) {
-        let result = Object.values(rules).filter(rule => rule.#category === category);
-        result.sort((a, b) => a.#identifier.localeCompare(b.#identifier));
-        return result;
-    }
-
-    static getRulesByExtension(extensionName) {
-        return Object.values(rules).filter(rule => rule.#extensionName === extensionName);
-    }
-
-    static getRule(identifier) {
-        return rules[identifier];
-    }
-
-    static getExtensionNames() {
-        return [...new Set(Object.values(rules).map(rule => rule.#extensionName))].filter(name => name !== false);
+        return null;
     }
 }
 
-export default Rule;
+export { Rule };

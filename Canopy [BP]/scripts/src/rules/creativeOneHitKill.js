@@ -1,5 +1,5 @@
 import { world, InputButton, ButtonState } from "@minecraft/server";
-import { Rule } from "lib/canopy/Canopy";
+import { Rule, Rules } from "../../lib/canopy/Canopy";
 
 new Rule({
     category: 'Rules',
@@ -8,7 +8,7 @@ new Rule({
 });
 
 world.afterEvents.entityHitEntity.subscribe((event) => {
-    if (!Rule.getNativeValue('creativeOneHitKill') || event.damagingEntity?.typeId !== 'minecraft:player') return;
+    if (!Rules.getNativeValue('creativeOneHitKill') || event.damagingEntity?.typeId !== 'minecraft:player') return;
     const player = event.damagingEntity;
     if (player.getGameMode() === 'creative') {
         if (player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed) {

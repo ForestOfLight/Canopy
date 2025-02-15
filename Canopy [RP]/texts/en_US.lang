@@ -4,12 +4,12 @@ entity.canopy:rideable.name=Canopy Rideable
 action.hint.exit.canopy:rideable=Sneak to stand
 
 ## generic
-generic.welcome.start=§7This server is running §l§aCanopy§r§7. Type ./help to get started.§r
-generic.welcome.extensions=§7Loaded extensions: §a%s
+generic.welcome.start=§7This server is running §l§aCanopy§r §av%s§7. Type ./help to get started.§r
+generic.welcome.extensions=§7Loaded extensions:
 generic.player.notfound=§cPlayer '%s' not found.
 generic.target.notfound=§cTarget not found.
 generic.entity.notfound=§cEntity not found.
-generic.total='Total'
+generic.total=Total
 
 ## commands
 commands.generic.unknown=§cInvalid command: '%1'. Use %2help for more information.
@@ -18,7 +18,7 @@ commands.generic.usage=§cUsage: %s
 commands.generic.blocked.survival=§cThis command can only be used in creative mode or spectator mode.
 
 commands.help=Displays help pages.
-commands.help.search.noresult=§cNo results found for '%s'
+commands.help.search.noresult=§cNo results found for '%s'.
 commands.help.search.results=§l§aCanopy§r §2Help search results for '§r%1§2':%2
 commands.help.page.header=§l§aCanopy§r§2 Help Page: §f%1
 commands.help.infodisplay=Togglable rules for your InfoDisplay.
@@ -44,11 +44,17 @@ commands.camera.spectate.started=§aSpectating
 commands.camera.spectate.ended=§7Spectating ended
 
 commands.canopy=Enable or disable a rule.
+commands.canopy.version=Displays the current version of Canopy and all loaded extensions.
+commands.canopy.version.message=§7This server is running §l§aCanopy§r
+commands.canopy.version.extensions=§7Loaded extensions:
+commands.canopy.single=Enables or disables a single rule.
+commands.canopy.multiple=Enables or disables multiple rules.
+commands.canopy.infodisplayRule=§cThe rule '%1' is part of the InfoDisplay, and must be toggled using %2info. Use %2help for more information.
 
 commands.changedimension=Teleports you to the specified dimension.
 commands.changedimension.notfound=§cInvalid dimension. Please use one of these: %s
-commands.changedimension.success.coords=§7Teleported to %1 in %2 dimension.
-commands.changedimension.success=§7Changed to %s dimension.
+commands.changedimension.success.coords=§7Teleported to %1 in the %2§7.
+commands.changedimension.success=§7Changed to the %s§7.
 commands.changedimension.fail.coords=§cInvalid coordinates. Please provide all x, y, z numeric values or none.
 
 commands.claimprojectiles=Changes the owner of all projectiles within a radius.
@@ -111,7 +117,7 @@ commands.gamemode.a=Set your gamemode to adventure.
 commands.gamemode.c=Set your gamemode to creative.
 commands.gamemode.sp=Set your gamemode to spectator.
 
-commands.generator=Manages hopper generators. (Alias: gen)
+commands.generator=Manages hopper generators. (Alias: gt)
 commands.generator.channel.notfound=§cInvalid color: %s. Please use one of the wool block colors.
 commands.generator.query=Displays the count and rates of the hopper generator for the specified color.
 commands.generator.query.empty=§7There are no hopper generators in use.
@@ -127,7 +133,11 @@ commands.health=Displays the server's current TPS, MSPT, and entity counts.
 commands.health.fail.mspt=§cCould not compute MSPT. Please report this error.
 
 commands.info=Toggle InfoDisplay rules. (Alias: i)
-commands.info.allupdated=%s§r§7 all InfoDisplay rules.
+commands.info.single=Toggle a single InfoDisplay rule.
+commands.info.multiple=Toggle multiple InfoDisplay rules.
+commands.info.all=Toggle all InfoDisplay rules.
+commands.info.allupdated=§7All InfoDisplay rules are now §l
+commands.info.canopyRule=§cThe rule '%1' is global rule, and must be toggled using %2canopy. Use %2help for more information.
 
 commands.jump=Teleport to the block you are looking at. (Alias: j)
 commands.jump.fail.noblock=§cNo block found to jump to.
@@ -162,6 +172,17 @@ commands.resetall.success=§7All §lCanopy§r§8 player and world dynamic proper
 commands.resettest=Resets spawn tracking, hopper counters, and hopper generators at the same time.
 commands.resettest.success=§7Reset spawn counters, hopper counters, and hopper generators.
 commands.resettest.success.actionbar=[%s] §7Reset spawn counters, hopper counters, and hopper generators.
+
+commands.simmap=Displays a map of the loaded chunks near you or the specified location.
+commands.simmap.help.distance=Displays the map with a radius of chunks equal to the specified distance.
+commands.simmap.help.location=Display the map around the specified location.
+commands.simmap.help.display.set=Sets the distance or location for the simulation map in your InfoDisplay.
+commands.simmap.help.display.reset=Sets the location for the simulation map in your InfoDisplay to follow your current location.
+commands.simmap.header=§7Loaded chunks in %1§7 around §2%2§7
+commands.simmap.invalidDistance=§cDistance '%1' is invalid. Please use a value between 1 and %2.
+commands.simmap.config.distance=§7InfoDisplay Simulation Map distance updated to %s.
+commands.simmap.config.location=§7InfoDisplay Simulation Map location updated to %1 in %2.
+commands.simmap.config.reset=§7InfoDisplay Simulation Map location updated to follow your current location.
 
 commands.sit=Makes your player sit down.
 commands.sit.busy=§cYou are busy and cannot sit down.
@@ -237,21 +258,23 @@ commands.warp.list.empty=§7There are no warps.
 commands.warp.list.header=§7Available warps:
 
 ## rules
-rules.generic.unknown=§cInvalid rule: %s. Use %2help for more information.
+rules.generic.unknown=§cInvalid rule: '%1'. Use %2help for more information.
 rules.generic.blocked=§cThe %s rule is disabled.
-rules.generic.status=§7%1 is currently %2§r§7.
-rules.generic.nochange=§7%1 is already %2§r§7.
-rules.generic.updated=§7%1 is now %2§r§7.
+rules.generic.status=§7%1 is currently §l
+rules.generic.nochange=§7%1 is already §l
+rules.generic.updated=§7%1 is now §l
+rules.generic.enabled=§aenabled
+rules.generic.disabled=§cdisabled
 
 rules.commandCamera=Enables camera command.
 rules.commandChangeDimension=Enables changedimension command.
 rules.commandClaimProjectiles=Enables claimprojectiles command.
 rules.commandCleanup=Enables cleanup command.
 rules.hopperCounters=Enables counter command & hopper counter functionality.
-rules.commandGamemode=Enables shortened gamemode commands (e.g. `./s` for survival), including without OP.
 rules.hopperGenerators=Enables generator command & hopper generator functionality.
+rules.commandGamemode=Enables shortened gamemode commands (e.g. `./s` for survival), including without OP.
 rules.commandJumpSurvival=Enables jump command in survival mode.
-rules.commandPos=Enables pos command.
+rules.commandPosOthers=Enables using the pos command on other players.
 rules.commandRemoveEntity=Enables removeentity command.
 rules.commandSpawnMocking=Enables spawn mocking command.
 rules.commandSummonTnt=Enables summontnt command.
@@ -264,6 +287,8 @@ rules.armorStandRespawning=Armor stands respawn when hit by a projectile, droppi
 rules.autoItemPickup=Automatically picks up items when breaking blocks.
 rules.beeNoDrown=Enables bees healing from drowning damage.
 rules.cauldronConcreteConversion=Concrete powder items inside a cauldron filled with water will convert to concrete items.
+rules.creativeInstantTame=Instantly tames animals with their respective food in creative mode.
+rules.creativeNoTileDrops=Prevents items dropping from blocks broken in creative mode.
 rules.creativeOneHitKill=Allows creative players to one hit kill any entity. If sneaking, it will also kill nearby entities.
 rules.dupeTnt=TNT can be duplicated when moved by a piston and powered next to a note blocks.
 rules.durabilitySwap=Swaps 0 durability items out of your hand.
@@ -278,9 +303,7 @@ rules.hotbarSwitching=Allows for quick switching between multiple hotbars. Put a
 rules.hotbarSwitchingSurvival=Enables hotbarSwitching for survival mode.
 rules.instaminableDeepslate=Makes deepslate instaminable while using netherite, efficiency 5, and haste 2.
 rules.instaminableEndstone=Makes endstone instaminable while using netherite, efficiency 5, and haste 2.
-rules.instantTame=Instantly tames animals with their respective food.
-rules.instantTameSurvival=Enables instantTame for survival mode.
-rules.noTileDrops=Prevents items dropping from blocks broken in creative mode.
+rules.noWelcomeMessage=Disables the §lCanopy§r§8 welcome message.
 rules.pistonBedrockBreaking=Allows pistons to break bedrock when facing away from a bedrock block and expanding.
 rules.playerSit=Allows players to sit down after %s quick sneaks.
 rules.quickFillContainer=Using an item on a container with an arrow in the top left of your inventory will deposit all of that item into the container.
@@ -315,12 +338,15 @@ rules.infoDisplay.timeOfDay.display=§rTime: §7%s§r
 rules.infoDisplay.worldDayAndTimeOfDay.display=Day: §7%1§r §7%2§r
 rules.infoDisplay.sessionTime=Shows the time since you joined the world.
 rules.infoDisplay.sessionTime.display=§rSession: §7%s§r
-rules.infoDisplay.moonPhase=Shows the phase of the moon.
-rules.infoDisplay.moonPhase.display=§rMoon: §7%s§r
+rules.infoDisplay.chunkCoords=Shows the coordinates of the chunk you are in.
+rules.infoDisplay.chunkCoords.display=§rChunk: §7%s§r
 rules.infoDisplay.slimeChunk=Shows whether the chunk you are in is a slime chunk (only displays when in a slime chunk).
 rules.infoDisplay.slimeChunk.display=§7(§aSlime Chunk§7)§r
+rules.infoDisplay.moonPhase=Shows the phase of the moon.
+rules.infoDisplay.moonPhase.display=§rMoon: §7%s§r
 rules.infoDisplay.eventTrackers=Shows the counts of tracked events.
 rules.infoDisplay.hopperCounterCounts=Shows all active hopper counter counts in their respective colors. Hopper counter mode controls this info.
+rules.infoDisplay.simulationMap=Shows a map of the loaded chunks around you. The simmap command can be used to configure this. Warning: This is a very laggy rule.
 rules.infoDisplay.lookingAt=Shows the identifier of the block or entity you are looking at.
 rules.infoDisplay.signalStrength=Shows the signal strength of the block you are looking at.
 rules.infoDisplay.peekInventory=Shows the inventory of the block or entity you are looking at.
