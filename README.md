@@ -8,7 +8,7 @@
 [![CI](https://github.com/ForestOfLight/Canopy/actions/workflows/ci.yml/badge.svg)](https://github.com/ForestOfLight/Canopy/actions/workflows/ci.yml)
 [![GitHub Downloads](https://img.shields.io/github/downloads/ForestOfLight/Canopy/total?label=Github%20downloads&logo=github)](https://github.com/ForestOfLight/Canopy/releases/latest)
 [![Curseforge Downloads](https://cf.way2muchnoise.eu/full_1062078_downloads.svg)](https://www.curseforge.com/minecraft-bedrock/addons/canopy)
-[![Minecraft - Version](https://img.shields.io/badge/Minecraft-v1.21.50_(Bedrock)-brightgreen)](https://feedback.minecraft.net/hc/en-us/sections/360001186971-Release-Changelogs)
+[![Minecraft - Version](https://img.shields.io/badge/Minecraft-v1.21.60_(Bedrock)-brightgreen)](https://feedback.minecraft.net/hc/en-us/sections/360001186971-Release-Changelogs)
 [![GitHub License](https://img.shields.io/github/license/forestoflight/canopy)](LICENSE)
 [![Discord](https://badgen.net/discord/members/9KGche8fxm?icon=discord&label=Discord&list=what)](https://discord.gg/9KGche8fxm)
 </div>
