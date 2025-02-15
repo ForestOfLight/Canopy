@@ -137,7 +137,7 @@ commands.info.single=Schalted eine bestimmte Info Display Regel um.
 commands.info.multiple=Schalted angegebene Info Display Regeln um.
 commands.info.all=Schalted alle Info Display Regeln um.
 commands.info.allupdated=%s§r§7 alle Info Anzeige Regeln sin nun §1.
-commands.info.canopyRule=§cThe rule '%1' is global rule, and must be toggled using %2canopy. Use %2help for more information.
+commands.info.canopyRule=§cDie Regel '%1' ist eine globale Regel, und muss mit %2canopy umgeschaltet werden. Nutze %2help für mehr Informationen.
 
 commands.jump=Teleportiert Sie zu dem Block, den Sie gerade betrachten. (Alias: j)
 commands.jump.fail.noblock=§cKein Block gefunden, zu dem gesprungen werden kann.
@@ -168,6 +168,24 @@ commands.removeentity.success=§7Entfernt %1 mit der id '%2'.
 
 commands.resetall=Setzt alle §lCanopy§r§8 Regeln und Daten zurück. Mit Vorsicht verwenden.
 commands.resetall.success=§7Alle Eigenschaften von §lCanopy§r§8 für Spieler und Welt- Dynamik wurden zurückgesetzt.
+
+commands.resettest=Resets spawn tracking, hopper counters, and hopper generators at the same time.
+commands.resettest.success=§7Reset spawn counters, hopper counters, and hopper generators.
+commands.resettest.success.actionbar=[%s] §7Reset spawn counters, hopper counters, and hopper generators.
+
+commands.simmap=Zeigt eine Karte der geladenen Chunks in Ihrer Nähe oder am angegebenen Ort an.
+commands.simmap.help.distance=Zeigt die Karte mit einem Radius von Chunks an, der der angegebenen Entfernung entspricht.
+commands.simmap.help.location=Zeigt die Karte um die angegebene Position herum an.
+commands.simmap.help.display.set=Stellt die Entfernung oder den Standort für die Simulationskarte in Ihrem InfoDisplay ein.
+commands.simmap.help.display.reset=Stellt die Position für die Simulationskarte in Ihrem InfoDisplay so ein, dass sie Ihrer aktuellen Position folgt.
+commands.simmap.header=§7geladene chunks in %1§7 um §2%2§7
+commands.simmap.invalidDistance=§Die Entfernung '%1' ist ungültig. Bitte verwenden Sie einen Wert zwischen 1 und %2.
+commands.simmap.config.distance=§7InfoDisplay Entfernung der Simulationskarte aktualisiert auf %s.
+commands.simmap.config.location=§7InfoDisplay Die Position der Simulationskarte wurde auf %1 in %2 aktualisiert.
+commands.simmap.config.reset=§7InfoDisplay Simulationskarte aktualisiert, um Ihrer aktuellen Position zu folgen.
+
+commands.sit=Der Spieler setzt sich hin.
+commands.sit.busy=§cDu bist beschäftigt und kannst dich nicht hinsetzen.
 
 commands.spawn=Spawn-Befehl zum Aufspüren und Verfolgen von Spawns.
 commands.spawn.entities=Zeigt eine Liste aller Entitäten und ihrer Positionen in der Welt an.
@@ -244,6 +262,8 @@ rules.generic.blocked=§cDie Regel %s ist deaktiviert.
 rules.generic.status=§7%1 ist derzeit %2§r§7.
 rules.generic.nochange=§7%1 ist bereits %2§r§7.
 rules.generic.updated=§7%1 ist jetzt %2§r§7.
+rules.generic.enabled=§aaktiviert
+rules.generic.disabled=§cdeaktiviert
 
 rules.commandCamera=Aktiviert den Kamera-Befehl.
 rules.commandChangeDimension=Aktiviert den changedimension Befehl.
