@@ -9,7 +9,7 @@ generic.welcome.extensions=§7Geladene Erweiterungen: §a%s
 generic.player.notfound=§cSpieler '%s' nicht gefunden.
 generic.target.notfound=§cZiel nicht gefunden.
 generic.entity.notfound=§cEntität nicht gefunden.
-generic.total='Total'
+generic.total=Total
 
 ## commands
 commands.generic.unknown=§cUngültiger Befel: '%1'. Nutze %2help für mehr Informationen.
@@ -29,6 +29,7 @@ commands.help.extension.commands=Befehle für §a%s§2.
 commands.camera=Platziere eine Kamera, beobachte sie oder nutze eine Überleben freundliche Version des Zuschauer Modus.
 commands.camera.place=Platziert eine Kamera bei deiner derzeitigen Position. (Alias: cp)
 commands.camera.view=Schaltet die Beobachtung der letzt platzierten Kamera um. (Alias: cv)
+commands.camera.view.load=Falls die platzierte Kamera nicht geladen ist wird sie füe eine Sekunde geladen.
 commands.camera.spectate=Schaltet einen Überleben freundlichen Zuschauer Modus um. (Alias: cs)
 commands.camera.place.viewing=§cDu kannst keine Kamera Platzieren wärend du eine andere Kamera beobachtest.
 commands.camera.place.success=§7Kamera bei %s platziert.
@@ -43,6 +44,12 @@ commands.camera.spectate.started=§aBeobachten
 commands.camera.spectate.ended=§7Beobachten beendet
 
 commands.canopy=Aktiviere oder Deaktiviere eine Regel.
+commands.canopy.version=Zeigt die aktuelle Version von Canopy und allen geladenen Erweiterungen.
+commands.canopy.version.message=§7Dieser Server nutzt §l§aCanopy§r
+commands.canopy.version.extensions=§7Gelaadene Erweiterungen:
+commands.canopy.single=Aktiviert oder deaktiviert eine bestimmte Regel.
+commands.canopy.multiple=Aktiviert oder deaktiviert alle bestimmten Regeln.
+commands.canopy.infodisplayRule=§cDie Regel '%1' ist ein Teil des Info Displays, und muss mit %2info umgeschaltet werden. Nutze %2help für mehr Informationen.
 
 commands.changedimension=Telepotiert dich zur angegebenen Diemension.
 commands.changedimension.notfound=§cUngültige Dimension. Bitte nutze eine dieser Optionen: %s
@@ -110,11 +117,27 @@ commands.gamemode.a=Stellt euren Spielmodus auf Abenteuer ein.
 commands.gamemode.c=Stellt euren Spielmodus auf kreativ.
 commands.gamemode.sp=Setzen Sie Ihren Spielmodus auf Zuschauer.
 
+commands.generator=Verwalted Trichtergeneratoren. (Alias: gt)
+commands.generator.channel.notfound=§cUngültige Farbe: %s. Bitt nutze eine der Woll Farben.
+commands.generator.query=Zeigt die Anzahl und Raten von Trichtergeneratoren einer Angegebenen Farbe an.
+commands.generator.query.empty=§7Es werden derzeit keine Trichtergeneratoren genutzt.
+commands.generator.query.channel=§7generierte Items für %1§7 (%2%3 min.), Total: §f%4§7, (§f%5§7):
+commands.generator.realtime=Zeigt die Anzahl und Raten von Trichtergeneratoren nutzt aber Echtzeit anstelle von Tick basierter Zeit.
+commands.generator.reset=Setzt alle Trichtergeneratoren zurück und startet Zeit neu.
+commands.generator.reset.single=§7Zurückgesetzt und Zeit neu gestartet: %s
+commands.generator.reset.single.actionbar=[%1] %2 Trichtergeneratoren Zurückgesetzt.
+commands.generator.reset.all=§7Alle Kanäle wurden zurück gesetzt und Trichtergenerator zeit wurde gestartet.
+commands.generator.reset.all.actionbar=[%s] Reset all hopper generators.
+
 commands.health=Zeigt die aktuellen TPS-, MSPT- und Entitätszahlen des Servers an.
 commands.health.fail.mspt=§cMSPT konnte nicht berechnet werden. Bitte melden Sie diesen Fehler.
 
 commands.info=Regeln für die Infoanzeige umschalten. (Alias: i)
-commands.info.allupdated=%s§r§7 alle Info Anzeige Regeln.
+commands.info.single=Schalted eine bestimmte Info Display Regel um.
+commands.info.multiple=Schalted angegebene Info Display Regeln um.
+commands.info.all=Schalted alle Info Display Regeln um.
+commands.info.allupdated=%s§r§7 alle Info Anzeige Regeln sin nun §1.
+commands.info.canopyRule=§cThe rule '%1' is global rule, and must be toggled using %2canopy. Use %2help for more information.
 
 commands.jump=Teleportiert Sie zu dem Block, den Sie gerade betrachten. (Alias: j)
 commands.jump.fail.noblock=§cKein Block gefunden, zu dem gesprungen werden kann.
