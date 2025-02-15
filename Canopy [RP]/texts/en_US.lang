@@ -23,7 +23,7 @@ commands.help.search.results=§l§aCanopy§r §2Help search results for '§r%1§
 commands.help.page.header=§l§aCanopy§r§2 Help Page: §f%1
 commands.help.infodisplay=Togglable rules for your InfoDisplay.
 commands.help.rules=Togglable global rules.
-commands.help.extension.rules=Togglable rules for §a%s§2.
+commands.help.extension.rules=Togglable rules for §a%s§7.
 commands.help.extension.commands=Commands for §a%s§2.
 
 commands.camera=Place a camera, view it, or use a survival-friendly spectator mode.
