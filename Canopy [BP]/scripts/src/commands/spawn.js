@@ -53,12 +53,12 @@ world.afterEvents.entitySpawn.subscribe((event) => {
             shouldCancelSpawn = true;
     }
     if (shouldCancelSpawn && event.entity)
-        try {
+        {try {
             event.entity.remove();
         } catch (error) {
             if (error.message !== "Failed to call function 'remove'")
                 throw error;
-        }
+        }}
 });
 
 function spawnCommand(sender, args) {
