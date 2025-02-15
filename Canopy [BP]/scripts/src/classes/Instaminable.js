@@ -1,7 +1,7 @@
+import { Rules} from "../../lib/canopy/Canopy";
 import { system, world } from "@minecraft/server";
-import { Rule } from "lib/canopy/Canopy";
 
-const beaconRefreshOffset = new Map();
+const beaconRefreshOffset = {};
 const BEACON_REFRESH_RATE = 80;
 
 world.afterEvents.effectAdd.subscribe(event => {
@@ -21,21 +21,21 @@ class Instaminable {
             for (const player of world.getPlayers()) {
                 if (!player)
                     continue;
-                if (player.getEffect('haste')?.amplifier == 2 && this.isTickBeforeRefresh(player)) {
+                if (player.getEffect('haste')?.amplifier === 2 && this.isTickBeforeRefresh(player)) 
                     player.removeEffect('haste');
-                }
+                
             }
         });
 
-        world.beforeEvents.playerBreakBlock.subscribe(async event => {
+        world.beforeEvents.playerBreakBlock.subscribe((event) => {
             const blockId = event.block.typeId;
-            if (await Rule.getValue(this.ruleId) !== true) return;
+            if (Rules.getNativeValue(this.ruleId) !== true) return;
             if (!this.litmusCallback(blockId)) return;
             const player = event.player;
             if (this.isEfficiencyFiveNetheritePick(event.itemStack) && this.hasHasteTwo(player)) {
-                let duration = player.getEffect('haste')?.duration;
+                const duration = player.getEffect('haste')?.duration;
                 if (duration > 0)
-                    player.addEffect('haste', duration, { amplifier: 2 });
+                    system.run(() => player.addEffect('haste', duration, { amplifier: 2 }));
             }
         });
     }
@@ -54,7 +54,7 @@ class Instaminable {
 
     hasHasteTwo(player) {
         const haste = player.getEffect('haste');
-        return haste?.amplifier == 1;
+        return haste?.amplifier === 1;
     }
 }
 

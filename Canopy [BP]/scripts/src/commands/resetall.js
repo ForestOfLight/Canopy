@@ -9,7 +9,7 @@ new Command({
     adminOnly: true
 });
 
-function resetallCommand(sender) {
+function resetallCommand() {
     world.clearDynamicProperties();
     const players = world.getAllPlayers();
     players.forEach(player => {

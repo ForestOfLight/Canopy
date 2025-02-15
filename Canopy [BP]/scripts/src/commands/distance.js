@@ -1,6 +1,5 @@
-import { Command } from 'lib/canopy/Canopy';
-import Utils from 'stickycore/utils';
-import Data from 'stickycore/data';
+import { Command, Commands } from "../../lib/canopy/Canopy";
+import { stringifyLocation, getRaycastResults, getClosestTarget, calcDistance } from "../../include/utils";
 
 let savedLocation = { x: undefined, y: undefined, z: undefined };
 const MAX_DISTANCE = 64*16;
@@ -8,7 +7,7 @@ const MAX_DISTANCE = 64*16;
 const cmd = new Command({
     name: 'distance',
     description: { translate: 'commands.distance' },
-    usage: `distance [from [x y z]] [to [x y z]] OR ${Command.prefix}distance target`,
+    usage: `distance [from [x y z]] [to [x y z]] OR ${Commands.getPrefix()}distance target`,
     args: [
         { type: 'string', name: 'actionArgOne' },
         { type: 'number', name: 'fromArgX' },
@@ -41,27 +40,26 @@ new Command({
         { type: 'number', name: 'toArgY' },
         { type: 'number', name: 'toArgZ' }
     ],
-    usage: `d to [from [x y z]] [to [x y z]] OR ${Command.prefix}d target`,
+    usage: `d to [from [x y z]] [to [x y z]] OR ${Commands.getPrefix()}d target`,
     callback: distanceCommand,
     helpHidden: true
 });
 
 function distanceCommand(sender, args) {
     const { actionArgOne, actionArgTwo } = args;
-    let output = '';
-
-    if (actionArgOne === 'from' && actionArgTwo !== 'to')
-        output = trySaveLocation(sender, args);
-    else if (actionArgOne === 'to')
-        output = tryCalculateDistanceFromSave(sender, args);
-    else if (actionArgOne === 'from' && actionArgTwo === 'to')
-        output = tryCalculateDistance(sender, args);
-    else if (actionArgOne === 'target')
-        output = targetDistance(sender, args);
-    else
-        output = { translate: 'commands.generic.usage', with: [cmd.getUsage()] };
     
-    sender.sendMessage(output);
+    let message;
+    if (actionArgOne === 'from' && actionArgTwo !== 'to')
+        message = trySaveLocation(sender, args);
+    else if (actionArgOne === 'to')
+        message = tryCalculateDistanceFromSave(sender, args);
+    else if (actionArgOne === 'from' && actionArgTwo === 'to')
+        message = tryCalculateDistance(sender, args);
+    else if (actionArgOne === 'target')
+        message = targetDistance(sender, args);
+    else
+        message = { translate: 'commands.generic.usage', with: [cmd.getUsage()] };
+    sender.sendMessage(message);
 }
 
 function trySaveLocation(sender, args) {
@@ -71,26 +69,25 @@ function trySaveLocation(sender, args) {
     else if (areDefined(fromArgX, fromArgY, fromArgZ))
         savedLocation = { x: fromArgX, y: fromArgY, z: fromArgZ };
     else
-        return { translate: 'commands.generic.usage', with: [`${Command.prefix}distance from [x y z]`] }
+        return { translate: 'commands.generic.usage', with: [`${Commands.getPrefix()}distance from [x y z]`] }
 
-    return { translate: 'commands.distance.from.success', with: [Utils.stringifyLocation(savedLocation)] };
+    return { translate: 'commands.distance.from.success', with: [stringifyLocation(savedLocation)] };
 }
 
 function tryCalculateDistanceFromSave(sender, args) {
     const { fromArgX, fromArgY, fromArgZ } = args;
-    let fromLocation;
-    let toLocation;
-
+    
     if (!hasSavedLocation() || (savedLocation.x === null && savedLocation.y === null && savedLocation.z === null))
-        return { translate: 'commands.distance.to.fail.nosave', with: [Command.prefix] };
-    fromLocation = savedLocation;
-
+        return { translate: 'commands.distance.to.fail.nosave', with: [Commands.getPrefix()] };
+    const fromLocation = savedLocation;
+    
+    let toLocation;
     if (areDefined(fromArgX, fromArgY, fromArgZ))
         toLocation = { x: fromArgX, y: fromArgY, z: fromArgZ };
     else if (areUndefined(fromArgX, fromArgY, fromArgZ))
         toLocation = sender.location;
     else
-        return { translate: 'commands.generic.usage', with: [`${Command.prefix}distance to [x y z]`] };
+        return { translate: 'commands.generic.usage', with: [`${Commands.getPrefix()}distance to [x y z]`] };
 
     return getCompleteOutput(fromLocation, toLocation);
 }
@@ -108,24 +105,24 @@ function tryCalculateDistance(sender, args) {
         fromLocation = { x: fromArgX, y: fromArgY, z: fromArgZ };
         toLocation = { x: toArgX, y: toArgY, z: toArgZ };
     } else {
-        return { translate: 'commands.generic.usage', with: [`${Command.prefix}distance from <x y z> to [x y z]`] };
+        return { translate: 'commands.generic.usage', with: [`${Commands.getPrefix()}distance from <x y z> to [x y z]`] };
     }
 
     return getCompleteOutput(fromLocation, toLocation);
 }
 
 function targetDistance(sender) {
-    let playerLocation = sender.getHeadLocation();
+    const playerLocation = sender.getHeadLocation();
     let targetLocation;
 
-    const { blockRayResult, entityRayResult } = Data.getRaycastResults(sender, MAX_DISTANCE);
+    const { blockRayResult, entityRayResult } = getRaycastResults(sender, MAX_DISTANCE);
     if (!blockRayResult && !entityRayResult[0])
         return { translate: 'commands.distance.target.notfound' };
-    const target = Utils.getClosestTarget(sender, blockRayResult, entityRayResult);
+    const target = getClosestTarget(sender, blockRayResult, entityRayResult);
 
     try {
         targetLocation = target.location;
-    } catch(error) {
+    } catch {
         return { translate: 'commands.distance.target.notfound' };
     }
 
@@ -145,8 +142,8 @@ function hasSavedLocation() {
 }
 
 function calculateDistances(locationOne, locationTwo) {
-    const cartesianDistance = Utils.calcDistance(locationOne, locationTwo, true);
-    const cylindricalDistance = Utils.calcDistance(locationOne, locationTwo, false);
+    const cartesianDistance = calcDistance(locationOne, locationTwo, true);
+    const cylindricalDistance = calcDistance(locationOne, locationTwo, false);
     const manhattanDistance = Math.abs(locationOne.x - locationTwo.x) + Math.abs(locationOne.y - locationTwo.y) + Math.abs(locationOne.z - locationTwo.z);
 
     return { cartesianDistance, cylindricalDistance, manhattanDistance };
@@ -156,7 +153,7 @@ function getCompleteOutput(locationOne, locationTwo) {
     const { cartesianDistance, cylindricalDistance, manhattanDistance } = calculateDistances(locationOne, locationTwo);
     const message = {
         rawtext: [
-            { text: `§7Distance from §a${Utils.stringifyLocation(locationOne)}§7 to §a${Utils.stringifyLocation(locationTwo)}§7:\n` },
+            { text: `§7Distance from §a${stringifyLocation(locationOne)}§7 to §a${stringifyLocation(locationTwo)}§7:\n` },
             { rawtext: [
                 { translate: 'commands.distance.cartesian', with: [cartesianDistance.toFixed(3)] }, { text: '\n' },
                 { translate: 'commands.distance.cylindrical', with: [cylindricalDistance.toFixed(3)] }, { text: '\n' },

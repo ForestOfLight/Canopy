@@ -1,6 +1,6 @@
-import { Rule, Command } from 'lib/canopy/Canopy';
-import { system, world } from '@minecraft/server';
-import Utils from 'stickycore/utils';
+import { Rule, Command } from "../../lib/canopy/Canopy";
+import { system, world } from "@minecraft/server";
+import { stringifyLocation } from "../../include/utils";
 
 new Rule({
     category: 'Rules',
@@ -53,14 +53,6 @@ new Command({
     helpHidden: true
 });
 
-class CameraPlacement {
-    constructor(location, rotation, dimension) {
-        this.location = location;
-        this.rotation = rotation;
-        this.dimension = dimension;
-    }
-}
-
 class BeforeSpectatorPlayer {
     constructor(player) {
         this.location = player.location;
@@ -68,7 +60,7 @@ class BeforeSpectatorPlayer {
         this.dimensionId = player.dimension.id;
         this.gamemode = player.getGameMode();
         this.effects = [];
-        for (let effect of player.getEffects())
+        for (const effect of player.getEffects())
             this.effects.push({ typeId: effect.typeId, duration: effect.duration, amplifier: effect.amplifier });
     }
 }
@@ -114,23 +106,22 @@ function cameraCommand(sender, args) {
 }
 
 function placeCameraAction(sender) {
-    let camera;
     const eyeHeight = 1.62001002;
 
     if (sender.getDynamicProperty('isViewingCamera'))
         return sender.sendMessage({ translate: 'commands.camera.place.viewing' });
 
-    camera = new CameraPlacement(
-        { x: sender.location.x, y: sender.location.y + eyeHeight, z: sender.location.z },
-        sender.getRotation(),
-        sender.dimension.id
-    );
-    placeCamera(sender, camera);
+    const cameraSettings = {
+        location: { x: sender.location.x, y: sender.location.y + eyeHeight, z: sender.location.z },
+        rotation: sender.getRotation(),
+        dimensionId: sender.dimension.id
+    };
+    placeCamera(sender, cameraSettings);
 }
 
-function placeCamera(sender, camera) {
-    sender.setDynamicProperty('placedCamera', JSON.stringify(camera));
-    sender.sendMessage({ translate: 'commands.camera.place.success', with: [Utils.stringifyLocation(camera.location, 0)] });
+function placeCamera(sender, cameraSettings) {
+    sender.setDynamicProperty('placedCamera', JSON.stringify(cameraSettings));
+    sender.sendMessage({ translate: 'commands.camera.place.success', with: [stringifyLocation(cameraSettings.location, 0)] });
 }
 
 function viewCameraAction(sender, option) {
@@ -139,36 +130,36 @@ function viewCameraAction(sender, option) {
     if (!sender.getDynamicProperty('placedCamera'))
         return sender.sendMessage({ translate: 'commands.camera.view.fail' });
 
-    const placedCamera = JSON.parse(sender.getDynamicProperty('placedCamera'));
-    toggleCameraView(sender, placedCamera, option);
+    const placedCameraSettings = JSON.parse(sender.getDynamicProperty('placedCamera'));
+    toggleCameraView(sender, placedCameraSettings, option);
 }
 
-function toggleCameraView(sender, placedCamera, option) {
-    if (!sender.getDynamicProperty('isViewingCamera')) {
-        if (placedCamera.dimension !== sender.dimension.id)
-            return sender.sendMessage({ translate: 'commands.camera.view.dimension', with: [placedCamera.dimension] });
-        startCameraView(sender, placedCamera, option);
-    } else {
+function toggleCameraView(sender, placedCameraSettings, option) {
+    if (sender.getDynamicProperty('isViewingCamera')) {
         endCameraView(sender);
+    } else {
+        if (placedCameraSettings.dimensionId !== sender.dimension.id)
+            return sender.sendMessage({ translate: 'commands.camera.view.dimension', with: [placedCameraSettings.dimensionId] });
+        startCameraView(sender, placedCameraSettings, option);
     }
 }
 
-function startCameraView(sender, placedCamera, option) {
+function startCameraView(sender, placedCameraSettings, option) {
     if (option === 'load')
-        loadChunkForTicks(placedCamera, 20);
+        loadChunkForTicks(placedCameraSettings, 20);
     sender.camera.setCamera('minecraft:free', {
         easeOptions: { easeTime: 1.0, easeType: 'InOutSine' },
-        location: placedCamera.location,
-        rotation: placedCamera.rotation
+        location: placedCameraSettings.location,
+        rotation: placedCameraSettings.rotation
     });
     sender.setDynamicProperty('isViewingCamera', true);
     sender.onScreenDisplay.setActionBar({ translate: 'commands.camera.view.started' });
 }
 
-function loadChunkForTicks(placedCamera, ticks) {
-    const dimension = world.getDimension(placedCamera.dimension);
+function loadChunkForTicks(placedCameraSettings, ticks) {
+    const dimension = world.getDimension(placedCameraSettings.dimensionId);
     dimension.runCommand('tickingarea remove Canopy-cameraLoad');
-    dimension.runCommand(`tickingarea add ${placedCamera.location.x} ${placedCamera.location.y} ${placedCamera.location.z} ${placedCamera.location.x} ${placedCamera.location.y} ${placedCamera.location.z} Canopy-cameraLoad`);
+    dimension.runCommand(`tickingarea add ${placedCameraSettings.location.x} ${placedCameraSettings.location.y} ${placedCameraSettings.location.z} ${placedCameraSettings.location.x} ${placedCameraSettings.location.y} ${placedCameraSettings.location.z} Canopy-cameraLoad`);
     system.runTimeout(() => {
         dimension.runCommand('tickingarea remove Canopy-cameraLoad');
     }, ticks);
@@ -186,10 +177,10 @@ function endCameraView(sender) {
 function spectateAction(sender) {
     if (sender.getDynamicProperty('isViewingCamera'))
         return sender.sendMessage({ translate: 'commands.camera.spectate.viewing' });
-    if (!sender.getDynamicProperty('isSpectating'))
-        startSpectate(sender);
-    else
+    if (sender.getDynamicProperty('isSpectating'))
         endSpectate(sender);
+    else
+        startSpectate(sender);
 }
 
 function startSpectate(sender) {
@@ -200,10 +191,10 @@ function startSpectate(sender) {
     
     system.runTimeout(() => {
         sender.setGameMode('spectator');
-        for (let effect of sender.getEffects())
+        for (const effect of sender.getEffects())
             sender.removeEffect(effect?.typeId);
-        sender.addEffect('night_vision', 999999, { amplifier: 0, showParticles: false });
-        sender.addEffect('conduit_power', 999999, { amplifier: 0, showParticles: false });
+        sender.addEffect('night_vision', 20000000, { amplifier: 0, showParticles: false });
+        sender.addEffect('conduit_power', 20000000, { amplifier: 0, showParticles: false });
         sender.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.started' });
     }, 8);
 }
@@ -213,14 +204,17 @@ function endSpectate(sender) {
     const beforeSpectatorPlayer = JSON.parse(sender.getDynamicProperty('beforeSpectatorPlayer'));
     sender.setDynamicProperty('isSpectating', false);
     system.runTimeout(() => {
-        for (let effect of sender.getEffects()) {
+        for (const effect of sender.getEffects()) {
             if (!effect) continue;
             sender.removeEffect(effect.typeId);
         }
         sender.teleport(beforeSpectatorPlayer.location, { dimension: world.getDimension(beforeSpectatorPlayer.dimensionId), rotation: beforeSpectatorPlayer.rotation });
         for (const effect of beforeSpectatorPlayer.effects) {
-            if (!effect.typeId || !effect.duration || !effect.amplifier) continue;
-            sender.addEffect(effect.typeId, Math.min(20000000, effect.duration), { amplifier: effect.amplifier });
+            try {
+                sender.addEffect(effect.typeId, Math.min(20000000, effect.duration), { amplifier: effect.amplifier });
+            } catch (error) {
+                console.warn(`Failed to add effect back to player ${sender.name}. Error: ${error}`);
+            }
         }
         sender.setGameMode(beforeSpectatorPlayer.gamemode);
         sender.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.ended' });
@@ -229,7 +223,7 @@ function endSpectate(sender) {
 
 function cameraFadeOut(sender) {
     sender.camera.fade({
-        fadeColor: { red: 0, green: 0, blue: 0 }, 
+        fadeColor: { red: 0, green: 0, blue: 0 },
         fadeTime: { fadeInTime: 0.5, fadeOutTime: 0.5, holdTime: 0.0 }
     });
 }

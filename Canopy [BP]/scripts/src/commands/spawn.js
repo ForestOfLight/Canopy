@@ -1,8 +1,8 @@
-import { world, DimensionTypes } from '@minecraft/server'
-import { Rule, Command } from 'lib/canopy/Canopy'
-import Utils from 'stickycore/utils'
-import WorldSpawns from 'src/classes/WorldSpawns'
-import { categoryToMobMap } from 'src/classes/SpawnTracker';
+import { world, DimensionTypes } from "@minecraft/server";
+import { Rule, Command, Rules, Commands } from "../../lib/canopy/Canopy";
+import { getColoredDimensionName, stringifyLocation, broadcastActionBar } from "../../include/utils";
+import WorldSpawns from "../classes/WorldSpawns";
+import { categoryToMobMap } from "../../include/data";
 
 const thisRule = new Rule({
     category: 'Rules',
@@ -32,7 +32,6 @@ const cmd = new Command({
         { usage: 'spawn tracking <mobName> [x1 y1 z1] [x2 y2 z2]', description: { translate: 'commands.spawn.tracking.mob' } },
         { usage: 'spawn tracking', description: { translate: 'commands.spawn.tracking.query' } },
         { usage: 'spawn tracking stop', description: { translate: 'commands.spawn.tracking.stop' } },
-        { usage: 'spawn test', description: { translate: 'commands.spawn.test' } },
         { usage: 'spawn mocking <true/false>', description: { translate: 'commands.spawn.mocking' } }
     ]
 });
@@ -42,59 +41,78 @@ let isMocking = false;
 let currMobIds = [];
 let currActiveArea = null;
 
-world.afterEvents.entitySpawn.subscribe(async (event) => {
+world.afterEvents.entitySpawn.subscribe((event) => {
     const entity = event.entity;
     if (worldSpawns && entity.typeId !== 'minecraft:item')
         worldSpawns.sendMobToTrackers(event.entity);
 
-    if (!isMocking || event.cause === 'Loaded' || !await Rule.getValue('commandSpawnMocking')) return;
+    if (!isMocking || event.cause === 'Loaded' || !Rules.getNativeValue('commandSpawnMocking')) return;
     let shouldCancelSpawn = false;
     for (const category in categoryToMobMap) {
-        if (categoryToMobMap[category].includes(event.entity.typeId.replace('minecraft:', ''))) shouldCancelSpawn = true;
+        if (categoryToMobMap[category].includes(event.entity.typeId.replace('minecraft:', '')))
+            shouldCancelSpawn = true;
     }
-    if (shouldCancelSpawn && event.entity) event.entity.remove();
+    if (shouldCancelSpawn && event.entity)
+        {try {
+            event.entity.remove();
+        } catch (error) {
+            if (error.message !== "Failed to call function 'remove'")
+                throw error;
+        }}
 });
 
 function spawnCommand(sender, args) {
     const { action, actionTwo, x1, y1, z1, x2, y2, z2 } = args;
-    const posOne = { x: x1, y: y1, z: z1 };
-    const posTwo = { x: x2, y: y2, z: z2 };
+    const area = {
+        posOne: { x: x1, y: y1, z: z1 },
+        posTwo: { x: x2, y: y2, z: z2 }
+    };
 
-    if (action === 'entities') printAllEntities(sender);
-    else if (action === 'mocking') handleMockingCmd(sender, actionTwo);
-    else if (action === 'test') resetSpawnCounters(sender);
-    else if (action === 'recent') recentSpawns(sender, actionTwo);
-    else if (action === 'tracking' && actionTwo === null) printTrackingStatus(sender);
-    else if (action === 'tracking' && actionTwo !== null && x1 !== null && z2 === null) sender.sendMessage({ translate: 'commands.generic.usage', with: [`${Command.prefix}spawn tracking <start/stop/mobname> [x1 y1 z1] [x2 y2 z2]`] });
-    else if (action === 'tracking' && actionTwo === 'start') startTracking(sender, posOne, posTwo);
-    else if (action === 'tracking' && actionTwo === 'stop') stopTracking(sender);
-    else if (action === 'tracking' && actionTwo !== null) trackMob(sender, actionTwo, posOne, posTwo);
-    else return cmd.sendUsage(sender);
+    if (action === 'entities')
+        printAllEntities(sender);
+    else if (action === 'mocking')
+        handleMockingCmd(sender, actionTwo);
+    else if (action === 'test')
+        resetSpawnCounters(sender);
+    else if (action === 'recent')
+        recentSpawns(sender, actionTwo);
+    else if (action === 'tracking' && actionTwo === null)
+        printTrackingStatus(sender);
+    else if (action === 'tracking' && actionTwo !== null && x1 !== null && z2 === null)
+        sender.sendMessage({ translate: 'commands.generic.usage', with: [`${Commands.getPrefix()}spawn tracking <start/stop/mobname> [x1 y1 z1] [x2 y2 z2]`] });
+    else if (action === 'tracking' && actionTwo === 'start')
+        startTracking(sender, area);
+    else if (action === 'tracking' && actionTwo === 'stop')
+        stopTracking(sender);
+    else if (action === 'tracking' && actionTwo !== null)
+        trackMob(sender, actionTwo, area);
+    else
+        return cmd.sendUsage(sender);
 }
 
 function printAllEntities(sender) {
     DimensionTypes.getAll().forEach(dimension => {
         const dimensionId = dimension.typeId;
-        sender.sendMessage({ translate: 'commands.spawn.tracking.query.dimension', with: [Utils.getColoredDimensionName(dimensionId)] });
+        sender.sendMessage({ translate: 'commands.spawn.tracking.query.dimension', with: [getColoredDimensionName(dimensionId)] });
         const entities = world.getDimension(dimensionId).getEntities();
         entities.forEach(entity => {
-            sender.sendMessage(`§7-${Utils.stringifyLocation(entity.location)}: ${entity.typeId.replace('minecraft:', '')}`);
+            sender.sendMessage(`§7-${stringifyLocation(entity.location)}: ${entity.typeId.replace('minecraft:', '')}`);
         });
     });
 }
 
 async function handleMockingCmd(sender, enable) {
-    if (!await Rule.getValue('commandSpawnMocking'))
+    if (!await Rules.getNativeValue('commandSpawnMocking'))
         return sender.sendMessage({ translate: 'rules.generic.blocked', with: [thisRule.getID()] });
     if (enable === null)
-        return sender.sendMessage({ translate: 'commands.generic.usage', with: [`${Command.prefix}spawn mocking <true/false>`] });
+        return sender.sendMessage({ translate: 'commands.generic.usage', with: [`${Commands.getPrefix()}spawn mocking <true/false>`] });
     isMocking = enable;
     if (enable) {
         sender.sendMessage({ translate: 'commands.spawn.mocking.enable' });
-        Utils.broadcastActionBar({ translate: 'commands.spawn.mocking.enable.actionbar', with: [sender.name] }, sender);
+        broadcastActionBar({ translate: 'commands.spawn.mocking.enable.actionbar', with: [sender.name] }, sender);
     } else {
         sender.sendMessage({ translate: 'commands.spawn.mocking.disable' });
-        Utils.broadcastActionBar({ translate: 'commands.spawn.mocking.disable.actionbar', with: [sender.name] }, sender);
+        broadcastActionBar({ translate: 'commands.spawn.mocking.disable.actionbar', with: [sender.name] }, sender);
     }
 }
 
@@ -103,7 +121,7 @@ function resetSpawnCounters(sender) {
         return sender.sendMessage({ translate: 'commands.spawn.tracking.no' });
     worldSpawns.reset();
     sender.sendMessage({ translate: 'commands.spawn.tracking.test.success' });
-    Utils.broadcastActionBar({ translate: 'commands.spawn.tracking.test.success.actionbar', with: [sender.name] }, sender);
+    broadcastActionBar({ translate: 'commands.spawn.tracking.test.success.actionbar', with: [sender.name] }, sender);
 }
 
 function recentSpawns(sender, actionTwo) {
@@ -125,7 +143,8 @@ function printTrackingStatus(sender) {
     sender.sendMessage(worldSpawns.getOutput());
 }
 
-function startTracking(sender, posOne, posTwo) {
+function startTracking(sender, area) {
+    const { posOne, posTwo } = area;
     if (worldSpawns !== null)
         return sender.sendMessage({ translate: 'commands.spawn.tracking.already' });
     if (!isLocationNull(posOne) && !isLocationNull(posTwo))
@@ -133,11 +152,11 @@ function startTracking(sender, posOne, posTwo) {
     worldSpawns = new WorldSpawns([], currActiveArea);
     const message = { rawtext: [{ translate: 'commands.spawn.tracking.start.success' }] }
     if (currActiveArea)
-        message.rawtext.push({ translate: 'commands.spawn.tracking.start.area', with: [Utils.stringifyLocation(posOne), Utils.stringifyLocation(posTwo)] })
+        message.rawtext.push({ translate: 'commands.spawn.tracking.start.area', with: [stringifyLocation(posOne), stringifyLocation(posTwo)] })
     if (isMocking)
         message.rawtext.push({ translate: 'commands.spawn.tracking.start.mocking' });
     sender.sendMessage(message);
-    Utils.broadcastActionBar({ translate: 'commands.spawn.tracking.start.actionbar', with: [sender.name] }, sender);
+    broadcastActionBar({ translate: 'commands.spawn.tracking.start.actionbar', with: [sender.name] }, sender);
 }
 
 function stopTracking(sender) {
@@ -149,14 +168,15 @@ function stopTracking(sender) {
     currMobIds = [];
     currActiveArea = null;
     sender.sendMessage({ translate: 'commands.spawn.tracking.stop.success' });
-    Utils.broadcastActionBar({ translate: 'commands.spawn.tracking.stop.actionbar', with: [sender.name] }, sender);
+    broadcastActionBar({ translate: 'commands.spawn.tracking.stop.actionbar', with: [sender.name] }, sender);
 }
 
-function trackMob(sender, mobName, posOne, posTwo) {
+function trackMob(sender, mobName, area) {
+    const { posOne, posTwo } = area;
     let isTrackable = false;
-    for (const category in categoryToMobMap) {
+    for (const category in categoryToMobMap) 
         if (categoryToMobMap[category].includes(mobName)) isTrackable = true;
-    }
+    
     if (!isTrackable)
         return sender.sendMessage({ translate: 'commands.spawn.tracking.mob.invalid', with: [String(mobName)] });
     if (!currMobIds.includes(mobName))
@@ -168,9 +188,9 @@ function trackMob(sender, mobName, posOne, posTwo) {
     worldSpawns = new WorldSpawns(currMobIds, currActiveArea);
     const message = { rawtext: [{ translate: 'commands.spawn.tracking.start.mob', with: [currMobIds.join(', ')] }] }
     if (currActiveArea)
-        message.rawtext.push({ translate: 'commands.spawn.tracking.start.area', with: [Utils.stringifyLocation(posOne), Utils.stringifyLocation(posTwo)] })
+        message.rawtext.push({ translate: 'commands.spawn.tracking.start.area', with: [stringifyLocation(posOne), stringifyLocation(posTwo)] })
     sender.sendMessage(message);
-    Utils.broadcastActionBar({ translate: 'commands.spawn.tracking.start.mob.actionbar', with: [sender.name, mobName]}, sender);
+    broadcastActionBar({ translate: 'commands.spawn.tracking.start.mob.actionbar', with: [sender.name, mobName]}, sender);
 }
 
 function isLocationNull(location) {

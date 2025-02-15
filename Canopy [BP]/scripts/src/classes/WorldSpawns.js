@@ -1,6 +1,7 @@
-import { world, DimensionTypes, MolangVariableMap, system } from '@minecraft/server';
-import { categoryToMobMap, SpawnTracker } from 'src/classes/SpawnTracker';
-import Utils from 'stickycore/utils';
+import { world, DimensionTypes, MolangVariableMap, system } from "@minecraft/server";
+import { SpawnTracker } from "../classes/SpawnTracker";
+import { categoryToMobMap } from '../../include/data';
+import { getColoredDimensionName, stringifyLocation } from "../../include/utils";
 
 const categories = Object.keys(categoryToMobMap);
 const dimensionIds = DimensionTypes.getAll().map(({ typeId }) => typeId);
@@ -27,9 +28,9 @@ class WorldSpawns {
 
     sendMobToTrackers(entity) {
         for (const dimensionId in this.trackers) {
-            for (const category in this.trackers[dimensionId]) {
+            for (const category in this.trackers[dimensionId]) 
                 this.trackers[dimensionId][category].recieveMob(entity);
-            }
+            
         }
     }
 
@@ -71,7 +72,7 @@ class WorldSpawns {
         dimensionIds.forEach(dimensionId => {
             this.trackers[dimensionId] = {};
             categories.forEach(category => {
-                this.trackers[dimensionId][category] = new SpawnTracker(dimensionId, category, [], this.activeArea);
+                this.trackers[dimensionId][category] = new SpawnTracker(dimensionId, categoryToMobMap[category], this.activeArea);
             });
         });
     }
@@ -79,8 +80,23 @@ class WorldSpawns {
     trackMobs(mobIds) {
         dimensionIds.forEach(dimensionId => {
             this.trackers[dimensionId] = this.trackers[dimensionId] || {};
-            this.trackers[dimensionId]['custom'] = new SpawnTracker(dimensionId, null, mobIds, this.activeArea);
+            const categorizedMobs = this.categorizeMobs(mobIds);
+            for (const category in categorizedMobs)
+                this.trackers[dimensionId][category] = new SpawnTracker(dimensionId, categorizedMobs[category], this.activeArea);
         });
+    }
+
+    categorizeMobs(mobIds) {
+        const categorizedMobs = {};
+        for (const [category, mobs] of Object.entries(categoryToMobMap)) {
+            mobIds.forEach(mobId => {
+                if (mobs.includes(mobId)) {
+                    categorizedMobs[category] = categorizedMobs[category] || [];
+                    categorizedMobs[category].push(mobId);
+                }
+            });
+        }
+        return categorizedMobs;
     }
 
     reset() {
@@ -94,14 +110,14 @@ class WorldSpawns {
 
     getRecentsOutput(mobname = null) {
         let output = `Recent spawns (last 30s):`;
-        let recents = this.getRecents(mobname);
+        const recents = this.getRecents(mobname);
         for (const dimensionId in recents) {
-            output += `\n${Utils.getColoredDimensionName(dimensionId)}§7:`;
+            output += `\n${getColoredDimensionName(dimensionId)}§7:`;
             for (const category in recents[dimensionId]) {
                 if (!recents[dimensionId][category] || Object.keys(recents[dimensionId][category])?.length === 0) continue;
                 output += `\n§7 > ${category.toUpperCase()}:`;
                 for (const mobType in recents[dimensionId][category]) {
-                    const recentLocations = recents[dimensionId][category][mobType].map(location => Utils.stringifyLocation(location)).join(', ')
+                    const recentLocations = recents[dimensionId][category][mobType].map(location => stringifyLocation(location)).join(', ')
                     output += `\n§7  - ${mobType}: ${recentLocations}`;
                 }
             }
@@ -110,7 +126,7 @@ class WorldSpawns {
     }
 
     getRecents(mobname = null) {
-        let recents = {};
+        const recents = {};
         for (const dimensionId in this.trackers) {
             recents[dimensionId] = {};
             for (const category in this.trackers[dimensionId]) {
@@ -127,7 +143,7 @@ class WorldSpawns {
         let output = `Spawn statistics (${this.getMinutesSinceStart().toFixed(2)} min.):`;
         for (const dimensionId in this.trackers) {
             if (this.getTotalMobs(this.getMobsPerTick(dimensionId)) === 0) continue;
-            output += `\n${Utils.getColoredDimensionName(dimensionId)}§7: ${this.getFormattedDimensionValues(dimensionId)}`;
+            output += `\n${getColoredDimensionName(dimensionId)}§7: ${this.getFormattedDimensionValues(dimensionId)}`;
             for (const category in this.trackers[dimensionId]) {
                 const tracker = this.trackers[dimensionId][category];
                 output += `${tracker.getOutput()}`;

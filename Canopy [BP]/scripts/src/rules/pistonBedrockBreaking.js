@@ -1,6 +1,6 @@
-import { Rule } from 'lib/canopy/Canopy';
+import { Rule, Rules } from "../../lib/canopy/Canopy";
 import { BlockPermutation, ItemStack, world } from '@minecraft/server';
-import DirectionStateFinder from 'src/classes/DirectionState';
+import DirectionStateFinder from "../classes/DirectionState";
 
 new Rule({
     category: 'Rules',
@@ -10,11 +10,11 @@ new Rule({
 
 const insideBedrockPistonList = [];
 
-world.afterEvents.pistonActivate.subscribe(async (event) => {
-    if (!await Rule.getNativeValue('pistonBedrockBreaking') || !['Expanding', 'Retracting'].includes(event.piston.state)) return;
+world.afterEvents.pistonActivate.subscribe((event) => {
+    if (!Rules.getNativeValue('pistonBedrockBreaking') || !['Expanding', 'Retracting'].includes(event.piston.state)) return;
     const piston = event.piston;
     const block = event.block;
-    let directionState = DirectionStateFinder.getDirectionState(block.permutation);
+    const directionState = DirectionStateFinder.getDirectionState(block.permutation);
     if (directionState === undefined) return;
     directionState.value = DirectionStateFinder.getRawMirroredDirection(block);
     if (piston.state === 'Expanding') {
@@ -27,7 +27,7 @@ world.afterEvents.pistonActivate.subscribe(async (event) => {
         const oldPiston = getBlockFromPistonList(block);
         if (oldPiston !== undefined) {
             const blockType = block.typeId;
-            const dropLocation = { x: block.location.x + .5, y: block.location.y + .5, z: block.location.z + .5 };
+            const dropLocation = block.center();
             block.setType('minecraft:air');
             event.dimension.spawnItem(new ItemStack(blockType, 1), dropLocation);
             insideBedrockPistonList.splice(insideBedrockPistonList.indexOf(oldPiston), 1);
@@ -40,9 +40,9 @@ function getBlockFromPistonList(block) {
         if (pistonBlock.dimensionId === block.dimension.id 
             && pistonBlock.location.x === block.location.x 
             && pistonBlock.location.y === block.location.y 
-            && pistonBlock.location.z === block.location.z) {
+            && pistonBlock.location.z === block.location.z) 
             return pistonBlock;
-        }
+        
     }
     return undefined;
 }

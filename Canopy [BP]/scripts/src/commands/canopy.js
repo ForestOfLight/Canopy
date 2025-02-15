@@ -1,53 +1,92 @@
-import { Rule, Command } from 'lib/canopy/Canopy';
-import { resetCounterMap } from 'src/commands/counter';
+import { Command, InfoDisplayRule, Extensions, Rules, Commands } from "../../lib/canopy/Canopy";
+import { PACK_VERSION } from "../../constants";
+import counterChannels from '../classes/CounterChannels';
+import generatorChannels from "../classes/GeneratorChannels";
 
 const cmd = new Command({
     name: 'canopy',
     description: { translate: 'commands.canopy' },
-    usage: 'canopy <rule> <true/false>',
+    usage: 'canopy <rule/version> [true/false]',
     args: [
-        { type: 'string', name: 'ruleID' },
+        { type: 'string|array', name: 'ruleIDs' },
         { type: 'boolean', name: 'enable' },
     ],
     callback: canopyCommand,
+    helpEntries: [
+        { usage: 'canopy version', description: { translate: 'commands.canopy.version' } },
+        { usage: 'canopy <rule> [true/false]', description: { translate: 'commands.canopy.single' } },
+        { usage: 'canopy <[rule1,rule2,...]> [true/false]', description: { translate: 'commands.canopy.multiple' } },
+    ],
     adminOnly: true
-})
+});
 
 async function canopyCommand(sender, args) {
-    const { ruleID, enable } = args;
-    if (ruleID === null && enable === null)
+    const { ruleIDs, enable } = args;
+    if (ruleIDs === null && enable === null)
         return cmd.sendUsage(sender);
-    if (!Rule.exists(ruleID)) 
-        return sender.sendMessage({ translate: 'rules.generic.unknown', with: [ruleID, Command.prefix] });
 
-    const rule = Rule.getRule(ruleID);
-    const ruleValue = await rule.getValue();
-    const enabledFormat = ruleValue ? '§l§aenabled' : '§l§cdisabled';
-    if (enable === null)
-        return sender.sendMessage({ translate: 'rules.generic.status', with: [rule.getID(), enabledFormat] });
-    if (ruleValue === enable)
-        return sender.sendMessage({ translate: 'rules.generic.nochange', with: [rule.getID(), enabledFormat] });
-
-    if (ruleID === 'hopperCounters' && !enable)
-        resetCounterMap();
-
-    if (!enable)
-        await updateRules(sender, rule.getDependentRuleIDs(), enable);
-    else
-        await updateRules(sender, rule.getContigentRuleIDs(), enable);
-    await updateRules(sender, rule.getIndependentRuleIDs(), false);
-    
-    updateRule(sender, ruleID, ruleValue, enable);
+    if (typeof ruleIDs === 'string' && ruleIDs === 'version')
+        return sender.sendMessage(getVersionMessage());
+    else if (typeof ruleIDs === 'string')
+        return handleRuleChange(sender, ruleIDs, enable);
+    for (const ruleID of ruleIDs)
+        await handleRuleChange(sender, ruleID, enable);
 }
 
-function updateRule(sender, ruleID, ruleValue, enable) {
+function getVersionMessage() {
+    const message = { rawtext: [
+        { translate: 'commands.canopy.version.message' },
+        { text: ` §av${PACK_VERSION}§r§7.\n` }
+    ]};
+    const extensionNames = Extensions.getVersionedNames();
+    if (extensionNames.length === 0) return message;
+    message.rawtext.push({ translate: 'commands.canopy.version.extensions' });
+    for (let i = 0; i < extensionNames.length; i++) {
+        const extensionName = extensionNames[i];
+        if (i > 0)
+            message.rawtext.push({ text: '§r§7,' });
+        message.rawtext.push({ text: ` §a§o${extensionName.name}§7 v${extensionName.version}` });
+    }
+    message.rawtext.push({ text: '§r§7.' });
+    return message;
+}
+
+async function handleRuleChange(sender, ruleID, enable) {
+    if (!Rules.exists(ruleID))
+        return sender.sendMessage({ translate: 'rules.generic.unknown', with: [ruleID, Commands.getPrefix()] });
+    const rule = Rules.get(ruleID);
+    if (rule instanceof InfoDisplayRule)
+        return sender.sendMessage({ translate: 'commands.canopy.infodisplayRule', with: [ruleID, Commands.getPrefix()] });
+    const ruleValue = await rule.getValue();
+    const enabledRawText = ruleValue ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' }
+    if (enable === null)
+        return sender.sendMessage({ rawtext: [{ translate: 'rules.generic.status', with: [rule.getID()] }, enabledRawText, { text: '§r§7.' }] });
+    if (ruleValue === enable)
+        return sender.sendMessage({ rawtext: [{ translate: 'rules.generic.nochange', with: [rule.getID()] }, enabledRawText, { text: '§r§7.' }] });
+
+    if (ruleID === 'hopperCounters' && !enable)
+        counterChannels.disable();
+    if (ruleID === 'generatorCounters' && !enable)
+        generatorChannels.disable();
+
+    if (enable)
+        await updateRules(sender, rule.getContigentRuleIDs(), enable);
+    else
+        await updateRules(sender, rule.getDependentRuleIDs(), enable);
+    await updateRules(sender, rule.getIndependentRuleIDs(), false);
+    
+    await updateRule(sender, ruleID, enable);
+}
+
+async function updateRule(sender, ruleID, enable) {
+    const ruleValue = await Rules.getValue(ruleID);
     if (ruleValue === enable) return;
-    Rule.getRule(ruleID).setValue(enable);
-    sender.sendMessage({ translate: 'rules.generic.updated', with: [ruleID, enable ? '§l§aenabled' : '§l§cdisabled'] });
+    Rules.get(ruleID).setValue(enable);
+    const enabledRawText = enable ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' };
+    return sender.sendMessage({ rawtext: [{ translate: 'rules.generic.updated', with: [ruleID] }, enabledRawText, { text: '§r§7.' }] });
 }
 
 async function updateRules(sender, ruleIDs, enable) {
-    for (const ruleID of ruleIDs) {
-        updateRule(sender, ruleID, await Rule.getValue(ruleID), enable);
-    }
+    for (const ruleID of ruleIDs) 
+        await updateRule(sender, ruleID, enable);
 }

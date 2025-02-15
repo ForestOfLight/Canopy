@@ -1,4 +1,4 @@
-import { Rule } from "lib/canopy/Canopy";
+import { Rule, Rules } from "../../lib/canopy/Canopy";
 import { world, system } from '@minecraft/server';
 
 new Rule({
@@ -10,13 +10,13 @@ new Rule({
 
 const MAX_VELOCITY = 0.019600000232548116; // From vanilla TNT: 49/2500 with some floating point error
 
-world.afterEvents.entitySpawn.subscribe(async (event) => {
-    if (event.entity.typeId !== 'minecraft:tnt' || !await Rule.getValue('tntPrimeMaxMomentum')) return;
+world.afterEvents.entitySpawn.subscribe((event) => {
+    if (event.entity.typeId !== 'minecraft:tnt' || !Rules.getNativeValue('tntPrimeMaxMomentum')) return;
     const entity = event.entity;
-    if (await Rule.getValue('dupeTnt')) {
+    if (Rules.getNativeValue('dupeTnt')) {
         system.runTimeout(() => {
             if (!entity.isValid()) return;
-            correctErrorAndNegateXZVelocity(entity);
+            haltHorizontalVelocity(entity);
             applyHardcodedImpulse(entity);
         }, 1);
     } else {
@@ -25,11 +25,20 @@ world.afterEvents.entitySpawn.subscribe(async (event) => {
     }
 });
 
-function correctErrorAndNegateXZVelocity(entity) {
+function haltHorizontalVelocity(entity) {
     const velocity = entity.getVelocity();
-    const blockCenter = { x: Math.floor(entity.location.x) + 0.5, y: entity.location.y, z: Math.floor(entity.location.z) + 0.5 };
-    entity.teleport(blockCenter);
+    centerEntityPosition(entity); // Entity could be off-center, resulting in a non-straight drop
     entity.applyImpulse({ x: 0, y: velocity.y, z: 0 });
+}
+
+function centerEntityPosition(entity) {
+    const blockCenter = getHorizontalCenter(entity.location);
+    entity.teleport(blockCenter);
+}
+
+function getHorizontalCenter(location) {
+    const halfABlock = 0.5;
+    return { x: Math.floor(location.x) + halfABlock, y: location.y, z: Math.floor(location.z) + halfABlock };
 }
 
 function negateXZVelocity(entity) {
@@ -38,10 +47,16 @@ function negateXZVelocity(entity) {
 }
 
 function applyHardcodedImpulse(entity) {
-    const randValues = [-MAX_VELOCITY, 0, MAX_VELOCITY];
-    const randX = randValues[Math.floor(Math.random() * 3)];
-    const randZ = randValues[Math.floor(Math.random() * 3)];
+    const randX = getRandomMaxMomentumValue();
+    const randZ = getRandomMaxMomentumValue();
     entity.applyImpulse({ x: randX, y: 0,  z: randZ });
 }
 
-export { negateXZVelocity, correctErrorAndNegateXZVelocity }
+function getRandomMaxMomentumValue() {
+    const randValues = [-MAX_VELOCITY, 0, MAX_VELOCITY];
+    const randIndex = Math.floor(Math.random() * randValues.length);
+    const randValue = randValues[randIndex];
+    return randValue;
+}
+
+export { negateXZVelocity, haltHorizontalVelocity }

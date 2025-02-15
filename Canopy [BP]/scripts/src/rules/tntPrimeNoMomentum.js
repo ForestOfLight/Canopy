@@ -1,6 +1,6 @@
-import { Rule } from 'lib/canopy/Canopy';
+import { Rule, Rules } from "../../lib/canopy/Canopy";
 import { world, system } from '@minecraft/server';
-import { negateXZVelocity, correctErrorAndNegateXZVelocity } from './tntPrimeMaxMomentum.js';
+import { negateXZVelocity, haltHorizontalVelocity } from './tntPrimeMaxMomentum.js';
 
 new Rule({
     category: 'Rules',
@@ -9,13 +9,13 @@ new Rule({
     independentRules: ['tntPrimeMaxMomentum'],
 });
 
-world.afterEvents.entitySpawn.subscribe(async (event) => {
-    if (event.entity.typeId !== 'minecraft:tnt' || !await Rule.getValue('tntPrimeNoMomentum')) return;
+world.afterEvents.entitySpawn.subscribe((event) => {
+    if (event.entity.typeId !== 'minecraft:tnt' || !Rules.getNativeValue('tntPrimeNoMomentum')) return;
     const entity = event.entity;
-    if (await Rule.getValue('dupeTnt')) {
+    if (Rules.getNativeValue('dupeTnt')) {
         system.runTimeout(() => {
             if (!entity.isValid()) return;
-            correctErrorAndNegateXZVelocity(entity);
+            haltHorizontalVelocity(entity);
         }, 1);
     } else {
         negateXZVelocity(entity);

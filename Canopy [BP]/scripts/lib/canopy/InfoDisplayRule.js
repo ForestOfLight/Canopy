@@ -1,4 +1,5 @@
-import Rule from './Rule';
+import { Rule } from './Rule';
+import { Rules } from './Rules';
 
 class InfoDisplayRule extends Rule {
     constructor({ identifier, description = '', contingentRules = [], independentRules = [], extensionName = false }) {
@@ -13,17 +14,28 @@ class InfoDisplayRule extends Rule {
         player.setDynamicProperty(super.getID(), value);
     }
 
+    static get(identifier) {
+        const rule = Rules.get(identifier);
+        if (rule?.getCategory() === "InfoDisplay")
+            return rule;
+        return undefined;
+    }
+
+    static exists(identifier) {
+        return Rules.exists(identifier) && Rules.get(identifier).getCategory() === "InfoDisplay";
+    }
+
     static getValue(player, identifier) {
-        return this.getRule(identifier).getValue(player);
+        return this.get(identifier).getValue(player);
     }
     
     static setValue(player, identifier, value) {
-        this.getRule(identifier).setValue(player, value);
+        this.get(identifier).setValue(player, value);
     }
     
-    static getRules() {
-        return Object.values(super.getRules()).filter(rule => rule.getCategory() === "InfoDisplay");
+    static getAll() {
+        return Object.values(Rules.getAll()).filter(rule => rule.getCategory() === "InfoDisplay");
     }
 }
 
-export default InfoDisplayRule;
+export { InfoDisplayRule };

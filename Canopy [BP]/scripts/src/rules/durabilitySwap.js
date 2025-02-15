@@ -1,4 +1,4 @@
-import { Rule } from 'lib/canopy/Canopy';
+import { Rule, Rules} from "../../lib/canopy/Canopy";
 import { world, GameMode } from '@minecraft/server';
 import { usedDurability, getRemainingDurability } from 'src/rules/durabilityNotifier';
 
@@ -13,7 +13,7 @@ world.afterEvents.playerInteractWithBlock.subscribe((event) => durabilitySwap(ev
 world.afterEvents.playerInteractWithEntity.subscribe((event) => durabilitySwap(event.player, event.beforeItemStack, event.itemStack));
 
 function durabilitySwap(player, beforeItemStack, itemStack) {
-    if (!Rule.getNativeValue(rule.getID()) || !player || !itemStack || !beforeItemStack
+    if (!Rules.getNativeValue(rule.getID()) || !player || !itemStack || !beforeItemStack
         || player.getGameMode() === GameMode.creative
         || !usedDurability(beforeItemStack, itemStack)
     ) return;
@@ -37,9 +37,9 @@ function swapOutItem(player) {
 function findEmptySlot(playerInventory) {
     for (let slotIndex = 9; slotIndex < playerInventory.size; slotIndex++) {
         const slot = playerInventory.getSlot(slotIndex);
-        if (!slot.hasItem()) {
+        if (!slot.hasItem()) 
             return slotIndex;
-        }
+        
     }
     return -1;
 }
@@ -47,9 +47,9 @@ function findEmptySlot(playerInventory) {
 function findSlotWithoutDurabilityComponent(playerInventory) {
     for (let slotIndex = 0; slotIndex < playerInventory.size; slotIndex++) {
         const slot = playerInventory.getSlot(slotIndex);
-        if (slot.hasItem() && !slot.getItem()?.hasComponent('durability')) {
+        if (slot.hasItem() && !slot.getItem()?.hasComponent('durability')) 
             return slotIndex;
-        }
+        
     }
     return -1;
 }
@@ -57,9 +57,9 @@ function findSlotWithoutDurabilityComponent(playerInventory) {
 function findSlotWithSomeDurability(playerInventory) {
     for (let slotIndex = 0; slotIndex < playerInventory.size; slotIndex++) {
         const slot = playerInventory.getSlot(slotIndex);
-        if (slot.hasItem() && getRemainingDurability(slot.getItem()) > 0) {
+        if (slot.hasItem() && getRemainingDurability(slot.getItem()) > 0) 
             return slotIndex;
-        }
+        
     }
     return -1;
 }

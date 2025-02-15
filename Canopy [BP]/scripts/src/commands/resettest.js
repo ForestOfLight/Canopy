@@ -1,6 +1,6 @@
 import { Command } from 'lib/canopy/Canopy'
-import { channelMap as counterMap } from 'src/commands/counter';
-import { channelMap as generatorMap } from 'src/commands/generator';
+import CounterChannels from '../classes/CounterChannels';
+import GeneratorChannels from "../classes/GeneratorChannels";
 import { worldSpawns } from 'src/commands/spawn';
 
 new Command({
@@ -13,7 +13,7 @@ new Command({
 function resettestCommand(sender) {
     if (worldSpawns !== null)
         worldSpawns.reset();
-    counterMap.resetAll();
-    generatorMap.resetAll();
+    CounterChannels.resetAllCounts();
+    GeneratorChannels.resetAllCounts();
     sender.sendMessage({ translate: 'commands.resettest.success' });
 }

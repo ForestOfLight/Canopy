@@ -1,4 +1,4 @@
-import { Rule } from "lib/canopy/Canopy";
+import { Rule, Rules } from "../../lib/canopy/Canopy";
 import { world } from "@minecraft/server";
 
 new Rule({
@@ -9,7 +9,7 @@ new Rule({
 });
 
 world.beforeEvents.explosion.subscribe((event) => {
-    if (!Rule.getNativeValue('explosionChainReactionOnly')) return;
+    if (!Rules.getNativeValue('explosionChainReactionOnly')) return;
     const explodedTntBlocks = event.getImpactedBlocks().filter(block => block.typeId === 'minecraft:tnt');
     event.setImpactedBlocks(explodedTntBlocks);
 });
