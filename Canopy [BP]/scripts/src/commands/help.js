@@ -77,7 +77,8 @@ function populateExtensionRulePages(helpBook) {
 function populateExtensionCommandPages(helpBook) {
     const extensions = Extensions.getAll();
     for (const extension of extensions) {
-        const commands = extension.getCommands();
+        let commands = extension.getCommands();
+        commands = commands.filter(cmd => !cmd.isHelpHidden());
         if (commands.length > 0) {
             const commandPage = new CommandHelpPage({ title: `Commands`, description: { translate: 'commands.help.extension.commands', with: [extension.getName()] } }, extension.getName());
             helpBook.newPage(commandPage);

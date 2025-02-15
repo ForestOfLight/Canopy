@@ -19,6 +19,7 @@ class Extension {
         this.#checkArgs();
         this.#setupCommandRegistration();
         this.#setupRuleRegistration();
+        this.#sendReadyEvent();
     }
 
     #checkArgs() {
@@ -68,6 +69,15 @@ class Extension {
         return this.rules.find(rule => rule.getID() === name);
     }
 
+    #makeID(name) {
+        if (typeof name !== 'string')
+            throw new Error(`[Canopy] Could not register extension: ${name}. Extension name must be a string.`);
+        const id = name.toLowerCase().replace(/[^a-z0-9 ]/g, '').replace(/ /g, '_');
+        if (id.length === 0)
+            throw new Error(`[Canopy] Could not register extension: ${name}. Extension name must contain at least one alphanumeric character.`);
+        return id;
+    }
+
     #setupCommandRegistration() {
         IPC.on(`canopyExtension:${this.id}:registerCommand`, (cmdData) => {
             this.commands.push(new Command(cmdData));
@@ -80,13 +90,8 @@ class Extension {
         });
     }
 
-    #makeID(name) {
-        if (typeof name !== 'string')
-            throw new Error(`[Canopy] Could not register extension: ${name}. Extension name must be a string.`);
-        const id = name.toLowerCase().replace(/[^a-z0-9 ]/g, '').replace(/ /g, '_');
-        if (id.length === 0)
-            throw new Error(`[Canopy] Could not register extension: ${name}. Extension name must contain at least one alphanumeric character.`);
-        return id;
+    #sendReadyEvent() {
+        IPC.send(`canopyExtension:${this.id}:registrationReady`);
     }
 }
 
