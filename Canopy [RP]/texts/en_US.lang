@@ -267,7 +267,7 @@ rules.generic.enabled=§aenabled
 rules.generic.disabled=§cdisabled
 
 rules.commandCamera=Enables camera command.
-rules.commandChangeDimension=Enables changedimension command.
+rules.commandChangeDimension=Enables dtp command.
 rules.commandClaimProjectiles=Enables claimprojectiles command.
 rules.commandCleanup=Enables cleanup command.
 rules.hopperCounters=Enables counter command & hopper counter functionality.
