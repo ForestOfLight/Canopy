@@ -71,3 +71,6 @@ import './src/rules/durabilitySwap'
 // Load Time Processes
 import './src/onStart'
 import './src/onReload'
+
+// Tests
+import './src/commands/formtest'
