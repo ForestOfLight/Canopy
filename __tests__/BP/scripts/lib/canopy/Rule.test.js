@@ -185,32 +185,4 @@ describe('Rule', () => {
             );
         });
     });
-
-    describe('parseValue', () => {
-        it('should parse JSON strings to objects', () => {
-            expect(Rules.get('test_rule').parseValue('{"test": "value"}')).toEqual({ test: 'value' });
-            expect(Rules.get('test_rule').parseValue('["test", "value"]')).toEqual(['test', 'value']);
-            expect(Rules.get('test_rule').parseValue('true')).toBe(true);
-            expect(Rules.get('test_rule').parseValue('null')).toBeNull();
-            expect(Rules.get('test_rule').parseValue('1')).toBe(1);
-            expect(Rules.get('test_rule').parseValue('"test"')).toBe('test');
-            expect(Rules.get('test_rule').parseValue(1)).toBe(1);
-        });
-    
-        it('should return undefined if the value is \'undefined\'', () => {
-            expect(Rules.get('test_rule').parseValue('undefined')).toBeUndefined();
-        });
-    
-        it('should return NaN if the value is \'NaN\'', () => {
-            expect(Rules.get('test_rule').parseValue('NaN')).toBeNaN();
-        });
-    
-        it('should return null for invalid JSON strings', () => {
-            const warn = console.warn;
-            console.warn = vi.fn();
-            expect(Rules.get('test_rule').parseValue('invalid')).toBeNull();
-            expect(console.warn).toHaveBeenCalled();
-            console.warn = warn;
-        });
-    });
 });

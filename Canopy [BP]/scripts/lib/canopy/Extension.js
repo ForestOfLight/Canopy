@@ -1,13 +1,14 @@
 import IPC from "../ipc/ipc";
-import { Command } from "./Command.js";
-import { Rule } from "./Rule.js";
+import { Command } from "./Command";
+import { Rule } from "./Rule";
+import { parseDPValue } from "../../include/utils";
 
 class Extension {
     id = null;
     commands = [];
     rules = [];
 
-    constructor({ name, version, author, description }) {
+    constructor({ name, version, author, description, isEndstone = false }) {
         this.id = this.#makeID(name);
         this.name = name;
         this.version = version;
@@ -15,11 +16,9 @@ class Extension {
         if (typeof description == 'string')
             description = { text: description };
         this.description = description;
+        this.isEndstone = isEndstone;
 
         this.#checkArgs();
-        this.#setupCommandRegistration();
-        this.#setupRuleRegistration();
-        this.#sendReadyEvent();
     }
 
     #checkArgs() {
@@ -31,6 +30,12 @@ class Extension {
             throw new Error('[Canopy] Extension author must be a string, contain at least one alphanumeric character, and be less than 32 characters.');
         if (typeof this.description !== 'object' || this.description === null)
             throw new Error('[Canopy] Extension description cannot be null.');
+    }
+
+    setup() {
+        this.#setupCommandRegistration();
+        this.#setupRuleRegistration();
+        this.#sendReadyEvent();
     }
 
     getID() {
@@ -65,8 +70,28 @@ class Extension {
         return this.commands.find(cmd => cmd.getName() === name);
     }
 
-    getRule(name) {
-        return this.rules.find(rule => rule.getID() === name);
+    getRule(identifier) {
+        return this.rules.find(rule => rule.getID() === identifier);
+    }
+
+    async getRuleValue(identifier) {
+        return await IPC.invoke(`canopyExtension:${this.id}:ruleValueRequest`, { ruleID: identifier }).then(result => 
+            parseDPValue(result)
+        );
+    }
+
+    setRuleValue(identifier, value) {
+        IPC.send(`canopyExtension:${this.id}:ruleValueSet`, { ruleID: identifier, value: value });
+    }
+
+    runCommand(name, sender, args) {
+        if (this.isEndstone)
+            return sender.runCommand(`${name} ${args.join(' ')}`);
+        IPC.send(`canopyExtension:${this.id}:commandCallbackRequest`, { 
+            commandName: name,
+            senderName: sender?.name,
+            args: args
+        });
     }
 
     #makeID(name) {
@@ -91,7 +116,7 @@ class Extension {
     }
 
     #sendReadyEvent() {
-        IPC.send(`canopyExtension:${this.id}:registrationReady`);
+        IPC.send(`canopyExtension:${this.id}:ready`);
     }
 }
 

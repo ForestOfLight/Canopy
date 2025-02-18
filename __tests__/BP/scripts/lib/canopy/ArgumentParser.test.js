@@ -97,5 +97,18 @@ describe('ArgumentParser', () => {
                 args: [true, 42, 'test string', [1, 2, 3], '@e[type=creeper]']
             });
         });
+
+        it('should be able to parse args back to their command string', () => {
+            const commandString = 'command true 42 "test string" [1,2,3] "@e[type=creeper]"';
+            const result = ArgumentParser.parseCommandString(commandString);
+            const parsedArgs = result.args.map(arg => {
+                if (typeof arg === 'string')
+                    return `"${arg}"`;
+                else if (Array.isArray(arg))
+                    return `[${arg.join(',')}]`;
+                return arg;
+            });
+            expect(parsedArgs.join(' ')).toEqual(`true 42 "test string" [1,2,3] "@e[type=creeper]"`);
+        });
     });
 });

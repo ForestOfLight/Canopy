@@ -2,7 +2,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { 
 	calcDistance, isString, isNumeric, parseName, getClosestTarget, stringifyLocation, 
 	populateItems, getColorCode, wait, getInventory, locationInArea, getColoredDimensionName, 
-	getScriptEventSourceName, getScriptEventSourceObject, recolor, titleCase, formatColorStr
+	getScriptEventSourceName, getScriptEventSourceObject, recolor, titleCase, formatColorStr,
+	parseDPValue
 } from '../../../../Canopy [BP]/scripts/include/utils.js';
 
 vi.mock('@minecraft/server', {
@@ -660,5 +661,29 @@ describe('formatColorStr', () => {
 
 	it('returns an uncolored name if the color is not found', () => {
 		expect(formatColorStr('unknown')).toBe('unknown§r');
+	});
+});
+
+describe('parseValue', () => {
+	it('should parse JSON strings to objects', () => {
+		expect(parseDPValue('{"test": "value"}')).toEqual({ test: 'value' });
+		expect(parseDPValue('["test", "value"]')).toEqual(['test', 'value']);
+		expect(parseDPValue('true')).toBe(true);
+		expect(parseDPValue('null')).toBeNull();
+		expect(parseDPValue('1')).toBe(1);
+		expect(parseDPValue('"test"')).toBe('test');
+		expect(parseDPValue(1)).toBe(1);
+	});
+
+	it('should return undefined if the value is \'undefined\'', () => {
+		expect(parseDPValue('undefined')).toBeUndefined();
+	});
+
+	it('should return NaN if the value is \'NaN\'', () => {
+		expect(parseDPValue('NaN')).toBeNaN();
+	});
+
+	it('should throw an error for invalid JSON strings', () => {
+		expect(() => parseDPValue('{"test": "value"')).toThrow();
 	});
 });
