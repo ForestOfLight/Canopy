@@ -252,15 +252,3 @@ export function titleCase(str) {
 export function formatColorStr(color) {
 	return `${getColorCode(color)}${color}§r`;
 }
-
-export function parseDPValue(value) {
-	if (value === 'undefined' || value === undefined)
-		return undefined;
-	try {
-		return JSON.parse(value);
-	} catch {
-		if (value === 'NaN')
-			return NaN;
-		throw new Error(`Failed to parse value for DynamicProperty: ${value}.`);
-	}
-}

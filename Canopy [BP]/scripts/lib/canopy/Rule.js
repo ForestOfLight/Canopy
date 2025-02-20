@@ -1,7 +1,6 @@
 import { world } from '@minecraft/server';
 import { Rules } from "./Rules";
 import { Extensions } from './Extensions';
-import { parseDPValue } from "../../include/utils";
 
 class Rule {
     #category;
@@ -54,13 +53,13 @@ class Rule {
     async getValue() {
         if (this.#extension)
             return await this.#extension.getRuleValue(this.#identifier);
-        return parseDPValue(world.getDynamicProperty(this.#identifier));
+        return this.#parseRuleValueString(world.getDynamicProperty(this.#identifier));
     }
 
     getNativeValue() {
         if (this.#extension)
             throw new Error(`[Canopy] [Rule] Native value is not available for ${this.#identifier} from extension ${this.#extension.getName()}.`);
-        return parseDPValue(world.getDynamicProperty(this.#identifier));
+        return this.#parseRuleValueString(world.getDynamicProperty(this.#identifier));
     }
     
     setValue(value) {
@@ -68,6 +67,18 @@ class Rule {
             this.#extension.setRuleValue(this.#identifier, value);
         else
             world.setDynamicProperty(this.#identifier, value);
+    }
+
+    #parseRuleValueString(value) {
+        if (value === 'undefined' || value === undefined)
+            return undefined;
+        try {
+            return JSON.parse(value);
+        } catch {
+            if (value === 'NaN')
+                return NaN;
+            throw new Error(`Failed to parse value for DynamicProperty: ${value}.`);
+        }
     }
 }
 

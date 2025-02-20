@@ -1,6 +1,5 @@
 import { Command } from "./Command";
 import { Rule } from "./Rule";
-import { parseDPValue } from "../../include/utils";
 import IPC from "../ipc/ipc";
 import { RegisterCommand, RegisterRule, RuleValueRequest, RuleValueSet, CommandCallbackRequest, Ready, RuleValueResponse } from "./extension.ipc";
 
@@ -77,9 +76,7 @@ class Extension {
 
     async getRuleValue(identifier) {
         return await IPC.invoke(`canopyExtension:${this.id}:ruleValueRequest`, RuleValueRequest, { ruleID: identifier }, RuleValueResponse)
-            .then(result => {
-                return result.value;
-            });
+            .then(result => result.value);
     }
 
     setRuleValue(identifier, value) {

@@ -115,9 +115,7 @@ class Commands {
     }
 
     static #handleGetPrefixRequest() {
-        IPC.handle('canopyExtension:commandPrefixRequest', CommandPrefixRequest, CommandPrefixResponse, () => {
-            return { prefix: this.#prefix };
-        });
+        IPC.handle('canopyExtension:commandPrefixRequest', CommandPrefixRequest, CommandPrefixResponse, () => ({ prefix: this.#prefix }));
     }
 
     static #handleChatCommands() {
