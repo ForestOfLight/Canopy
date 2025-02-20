@@ -2,7 +2,7 @@ import { world, system } from "@minecraft/server";
 import IPC from "../ipc/ipc";
 import { ArgumentParser } from "./ArgumentParser";
 import { Rules } from "./Rules";
-import { CommandPrefixRequest } from "./extension.ipc";
+import { CommandPrefixRequest, CommandPrefixResponse } from "./extension.ipc";
 
 const ADMIN_ONLY_TAG = 'CanopyAdmin';
 const COMMAND_PREFIX = './';
@@ -115,7 +115,9 @@ class Commands {
     }
 
     static #handleGetPrefixRequest() {
-        IPC.handle('canopyExtension:commandPrefixRequest', CommandPrefixRequest, () => this.#prefix);
+        IPC.handle('canopyExtension:commandPrefixRequest', CommandPrefixRequest, CommandPrefixResponse, () => {
+            return { prefix: this.#prefix };
+        });
     }
 
     static #handleChatCommands() {

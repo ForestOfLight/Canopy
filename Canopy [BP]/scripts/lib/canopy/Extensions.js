@@ -46,6 +46,7 @@ class Extensions {
             const extension = new Extension(extensionData);
             extension.setup();
             this.extensions[extension.getID()] = extension;
+            console.warn(`[Canopy] Registered ${extensionData.name} v${extensionData.version}.`);
         });
         IPC.send('canopyExtension:ready', Ready, {});
     }

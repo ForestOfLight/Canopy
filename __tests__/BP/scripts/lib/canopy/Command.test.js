@@ -4,7 +4,7 @@ import { Commands } from "../../../../../Canopy [BP]/scripts/lib/canopy/Commands
 import IPC from "../../../../../Canopy [BP]/scripts/lib/ipc/ipc";
 import { Extension } from "../../../../../Canopy [BP]/scripts/lib/canopy/Extension";
 import { Extensions } from "../../../../../Canopy [BP]/scripts/lib/canopy/Extensions";
-import { CommandCallbackRequest } from "../../../../../Canopy [BP]/scripts/lib/canopy/extension.ipc";
+import { CommandCallbackRequest } from "../../../../../Canopy [BP]/scripts/lib/canopy/extension.ipc.ts";
 
 vi.mock("@minecraft/server", () => ({
     world: { 

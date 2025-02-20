@@ -261,6 +261,6 @@ export function parseDPValue(value) {
 	} catch {
 		if (value === 'NaN')
 			return NaN;
-		throw new Error(`Failed to parse value for DP. Returning null.`);
+		throw new Error(`Failed to parse value for DynamicProperty: ${value}.`);
 	}
 }
