@@ -7,26 +7,6 @@ class EntityLog {
         this.subscribedPlayers = [];
     }
 
-    initEvents() {
-        throw new Error("Method 'initEvents' must be implemented.");
-    }
-
-    onTick() {
-        throw new Error("Method 'onTick' must be implemented.");
-    }
-
-    isPrintable() {
-        throw new Error("Method 'isPrintable' must be implemented.");
-    }
-
-    getLogHeader() {
-        throw new Error("Method 'getLogHeader' must be implemented.");
-    }
-
-    getLogBody() {
-        throw new Error("Method 'getLogBody' must be implemented.");
-    }
-
     subscribe(player) {
         this.subscribedPlayers.push(player);
     }
@@ -40,4 +20,4 @@ class EntityLog {
     }
 }
 
-export default EntityLog;
+export { EntityLog };

@@ -43,7 +43,6 @@ class Extensions {
     static #setupExtensionRegistration() {
         IPC.on('canopyExtension:registerExtension', (extensionData) => {
             const extension = new Extension(extensionData);
-            extension.setup();
             this.extensions[extension.getID()] = extension;
         });
         IPC.send('canopyExtension:ready');

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import Profiler from "../../../../../Canopy [BP]/scripts/src/classes/Profiler";
+import { Profiler } from "../../../../../Canopy [BP]/scripts/src/classes/Profiler";
 
 vi.mock("@minecraft/server", () => ({
     system: {

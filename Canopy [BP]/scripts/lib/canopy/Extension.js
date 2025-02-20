@@ -19,6 +19,9 @@ class Extension {
         this.isEndstone = isEndstone;
 
         this.#checkArgs();
+        this.#setupCommandRegistration();
+        this.#setupRuleRegistration();
+        this.#sendReadyEvent();
     }
 
     #checkArgs() {
@@ -30,12 +33,6 @@ class Extension {
             throw new Error('[Canopy] Extension author must be a string, contain at least one alphanumeric character, and be less than 32 characters.');
         if (typeof this.description !== 'object' || this.description === null)
             throw new Error('[Canopy] Extension description cannot be null.');
-    }
-
-    setup() {
-        this.#setupCommandRegistration();
-        this.#setupRuleRegistration();
-        this.#sendReadyEvent();
     }
 
     getID() {
