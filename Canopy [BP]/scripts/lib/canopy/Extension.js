@@ -1,7 +1,7 @@
-import IPC from "../ipc/ipc";
 import { Command } from "./Command";
 import { Rule } from "./Rule";
-import { parseDPValue } from "../../include/utils";
+import IPC from "../ipc/ipc";
+import { RegisterCommand, RegisterRule, RuleValueRequest, RuleValueSet, CommandCallbackRequest, Ready, RuleValueResponse } from "./extension.ipc";
 
 class Extension {
     id = null;
@@ -72,22 +72,21 @@ class Extension {
     }
 
     async getRuleValue(identifier) {
-        return await IPC.invoke(`canopyExtension:${this.id}:ruleValueRequest`, { ruleID: identifier }).then(result => 
-            parseDPValue(result)
-        );
+        return await IPC.invoke(`canopyExtension:${this.id}:ruleValueRequest`, RuleValueRequest, { ruleID: identifier }, RuleValueResponse)
+            .then(result => result.value);
     }
 
     setRuleValue(identifier, value) {
-        IPC.send(`canopyExtension:${this.id}:ruleValueSet`, { ruleID: identifier, value: value });
+        IPC.send(`canopyExtension:${this.id}:ruleValueSet`, RuleValueSet, { ruleID: identifier, value: value });
     }
 
-    runCommand(name, sender, args) {
+    runCommand(sender, commandName, args) {
         if (this.isEndstone)
-            return sender.runCommand(`${name} ${args.join(' ')}`);
-        IPC.send(`canopyExtension:${this.id}:commandCallbackRequest`, { 
-            commandName: name,
+            return sender.runCommand(`${commandName} ${Object.values(args).join(' ')}`);
+        IPC.send(`canopyExtension:${this.id}:commandCallbackRequest`, CommandCallbackRequest, {
+            commandName: commandName,
             senderName: sender?.name,
-            args: args
+            args: JSON.stringify(args),
         });
     }
 
@@ -101,19 +100,19 @@ class Extension {
     }
 
     #setupCommandRegistration() {
-        IPC.on(`canopyExtension:${this.id}:registerCommand`, (cmdData) => {
+        IPC.on(`canopyExtension:${this.id}:registerCommand`, RegisterCommand, (cmdData) => {
             this.commands.push(new Command(cmdData));
         });
     }
 
     #setupRuleRegistration() {
-        IPC.on(`canopyExtension:${this.id}:registerRule`, (ruleData) => {
+        IPC.on(`canopyExtension:${this.id}:registerRule`, RegisterRule, (ruleData) => {
             this.rules.push(new Rule({ category: "Rules", ...ruleData }));
         });
     }
 
     #sendReadyEvent() {
-        IPC.send(`canopyExtension:${this.id}:ready`);
+        IPC.send(`canopyExtension:${this.id}:ready`, Ready, void 0);
     }
 }
 

@@ -84,7 +84,7 @@ class Command {
 	
 	runCallback(sender, args) {
 		if (this.#extension)
-			this.#extension.runCommand(this.#name, sender, args);
+			this.#extension.runCommand(sender, this.#name, args);
 		else
 			this.#callback(sender, args);
 	}

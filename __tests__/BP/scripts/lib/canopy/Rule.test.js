@@ -4,6 +4,7 @@ import { Rules } from '../../../../../Canopy [BP]/scripts/lib/canopy/Rules.js';
 import IPC from '../../../../../Canopy [BP]/scripts/lib/ipc/ipc.js';
 import { Extensions } from '../../../../../Canopy [BP]/scripts/lib/canopy/Extensions.js';
 import { Extension } from '../../../../../Canopy [BP]/scripts/lib/canopy/Extension.js';
+import { RuleValueSet } from '../../../../../Canopy [BP]/scripts/lib/canopy/extension.ipc.ts';
 
 vi.mock('@minecraft/server', () => ({
     world: { 
@@ -178,6 +179,7 @@ describe('Rule', () => {
             await Rules.get('test_rule').setValue(true);
             expect(ipcSendMock).toHaveBeenCalledWith(
                 `canopyExtension:${Rules.get('test_rule').getExtension().getID()}:ruleValueSet`,
+                RuleValueSet,
                 { 
                     ruleID: 'test_rule',
                     value: true 

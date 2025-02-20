@@ -4,6 +4,7 @@ import { Commands } from "../../../../../Canopy [BP]/scripts/lib/canopy/Commands
 import IPC from "../../../../../Canopy [BP]/scripts/lib/ipc/ipc";
 import { Extension } from "../../../../../Canopy [BP]/scripts/lib/canopy/Extension";
 import { Extensions } from "../../../../../Canopy [BP]/scripts/lib/canopy/Extensions";
+import { CommandCallbackRequest } from "../../../../../Canopy [BP]/scripts/lib/canopy/extension.ipc";
 
 vi.mock("@minecraft/server", () => ({
     world: { 
@@ -152,10 +153,10 @@ describe("Command", () => {
 
             command.runCallback(sender, args);
 
-            expect(ipcSendMock).toHaveBeenCalledWith("canopyExtension:extension:commandCallbackRequest", {
+            expect(ipcSendMock).toHaveBeenCalledWith("canopyExtension:extension:commandCallbackRequest", CommandCallbackRequest, {
                 commandName: "test",
                 senderName: "sender",
-                args: ["arg1"]
+                args: "[\"arg1\"]"
             });
         });
     });

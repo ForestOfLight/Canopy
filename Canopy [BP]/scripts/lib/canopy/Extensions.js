@@ -1,5 +1,6 @@
-import IPC from "../ipc/ipc";
 import { Extension } from "./Extension";
+import IPC from "../ipc/ipc";
+import { Ready, RegisterExtension } from "./extension.ipc";
 
 class Extensions {
     static extensions = {};
@@ -41,11 +42,12 @@ class Extensions {
     }
 
     static #setupExtensionRegistration() {
-        IPC.on('canopyExtension:registerExtension', (extensionData) => {
+        IPC.on('canopyExtension:registerExtension', RegisterExtension, (extensionData) => {
             const extension = new Extension(extensionData);
             this.extensions[extension.getID()] = extension;
+            console.warn(`[Canopy] Registered ${extensionData.name} v${extensionData.version}.`);
         });
-        IPC.send('canopyExtension:ready');
+        IPC.send('canopyExtension:ready', Ready, {});
     }
 
     static {
