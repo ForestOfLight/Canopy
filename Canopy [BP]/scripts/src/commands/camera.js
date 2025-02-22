@@ -2,6 +2,8 @@ import { Rule, Command } from "../../lib/canopy/Canopy";
 import { system, world } from "@minecraft/server";
 import { stringifyLocation } from "../../include/utils";
 
+const MAX_EFFECT_DURATION = 20000000;
+
 new Rule({
     category: 'Rules',
     identifier: 'commandCamera',
@@ -191,10 +193,15 @@ function startSpectate(sender) {
     
     system.runTimeout(() => {
         sender.setGameMode('spectator');
-        for (const effect of sender.getEffects())
-            sender.removeEffect(effect?.typeId);
-        sender.addEffect('night_vision', 20000000, { amplifier: 0, showParticles: false });
-        sender.addEffect('conduit_power', 20000000, { amplifier: 0, showParticles: false });
+        for (const effect of sender.getEffects()) {
+            try {
+                sender.removeEffect(effect.typeId);
+            } catch (error) {
+                console.warn(`[Canopy] Failed to remove ${effect?.typeId} effect from player ${sender.name} while starting spectate.`);
+            }
+        }
+        sender.addEffect('night_vision', MAX_EFFECT_DURATION, { amplifier: 0, showParticles: false });
+        sender.addEffect('conduit_power', MAX_EFFECT_DURATION, { amplifier: 0, showParticles: false });
         sender.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.started' });
     }, 8);
 }
@@ -205,15 +212,20 @@ function endSpectate(sender) {
     sender.setDynamicProperty('isSpectating', false);
     system.runTimeout(() => {
         for (const effect of sender.getEffects()) {
-            if (!effect) continue;
-            sender.removeEffect(effect.typeId);
+            try {
+                sender.removeEffect(effect.typeId);
+            } catch (error) {
+                console.warn(`[Canopy] Failed to remove ${effect?.typeId} effect from player ${sender.name} while ending spectate.`);
+            }
         }
         sender.teleport(beforeSpectatorPlayer.location, { dimension: world.getDimension(beforeSpectatorPlayer.dimensionId), rotation: beforeSpectatorPlayer.rotation });
         for (const effect of beforeSpectatorPlayer.effects) {
             try {
-                sender.addEffect(effect.typeId, Math.min(20000000, effect.duration), { amplifier: effect.amplifier });
+                if (effect.duration == -1)
+                    effect.duration = MAX_EFFECT_DURATION;
+                sender.addEffect(effect.typeId, Math.min(MAX_EFFECT_DURATION, effect.duration), { amplifier: effect.amplifier });
             } catch (error) {
-                console.warn(`Failed to add effect back to player ${sender.name}. Error: ${error}`);
+                console.warn(`[Canopy] Failed to add ${effect?.typeId} effect back to player ${sender.name} while ending spectate. Error: ${error}`);
             }
         }
         sender.setGameMode(beforeSpectatorPlayer.gamemode);
