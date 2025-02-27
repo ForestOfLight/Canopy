@@ -19,11 +19,7 @@ export const RegisterExtension = PROTO.Object({
 
 export const RegisterCommand = PROTO.Object({
     name: PROTO.String,
-    description: PROTO.Object({
-        text: PROTO.Optional(PROTO.String),
-        translate: PROTO.Optional(PROTO.String),
-        with: PROTO.Optional(PROTO.Array(PROTO.String))
-    }),
+    description: description,
     usage: PROTO.String,
     callback: PROTO.Optional(PROTO.Undefined),
     args: PROTO.Optional(PROTO.Array(PROTO.Object({
