@@ -14,8 +14,9 @@ const playerSneaks = {};
 
 system.runInterval(() => {
     if (!Rules.getNativeValue('playerSit')) return;
+    cleanupRideableEntities();
     world.getAllPlayers().forEach(player => {
-        if (player?.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed) {
+        if (player?.inputInfo?.getButtonState(InputButton.Sneak) === ButtonState.Pressed) {
             const currentTime = Date.now();
             const sneakInfo = playerSneaks[player.id] || { count: 0, lastTime: currentTime, lastTick: system.currentTick };
             if (sneakInfo.lastTick === system.currentTick - 1) {
@@ -37,7 +38,6 @@ system.runInterval(() => {
             playerSneaks[player.id] = sneakInfo;
         }
     });
-    cleanupRideableEntities();
 });
 
 function sit(player) {
