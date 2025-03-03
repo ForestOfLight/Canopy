@@ -67,7 +67,11 @@ class Commands {
     }
 
     static #isAdmin(player) {
-        return player.hasTag(ADMIN_ONLY_TAG);
+        for (const tag of player.getTags()) {
+            if (tag.toLowerCase() === ADMIN_ONLY_TAG.toLowerCase())
+                return true;
+        }
+        return false;
     }
 
     static async #getDisabledContingentRules(command) {
