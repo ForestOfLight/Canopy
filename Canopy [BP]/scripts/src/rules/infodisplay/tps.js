@@ -17,8 +17,11 @@ class TPS extends InfoDisplayElement {
     }
 
     getTPS() {
-        const tps = Profiler.tps.toFixed(1);
-		return tps >= TicksPerSecond ? `§a${TicksPerSecond}.0` : `§c${tps}`;
+        const tps = Profiler.tps;
+        const nearbyRange = 0.19;
+        if (tps >= TicksPerSecond - nearbyRange && tps <= TicksPerSecond + nearbyRange)
+            return `§a${TicksPerSecond}.0`;
+		return tps >= TicksPerSecond ? `§a${tps.toFixed(1)}` : `§c${tps.toFixed(1)}`;
 	}
 }
 
