@@ -1,4 +1,4 @@
-import EntityLog from "./EntityLog";
+import { EntityLog } from "./EntityLog";
 import { world, system } from "@minecraft/server";
 
 class EntityMovementLog extends EntityLog {
@@ -16,7 +16,8 @@ class EntityMovementLog extends EntityLog {
     }
 
     onTick() {
-        if (this.subscribedPlayers.length === 0) return;
+        if (this.subscribedPlayers.length === 0)
+            return;
         this.updateEntityLists();
         for (const player of this.subscribedPlayers) {
             if (this.isPrintable()) {
@@ -125,4 +126,4 @@ class EntityMovementLog extends EntityLog {
     }
 }
 
-export default EntityMovementLog;
+export { EntityMovementLog };

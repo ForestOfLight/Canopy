@@ -1,7 +1,7 @@
 import { Rule, Command } from "../../lib/canopy/Canopy";
 import { system, world } from "@minecraft/server";
 import { isNumeric } from "../../include/utils";
-import Profiler from "../classes/Profiler";
+import { Profiler } from "../classes/Profiler";
 
 new Rule({
     category: 'Rules',

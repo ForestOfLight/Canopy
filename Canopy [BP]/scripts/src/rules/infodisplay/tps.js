@@ -1,5 +1,5 @@
 import InfoDisplayElement from './InfoDisplayElement.js';
-import Profiler from '../../classes/Profiler.js';
+import { Profiler } from '../../classes/Profiler.js';
 import { TicksPerSecond } from '@minecraft/server';
 
 class TPS extends InfoDisplayElement {

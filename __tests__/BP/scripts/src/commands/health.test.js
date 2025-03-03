@@ -15,6 +15,7 @@ vi.mock("@minecraft/server", () => ({
                 subscribe: vi.fn()
             }
         },
+        runJob: vi.fn(),
         runInterval: vi.fn(),
         runTimeout: vi.fn(),
     },

@@ -1,4 +1,4 @@
-import EntityLog from "./EntityLog";
+import { EntityLog } from "./EntityLog";
 import { world, system } from "@minecraft/server";
 import { stringifyLocation } from "../../include/utils";
 
@@ -70,4 +70,4 @@ class EntityTntLog extends EntityLog {
     }
 }
 
-export default EntityTntLog;
+export { EntityTntLog };

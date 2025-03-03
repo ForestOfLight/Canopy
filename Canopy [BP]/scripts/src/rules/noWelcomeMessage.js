@@ -34,7 +34,7 @@ function displayWelcome(player) {
         const extensionName = extensions[i];
         if (i > 0)
             extensionsMessage.rawtext.push({ text: '§r§7,' });
-        extensionsMessage.rawtext.push({ text: ` §a§o${extensionName.name}§7 v${extensionName.version}` });
+        extensionsMessage.rawtext.push({ text: ` §a§o${extensionName.name} v${extensionName.version}` });
     }
     player.sendMessage(extensionsMessage);
 }
