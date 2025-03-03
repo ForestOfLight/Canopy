@@ -11,6 +11,10 @@ vi.mock('@minecraft/server', {
     DimensionTypes: {}
 });
 
+vi.mock("@minecraft/server-ui", () => ({
+    ModalFormData: vi.fn(),
+}));
+
 describe('calcDistance()', () => {
 	it('returns correct distance (no Y)', () => {
 		const distance = calcDistance({ x: 0, y: 0, z: 0 }, { x: 3, y: 4, z: 4 }, false);

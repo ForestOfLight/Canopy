@@ -26,6 +26,10 @@ vi.mock("@minecraft/server", () => ({
     }
 }));
 
+vi.mock("@minecraft/server-ui", () => ({
+    ModalFormData: vi.fn(),
+}));
+
 describe('healthCommand', () => {
     it('should profile the tps & mspt', () => {
         const sender = {
