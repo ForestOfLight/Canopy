@@ -103,8 +103,7 @@ async function updateRules(sender, ruleIDs, enable) {
 }
 
 async function openMenu(sender) {
-    const formTitle = "§l§aCanopy§r §aRules";
-    const form = new ModalFormData().title(formTitle);
+    const form = new ModalFormData().title("§l§aCanopy§r §aRules");
     const rules = Rules.getByCategory("Rules").sort((a, b) => a.getID().localeCompare(b.getID()));
     for (const rule of rules) {
         try {
@@ -114,11 +113,11 @@ async function openMenu(sender) {
             sender.sendMessage(`§cError: ${error.message} for rule ${rule.getID()}`);
         }
     }
-    form.submitButton("Apply");
+    form.submitButton({ translate: 'commands.canopy.menu.submit' });
 
-    forceShow(sender, formTitle, form, 1000).then(response => {
+    forceShow(sender, form, 1000).then(response => {
         if (response.canceled) 
-            sender.sendMessage(`§8Form canceled. Rules were not updated.`);
+            sender.sendMessage({ translate: 'commands.canopy.menu.canceled' });
         else
             updateChangedValues(sender, response.formValues);
     }).catch(error => {
@@ -130,8 +129,8 @@ async function updateChangedValues(sender, formValues) {
     const rules = Rules.getByCategory("Rules").sort((a, b) => a.getID().localeCompare(b.getID()));
     for (let i = 0; i < rules.length; i++) {
         const rule = rules[i];
-        if (await rule.getValue() !== formValues[i]) {
+        if (await rule.getValue() !== formValues[i]) 
             await handleRuleChange(sender, rule.getID(), formValues[i]);
-        }
+        
     }
 }

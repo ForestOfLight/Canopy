@@ -114,8 +114,7 @@ function updateRules(sender, ruleIDs, enable) {
 }
 
 function openMenu(sender) {
-    const formTitle = "§aInfoDisplay Rules";
-    const form = new ModalFormData().title(formTitle);
+    const form = new ModalFormData().title("§aInfoDisplay Rules");
     const rules = Rules.getByCategory("InfoDisplay").sort((a, b) => a.getID().localeCompare(b.getID()));
     for (const rule of rules) {
         try {
@@ -125,12 +124,12 @@ function openMenu(sender) {
             sender.sendMessage(`§cError: ${error.message} for rule ${rule.getID()}`);
         }
     }
-    form.submitButton("Apply");
+    form.submitButton({ translate: 'commands.canopy.menu.submit' });
 
-    forceShow(sender, formTitle, form, 1000)
+    forceShow(sender, form, 1000)
         .then(response => {
             if (response.canceled) 
-                sender.sendMessage(`§8Form canceled. Rules were not updated.`);
+                sender.sendMessage({ translate: 'commands.canopy.menu.canceled' });
             else
                 updateChangedValues(sender, response.formValues);
         })
@@ -143,8 +142,8 @@ function updateChangedValues(sender, formValues) {
     const rules = Rules.getByCategory("InfoDisplay").sort((a, b) => a.getID().localeCompare(b.getID()));
     for (let i = 0; i < rules.length; i++) {
         const rule = rules[i];
-        if (rule.getValue(sender) !== formValues[i]) {
+        if (rule.getValue(sender) !== formValues[i]) 
             handleRuleChange(sender, rule.getID(), formValues[i]);
-        }
+        
     }
 }

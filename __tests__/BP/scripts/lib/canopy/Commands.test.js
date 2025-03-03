@@ -153,7 +153,7 @@ describe('Commands', () => {
 
         it('should send an error message if the command is admin only and the sender is not an admin', () => {
             command.isAdminOnly = () => true;
-            sender.hasTag = () => false;
+            sender.getTags = () => [];
             Commands.executeCommand(sender, 'test', []);
             expect(sender.sendMessage).toHaveBeenCalledWith({ translate: 'commands.generic.nopermission' });
         });
