@@ -1,16 +1,19 @@
-import { Command, InfoDisplayRule, Commands } from "../../lib/canopy/Canopy";
+import { Command, InfoDisplayRule, Commands, Rules } from "../../lib/canopy/Canopy";
 import ProbeManager from "../classes/ProbeManager";
+import { ModalFormData } from "@minecraft/server-ui";
+import { forceShow } from "../../include/utils";
 
 const cmd = new Command({
     name: 'info',
     description: { translate: 'commands.info' },
-    usage: 'info <rule/all> [true/false]',
+    usage: 'info <menu/rule/all> [true/false]',
     args: [
         { type: 'string|array', name: 'ruleIDs' },
         { type: 'boolean', name: 'enable' }
     ],
     callback: infoCommand,
     helpEntries: [
+        { usage: 'info menu', description: { translate: 'commands.info.menu' } },
         { usage: 'info <rule> [true/false]', description: { translate: 'commands.info.single' } },
         { usage: 'info <[rule1,rule2,...]> [true/false]', description: { translate: 'commands.info.multiple' } },
         { usage: 'info all [true/false]', description: { translate: 'commands.info.all' } }
@@ -31,15 +34,22 @@ new Command({
 
 function infoCommand(sender, args) {
     const { ruleIDs, enable } = args;
-    if (ruleIDs === null && enable === null) return cmd.sendUsage(sender);
-    
+    if (ruleIDs === null && enable === null) {
+        cmd.sendUsage(sender);
+        return;
+    }
+    if (ruleIDs === 'menu') {
+        openMenu(sender);
+        return;
+    }
     if (ruleIDs === 'all') {
         changeAll(sender, enable);
         return;
     }
-    
-    if (typeof ruleIDs === 'string')
-        return handleRuleChange(sender, ruleIDs, enable);
+    if (typeof ruleIDs === 'string') {
+        handleRuleChange(sender, ruleIDs, enable);
+        return;
+    }
     for (const ruleID of ruleIDs)
         handleRuleChange(sender, ruleID, enable);
 }
@@ -101,4 +111,40 @@ function updateRule(sender, ruleID, enable) {
 function updateRules(sender, ruleIDs, enable) {
     for (const ruleID of ruleIDs)
         updateRule(sender, ruleID, enable);
+}
+
+function openMenu(sender) {
+    const formTitle = "§aInfoDisplay Rules";
+    const form = new ModalFormData().title(formTitle);
+    const rules = Rules.getByCategory("InfoDisplay").sort((a, b) => a.getID().localeCompare(b.getID()));
+    for (const rule of rules) {
+        try {
+            const ruleValue = rule.getValue(sender);
+            form.toggle(rule.getID(), ruleValue);
+        } catch (error) {
+            sender.sendMessage(`§cError: ${error.message} for rule ${rule.getID()}`);
+        }
+    }
+    form.submitButton("Apply");
+
+    forceShow(sender, formTitle, form, 1000)
+        .then(response => {
+            if (response.canceled) 
+                sender.sendMessage(`§8Form canceled. Rules were not updated.`);
+            else
+                updateChangedValues(sender, response.formValues);
+        })
+        .catch(error => {
+            sender.sendMessage(`§cError: ${error.message}`);
+        });
+}
+
+function updateChangedValues(sender, formValues) {
+    const rules = Rules.getByCategory("InfoDisplay").sort((a, b) => a.getID().localeCompare(b.getID()));
+    for (let i = 0; i < rules.length; i++) {
+        const rule = rules[i];
+        if (rule.getValue(sender) !== formValues[i]) {
+            handleRuleChange(sender, rule.getID(), formValues[i]);
+        }
+    }
 }

@@ -47,6 +47,7 @@ commands.canopy=Enable or disable a rule.
 commands.canopy.version=Displays the current version of Canopy and all loaded extensions.
 commands.canopy.version.message=§7This server is running §l§aCanopy§r
 commands.canopy.version.extensions=§7Loaded extensions:
+commands.canopy.menu=Displays a menu to toggle rules.
 commands.canopy.single=Enables or disables a single rule.
 commands.canopy.multiple=Enables or disables multiple rules.
 commands.canopy.infodisplayRule=§cThe rule '%1' is part of the InfoDisplay, and must be toggled using %2info. Use %2help for more information.
@@ -133,6 +134,7 @@ commands.health=Displays the server's current TPS, MSPT, and entity counts.
 commands.health.fail.mspt=§cCould not compute MSPT. Please report this error.
 
 commands.info=Toggle InfoDisplay rules. (Alias: i)
+commands.info.menu=Displays a menu to toggle InfoDisplay rules.
 commands.info.single=Toggle a single InfoDisplay rule.
 commands.info.multiple=Toggle multiple InfoDisplay rules.
 commands.info.all=Toggle all InfoDisplay rules.
