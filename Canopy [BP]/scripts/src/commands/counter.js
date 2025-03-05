@@ -5,8 +5,10 @@ import { broadcastActionBar, formatColorStr } from "../../include/utils";
 new Rule({
     category: 'Rules',
     identifier: 'hopperCounters',
-    description: { translate: 'rules.hopperCounters' }
-})
+    description: { translate: 'rules.hopperCounters' },
+    onEnableCallback: () => counterChannels.enable(),
+    onDisableCallback: () => counterChannels.disable()
+});
 
 const cmd = new Command({
     name: 'counter',

@@ -19,6 +19,10 @@ vi.mock('@minecraft/server', () => ({
     }
 }));
 
+vi.mock("@minecraft/server-ui", () => ({
+    ModalFormData: vi.fn(),
+}));
+
 describe('Canopy module', () => {
     it('should export Commands', () => {
         expect(Canopy.Commands).toBeDefined();

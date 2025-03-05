@@ -1,7 +1,5 @@
 import { Command, InfoDisplayRule, Extensions, Rules, Commands } from "../../lib/canopy/Canopy";
 import { PACK_VERSION } from "../../constants";
-import counterChannels from '../classes/CounterChannels';
-import generatorChannels from "../classes/GeneratorChannels";
 import { ModalFormData } from "@minecraft/server-ui";
 import { forceShow } from "../../include/utils";
 
@@ -74,11 +72,6 @@ async function handleRuleChange(sender, ruleID, enable) {
         return sender.sendMessage({ rawtext: [{ translate: 'rules.generic.status', with: [rule.getID()] }, enabledRawText, { text: '§r§7.' }] });
     if (ruleValue === enable)
         return sender.sendMessage({ rawtext: [{ translate: 'rules.generic.nochange', with: [rule.getID()] }, enabledRawText, { text: '§r§7.' }] });
-
-    if (ruleID === 'hopperCounters' && !enable)
-        counterChannels.disable();
-    if (ruleID === 'generatorCounters' && !enable)
-        generatorChannels.disable();
 
     if (enable)
         await updateRules(sender, rule.getContigentRuleIDs(), enable);
