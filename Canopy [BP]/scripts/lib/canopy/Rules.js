@@ -1,10 +1,12 @@
 class Rules {
     static #rules = {};
 
-    static register(rule) {
+    static async register(rule) {
         if (this.exists(rule.getID())) 
             throw new Error(`[Canopy] Rule with identifier '${rule.getID()}' already exists.`);
         this.#rules[rule.getID()] = rule;
+        if (await rule.getValue() === true)
+            rule.onEnable();
     }
 
     static get(identifier) {

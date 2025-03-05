@@ -8,12 +8,10 @@ class Rule {
     #description;
     #contingentRules;
     #independentRules;
-    #onEnableCallback;
-    #onDisableCallback;
     #extension;
 
     constructor({ category, identifier, description = '', contingentRules = [], independentRules = [], 
-                onEnableCallback = null, onDisableCallback = null, extensionName = false }) {
+                onEnableCallback = () => {}, onDisableCallback = () => {}, extensionName = false }) {
         this.#category = category;
         this.#identifier = identifier;
         if (typeof description == 'string')
@@ -21,8 +19,8 @@ class Rule {
         this.#description = description;
         this.#contingentRules = contingentRules;
         this.#independentRules = independentRules;
-        this.#onEnableCallback = onEnableCallback;
-        this.#onDisableCallback = onDisableCallback;
+        this.onEnable = onEnableCallback;
+        this.onDisable = onDisableCallback;
         this.#extension = Extensions.getFromName(extensionName);
         Rules.register(this);
     }
@@ -77,16 +75,6 @@ class Rule {
                 this.onDisable();
             world.setDynamicProperty(this.#identifier, value);
         }
-    }
-
-    onEnable() {
-        if (this.#onEnableCallback)
-            this.#onEnableCallback();
-    }
-
-    onDisable() {
-        if (this.#onDisableCallback)
-            this.#onDisableCallback();
     }
 
     #parseRuleValueString(value) {
