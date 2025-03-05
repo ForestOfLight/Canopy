@@ -6,7 +6,14 @@ new Rule({
     category: 'Rules',
     identifier: 'autoItemPickup',
     description: { translate: 'rules.autoItemPickup' },
+    contingentRules: ['carefulBreak']
 });
+
+new Rule({
+    category: 'Rules',
+    identifier: 'carefulBreak',
+    description: { translate: 'rules.carefulBreak' }
+})
 
 let brokenBlockEventsThisTick = [];
 
@@ -15,14 +22,19 @@ system.runInterval(() => {
 });
 
 world.afterEvents.playerBreakBlock.subscribe((blockEvent) => {
-    if (!Rules.getNativeValue('autoItemPickup')) return;
+    if (!shouldPickup(blockEvent.player)) return;
     if (blockEvent.player?.getGameMode() === 'creative') return;
     brokenBlockEventsThisTick.push(blockEvent);
 });
 
+function shouldPickup(player) {
+    return (Rules.getNativeValue('carefulBreak') && player?.isSneaking)
+        || Rules.getNativeValue('autoItemPickup');
+}
+
 world.afterEvents.entitySpawn.subscribe((entityEvent) => {
     if (entityEvent.cause !== 'Spawned' || entityEvent.entity?.typeId !== 'minecraft:item') return;
-    if (!Rules.getNativeValue('autoItemPickup')) return;
+    if (!Rules.getNativeValue('carefulBreak') && !Rules.getNativeValue('autoItemPickup')) return;
 
     const item = entityEvent.entity;
     let brokenBlockEvent;
