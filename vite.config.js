@@ -3,12 +3,13 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   server: {
     deps: {
-      external: ['@minecraft/server']
+      external: ['@minecraft/server', '@minecraft/server-ui'],
     }
   },
   resolve: {
     alias: {
       '@minecraft/server': `__mocks__/@minecraft/server`,
+      '@minecraft/server-ui': `__mocks__/@minecraft/server-ui`,
     }
   },
   test: {

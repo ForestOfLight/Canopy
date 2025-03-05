@@ -33,15 +33,15 @@ vi.mock("@minecraft/server", () => ({
         },
         getDimension: vi.fn(() => ({
             getEntities: vi.fn(() => [
-                { typeId: 'minecraft:falling_block', id: 'entity1', location: { x: 1, y: 2, z: 3 },
+                { typeId: 'minecraft:falling_block', id: 'entity1', location: { x: 1, y: 2, z: 3 }, dimension: { id: 'overworld' },
                     getComponent: vi.fn(() => ({ })),
                     isValid: vi.fn(() => true)
                 },
-                { typeId: 'minecraft:projectile', id: 'entity2', location: { x: 4, y: 5, z: 6 },
+                { typeId: 'minecraft:projectile', id: 'entity2', location: { x: 4, y: 5, z: 6 }, dimension: { id: 'overworld' },
                     getComponent: vi.fn(() => ({ projectile: { isValid: true } })),
                     isValid: vi.fn(() => true)
                 },
-                { typeId: 'minecraft:item', id: 'entity3', location: { x: 7, y: 8, z: 9 },
+                { typeId: 'minecraft:item', id: 'entity3', location: { x: 7, y: 8, z: 9 }, dimension: { id: 'overworld' },
                     getComponent: vi.fn(() => ({ })),
                     isValid: vi.fn(() => false)
                 }
@@ -116,7 +116,7 @@ describe('EntitMovementLog', () => {
             expect(mockPlayer.sendMessage).toHaveBeenCalled();
         });
 
-        it('should send messages to subscribed players when logging an invalid type', () => {
+        it('should throw an error when logging an invalid type', () => {
             entityLog = new EntityMovementLog('invalid_type', { main: 'main', secondary: 'secondary', tertiary: 'tertiary' });
             const mockPlayer = {
                 getDynamicProperty: vi.fn(() => 2),

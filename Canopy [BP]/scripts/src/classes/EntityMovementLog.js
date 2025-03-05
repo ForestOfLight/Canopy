@@ -69,7 +69,7 @@ class EntityMovementLog extends EntityLog {
             this.lastTickEntities.push({
                 id: entity.id,
                 location: entity.location,
-                dimension: entity.dimension
+                dimensionId: entity.dimension?.id
             });
         }
     }
@@ -80,7 +80,7 @@ class EntityMovementLog extends EntityLog {
             return !(lastTickEntity.location.x === entity.location.x &&
                  lastTickEntity.location.y === entity.location.y &&
                  lastTickEntity.location.z === entity.location.z &&
-                 lastTickEntity.dimension.id === entity.dimension.id);
+                 lastTickEntity.dimensionId === entity.dimension.id);
         }
         return false;
     }

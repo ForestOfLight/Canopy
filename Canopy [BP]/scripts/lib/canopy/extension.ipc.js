@@ -1,13 +1,13 @@
 /* eslint-disable new-cap */
 import { PROTO } from '../ipc/ipc'
 
+export const Ready = PROTO.Void;
+
 const description = PROTO.Object({
     text: PROTO.Optional(PROTO.String),
     translate: PROTO.Optional(PROTO.String),
     with: PROTO.Optional(PROTO.Array(PROTO.String))
 });
-
-export const Ready = PROTO.Void;
 
 export const RegisterExtension = PROTO.Object({
     name: PROTO.String,

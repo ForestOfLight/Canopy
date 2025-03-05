@@ -2,33 +2,45 @@ import { Command, InfoDisplayRule, Extensions, Rules, Commands } from "../../lib
 import { PACK_VERSION } from "../../constants";
 import counterChannels from '../classes/CounterChannels';
 import generatorChannels from "../classes/GeneratorChannels";
+import { ModalFormData } from "@minecraft/server-ui";
+import { forceShow } from "../../include/utils";
 
 const cmd = new Command({
     name: 'canopy',
     description: { translate: 'commands.canopy' },
-    usage: 'canopy <rule/version> [true/false]',
+    usage: 'canopy <menu/rule/version> [true/false]',
     args: [
         { type: 'string|array', name: 'ruleIDs' },
         { type: 'boolean', name: 'enable' },
     ],
     callback: canopyCommand,
     helpEntries: [
-        { usage: 'canopy version', description: { translate: 'commands.canopy.version' } },
+        { usage: 'canopy menu', description: { translate: 'commands.canopy.menu' } },
         { usage: 'canopy <rule> [true/false]', description: { translate: 'commands.canopy.single' } },
         { usage: 'canopy <[rule1,rule2,...]> [true/false]', description: { translate: 'commands.canopy.multiple' } },
+        { usage: 'canopy version', description: { translate: 'commands.canopy.version' } },
     ],
     adminOnly: true
 });
 
 async function canopyCommand(sender, args) {
     const { ruleIDs, enable } = args;
-    if (ruleIDs === null && enable === null)
-        return cmd.sendUsage(sender);
-
-    if (typeof ruleIDs === 'string' && ruleIDs === 'version')
-        return sender.sendMessage(getVersionMessage());
-    else if (typeof ruleIDs === 'string')
-        return handleRuleChange(sender, ruleIDs, enable);
+    if (ruleIDs === null && enable === null) {
+        cmd.sendUsage(sender);
+        return;
+    }
+    if (typeof ruleIDs === 'string' && ruleIDs === 'menu') {
+        openMenu(sender);
+        return;
+    }
+    if (typeof ruleIDs === 'string' && ruleIDs === 'version') {
+        sender.sendMessage(getVersionMessage());
+        return;
+    }
+    if (typeof ruleIDs === 'string') {
+        handleRuleChange(sender, ruleIDs, enable);
+        return;
+    }
     for (const ruleID of ruleIDs)
         await handleRuleChange(sender, ruleID, enable);
 }
@@ -45,9 +57,8 @@ function getVersionMessage() {
         const extensionName = extensionNames[i];
         if (i > 0)
             message.rawtext.push({ text: '§r§7,' });
-        message.rawtext.push({ text: ` §a§o${extensionName.name}§7 v${extensionName.version}` });
+        message.rawtext.push({ text: ` §2§o${extensionName.name} v${extensionName.version}` });
     }
-    message.rawtext.push({ text: '§r§7.' });
     return message;
 }
 
@@ -87,6 +98,39 @@ async function updateRule(sender, ruleID, enable) {
 }
 
 async function updateRules(sender, ruleIDs, enable) {
-    for (const ruleID of ruleIDs) 
+    for (const ruleID of ruleIDs)
         await updateRule(sender, ruleID, enable);
+}
+
+async function openMenu(sender) {
+    const form = new ModalFormData().title("§l§aCanopy§r §aRules");
+    const rules = Rules.getByCategory("Rules").sort((a, b) => a.getID().localeCompare(b.getID()));
+    for (const rule of rules) {
+        try {
+            const ruleValue = await rule.getValue();
+            form.toggle(rule.getID(), ruleValue);
+        } catch (error) {
+            sender.sendMessage(`§cError: ${error.message} for rule ${rule.getID()}`);
+        }
+    }
+    form.submitButton({ translate: 'commands.canopy.menu.submit' });
+
+    forceShow(sender, form, 1000).then(response => {
+        if (response.canceled) 
+            sender.sendMessage({ translate: 'commands.canopy.menu.canceled' });
+        else
+            updateChangedValues(sender, response.formValues);
+    }).catch(error => {
+        sender.sendMessage(`§cError: ${error.message}`);
+    });
+}
+
+async function updateChangedValues(sender, formValues) {
+    const rules = Rules.getByCategory("Rules").sort((a, b) => a.getID().localeCompare(b.getID()));
+    for (let i = 0; i < rules.length; i++) {
+        const rule = rules[i];
+        if (await rule.getValue() !== formValues[i]) 
+            await handleRuleChange(sender, rule.getID(), formValues[i]);
+        
+    }
 }

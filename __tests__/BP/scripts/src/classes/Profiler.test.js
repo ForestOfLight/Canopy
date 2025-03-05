@@ -21,6 +21,10 @@ vi.mock("@minecraft/server", () => ({
     }
 }));
 
+vi.mock("@minecraft/server-ui", () => ({
+    ModalFormData: vi.fn(),
+}));
+
 describe('Profiler', () => {
     it('should have a getter for the instant MS', () => {
         expect(Profiler.tickMs).toBeDefined();

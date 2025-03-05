@@ -197,7 +197,7 @@ function startSpectate(sender) {
             try {
                 sender.removeEffect(effect.typeId);
             } catch (error) {
-                console.warn(`[Canopy] Failed to remove ${effect?.typeId} effect from player ${sender.name} while starting spectate.`);
+                console.warn(`[Canopy] Failed to remove ${effect?.typeId} effect from player ${sender.name} while starting spectate. Error: ${error}`);
             }
         }
         sender.addEffect('night_vision', MAX_EFFECT_DURATION, { amplifier: 0, showParticles: false });
@@ -215,13 +215,13 @@ function endSpectate(sender) {
             try {
                 sender.removeEffect(effect.typeId);
             } catch (error) {
-                console.warn(`[Canopy] Failed to remove ${effect?.typeId} effect from player ${sender.name} while ending spectate.`);
+                console.warn(`[Canopy] Failed to remove ${effect?.typeId} effect from player ${sender.name} while ending spectate. Error: ${error}`);
             }
         }
         sender.teleport(beforeSpectatorPlayer.location, { dimension: world.getDimension(beforeSpectatorPlayer.dimensionId), rotation: beforeSpectatorPlayer.rotation });
         for (const effect of beforeSpectatorPlayer.effects) {
             try {
-                if (effect.duration == -1)
+                if (effect.duration === -1)
                     effect.duration = MAX_EFFECT_DURATION;
                 sender.addEffect(effect.typeId, Math.min(MAX_EFFECT_DURATION, effect.duration), { amplifier: effect.amplifier });
             } catch (error) {
