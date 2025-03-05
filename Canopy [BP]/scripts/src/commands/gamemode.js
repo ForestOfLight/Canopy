@@ -1,4 +1,4 @@
-import { Rule, Command } from 'lib/canopy/Canopy';
+import { Rule, Command } from '../../lib/canopy/Canopy';
 
 new Rule({
     category: 'Rules',

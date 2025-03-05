@@ -18,7 +18,29 @@ class ItemCounterChannels {
             channel.loadSavedData();
             this.channels[color] = channel;
         }
-        this.enable();
+    }
+
+    enable() {
+        world.afterEvents.playerPlaceBlock.subscribe((event) => this.onPlayerPlaceBlock(event.block));
+        this.onTickRunner = system.runInterval(() => this.onTick(), 1);
+    }
+
+    disable() {
+        world.afterEvents.playerPlaceBlock.unsubscribe(this.onPlayerPlaceBlock);
+        system.clearRun(this.onTickRunner);
+        for (const channel of Object.values(this.channels))
+            channel.disable();
+    }
+
+    onPlayerPlaceBlock(placedBlock) {
+        if (!Rules.getNativeValue(this.controllingRuleID)) return;
+        this.tryCreateHopperBlockPair(placedBlock);
+    }
+
+    onTick() {
+        if (!Rules.getNativeValue(this.controllingRuleID)) return;
+        for (const channel of Object.values(this.channels))
+            channel.onTick();
     }
 
     tryCreateHopperBlockPair() {
@@ -41,18 +63,6 @@ class ItemCounterChannels {
     resetAllCounts() {
         for (const channel of Object.values(this.channels))
             channel.reset();
-    }
-
-    enable() {
-        world.afterEvents.playerPlaceBlock.subscribe((event) => this.onPlayerPlaceBlock(event.block));
-        this.onTickRunner = system.runInterval(() => this.onTick(), 1);
-    }
-
-    disable() {
-        world.afterEvents.playerPlaceBlock.unsubscribe();
-        system.clearRun(this.onTickRunner);
-        for (const channel of Object.values(this.channels))
-            channel.disable();
     }
 
     setMode(color, mode) {
@@ -92,17 +102,6 @@ class ItemCounterChannels {
 
     getActiveChannels() {
         return Object.values(this.channels).filter(channel => channel.hopperList.length > 0);
-    }
-
-    onPlayerPlaceBlock(placedBlock) {
-        if (!Rules.getNativeValue(this.controllingRuleID)) return;
-        this.tryCreateHopperBlockPair(placedBlock);
-    }
-
-    onTick() {
-        if (!Rules.getNativeValue(this.controllingRuleID)) return;
-        for (const channel of Object.values(this.channels))
-            channel.onTick();
     }
 }
 

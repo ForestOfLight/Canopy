@@ -1,5 +1,4 @@
 import { Command, InfoDisplayRule, Commands, Rules } from "../../lib/canopy/Canopy";
-import ProbeManager from "../classes/ProbeManager";
 import { ModalFormData } from "@minecraft/server-ui";
 import { forceShow } from "../../include/utils";
 
@@ -71,11 +70,6 @@ function handleRuleChange(sender, ruleID, enable) {
         const enabledRawText = enable ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' };
         return sender.sendMessage({ rawtext: [ { translate: 'rules.generic.nochange', with: [ruleID] }, enabledRawText, { text: '§r§7.' } ] });
     }
-
-    if (['showDisplay', 'light', 'biome'].includes(ruleID))
-        ProbeManager.removeProbe(sender);
-    if (ruleID === 'showDisplay' && !enable)
-        clearInfoDisplay(sender);
     
     const rule = InfoDisplayRule.get(ruleID);
     if (enable)

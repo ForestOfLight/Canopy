@@ -1,11 +1,15 @@
 import InfoDisplayElement from './InfoDisplayElement.js';
-import ProbeManager from 'src/classes/ProbeManager';
+import ProbeManager from '../../classes/ProbeManager';
 
 class Light extends InfoDisplayElement {
     player;
 
     constructor(player, displayLine) {
-        const ruleData = { identifier: 'light', description: { translate: 'rules.infoDisplay.light' } };
+        const ruleData = { 
+            identifier: 'light',
+            description: { translate: 'rules.infoDisplay.light' },
+            onDisableCallback: () => ProbeManager.removeProbe(player)
+        };
         super(ruleData, displayLine);
         this.player = player;
     }

@@ -8,6 +8,16 @@ new Rule({
     category: 'Rules',
     identifier: 'commandCamera',
     description: { translate: 'rules.commandCamera' },
+    onEnableCallback: () => {
+        world.afterEvents.playerGameModeChange.subscribe(onPlayerGameModeChange);
+        world.beforeEvents.playerLeave.subscribe(onPlayerLeave);
+        world.afterEvents.playerDimensionChange.subscribe(onPlayerDimensionChange);
+    },
+    onDisableCallback: () => {
+        world.afterEvents.playerGameModeChange.unsubscribe(onPlayerGameModeChange);
+        world.beforeEvents.playerLeave.unsubscribe(onPlayerLeave);
+        world.afterEvents.playerDimensionChange.unsubscribe(onPlayerDimensionChange);
+    }
 });
 
 const cmd = new Command({
@@ -61,13 +71,11 @@ class BeforeSpectatorPlayer {
         this.rotation = player.getRotation();
         this.dimensionId = player.dimension.id;
         this.gamemode = player.getGameMode();
-        this.effects = [];
-        for (const effect of player.getEffects())
-            this.effects.push({ typeId: effect.typeId, duration: effect.duration, amplifier: effect.amplifier });
+        this.effects = player.getEffects().map(effect => ({ typeId: effect.typeId, duration: effect.duration, amplifier: effect.amplifier }));
     }
 }
 
-world.beforeEvents.playerGameModeChange.subscribe((event) => {
+function onPlayerGameModeChange(event) {
     const player = event.player;
     if (player?.getDynamicProperty('isSpectating') && event.fromGameMode === 'spectator' && event.toGameMode !== 'spectator') {
         system.run(() => {
@@ -75,18 +83,18 @@ world.beforeEvents.playerGameModeChange.subscribe((event) => {
             player.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.gamemode'});
         });
     }
-});
+}
 
-world.beforeEvents.playerLeave.subscribe((event) => {
+function onPlayerLeave(event) {
     event.player?.setDynamicProperty('isViewingCamera', false);
-});
+}
 
-world.afterEvents.playerDimensionChange.subscribe((event) => {
+function onPlayerDimensionChange(event) {
     const player = event.player;
     if (!player?.getDynamicProperty('isViewingCamera')) return;
     player.camera.clear();
     player.setDynamicProperty('isViewingCamera', false);
-});
+}
 
 function cameraCommand(sender, args) {
     const { action, option } = args;
