@@ -11,7 +11,7 @@ new Command({
     description: { translate: 'commands.cleanup' },
     usage: 'cleanup [distance]',
     args: [
-        { type: 'number', name: 'distance' },
+        { type: 'number', name: 'distance' }
     ],
     callback: cleanupCommand,
     contingentRules: ['commandCleanup']

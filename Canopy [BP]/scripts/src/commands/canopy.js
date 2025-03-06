@@ -9,14 +9,14 @@ const cmd = new Command({
     usage: 'canopy <menu/rule/version> [true/false]',
     args: [
         { type: 'string|array', name: 'ruleIDs' },
-        { type: 'boolean', name: 'enable' },
+        { type: 'boolean', name: 'enable' }
     ],
     callback: canopyCommand,
     helpEntries: [
         { usage: 'canopy menu', description: { translate: 'commands.canopy.menu' } },
         { usage: 'canopy <rule> [true/false]', description: { translate: 'commands.canopy.single' } },
         { usage: 'canopy <[rule1,rule2,...]> [true/false]', description: { translate: 'commands.canopy.multiple' } },
-        { usage: 'canopy version', description: { translate: 'commands.canopy.version' } },
+        { usage: 'canopy version', description: { translate: 'commands.canopy.version' } }
     ],
     adminOnly: true
 });
