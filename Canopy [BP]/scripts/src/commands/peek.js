@@ -1,5 +1,6 @@
 import { Command } from "../../lib/canopy/Canopy";
-import { populateItems, getRaycastResults, getClosestTarget, parseName, stringifyLocation } from "../../include/utils";
+import { titleCase, getRaycastResults, getClosestTarget, parseName, stringifyLocation, forceShow, populateItems } from "../../include/utils";
+import { ChestFormData } from "../../lib/chestui/forms.js"
 
 const MAX_DISTANCE = 6*16;
 const currentQuery = {};
@@ -12,7 +13,7 @@ new Command({
         { type: 'string', name: 'itemQuery' }
     ],
     callback: peekCommand
-})
+});
 
 function peekCommand(sender, args) {
     const { itemQuery } = args;
@@ -22,19 +23,21 @@ function peekCommand(sender, args) {
     if (!target) return;
     const inventory = getInventory(sender, target);
     if (!inventory) return;
-    const items = populateItems(inventory);
-    sender.sendMessage(formatOutput(target, items, itemQuery));
+
+    showInventoryUI(sender, target, inventory, itemQuery);
 }
 
 function updateQueryMap(sender, itemQuery) {
     const oldQuery = currentQuery[sender.name];
-    if ([null, undefined].includes(oldQuery) && itemQuery === null) {return;}
-    else if (itemQuery === null && ![null, undefined].includes(oldQuery)) {
+    if ([null, undefined].includes(oldQuery) && itemQuery === null)
+        return;
+    if (itemQuery === null && ![null, undefined].includes(oldQuery)) {
         currentQuery[sender.name] = null;
-        return sender.sendMessage({ translate: 'commands.peek.query.cleared' });
+        sender.sendMessage({ translate: 'commands.peek.query.cleared' });
+        return;
     } 
-        currentQuery[sender.name] = itemQuery;
-        sender.sendMessage({ translate: 'commands.peek.query.set', with: [itemQuery] });   
+    currentQuery[sender.name] = itemQuery;
+    sender.sendMessage({ translate: 'commands.peek.query.set', with: [itemQuery] });   
 }
 
 function getTarget(sender) {
@@ -61,20 +64,52 @@ function getInventory(sender, target) {
     return inventory;
 }
 
-function formatOutput(target, items, itemQuery) {
-    if (Object.keys(items).length === 0)
-        return { translate: 'commands.peek.fail.noitems', with: [target.name, stringifyLocation(target.entity.location, 0)] };
+export function showInventoryUI(sender, target, inventory, itemQuery) {
+    forceShow(sender, buildInventoryUI(target, inventory, itemQuery));
+}
 
-    let output = '§g-------------\n';
-    output += `§l§e${target.name}§r: ${stringifyLocation(target.entity.location, 0)}`;
-    for (const itemName in items) {
-        if (itemQuery && itemName.includes(itemQuery))
-            output += `\n§c${itemName}§r: ${items[itemName]}`;
-        else
-            output += `\n§e${itemName}§r: ${items[itemName]}`;
+function buildInventoryUI(target, inventory, itemQuery) {
+    const numSlots = inventory.container.size;
+    const form = new ChestFormData(numSlots);
+    form.title(formatContainerName(target.name));
+    for (let slotNum = 0; slotNum < numSlots; slotNum++) {
+        const itemStack = inventory.container.getItem(slotNum);
+        if (!itemStack) continue;
+        // if (itemQuery && itemName.includes(itemQuery)) {
+            // format it differently
+        // } else {
+        const itemName = formatItemName(itemStack);
+        const itemDesc = formatItemDescription(itemStack);
+        const durabilityComponent = itemStack.getComponent('durability');
+        let durabilityRatio = undefined;
+        if (durabilityComponent && durabilityComponent.damage !== 0)
+            durabilityRatio = (durabilityComponent.maxDurability - durabilityComponent.damage) / durabilityComponent.maxDurability * 100;
+        const isEnchanted = itemStack.getComponent('enchantable')?.getEnchantments().length > 0;
+        form.button(slotNum, itemName, itemDesc, itemStack.typeId, itemStack.amount, undefined, isEnchanted);
+        // }
     }
-    output += '\n§g-------------';
-    return output;
+    return form;
+}
+
+function formatContainerName(name) {
+    return titleCase(name.replace('minecraft:', ''));
+}
+
+function formatItemName(itemStack) {
+    if (itemStack.nameTag)
+        return `§o${itemStack.nameTag}`;
+    return titleCase(itemStack.typeId.replace('minecraft:', ''));
+}
+
+function formatItemDescription(itemStack) {
+    const enchantments = itemStack.getComponent('enchantable')?.getEnchantments();
+    if (!enchantments)
+        return [];
+    const itemDesc = enchantments.map(enchantment => {
+        const enchantmentName = titleCase(enchantment.type.id.replace('minecraft:', ''));
+        return `§7${enchantmentName} ${enchantment.level}`;
+    });
+    return itemDesc;
 }
 
 export { currentQuery };

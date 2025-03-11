@@ -1,5 +1,5 @@
 import { world, system, ItemStack, DimensionTypes } from '@minecraft/server';
-import { FormCancelationReason } from '@minecraft/server-ui';
+import { FormCancelationReason, uiManager } from '@minecraft/server-ui';
 
 export function calcDistance(locationOne, locationTwo, useY = true) {
 	const dx = locationOne.x - locationTwo.x;
@@ -47,20 +47,17 @@ export function stringifyLocation(location, precision = 0) {
 
 export function populateItems(inventory) {
 	const items = {};
-
 	inventory = inventory.container;
-	for (let i=0; i<inventory.size; i++) {
+	for (let i = 0; i < inventory.size; i++) {
 		try {
-			const item = inventory.getSlot(i);
-			
-			const data = item.typeId.replace('minecraft:','');
-			if (items[data]) items[data] += item.amount;
-			else items[data] = item.amount;
+			const itemStack = inventory.getSlot(i);
+			const data = itemStack.typeId.replace('minecraft:','');
+			if (items[data]) items[data] += itemStack.amount;
+			else items[data] = itemStack.amount;
 		} catch {
 			continue;
 		}
 	}
-
 	return items;
 }
 
@@ -253,11 +250,12 @@ export function formatColorStr(color) {
 	return `${getColorCode(color)}${color}§r`;
 }
 
-export async function forceShow(player, form, timeout = Infinity) {
+export async function forceShow(player, form, timeout = Infinity, showBusyMessage = true) {
+	uiManager.closeAllForms(player);
     const startTick = system.currentTick;
     while ((system.currentTick - startTick) < timeout) {
         const response = await form.show(player);
-        if (startTick + 1 === system.currentTick && response.cancelationReason === FormCancelationReason.UserBusy)
+        if (startTick + 1 === system.currentTick && response.cancelationReason === FormCancelationReason.UserBusy && showBusyMessage)
             player.sendMessage({ translate: 'commands.canopy.menu.busy' });
         if (response.cancelationReason !== FormCancelationReason.UserBusy)
             return response;
