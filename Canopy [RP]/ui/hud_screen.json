@@ -1,31 +1,38 @@
 {
-	"hud_title_text": {
-		"type": "image",
-		"size": [ "100%c + 10px", "100%c + 8px"],
-		"alpha": 0.8,
-		"anchor_from": "top_right",
-		"anchor_to": "top_right",
-		"offset": [ 0, 0 ],
-		"texture": "textures/ui/Gray",
-		"layer": 30,
-		"controls": [
+	"hud_title_text/title_frame/title": {
+		"modifications": [
 			{
-				"title": {
-					"type": "label",
-					"text": "#text",
-					"layer": 31,
-					"localize": false,
-					"font_size": "small",
-					"font_scale_factor": 1.6,
-					"bindings": [
-						{
-							"binding_name": "#hud_title_text_string",
-							"binding_name_override": "#text",
-							"binding_type": "global"
-						}
-					]
-				}
+			"array_name": "bindings",
+			"operation": "insert_back",
+			"value": {
+				"binding_type": "view",
+				"source_property_name": "(not (('%.1s' * #text) = '!'))",
+				"target_property_name": "#visible"
 			}
-		]
+		}]
+	},
+
+	"hud_title_text/subtitle_frame/subtitle": {
+		"modifications": [
+			{
+			"array_name": "bindings",
+			"operation": "insert_back",
+			"value": {
+				"binding_type": "view",
+				"source_property_name": "(not (('%.1s' * #text) = '!'))",
+				"target_property_name": "#visible"
+			}
+		}]
+	},
+
+	"root_panel": {
+		"modifications": [{
+			"array_name": "controls",
+			"operation": "insert_front",
+			"value": [
+				{ "infodisplay_title@canopy::infodisplay.title_factory": {} },
+				{ "infodisplay_subtitle@canopy::infodisplay.subtitle_factory": {} }
+			]
+		}]
 	}
 }

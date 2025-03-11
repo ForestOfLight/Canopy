@@ -20,6 +20,8 @@ import LookingAt from './LookingAt';
 import SignalStrength from './SignalStrength';
 import PeekInventory from './PeekInventory';
 
+const RP_RECOGNITION_KEY = '!id.';
+
 const playerToInfoDisplayMap = {};
 let currentTickWorldwideElementData = {};
 
@@ -57,11 +59,8 @@ class InfoDisplay {
 	update() {
 		this.infoMessage = { rawtext: [] };
 		const enabledElements = this.getEnabledElements();
-
-		for (let i = 0; i < enabledElements.length; i++) 
+		for (let i = 0; i < enabledElements.length; i++)
 			this.updateElementData(enabledElements, i);
-		
-
 		this.trimTrailingWhitespace();
 		this.sendInfoMessage();
 	}
@@ -118,6 +117,7 @@ class InfoDisplay {
 	sendInfoMessage() {
 		if (this.infoMessage.rawtext.length === 0)
 			return;
+		this.infoMessage.rawtext.unshift({ text: RP_RECOGNITION_KEY });
 		this.player.onScreenDisplay.setTitle(this.infoMessage);
 	}
 }

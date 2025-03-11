@@ -1,0 +1,130 @@
+{
+    "namespace": "canopy::infodisplay",
+
+    "title_factory": {
+        "type": "panel",
+          "factory": {
+            "name": "hud_title_text_factory",
+            "control_ids": {
+              "hud_title_text": "hud_title_text@canopy::infodisplay.custom_title"
+            }
+        } 
+    }, 
+
+    "subtitle_factory": {
+        "type": "panel",
+          "factory": {
+            "name": "hud_title_text_factory",
+            "control_ids": {
+              "hud_title_text": "hud_title_text@canopy::infodisplay.custom_subtitle"
+            }
+        } 
+    }, 
+
+    "custom_title": {
+        // main config
+        "type": "panel",
+        "size": [ "100%c", "100%c" ],
+        "anchor_to": "top_right",
+        "anchor_from": "top_right",
+        // variables
+        "$title_stay_time": 1,
+        "$title_fade_in_time": 0,
+        "$title_fade_out_time": 0,
+        "$key": "!id.",
+        // controls
+        "controls": [
+            { 
+                "title@canopy::infodisplay.custom_title_background": {
+                    "controls": [{
+                        "title_text@canopy::infodisplay.custom_title_text": {
+                            "text": "#text",
+                            "bindings": [
+                                {
+                                    "binding_name": "#hud_title_text_string"
+                                },
+                                {
+                                    "binding_type": "view",
+                                    "source_property_name": "(#hud_title_text_string - $key)",
+                                    "target_property_name": "#text"
+                                }
+                            ]
+                        }
+                    }],
+                    "bindings": [
+                        {
+                            "binding_name": "#hud_title_text_string"
+                        },
+                        {
+                            "binding_type": "view",
+                            "source_property_name": "(('%.4s' * #hud_title_text_string) = $key)",
+                            "target_property_name": "#visible"  
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+
+    "custom_subtitle": {
+        // main config
+        "type": "panel",
+        "size": [ "100%c", "100%c" ],
+        "anchor_to": "top_right",
+        "anchor_from": "top_right",
+        // variables
+        "$title_stay_time": 1,
+        "$title_fade_in_time": 0,
+        "$title_fade_out_time": 0,
+        "$key": "!id.",
+        // controls
+        "controls": [
+            { 
+                "title@canopy::infodisplay.custom_title_background": {
+                    "controls": [{
+                        "title_text@canopy::infodisplay.custom_title_text": {
+                            "text": "#text",
+                            "bindings": [
+                                {
+                                    "binding_name": "#hud_subtitle_text_string"
+                                },
+                                {
+                                    "binding_type": "view",
+                                    "source_property_name": "(#hud_subtitle_text_string - $key)",
+                                    "target_property_name": "#text"
+                                }
+                            ]
+                        }
+                    }],
+                    "bindings": [
+                        {
+                            "binding_name": "#hud_subtitle_text_string"
+                        },
+                        {
+                            "binding_type": "view",
+                            "source_property_name": "(('%.4s' * #hud_subtitle_text_string) = $key)",
+                            "target_property_name": "#visible"  
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+
+    "custom_title_background": {
+        "type": "image",
+        "size": [ "100%c + 10px", "100%c + 8px"],
+        "texture": "textures/ui/Gray",
+        "alpha": "@hud.anim_title_text_alpha_in",
+        "propagate_alpha": true,
+        "layer": 30
+    },
+
+    "custom_title_text": {
+        "type": "label",
+        "layer": 31,
+        "localize": false,
+        "font_size": "small",
+        "font_scale_factor": 1.6
+    }
+}
