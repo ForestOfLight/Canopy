@@ -1,4 +1,4 @@
-import { Command, InfoDisplayRule, Commands, Rules } from "../../lib/canopy/Canopy";
+import { Command, InfoDisplayRule, Commands, Rules, Rule } from "../../lib/canopy/Canopy";
 import { ModalFormData } from "@minecraft/server-ui";
 import { forceShow } from "../../include/utils";
 
@@ -53,25 +53,24 @@ function infoCommand(sender, args) {
         handleRuleChange(sender, ruleID, enable);
 }
 
-function handleRuleChange(sender, ruleID, enable) {
+async function handleRuleChange(sender, ruleID, enable) {
     if (!InfoDisplayRule.exists(ruleID))
         return sender.sendMessage({ rawtext: [ { translate: 'rules.generic.unknown', with: [ruleID, Commands.getPrefix()] } ] });
-    
     if (!(InfoDisplayRule.get(ruleID) instanceof InfoDisplayRule))
         return sender.sendMessage({ translate: 'commands.info.canopyRule', with: [ruleID, Command.getPrefix()] });
-
     const ruleValue = InfoDisplayRule.getValue(sender, ruleID);
     if (enable === null) {
         const enabledRawText = ruleValue ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' };
         return sender.sendMessage({ rawtext: [ { translate: 'rules.generic.status', with: [ruleID] }, enabledRawText, { text: '§r§7.' } ] });
     }
-
     if (enable === ruleValue) {
         const enabledRawText = enable ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' };
         return sender.sendMessage({ rawtext: [ { translate: 'rules.generic.nochange', with: [ruleID] }, enabledRawText, { text: '§r§7.' } ] });
     }
     
     const rule = InfoDisplayRule.get(ruleID);
+    if (await isBlockedByGlobalContingent(rule), enable)
+        return sender.sendMessage({ translate: 'rules.generic.blocked', with: [ruleID] });
     if (enable)
         updateRules(sender, rule.getContigentRuleIDs(), enable);
     else
@@ -84,7 +83,6 @@ function handleRuleChange(sender, ruleID, enable) {
 function changeAll(sender, enable) {
     for (const entry of InfoDisplayRule.getAll()) 
         entry.setValue(sender, enable);
-    
     if (!enable) clearInfoDisplay(sender);
     const enabledRawText = enable ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' };
     sender.sendMessage({ rawtext: [ { translate: 'commands.info.allupdated' }, enabledRawText, { text: '§r§7.' } ] });
@@ -107,6 +105,18 @@ function updateRules(sender, ruleIDs, enable) {
         updateRule(sender, ruleID, enable);
 }
 
+async function isBlockedByGlobalContingent(rule, enable) {
+    if (!enable)
+        return false;
+    const globalContingentRules = rule.getGlobalContingentRuleIDs();
+    for (const contingentRuleID of globalContingentRules) {
+        const contingentRule = Rule.get(contingentRuleID);
+        if (await contingentRule.getValue())
+            return true;
+    }
+    return false;
+}
+
 function openMenu(sender) {
     const form = new ModalFormData().title("§aInfoDisplay Rules");
     const rules = Rules.getByCategory("InfoDisplay").sort((a, b) => a.getID().localeCompare(b.getID()));
@@ -119,7 +129,6 @@ function openMenu(sender) {
         }
     }
     form.submitButton({ translate: 'commands.canopy.menu.submit' });
-
     forceShow(sender, form, 1000)
         .then(response => {
             if (response.canceled) 
@@ -138,6 +147,5 @@ function updateChangedValues(sender, formValues) {
         const rule = rules[i];
         if (rule.getValue(sender) !== formValues[i]) 
             handleRuleChange(sender, rule.getID(), formValues[i]);
-        
     }
 }

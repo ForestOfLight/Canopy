@@ -63,40 +63,40 @@ class ChestFormData {
 			this.#titleText.rawtext.push({ text: text });
 		}
 		else if (typeof text === 'object') {
-			if (text.rawtext) {
+			if (text.rawtext) 
 				this.#titleText.rawtext.push(...text.rawtext);
-			}
-			else {
+			
+			else 
 				this.#titleText.rawtext.push(text);
-			}
+			
 		}
 		return this;
 	}
 	button(slot, itemName, itemDesc, texture, stackSize = 1, durability = 0, enchanted = false) {
 		const targetTexture = custom_content_keys.has(texture) ? custom_content[texture]?.texture : texture;
 		const ID = typeIdToDataId.get(targetTexture) ?? typeIdToID.get(targetTexture);
-		let buttonRawtext = {
+		const buttonRawtext = {
 			rawtext: [
 				{
 					text: `stack#${String(Math.min(Math.max(stackSize, 1), 99)).padStart(2, '0')}dur#${String(Math.min(Math.max(durability, 0), 99)).padStart(2, '0')}§r`
 				}
 			]
 		};
-		if (typeof itemName === 'string') {
+		if (typeof itemName === 'string') 
 			buttonRawtext.rawtext.push({ text: itemName ? `${itemName}§r` : '§r' });
-		}
-		else if (typeof itemName === 'object' && itemName.rawtext) {
+		
+		else if (typeof itemName === 'object' && itemName.rawtext) 
 			buttonRawtext.rawtext.push(...itemName.rawtext, { text: '§r' });
-		}
+		
 		else return;
 		if (Array.isArray(itemDesc) && itemDesc.length > 0) {
 			for (const obj of itemDesc) {
-				if (typeof obj === 'string') {
+				if (typeof obj === 'string') 
 					buttonRawtext.rawtext.push({ text: `\n${obj}` });
-				}
-				else if (typeof obj === 'object' && obj.rawtext) {
+				
+				else if (typeof obj === 'object' && obj.rawtext) 
 					buttonRawtext.rawtext.push({ text: `\n` }, ...obj.rawtext);
-				}
+				
 			}
 		}
 		this.#buttonArray.splice(Math.max(0, Math.min(slot, this.slotCount - 1)), 1, [
@@ -118,23 +118,23 @@ class ChestFormData {
 				const { stackAmount = 1, durability = 0, itemName, itemDesc, enchanted = false } = data;
 				const stackSize = String(Math.min(Math.max(stackAmount, 1), 99)).padStart(2, '0');
 				const durValue = String(Math.min(Math.max(durability, 0), 99)).padStart(2, '0');
-				let buttonRawtext = {
+				const buttonRawtext = {
 					rawtext: [{ text: `stack#${stackSize}dur#${durValue}§r` }]
 				};
-				if (typeof itemName === 'string') {
+				if (typeof itemName === 'string') 
 					buttonRawtext.rawtext.push({ text: `${itemName}§r` });
-				}
-				else if (itemName?.rawtext) {
+				
+				else if (itemName?.rawtext) 
 					buttonRawtext.rawtext.push(...itemName.rawtext, { text: '§r' });
-				}
+				
 				else continue;
 				if (Array.isArray(itemDesc) && itemDesc.length > 0) {
 					for (const obj of itemDesc) {
-						if (typeof obj === 'string') {
+						if (typeof obj === 'string') 
 							buttonRawtext.rawtext.push({ text: `\n${obj}` });
-						} else if (obj?.rawtext) {
+						 else if (obj?.rawtext) 
 							buttonRawtext.rawtext.push({ text: `\n`, ...obj.rawtext });
-						}
+						
 					}
 				}
 				this.#buttonArray.splice(Math.max(0, Math.min(slot, this.slotCount - 1)), 1, [
@@ -163,7 +163,7 @@ class ChestFormData {
 			const durDamage = durability ? Math.round((durability.maxDurability - durability.damage) / durability.maxDurability * 99) : 0;
 			const amount = item.amount;
 			const formattedItemName = typeId.replace(/.*(?<=:)/, '').replace(/_/g, ' ').replace(/(^\w|\s\w)/g, (m) => m.toUpperCase());
-			let buttonRawtext = {
+			const buttonRawtext = {
 				rawtext: [
 					{
 						text: `stack#${String(amount).padStart(2, '0')}dur#${String(durDamage).padStart(2, '0')}§r${formattedItemName}`
@@ -189,38 +189,38 @@ class FurnaceFormData {
 		this.slotCount = 3;
 	}
 	title(text) {
-		if (typeof text === 'string') {
+		if (typeof text === 'string') 
 			this.#titleText.rawtext.push({ text });
-		}
-		else if (typeof text === 'object' && text.rawtext) {
+		
+		else if (typeof text === 'object' && text.rawtext) 
 			this.#titleText.rawtext.push(...text.rawtext);
-		}
-		else {
+		
+		else 
 			this.#titleText.rawtext.push({ text: '' });
-		}
+		
 		return this;
 	}
 	button(slot, itemName, itemDesc, texture, stackSize = 1, durability = 0, enchanted = false) {
 		const targetTexture = custom_content_keys.has(texture) ? custom_content[texture]?.texture : texture;
 		const ID = typeIdToDataId.get(targetTexture) ?? typeIdToID.get(targetTexture);
-		let buttonRawtext = {
+		const buttonRawtext = {
 			rawtext: [{ text: `stack#${String(Math.min(Math.max(stackSize, 1), 99)).padStart(2, '0')}dur#${String(Math.min(Math.max(durability, 0), 99)).padStart(2, '0')}§r` }]
 		};
 
-		if (typeof itemName === 'string') {
+		if (typeof itemName === 'string') 
 			buttonRawtext.rawtext.push({ text: itemName ? `${itemName}§r` : '§r' });
-		}
-		else if (typeof itemName === 'object' && itemName.rawtext) {
+		
+		else if (typeof itemName === 'object' && itemName.rawtext) 
 			buttonRawtext.rawtext.push(...itemName.rawtext, { text: '§r' });
-		}
+		
 		else return;
 		if (Array.isArray(itemDesc) && itemDesc.length) {
 			itemDesc.forEach(obj => {
-				if (typeof obj === 'string') {
+				if (typeof obj === 'string') 
 					buttonRawtext.rawtext.push({ text: `\n${obj}` });
-				} else if (typeof obj === 'object' && obj.rawtext) {
+				 else if (typeof obj === 'object' && obj.rawtext) 
 					buttonRawtext.rawtext.push({ text: `\n` }, ...obj.rawtext);
-				}
+				
 			});
 		}
 		this.#buttonArray.splice(Math.max(0, Math.min(slot, this.slotCount - 1)), 1, [
@@ -247,7 +247,7 @@ class FurnaceFormData {
 			const durDamage = durability ? Math.round((durability.maxDurability - durability.damage) / durability.maxDurability * 99) : 0;
 			const amount = item.amount;
 			const formattedItemName = typeId.replace(/.*(?<=:)/, '').replace(/_/g, ' ').replace(/(^\w|\s\w)/g, (m) => m.toUpperCase());
-			let buttonRawtext = {
+			const buttonRawtext = {
 				rawtext: [
 					{
 						text: `stack#${String(amount).padStart(2, '0')}dur#${String(durDamage).padStart(2, '0')}§r${formattedItemName}`

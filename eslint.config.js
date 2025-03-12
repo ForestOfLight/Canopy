@@ -16,6 +16,7 @@ export default [
       '**/scripts/lib/mt.js',
       '**/scripts/lib/ipc/',
       '**/scripts/lib/SRCItemDatabase.js',
+      '**/scripts/lib/chestui/'
     ]
   },
   js.configs.recommended,

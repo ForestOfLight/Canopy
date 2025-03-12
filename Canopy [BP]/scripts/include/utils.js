@@ -250,7 +250,7 @@ export function formatColorStr(color) {
 	return `${getColorCode(color)}${color}§r`;
 }
 
-export async function forceShow(player, form, timeout = Infinity, showBusyMessage = true) {
+export async function forceShow(player, form, { timeout = Infinity, showBusyMessage = true } = {}) {
 	uiManager.closeAllForms(player);
     const startTick = system.currentTick;
     while ((system.currentTick - startTick) < timeout) {

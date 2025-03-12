@@ -1,5 +1,5 @@
 import { Command } from "../../lib/canopy/Canopy";
-import { titleCase, getRaycastResults, getClosestTarget, parseName, stringifyLocation, forceShow, populateItems } from "../../include/utils";
+import { titleCase, getRaycastResults, getClosestTarget, parseName, stringifyLocation, forceShow } from "../../include/utils";
 import { ChestFormData } from "../../lib/chestui/forms.js"
 
 const MAX_DISTANCE = 6*16;
@@ -12,6 +12,7 @@ new Command({
     args: [
         { type: 'string', name: 'itemQuery' }
     ],
+    contingentRules: ['allowPeekInventory'],
     callback: peekCommand
 });
 
@@ -24,7 +25,7 @@ function peekCommand(sender, args) {
     const inventory = getInventory(sender, target);
     if (!inventory) return;
 
-    showInventoryUI(sender, target, inventory, itemQuery);
+    showInventoryUI(sender, target, inventory);
 }
 
 function updateQueryMap(sender, itemQuery) {
@@ -64,11 +65,11 @@ function getInventory(sender, target) {
     return inventory;
 }
 
-export function showInventoryUI(sender, target, inventory, itemQuery) {
-    forceShow(sender, buildInventoryUI(target, inventory, itemQuery));
+export function showInventoryUI(sender, target, inventory) {
+    forceShow(sender, buildInventoryUI(target, inventory));
 }
 
-function buildInventoryUI(target, inventory, itemQuery) {
+function buildInventoryUI(target, inventory) {
     const numSlots = inventory.container.size;
     const form = new ChestFormData(numSlots);
     form.title(formatContainerName(target.name));
@@ -80,12 +81,12 @@ function buildInventoryUI(target, inventory, itemQuery) {
         // } else {
         const itemName = formatItemName(itemStack);
         const itemDesc = formatItemDescription(itemStack);
-        const durabilityComponent = itemStack.getComponent('durability');
         let durabilityRatio = undefined;
+        const durabilityComponent = itemStack.getComponent('durability');
         if (durabilityComponent && durabilityComponent.damage !== 0)
             durabilityRatio = (durabilityComponent.maxDurability - durabilityComponent.damage) / durabilityComponent.maxDurability * 100;
         const isEnchanted = itemStack.getComponent('enchantable')?.getEnchantments().length > 0;
-        form.button(slotNum, itemName, itemDesc, itemStack.typeId, itemStack.amount, undefined, isEnchanted);
+        form.button(slotNum, itemName, itemDesc, itemStack.typeId, itemStack.amount, durabilityRatio, isEnchanted);
         // }
     }
     return form;
