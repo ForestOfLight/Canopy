@@ -48,7 +48,7 @@ function getTarget(sender) {
     const targetEntity = getClosestTarget(sender, blockRayResult, entityRayResult);
     const targetData = {
         name: parseName(targetEntity),
-        entity: targetEntity,
+        entity: targetEntity
     };
     return targetData;
 }

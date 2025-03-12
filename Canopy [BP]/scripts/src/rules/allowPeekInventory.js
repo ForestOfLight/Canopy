@@ -1,6 +1,7 @@
 import { Rule, Rules } from '../../lib/canopy/Canopy';
-import { world } from '@minecraft/server';
+import { system, world } from '@minecraft/server';
 import { showInventoryUI } from '../commands/peek';
+import { parseName } from '../../include/utils';
 
 const peekItem = 'minecraft:spyglass';
 
@@ -20,9 +21,16 @@ new Rule({
 
 function onPlayerInteraction(event) {
     if (!Rules.getNativeValue('allowPeekInventory')) return;
-    const player = event.player;
-    if (!player || !event.itemStack?.typeId === peekItem) return;
-    const target = event.block || event.target;
-    if (!target || !target.getComponent('inventory')) return;
-    showInventoryUI(player, target, target.getComponent('inventory'));
+    if (!event.player || event.itemStack?.typeId !== peekItem) return;
+    let target = event.block || event.target;
+    const inventory = target?.getComponent('inventory');
+    if (!inventory) return;
+    event.cancel = true;
+    const targetData = {
+        name: parseName(target),
+        entity: target
+    };
+    system.run(() => {
+        showInventoryUI(event.player, targetData, inventory);
+    });
 }

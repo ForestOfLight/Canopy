@@ -2,15 +2,15 @@ import { Rule } from './Rule';
 import { Rules } from './Rules';
 
 class InfoDisplayRule extends Rule {
-    #globalContingentRules = [];
+    globalContingentRules;
 
     constructor(options) {
         super({ category: "InfoDisplay", ...options });
-        this.#globalContingentRules = options.globalContingentRules;
+        this.globalContingentRules = options.globalContingentRules || [];
     }
 
     getGlobalContingentRuleIDs() {
-        return this.#globalContingentRules;
+        return this.globalContingentRules;
     }
 
     getValue(player) {

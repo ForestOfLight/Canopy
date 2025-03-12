@@ -1,4 +1,4 @@
-import { Command, InfoDisplayRule, Commands, Rules, Rule } from "../../lib/canopy/Canopy";
+import { Command, InfoDisplayRule, Commands, Rules } from "../../lib/canopy/Canopy";
 import { ModalFormData } from "@minecraft/server-ui";
 import { forceShow } from "../../include/utils";
 
@@ -69,8 +69,12 @@ async function handleRuleChange(sender, ruleID, enable) {
     }
     
     const rule = InfoDisplayRule.get(ruleID);
-    if (await isBlockedByGlobalContingent(rule), enable)
-        return sender.sendMessage({ translate: 'rules.generic.blocked', with: [ruleID] });
+    const blockingGlobalContingents = await getBlockingGlobalContingents(rule);
+    if (enable && blockingGlobalContingents.length > 0) {
+        for (const blockingRuleID of blockingGlobalContingents)
+            sender.sendMessage({ translate: 'rules.generic.blocked', with: [blockingRuleID] });
+        return;
+    }
     if (enable)
         updateRules(sender, rule.getContigentRuleIDs(), enable);
     else
@@ -105,16 +109,15 @@ function updateRules(sender, ruleIDs, enable) {
         updateRule(sender, ruleID, enable);
 }
 
-async function isBlockedByGlobalContingent(rule, enable) {
-    if (!enable)
-        return false;
+async function getBlockingGlobalContingents(rule) {
+    const blockingGlobalContingents = [];
     const globalContingentRules = rule.getGlobalContingentRuleIDs();
     for (const contingentRuleID of globalContingentRules) {
-        const contingentRule = Rule.get(contingentRuleID);
-        if (await contingentRule.getValue())
-            return true;
+        const contingentRule = Rules.get(contingentRuleID);
+        if (!(await contingentRule.getValue()))
+            blockingGlobalContingents.push(contingentRuleID);
     }
-    return false;
+    return blockingGlobalContingents;
 }
 
 function openMenu(sender) {

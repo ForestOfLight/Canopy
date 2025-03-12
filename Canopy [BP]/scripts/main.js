@@ -66,6 +66,7 @@ import './src/rules/creativeOneHitKill'
 import './src/rules/playerSit'
 import './src/rules/refillHand'
 import './src/rules/durabilitySwap'
+import './src/rules/allowPeekInventory'
 
 // Load Time Processes
 import './src/onStart'
