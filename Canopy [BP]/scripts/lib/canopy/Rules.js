@@ -5,7 +5,7 @@ class Rules {
         if (this.exists(rule.getID())) 
             throw new Error(`[Canopy] Rule with identifier '${rule.getID()}' already exists.`);
         this.#rules[rule.getID()] = rule;
-        if (await rule.getValue() === true)
+        if (rule.getCategory() === "Rules" && await rule.getValue() === true)
             rule.onEnable();
     }
 
