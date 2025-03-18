@@ -289,6 +289,7 @@ rules.commandTntFuse=Mengaktifkan perintah tntfuse & fungsi waktu meledak TNT cu
 rules.commandWarp=Mengaktifkan perintah warp & warps.
 rules.commandWarpSurvival=Mengaktifkan perintah warp & warps di mode bertahan hidup.
 rules.allowBubbleColumnPlacement=Menghapus pembatasan dalam menempatkan kolom gelembung (bubble columns).
+rules.allowPeekInventory=Mengaktifkan perintah `./peek` & aturan peekInventory di InfoDisplay. Juga memungkinkan mengintip menggunakan teropong.
 rules.armorStandRespawning=Dudukan Baju Zirah akan muncul kembali ketika terkena proyektil, menjatuhkan item yang mereka kenakan.
 rules.autoItemPickup=Secara otomatis mengambil item saat menghancurkan blok.
 rules.beeNoDrown=Memungkinkan lebah untuk sembuh dari kerusakan (damage) akibat tenggelam.
