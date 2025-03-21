@@ -15,7 +15,8 @@ const playerSneaks = {};
 system.runInterval(() => {
     if (!Rules.getNativeValue('playerSit')) return;
     world.getAllPlayers().forEach(player => {
-        if (player?.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed) {
+        if (!player || !player.isValid()) return;
+        if (player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed) {
             const currentTime = Date.now();
             const sneakInfo = playerSneaks[player.id] || { count: 0, lastTime: currentTime, lastTick: system.currentTick };
             if (sneakInfo.lastTick === system.currentTick - 1) {

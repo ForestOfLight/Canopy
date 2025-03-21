@@ -5,7 +5,8 @@ class InfoDisplayRule extends Rule {
     globalContingentRules;
 
     constructor(options) {
-        super({ category: "InfoDisplay", ...options });
+        options.category = "InfoDisplay";
+        super({ ...options });
         this.globalContingentRules = options.globalContingentRules || [];
     }
 
