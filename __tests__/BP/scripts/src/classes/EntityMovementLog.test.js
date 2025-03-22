@@ -117,15 +117,10 @@ describe('EntitMovementLog', () => {
         });
 
         it('should throw an error when logging an invalid type', () => {
-            entityLog = new EntityMovementLog('invalid_type', { main: 'main', secondary: 'secondary', tertiary: 'tertiary' });
-            const mockPlayer = {
-                getDynamicProperty: vi.fn(() => 2),
-                sendMessage: vi.fn()
-            };
-            entityLog.subscribedPlayers = [mockPlayer];
-            entityLog.movingEntities = [{ id: 'entity1', location: { x: 1, y: 2, z: 3 } }];
-            entityLog.hasMovedSinceLastTick = vi.fn(() => true);
-            expect(() => entityLog.onTick()).toThrow();
+            const invalidLog = () => {
+                new EntityMovementLog('invalid_type', { main: 'main', secondary: 'secondary', tertiary: 'tertiary' });
+            }
+            expect(invalidLog).toThrow();
         });
     });
 });

@@ -64,7 +64,7 @@ describe('EntityTntLog', () => {
             expect(entityTntLog.tntSpawnLocations['tnt1']).toEqual({ x: 1, y: 2, z: 3 });
         });
 
-        it('should not add non-tnt entities', () => {
+        it('should not add non-tnt entities to tntSpawnLocations', () => {
             const mockEntity = { typeId: 'minecraft:other', id: 'other1', location: { x: 4, y: 5, z: 6 } };
             entityTntLog.onSpawn(mockEntity);
             expect(entityTntLog.tntSpawnLocations).toEqual({});

@@ -15,31 +15,37 @@ const playerSneaks = {};
 system.runInterval(() => {
     if (!Rules.getNativeValue('playerSit')) return;
     world.getAllPlayers().forEach(player => {
-        if (!player || !player.isValid()) return;
-        if (player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed) {
-            const currentTime = Date.now();
-            const sneakInfo = playerSneaks[player.id] || { count: 0, lastTime: currentTime, lastTick: system.currentTick };
-            if (sneakInfo.lastTick === system.currentTick - 1) {
-                sneakInfo.lastTime = currentTime;
-                sneakInfo.lastTick = system.currentTick;
-                return;
-            }
-            if (player.isOnGround && currentTime - sneakInfo.lastTime < SNEAK_SPEED) {
-                sneakInfo.count++;
-                if (sneakInfo.count >= SNEAK_COUNT) {
-                    sit(player);
-                    sneakInfo.count = 0;
-                }
-            } else {
-                sneakInfo.count = 1;
-            }
-            sneakInfo.lastTime = currentTime;
-            sneakInfo.lastTick = system.currentTick;
-            playerSneaks[player.id] = sneakInfo;
-        }
+        if (isPlayerSneaking(player))
+            handlePlayerSneak(player);
     });
     cleanupRideableEntities();
 });
+
+function isPlayerSneaking(player) {
+    return player && player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed;
+}
+
+function handlePlayerSneak(player) {
+    const currentTime = Date.now();
+    const sneakTracker = playerSneaks[player.id] || { count: 0, lastTime: currentTime, lastTick: system.currentTick };
+    if (sneakTracker.lastTick === system.currentTick - 1) {
+        sneakTracker.lastTime = currentTime;
+        sneakTracker.lastTick = system.currentTick;
+        return;
+    }
+    if (player.isOnGround && currentTime - sneakTracker.lastTime < SNEAK_SPEED) {
+        sneakTracker.count++;
+        if (sneakTracker.count >= SNEAK_COUNT) {
+            sit(player);
+            sneakTracker.count = 0;
+        }
+    } else {
+        sneakTracker.count = 1;
+    }
+    sneakTracker.lastTime = currentTime;
+    sneakTracker.lastTick = system.currentTick;
+    playerSneaks[player.id] = sneakTracker;
+}
 
 function sit(player) {
     const heightAdjustment = -0.12;

@@ -2,8 +2,12 @@ import { EntityLog } from "./EntityLog";
 import { world, system } from "@minecraft/server";
 
 class EntityMovementLog extends EntityLog {
+    validTypes = ['projectiles', 'falling_blocks'];
+
     constructor(type, { main, secondary, tertiary }) {
         super(type, { main, secondary, tertiary });
+        if (!this.validTypes.includes(type))
+            throw new Error(`Invalid entity log type: ${type}`);
         this.startTick = system.currentTick;
         this.movingEntities = [];
         this.thisTickEntities = [];
