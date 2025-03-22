@@ -22,7 +22,7 @@ new Rule({
 function onPlayerInteraction(event) {
     if (!Rules.getNativeValue('allowPeekInventory')) return;
     if (!event.player || event.itemStack?.typeId !== peekItem) return;
-    let target = event.block || event.target;
+    const target = event.block || event.target;
     const inventory = target?.getComponent('inventory');
     if (!inventory) return;
     event.cancel = true;

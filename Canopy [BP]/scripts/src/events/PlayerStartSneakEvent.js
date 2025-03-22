@@ -1,7 +1,10 @@
 import { system, world, InputButton, ButtonState } from "@minecraft/server";
 
-class PlayerSneakEvent {
+class PlayerStartSneakEvent {
     runner;
+    playersSneakingThisTick = [];
+    playersSneakingLastTick = [];
+    callbacks = [];
 
     constructor() {
         this.playersSneakingThisTick = [];
@@ -16,7 +19,7 @@ class PlayerSneakEvent {
     }
     
     unsubscribe(callback) {
-        this.callbacks = this.callbacks.filter(cb => cb !== callback);
+        this.removeCallback(callback);
         if (this.callbacks.length === 0)
             this.endSneakTracking();
     }
@@ -26,18 +29,18 @@ class PlayerSneakEvent {
         this.runner = system.runInterval(this.onTick.bind(this));
     }
 
-    endSneakTracking() {
-        system.clearRun(this.runner);
+    onTick() {
+        this.updateSneaks();
+        this.sendEvents();
     }
 
-    onTick() {
+    updateSneaks() {
         this.playersSneakingLastTick = [...this.playersSneakingThisTick];
         this.playersSneakingThisTick = [];
         world.getAllPlayers().forEach(player => {
             if (this.isPlayerSneaking(player))
                 this.playersSneakingThisTick.push(player);
         });
-        this.sendEvents();
     }
 
     sendEvents() {
@@ -45,7 +48,7 @@ class PlayerSneakEvent {
         if (playersStartedSneak.length === 0) return;
         this.callbacks.forEach(callback => {
             const event = {
-                playersStartedSneak
+                players: playersStartedSneak
             }
             callback(event);
         });
@@ -57,6 +60,10 @@ class PlayerSneakEvent {
         );
     }
 
+    removeCallback(callback) {
+        this.callbacks = this.callbacks.filter(cb => cb !== callback);
+    }
+
     isTracking() {
         return this.callbacks.length > 0;
     }
@@ -64,6 +71,12 @@ class PlayerSneakEvent {
     isPlayerSneaking(player) {
         return player && player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed;
     }
+
+    endSneakTracking() {
+        system.clearRun(this.runner);
+    }
 }
 
-export { PlayerSneakEvent };
+const playerStartSneakEvent = new PlayerStartSneakEvent();
+
+export { PlayerStartSneakEvent, playerStartSneakEvent };

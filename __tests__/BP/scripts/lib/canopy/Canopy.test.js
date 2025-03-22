@@ -40,6 +40,10 @@ describe('Canopy module', () => {
         expect(Canopy.Rule).toBeDefined();
     });
 
+    it('should export GlobalRule', () => {
+        expect(Canopy.GlobalRule).toBeDefined();
+    });
+
     it('should export InfoDisplayRule', () => {
         expect(Canopy.InfoDisplayRule).toBeDefined();
     });
