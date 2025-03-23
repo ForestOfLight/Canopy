@@ -202,7 +202,7 @@ describe('Commands', () => {
                 isAdminOnly: () => false, 
                 getContingentRules: () => ['rule1'],
                 getArgs: () => [
-                    { type: 'string|boolean|number|identifier|array|player', name: 'multiArg' },
+                    { type: 'string|boolean|number|identifier|array|player', name: 'multiArg' }
                 ],
                 runCallback: vi.fn() };
             Commands.register(command2);
