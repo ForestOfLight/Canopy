@@ -26,6 +26,10 @@ vi.mock("@minecraft/server", () => ({
     }
 }));
 
+vi.mock("@minecraft/server-ui", () => ({
+    ModalFormData: vi.fn(),
+}));
+
 describe('HelpBook', () => {
     let book;
     beforeEach(() => {

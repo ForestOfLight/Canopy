@@ -47,6 +47,10 @@ vi.mock('../../../../../Canopy [BP]/scripts/lib/canopy/Canopy', () => ({
     }
 }));
 
+vi.mock("@minecraft/server-ui", () => ({
+    ModalFormData: vi.fn(),
+}));
+
 describe('dupeTnt Rule', () => {
     beforeEach(() => {
         spawnedEntitiesThisTick.length = 0;
