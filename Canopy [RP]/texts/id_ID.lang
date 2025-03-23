@@ -23,8 +23,8 @@ commands.help.search.results=§l§aCanopy§r §2Hasil pencarian untuk '§r%1§2'
 commands.help.page.header=§l§aCanopy§r§2 Halaman Bantuan: §f%1
 commands.help.infodisplay=Aturan yang bisa diubah² untuk InfoDisplay Anda.
 commands.help.rules=Aturan global yang bisa diubah².
-commands.help.extension.rules=Aturan yang dapat diubah² untuk §a%s§7.
-commands.help.extension.commands=Perintah untuk §a%s§2.
+commands.help.extension.rules=Aturan yang dapat diubah² untuk §o§a%s§r§8.
+commands.help.extension.commands=Perintah untuk §o§a%s§r§2.
 
 commands.camera=Taruh kamera, lihat, atau gunakan sebagai mode penonton yang ramah untuk mode bertahan hidup.
 commands.camera.place=Menaruh kamera di lokasi Anda saat ini. (Alias: cp)
