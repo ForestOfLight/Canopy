@@ -5,13 +5,14 @@ import DirectionStateFinder from "../classes/DirectionState";
 new Rule({
     category: 'Rules',
     identifier: 'pistonBedrockBreaking',
-    description: { translate: 'rules.pistonBedrockBreaking' },
+    description: { translate: 'rules.pistonBedrockBreaking' }
 });
 
 const insideBedrockPistonList = [];
 
 world.afterEvents.pistonActivate.subscribe((event) => {
-    if (!Rules.getNativeValue('pistonBedrockBreaking') || !['Expanding', 'Retracting'].includes(event.piston.state)) return;
+    if (!Rules.getNativeValue('pistonBedrockBreaking') || !['Expanding', 'Retracting'].includes(event.piston.state))
+        return;
     const piston = event.piston;
     const block = event.block;
     const directionState = DirectionStateFinder.getDirectionState(block.permutation);

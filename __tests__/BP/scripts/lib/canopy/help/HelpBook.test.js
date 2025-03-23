@@ -26,6 +26,10 @@ vi.mock("@minecraft/server", () => ({
     }
 }));
 
+vi.mock("@minecraft/server-ui", () => ({
+    ModalFormData: vi.fn()
+}));
+
 describe('HelpBook', () => {
     let book;
     beforeEach(() => {
@@ -117,7 +121,7 @@ describe('HelpBook', () => {
             book.newPage(page2);
 
             const player = {
-                sendMessage: vi.fn(),
+                sendMessage: vi.fn()
             };
 
             await book.print(player);
@@ -126,7 +130,7 @@ describe('HelpBook', () => {
 
         it('should handle empty book', async () => {
             const player = {
-                sendMessage: vi.fn(),
+                sendMessage: vi.fn()
             };
 
             await book.print(player);
@@ -140,7 +144,7 @@ describe('HelpBook', () => {
             book.newPage(page);
 
             const player = {
-                sendMessage: vi.fn(),
+                sendMessage: vi.fn()
             };
 
             await book.printPage('Test Page', player);
@@ -149,7 +153,7 @@ describe('HelpBook', () => {
 
         it('should throw an error if the page does not exist', async () => {
             const player = {
-                sendMessage: vi.fn(),
+                sendMessage: vi.fn()
             };
 
             await expect(book.printPage('Nonexistent Page', player)).rejects.toThrow('[HelpBook] Page does not exist');
@@ -165,7 +169,7 @@ describe('HelpBook', () => {
             book.newPage(page2);
 
             const player = {
-                sendMessage: vi.fn(),
+                sendMessage: vi.fn()
             };
 
             await book.printSearchResults('searchable', player);
@@ -179,7 +183,7 @@ describe('HelpBook', () => {
             book.newPage(page2);
 
             const player = {
-                sendMessage: vi.fn(),
+                sendMessage: vi.fn()
             };
 
             await book.printSearchResults('Nonexistent', player);
@@ -194,7 +198,7 @@ describe('HelpBook', () => {
             book.newPage(page2);
 
             const player = {
-                sendMessage: vi.fn(),
+                sendMessage: vi.fn()
             };
 
             await book.printSearchResults('searchable', player);
@@ -209,7 +213,7 @@ describe('HelpBook', () => {
                 description: 'Searchable Command',
                 usage: 'searchable <arg>',
                 helpEntries: [
-                    { usage: 'searchable arg', description: 'An argument' },
+                    { usage: 'searchable arg', description: 'An argument' }
                 ]
             });
             page1.addEntry(command);
@@ -217,7 +221,7 @@ describe('HelpBook', () => {
             book.newPage(page2);
 
             const player = {
-                sendMessage: vi.fn(),
+                sendMessage: vi.fn()
             };
 
             await book.printSearchResults('searchable', player);
@@ -232,7 +236,7 @@ describe('HelpBook', () => {
                 description: 'Searchable Command',
                 usage: 'searchable <arg>',
                 helpEntries: [
-                    { usage: 'searchable arg', description: { translate: 'command.searchable.arg' } },
+                    { usage: 'searchable arg', description: { translate: 'command.searchable.arg' } }
                 ]
             });
             page1.addEntry(command);
@@ -240,7 +244,7 @@ describe('HelpBook', () => {
             book.newPage(page2);
 
             const player = {
-                sendMessage: vi.fn(),
+                sendMessage: vi.fn()
             };
 
             await book.printSearchResults('searchable', player);

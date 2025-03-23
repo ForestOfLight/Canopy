@@ -4,7 +4,7 @@ import { world } from "@minecraft/server";
 new Rule({
     category: 'Rules',
     identifier: 'entityInstantDeath',
-    description: { translate: 'rules.entityInstantDeath' },
+    description: { translate: 'rules.entityInstantDeath' }
 });
 
 world.afterEvents.entityDie.subscribe(async (event) => {

@@ -4,7 +4,7 @@ import { Rule, Command } from 'lib/canopy/Canopy';
 new Rule({
     category: 'Rules',
     identifier: 'commandRemoveEntity',
-    description: { translate: 'rules.commandRemoveEntity' },
+    description: { translate: 'rules.commandRemoveEntity' }
 });
 
 new Command({

@@ -5,7 +5,7 @@ import HotbarManager from 'src/classes/HotbarManager';
 new Rule({
     category: 'Rules',
     identifier: 'hotbarSwitching',
-    description: { translate: 'rules.hotbarSwitching' },
+    description: { translate: 'rules.hotbarSwitching' }
 });
 
 const ARROW_SLOT = 17;
@@ -32,12 +32,11 @@ function processHotbarSwitching(player) {
     if (lastSelectedSlots[player.id] !== undefined && (!hasArrowInCorrectSlot(player) || !hasAppropriateGameMode(player))) {
         delete lastSelectedSlots[player.id];
         return;
-    } else if (lastSelectedSlots[player.id] === undefined && (!hasArrowInCorrectSlot(player) || !hasAppropriateGameMode(player))) {
-        return;
     }
+    if (lastSelectedSlots[player.id] === undefined && (!hasArrowInCorrectSlot(player) || !hasAppropriateGameMode(player)))
+        return;
     if (hasScrolled(player) && player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed) 
         switchToHotbar(player, player.selectedSlotIndex);
-    
     lastSelectedSlots[player.id] = player.selectedSlotIndex;
 }
 

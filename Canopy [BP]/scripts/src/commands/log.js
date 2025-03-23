@@ -1,6 +1,6 @@
-import { Command } from "lib/canopy/Canopy";
-import EntityMovementLog from "../classes/EntityMovementLog";
-import EntityTntLog from "../classes/EntityTntLog";
+import { Command } from "../../lib/canopy/Canopy";
+import { EntityMovementLog } from "../classes/EntityMovementLog";
+import { EntityTntLog } from "../classes/EntityTntLog";
 
 const MAIN_COLOR = '§7';
 const SECONDARY_COLOR = '§c';
@@ -23,7 +23,7 @@ const cmd = new Command({
     callback: logCommand
 });
 
-function logCommand(sender, args) {
+export function logCommand(sender, args) {
     const { type, precision } = args;
     if (sender.getDynamicProperty('logPrecision') === undefined)
         sender.setDynamicProperty('logPrecision', 3);

@@ -15,7 +15,7 @@ new Command({
     description: { translate: 'commands.pos' },
     usage: 'pos [player]',
     args: [
-        { type: 'string|number', name: 'player' },
+        { type: 'string|number', name: 'player' }
     ],
     callback: posCommand
 });

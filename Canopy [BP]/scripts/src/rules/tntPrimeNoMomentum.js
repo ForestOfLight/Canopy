@@ -6,7 +6,7 @@ new Rule({
     category: 'Rules',
     identifier: 'tntPrimeNoMomentum',
     description: { translate: 'rules.tntPrimeNoMomentum' },
-    independentRules: ['tntPrimeMaxMomentum'],
+    independentRules: ['tntPrimeMaxMomentum']
 });
 
 world.afterEvents.entitySpawn.subscribe((event) => {

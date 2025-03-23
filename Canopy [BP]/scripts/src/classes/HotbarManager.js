@@ -55,7 +55,7 @@ class HotbarManager {
         const lastLoadedHotbar = this.player.getDynamicProperty('lastLoadedHotbar');
         if (lastLoadedHotbar === undefined) 
             return 0;
-        return parseInt(lastLoadedHotbar);
+        return parseInt(lastLoadedHotbar, 10);
     }
 }
 

@@ -4,7 +4,7 @@ import { system, world } from "@minecraft/server";
 new Rule({
     category: 'Rules',
     identifier: 'creativeInstantTame',
-    description: { translate: 'rules.creativeInstantTame' },
+    description: { translate: 'rules.creativeInstantTame' }
 });
 
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import Profiler from "../../../../../Canopy [BP]/scripts/src/classes/Profiler";
+import { Profiler } from "../../../../../Canopy [BP]/scripts/src/classes/Profiler";
 
 vi.mock("@minecraft/server", () => ({
     system: {
@@ -19,6 +19,10 @@ vi.mock("@minecraft/server", () => ({
             runner.clear();
         })
     }
+}));
+
+vi.mock("@minecraft/server-ui", () => ({
+    ModalFormData: vi.fn()
 }));
 
 describe('Profiler', () => {

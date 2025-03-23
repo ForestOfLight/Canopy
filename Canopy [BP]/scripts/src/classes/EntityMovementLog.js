@@ -1,9 +1,13 @@
-import EntityLog from "./EntityLog";
+import { EntityLog } from "./EntityLog";
 import { world, system } from "@minecraft/server";
 
 class EntityMovementLog extends EntityLog {
+    validTypes = ['projectiles', 'falling_blocks'];
+
     constructor(type, { main, secondary, tertiary }) {
         super(type, { main, secondary, tertiary });
+        if (!this.validTypes.includes(type))
+            throw new Error(`Invalid entity log type: ${type}`);
         this.startTick = system.currentTick;
         this.movingEntities = [];
         this.thisTickEntities = [];
@@ -16,7 +20,8 @@ class EntityMovementLog extends EntityLog {
     }
 
     onTick() {
-        if (this.subscribedPlayers.length === 0) return;
+        if (this.subscribedPlayers.length === 0)
+            return;
         this.updateEntityLists();
         for (const player of this.subscribedPlayers) {
             if (this.isPrintable()) {
@@ -68,7 +73,7 @@ class EntityMovementLog extends EntityLog {
             this.lastTickEntities.push({
                 id: entity.id,
                 location: entity.location,
-                dimension: entity.dimension
+                dimensionId: entity.dimension?.id
             });
         }
     }
@@ -79,7 +84,7 @@ class EntityMovementLog extends EntityLog {
             return !(lastTickEntity.location.x === entity.location.x &&
                  lastTickEntity.location.y === entity.location.y &&
                  lastTickEntity.location.z === entity.location.z &&
-                 lastTickEntity.dimension.id === entity.dimension.id);
+                 lastTickEntity.dimensionId === entity.dimension.id);
         }
         return false;
     }
@@ -125,4 +130,4 @@ class EntityMovementLog extends EntityLog {
     }
 }
 
-export default EntityMovementLog;
+export { EntityMovementLog };

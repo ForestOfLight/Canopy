@@ -7,7 +7,7 @@ const CLAIM_RADIUS = 25;
 new Rule({
     category: 'Rules',
     identifier: 'commandClaimProjectiles',
-    description: { translate: 'rules.commandClaimProjectiles' },
+    description: { translate: 'rules.commandClaimProjectiles' }
 });
 
 new Command({

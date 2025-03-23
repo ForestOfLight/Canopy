@@ -4,7 +4,7 @@ import { Rule, Rules } from "../../lib/canopy/Canopy";
 new Rule({
     category: 'Rules',
     identifier: 'quickFillContainer',
-    description: { translate: 'rules.quickFillContainer' },
+    description: { translate: 'rules.quickFillContainer' }
 });
 
 const ARROW_SLOT = 9;

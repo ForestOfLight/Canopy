@@ -2,7 +2,7 @@
  * @license
  * MIT License
  *
- * Copyright (c) 2024 OmniacDev
+ * Copyright (c) 2025 OmniacDev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,396 +22,467 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { world, system, ScriptEventSource } from '@minecraft/server';
-var IPC;
-(function (IPC) {
-    class Connection {
-        *MAYBE_ENCRYPT(args) {
-            return this._enc !== false ? yield* CRYPTO.encrypt(JSON.stringify(args), this._enc) : args;
+import { ScriptEventSource, system, world } from '@minecraft/server';
+export var PROTO;
+(function (PROTO) {
+    class ByteQueue {
+        get end() {
+            return this._length + this._offset;
         }
-        *MAYBE_DECRYPT(args) {
-            return this._enc !== false ? JSON.parse(yield* CRYPTO.decrypt(args[1], this._enc)) : args[1];
+        get front() {
+            return this._offset;
         }
-        get from() {
-            return this._from;
+        get data_view() {
+            return this._data_view;
         }
-        get to() {
-            return this._to;
+        constructor(size = 256) {
+            this._buffer = new Uint8Array(size);
+            this._data_view = new DataView(this._buffer.buffer);
+            this._length = 0;
+            this._offset = 0;
         }
-        constructor(from, to, encryption) {
-            this._from = from;
-            this._to = to;
-            this._enc = encryption;
-            this._terminators = new Array();
+        write(...values) {
+            this.ensure_capacity(values.length);
+            this._buffer.set(values, this.end);
+            this._length += values.length;
         }
-        terminate(notify = true) {
-            const $ = this;
-            $._terminators.forEach(terminate => terminate());
-            $._terminators.length = 0;
-            if (notify) {
-                system.runJob(NET.emit('ipc', 'terminate', $._to, [$._from]));
+        read(amount = 1) {
+            if (this._length > 0) {
+                const max_amount = amount > this._length ? this._length : amount;
+                const values = this._buffer.subarray(this._offset, this._offset + max_amount);
+                this._length -= max_amount;
+                this._offset += max_amount;
+                return globalThis.Array.from(values);
+            }
+            return [];
+        }
+        ensure_capacity(size) {
+            if (this.end + size > this._buffer.length) {
+                const larger_buffer = new Uint8Array((this.end + size) * 2);
+                larger_buffer.set(this._buffer.subarray(this._offset, this.end), 0);
+                this._buffer = larger_buffer;
+                this._offset = 0;
+                this._data_view = new DataView(this._buffer.buffer);
             }
         }
-        send(channel, ...args) {
-            const $ = this;
-            system.runJob((function* () {
-                const data = yield* $.MAYBE_ENCRYPT(args);
-                yield* NET.emit('ipc', 'send', `${$._to}:${channel}`, [$._from, data]);
-            })());
+        static from_uint8array(array) {
+            const byte_queue = new ByteQueue();
+            byte_queue._buffer = array;
+            byte_queue._length = array.length;
+            byte_queue._offset = 0;
+            byte_queue._data_view = new DataView(array.buffer);
+            return byte_queue;
         }
-        invoke(channel, ...args) {
-            const $ = this;
-            system.runJob((function* () {
-                const data = yield* $.MAYBE_ENCRYPT(args);
-                yield* NET.emit('ipc', 'invoke', `${$._to}:${channel}`, [$._from, data]);
-            })());
-            return new Promise(resolve => {
-                const terminate = NET.listen('ipc', 'handle', `${$._from}:${channel}`, function* (args) {
-                    if (args[0] === $._to) {
-                        const data = yield* $.MAYBE_DECRYPT(args);
-                        resolve(data);
-                        terminate();
-                    }
-                });
-            });
-        }
-        on(channel, listener) {
-            const $ = this;
-            const terminate = NET.listen('ipc', 'send', `${$._from}:${channel}`, function* (args) {
-                if (args[0] === $._to) {
-                    const data = yield* $.MAYBE_DECRYPT(args);
-                    listener(...data);
-                }
-            });
-            $._terminators.push(terminate);
-            return terminate;
-        }
-        once(channel, listener) {
-            const $ = this;
-            const terminate = NET.listen('ipc', 'send', `${$._from}:${channel}`, function* (args) {
-                if (args[0] === $._to) {
-                    const data = yield* $.MAYBE_DECRYPT(args);
-                    listener(...data);
-                    terminate();
-                }
-            });
-            $._terminators.push(terminate);
-            return terminate;
-        }
-        handle(channel, listener) {
-            const $ = this;
-            const terminate = NET.listen('ipc', 'invoke', `${$._from}:${channel}`, function* (args) {
-                if (args[0] === $._to) {
-                    const data = yield* $.MAYBE_DECRYPT(args);
-                    const result = listener(...data);
-                    const return_data = yield* $.MAYBE_ENCRYPT(result);
-                    yield* NET.emit('ipc', 'handle', `${$._to}:${channel}`, [$._from, return_data]);
-                }
-            });
-            $._terminators.push(terminate);
-            return terminate;
+        to_uint8array() {
+            return this._buffer.subarray(this._offset, this.end);
         }
     }
-    IPC.Connection = Connection;
-    class ConnectionManager {
-        *MAYBE_ENCRYPT(args, encryption) {
-            return encryption !== false ? yield* CRYPTO.encrypt(JSON.stringify(args), encryption) : args;
-        }
-        *MAYBE_DECRYPT(args, encryption) {
-            return encryption !== false ? JSON.parse(yield* CRYPTO.decrypt(args[1], encryption)) : args[1];
-        }
-        get id() {
-            return this._id;
-        }
-        constructor(id, force_encryption = false) {
-            const $ = this;
-            this._id = id;
-            this._enc_map = new Map();
-            this._con_map = new Map();
-            this._enc_force = force_encryption;
-            NET.listen('ipc', 'handshake', `${this._id}:SYN`, function* (args) {
-                const secret = CRYPTO.make_secret(args[4]);
-                const public_key = yield* CRYPTO.make_public(secret, args[4], args[3]);
-                const enc = args[1] === 1 || $._enc_force ? yield* CRYPTO.make_shared(secret, args[2], args[3]) : false;
-                $._enc_map.set(args[0], enc);
-                yield* NET.emit('ipc', 'handshake', `${args[0]}:ACK`, [$._id, $._enc_force ? 1 : 0, public_key]);
-            });
-            NET.listen('ipc', 'terminate', this._id, function* (args) {
-                $._enc_map.delete(args[0]);
-            });
-        }
-        connect(to, encrypted = false, timeout = 20) {
-            const $ = this;
-            return new Promise((resolve, reject) => {
-                const con = this._con_map.get(to);
-                if (con !== undefined) {
-                    con.terminate(false);
-                    resolve(con);
-                }
-                else {
-                    const secret = CRYPTO.make_secret();
-                    const enc_flag = encrypted ? 1 : 0;
-                    system.runJob((function* () {
-                        const public_key = yield* CRYPTO.make_public(secret);
-                        yield* NET.emit('ipc', 'handshake', `${to}:SYN`, [$._id, enc_flag, public_key, CRYPTO.PRIME, CRYPTO.MOD]);
-                    })());
-                    function clear() {
-                        terminate();
-                        system.clearRun(timeout_handle);
-                    }
-                    const timeout_handle = system.runTimeout(() => {
-                        reject();
-                        clear();
-                    }, timeout);
-                    const terminate = NET.listen('ipc', 'handshake', `${this._id}:ACK`, function* (args) {
-                        if (args[0] === to) {
-                            const enc = args[1] === 1 || encrypted ? yield* CRYPTO.make_shared(secret, args[2]) : false;
-                            const new_con = new Connection($._id, to, enc);
-                            $._con_map.set(to, new_con);
-                            resolve(new_con);
-                            clear();
-                        }
-                    });
-                }
-            });
-        }
-        send(channel, ...args) {
-            const $ = this;
-            system.runJob((function* () {
-                for (const [key, value] of $._enc_map) {
-                    const data = yield* $.MAYBE_ENCRYPT(args, value);
-                    yield* NET.emit('ipc', 'send', `${key}:${channel}`, [$._id, data]);
-                }
-            })());
-        }
-        invoke(channel, ...args) {
-            const $ = this;
-            const promises = [];
-            for (const [key, value] of $._enc_map) {
-                system.runJob((function* () {
-                    const data = yield* $.MAYBE_ENCRYPT(args, value);
-                    yield* NET.emit('ipc', 'invoke', `${key}:${channel}`, [$._id, data]);
-                })());
-                promises.push(new Promise(resolve => {
-                    const terminate = NET.listen('ipc', 'handle', `${$._id}:${channel}`, function* (args) {
-                        if (args[0] === key) {
-                            const data = yield* $.MAYBE_DECRYPT(args, value);
-                            resolve(data);
-                            terminate();
-                        }
-                    });
-                }));
+    PROTO.ByteQueue = ByteQueue;
+    let MIPS;
+    (function (MIPS) {
+        function* serialize(byte_queue) {
+            const uint8array = byte_queue.to_uint8array();
+            let str = '(0x';
+            for (let i = 0; i < uint8array.length; i++) {
+                const hex = uint8array[i].toString(16).padStart(2, '0').toUpperCase();
+                str += hex;
+                yield;
             }
-            return promises;
+            str += ')';
+            return str;
         }
-        on(channel, listener) {
-            const $ = this;
-            return NET.listen('ipc', 'send', `${$._id}:${channel}`, function* (args) {
-                const enc = $._enc_map.get(args[0]);
-                if (enc !== undefined) {
-                    const data = yield* $.MAYBE_DECRYPT(args, enc);
-                    listener(...data);
+        MIPS.serialize = serialize;
+        function* deserialize(str) {
+            if (str.startsWith('(0x') && str.endsWith(')')) {
+                const result = [];
+                const hex_str = str.slice(3, str.length - 1);
+                for (let i = 0; i < hex_str.length; i++) {
+                    const hex = hex_str[i] + hex_str[++i];
+                    result.push(parseInt(hex, 16));
+                    yield;
                 }
-            });
+                return ByteQueue.from_uint8array(new Uint8Array(result));
+            }
+            return new ByteQueue();
         }
-        once(channel, listener) {
-            const $ = this;
-            const terminate = NET.listen('ipc', 'send', `${$._id}:${channel}`, function* (args) {
-                const enc = $._enc_map.get(args[0]);
-                if (enc !== undefined) {
-                    const data = yield* $.MAYBE_DECRYPT(args, enc);
-                    listener(...data);
-                    terminate();
+        MIPS.deserialize = deserialize;
+    })(MIPS = PROTO.MIPS || (PROTO.MIPS = {}));
+    PROTO.Void = {
+        *serialize() { },
+        *deserialize() { }
+    };
+    PROTO.Null = {
+        *serialize() { },
+        *deserialize() {
+            return null;
+        }
+    };
+    PROTO.Undefined = {
+        *serialize() { },
+        *deserialize() {
+            return undefined;
+        }
+    };
+    PROTO.Int8 = {
+        *serialize(value, stream) {
+            const length = 1;
+            stream.write(...globalThis.Array(length).fill(0));
+            stream.data_view.setInt8(stream.end - length, value);
+        },
+        *deserialize(stream) {
+            const value = stream.data_view.getInt8(stream.front);
+            stream.read(1);
+            return value;
+        }
+    };
+    PROTO.Int16 = {
+        *serialize(value, stream) {
+            const length = 2;
+            stream.write(...globalThis.Array(length).fill(0));
+            stream.data_view.setInt16(stream.end - length, value);
+        },
+        *deserialize(stream) {
+            const value = stream.data_view.getInt16(stream.front);
+            stream.read(2);
+            return value;
+        }
+    };
+    PROTO.Int32 = {
+        *serialize(value, stream) {
+            const length = 4;
+            stream.write(...globalThis.Array(length).fill(0));
+            stream.data_view.setInt32(stream.end - length, value);
+        },
+        *deserialize(stream) {
+            const value = stream.data_view.getInt32(stream.front);
+            stream.read(4);
+            return value;
+        }
+    };
+    PROTO.UInt8 = {
+        *serialize(value, stream) {
+            const length = 1;
+            stream.write(...globalThis.Array(length).fill(0));
+            stream.data_view.setUint8(stream.end - length, value);
+        },
+        *deserialize(stream) {
+            const value = stream.data_view.getUint8(stream.front);
+            stream.read(1);
+            return value;
+        }
+    };
+    PROTO.UInt16 = {
+        *serialize(value, stream) {
+            const length = 2;
+            stream.write(...globalThis.Array(length).fill(0));
+            stream.data_view.setUint16(stream.end - length, value);
+        },
+        *deserialize(stream) {
+            const value = stream.data_view.getUint16(stream.front);
+            stream.read(2);
+            return value;
+        }
+    };
+    PROTO.UInt32 = {
+        *serialize(value, stream) {
+            const length = 4;
+            stream.write(...globalThis.Array(length).fill(0));
+            stream.data_view.setUint32(stream.end - length, value);
+        },
+        *deserialize(stream) {
+            const value = stream.data_view.getUint32(stream.front);
+            stream.read(4);
+            return value;
+        }
+    };
+    PROTO.UVarInt32 = {
+        *serialize(value, stream) {
+            while (value >= 0x80) {
+                stream.write((value & 0x7f) | 0x80);
+                value >>= 7;
+                yield;
+            }
+            stream.write(value);
+        },
+        *deserialize(stream) {
+            let value = 0;
+            let size = 0;
+            let byte;
+            do {
+                byte = stream.read()[0];
+                value |= (byte & 0x7f) << (size * 7);
+                size += 1;
+                yield;
+            } while ((byte & 0x80) !== 0 && size < 10);
+            return value;
+        }
+    };
+    PROTO.Float32 = {
+        *serialize(value, stream) {
+            const length = 4;
+            stream.write(...globalThis.Array(length).fill(0));
+            stream.data_view.setFloat32(stream.end - length, value);
+        },
+        *deserialize(stream) {
+            const value = stream.data_view.getFloat32(stream.front);
+            stream.read(4);
+            return value;
+        }
+    };
+    PROTO.Float64 = {
+        *serialize(value, stream) {
+            const length = 8;
+            stream.write(...globalThis.Array(length).fill(0));
+            stream.data_view.setFloat64(stream.end - length, value);
+        },
+        *deserialize(stream) {
+            const value = stream.data_view.getFloat64(stream.front);
+            stream.read(8);
+            return value;
+        }
+    };
+    PROTO.String = {
+        *serialize(value, stream) {
+            yield* PROTO.UVarInt32.serialize(value.length, stream);
+            for (let i = 0; i < value.length; i++) {
+                const code = value.charCodeAt(i);
+                yield* PROTO.UVarInt32.serialize(code, stream);
+            }
+        },
+        *deserialize(stream) {
+            const length = yield* PROTO.UVarInt32.deserialize(stream);
+            let value = '';
+            for (let i = 0; i < length; i++) {
+                const code = yield* PROTO.UVarInt32.deserialize(stream);
+                value += globalThis.String.fromCharCode(code);
+            }
+            return value;
+        }
+    };
+    PROTO.Boolean = {
+        *serialize(value, stream) {
+            stream.write(value ? 1 : 0);
+        },
+        *deserialize(stream) {
+            const value = stream.read()[0];
+            return value === 1;
+        }
+    };
+    PROTO.UInt8Array = {
+        *serialize(value, stream) {
+            yield* PROTO.UVarInt32.serialize(value.length, stream);
+            stream.write(...value);
+        },
+        *deserialize(stream) {
+            const length = yield* PROTO.UVarInt32.deserialize(stream);
+            return new Uint8Array(stream.read(length));
+        }
+    };
+    PROTO.Date = {
+        *serialize(value, stream) {
+            yield* PROTO.Float64.serialize(value.getTime(), stream);
+        },
+        *deserialize(stream) {
+            return new globalThis.Date(yield* PROTO.Float64.deserialize(stream));
+        }
+    };
+    function Object(obj) {
+        return {
+            *serialize(value, stream) {
+                for (const key in obj) {
+                    yield* obj[key].serialize(value[key], stream);
                 }
-            });
-            return terminate;
-        }
-        handle(channel, listener) {
-            const $ = this;
-            return NET.listen('ipc', 'invoke', `${$._id}:${channel}`, function* (args) {
-                const enc = $._enc_map.get(args[0]);
-                if (enc !== undefined) {
-                    const data = yield* $.MAYBE_DECRYPT(args, enc);
-                    const result = listener(...data);
-                    const return_data = yield* $.MAYBE_ENCRYPT(result, enc);
-                    yield* NET.emit('ipc', 'handle', `${args[0]}:${channel}`, [$._id, return_data]);
+            },
+            *deserialize(stream) {
+                const result = {};
+                for (const key in obj) {
+                    result[key] = yield* obj[key].deserialize(stream);
                 }
-            });
-        }
-    }
-    IPC.ConnectionManager = ConnectionManager;
-    /** Sends a message with `args` to `channel` */
-    function send(channel, ...args) {
-        system.runJob(NET.emit('ipc', 'send', channel, args));
-    }
-    IPC.send = send;
-    /** Sends an `invoke` message through IPC, and expects a result asynchronously. */
-    function invoke(channel, ...args) {
-        system.runJob(NET.emit('ipc', 'invoke', channel, args));
-        return new Promise(resolve => {
-            const terminate = NET.listen('ipc', 'handle', channel, function* (args) {
-                resolve(args[0]);
-                terminate();
-            });
-        });
-    }
-    IPC.invoke = invoke;
-    /** Listens to `channel`. When a new message arrives, `listener` will be called with `listener(args)`. */
-    function on(channel, listener) {
-        return NET.listen('ipc', 'send', channel, function* (args) {
-            listener(...args);
-        });
-    }
-    IPC.on = on;
-    /** Listens to `channel` once. When a new message arrives, `listener` will be called with `listener(args)`, and then removed. */
-    function once(channel, listener) {
-        const terminate = NET.listen('ipc', 'send', channel, function* (args) {
-            listener(...args);
-            terminate();
-        });
-        return terminate;
-    }
-    IPC.once = once;
-    /** Adds a handler for an `invoke` IPC. This handler will be called whenever `invoke(channel, ...args)` is called */
-    function handle(channel, listener) {
-        return NET.listen('ipc', 'invoke', channel, function* (args) {
-            const result = listener(...args);
-            yield* NET.emit('ipc', 'handle', channel, [result]);
-        });
-    }
-    IPC.handle = handle;
-})(IPC || (IPC = {}));
-export default IPC;
-var SERDE;
-(function (SERDE) {
-    const INVALID_START_CODES = [48, 49, 50, 51, 52, 53, 54, 55, 56, 57];
-    const INVALID_CODES = [
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-        31, 32, 33, 34, 35, 36, 37, 38, 39, 42, 43, 44, 47, 58, 59, 60, 61, 62, 63, 64, 91, 92, 93, 94, 96, 123, 124, 125,
-        126, 127
-    ];
-    const sequence_regex = /\?[0-9a-zA-Z.\-]{2}|[^?]+/g;
-    const encoded_regex = /^\?[0-9a-zA-Z.\-]{2}$/;
-    const BASE64 = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.-';
-    function* b64_encode(char) {
-        let encoded = '';
-        for (let code = char.charCodeAt(0); code > 0; code = Math.floor(code / 64)) {
-            encoded = BASE64[code % 64] + encoded;
-            yield;
-        }
-        return encoded;
-    }
-    function* b64_decode(enc) {
-        let code = 0;
-        for (let i = 0; i < enc.length; i++) {
-            code += 64 ** (enc.length - 1 - i) * BASE64.indexOf(enc[i]);
-            yield;
-        }
-        return String.fromCharCode(code);
-    }
-    function* encode(str) {
-        let result = '';
-        for (let i = 0; i < str.length; i++) {
-            const char = str.charAt(i);
-            const char_code = char.charCodeAt(0);
-            if ((i === 0 && INVALID_START_CODES.includes(char_code)) || INVALID_CODES.includes(char_code)) {
-                result += `?${(yield* b64_encode(char)).padStart(2, '0')}`;
+                return result;
             }
-            else {
-                result += char;
+        };
+    }
+    PROTO.Object = Object;
+    function Array(value) {
+        return {
+            *serialize(array, stream) {
+                yield* PROTO.UVarInt32.serialize(array.length, stream);
+                for (const item of array) {
+                    yield* value.serialize(item, stream);
+                }
+            },
+            *deserialize(stream) {
+                const result = [];
+                const length = yield* PROTO.UVarInt32.deserialize(stream);
+                for (let i = 0; i < length; i++) {
+                    result[i] = yield* value.deserialize(stream);
+                }
+                return result;
             }
-            yield;
-        }
-        return result;
+        };
     }
-    SERDE.encode = encode;
-    function* decode(str) {
-        let result = '';
-        const seqs = str.match(sequence_regex) ?? [];
-        for (let i = 0; i < seqs.length; i++) {
-            const seq = seqs[i];
-            if (seq.startsWith('?') && encoded_regex.test(seq))
-                result += yield* b64_decode(seq.slice(1));
-            else {
-                result += seq;
+    PROTO.Array = Array;
+    function Tuple(...values) {
+        return {
+            *serialize(tuple, stream) {
+                for (let i = 0; i < values.length; i++) {
+                    yield* values[i].serialize(tuple[i], stream);
+                }
+            },
+            *deserialize(stream) {
+                const result = [];
+                for (let i = 0; i < values.length; i++) {
+                    result[i] = yield* values[i].deserialize(stream);
+                }
+                return result;
             }
-            yield;
-        }
-        return result;
+        };
     }
-    SERDE.decode = decode;
-})(SERDE || (SERDE = {}));
-var CRYPTO;
-(function (CRYPTO) {
-    CRYPTO.PRIME = 19893121;
-    CRYPTO.MOD = 341;
-    const to_HEX = (n) => n.toString(16).toUpperCase();
-    const to_NUM = (h) => parseInt(h, 16);
-    function* mod_exp(base, exp, mod) {
-        let result = 1;
-        let b = base % mod;
-        for (let e = exp; e > 0; e = Math.floor(e / 2)) {
-            if (e % 2 === 1) {
-                result = (result * b) % mod;
+    PROTO.Tuple = Tuple;
+    function Optional(value) {
+        return {
+            *serialize(optional, stream) {
+                yield* PROTO.Boolean.serialize(optional !== undefined, stream);
+                if (optional !== undefined) {
+                    yield* value.serialize(optional, stream);
+                }
+            },
+            *deserialize(stream) {
+                const defined = yield* PROTO.Boolean.deserialize(stream);
+                if (defined) {
+                    return yield* value.deserialize(stream);
+                }
+                return undefined;
             }
-            b = (b * b) % mod;
-            yield;
-        }
-        return result;
+        };
     }
-    function make_secret(mod = CRYPTO.MOD) {
-        return Math.floor(Math.random() * (mod - 1)) + 1;
+    PROTO.Optional = Optional;
+    function Map(key, value) {
+        return {
+            *serialize(map, stream) {
+                yield* PROTO.UVarInt32.serialize(map.size, stream);
+                for (const [k, v] of map.entries()) {
+                    yield* key.serialize(k, stream);
+                    yield* value.serialize(v, stream);
+                }
+            },
+            *deserialize(stream) {
+                const size = yield* PROTO.UVarInt32.deserialize(stream);
+                const result = new globalThis.Map();
+                for (let i = 0; i < size; i++) {
+                    const k = yield* key.deserialize(stream);
+                    const v = yield* value.deserialize(stream);
+                    result.set(k, v);
+                }
+                return result;
+            }
+        };
     }
-    CRYPTO.make_secret = make_secret;
-    function* make_public(secret, mod = CRYPTO.MOD, prime = CRYPTO.PRIME) {
-        return to_HEX(yield* mod_exp(mod, secret, prime));
+    PROTO.Map = Map;
+    function Set(value) {
+        return {
+            *serialize(set, stream) {
+                yield* PROTO.UVarInt32.serialize(set.size, stream);
+                for (const [_, v] of set.entries()) {
+                    yield* value.serialize(v, stream);
+                }
+            },
+            *deserialize(stream) {
+                const size = yield* PROTO.UVarInt32.deserialize(stream);
+                const result = new globalThis.Set();
+                for (let i = 0; i < size; i++) {
+                    const v = yield* value.deserialize(stream);
+                    result.add(v);
+                }
+                return result;
+            }
+        };
     }
-    CRYPTO.make_public = make_public;
-    function* make_shared(secret, other, prime = CRYPTO.PRIME) {
-        return to_HEX(yield* mod_exp(to_NUM(other), secret, prime));
-    }
-    CRYPTO.make_shared = make_shared;
-    function* encrypt(raw, key) {
-        let encrypted = '';
-        for (let i = 0; i < raw.length; i++) {
-            encrypted += String.fromCharCode(raw.charCodeAt(i) ^ key.charCodeAt(i % key.length));
-            yield;
-        }
-        return encrypted;
-    }
-    CRYPTO.encrypt = encrypt;
-    function* decrypt(encrypted, key) {
-        let decrypted = '';
-        for (let i = 0; i < encrypted.length; i++) {
-            decrypted += String.fromCharCode(encrypted.charCodeAt(i) ^ key.charCodeAt(i % key.length));
-            yield;
-        }
-        return decrypted;
-    }
-    CRYPTO.decrypt = decrypt;
-})(CRYPTO || (CRYPTO = {}));
+    PROTO.Set = Set;
+    PROTO.Endpoint = PROTO.String;
+    PROTO.Header = PROTO.Object({
+        guid: PROTO.String,
+        encoding: PROTO.String,
+        index: PROTO.UVarInt32,
+        final: PROTO.Boolean
+    });
+})(PROTO || (PROTO = {}));
 export var NET;
 (function (NET) {
     const FRAG_MAX = 2048;
-    const namespace_listeners = new Map();
+    const ENCODING = 'mcbe-ipc:v3';
+    const ENDPOINTS = new Map();
+    function* serialize(byte_queue, max_size = Infinity) {
+        const uint8array = byte_queue.to_uint8array();
+        const result = [];
+        let acc_str = '';
+        let acc_size = 0;
+        for (let i = 0; i < uint8array.length; i++) {
+            const char_code = uint8array[i] | (uint8array[++i] << 8);
+            const utf16_size = char_code <= 0x7f ? 1 : char_code <= 0x7ff ? 2 : char_code <= 0xffff ? 3 : 4;
+            const char_size = char_code > 0xff ? utf16_size : 2;
+            if (acc_size + char_size > max_size) {
+                result.push(acc_str);
+                acc_str = '';
+                acc_size = 0;
+            }
+            if (char_code > 0xff) {
+                acc_str += String.fromCharCode(char_code);
+                acc_size += utf16_size;
+            }
+            else {
+                acc_str += char_code.toString(16).padStart(2, '0').toUpperCase();
+                acc_size += 2;
+            }
+            yield;
+        }
+        result.push(acc_str);
+        return result;
+    }
+    NET.serialize = serialize;
+    function* deserialize(strings) {
+        const result = [];
+        for (let i = 0; i < strings.length; i++) {
+            const str = strings[i];
+            for (let j = 0; j < str.length; j++) {
+                const char_code = str.charCodeAt(j);
+                if (char_code <= 0xff) {
+                    const hex = str[j] + str[++j];
+                    const hex_code = parseInt(hex, 16);
+                    result.push(hex_code & 0xff);
+                    result.push(hex_code >> 8);
+                }
+                else {
+                    result.push(char_code & 0xff);
+                    result.push(char_code >> 8);
+                }
+                yield;
+            }
+            yield;
+        }
+        return PROTO.ByteQueue.from_uint8array(new Uint8Array(result));
+    }
+    NET.deserialize = deserialize;
     system.afterEvents.scriptEventReceive.subscribe(event => {
         system.runJob((function* () {
-            const ids = event.id.split(':');
-            const namespace = yield* SERDE.decode(ids[0]);
-            const listeners = namespace_listeners.get(namespace);
+            const [serialized_endpoint, serialized_header] = event.id.split(':');
+            const endpoint_stream = yield* PROTO.MIPS.deserialize(serialized_endpoint);
+            const endpoint = yield* PROTO.Endpoint.deserialize(endpoint_stream);
+            const listeners = ENDPOINTS.get(endpoint);
             if (event.sourceType === ScriptEventSource.Server && listeners) {
-                const payload = Payload.fromString(yield* SERDE.decode(ids[1]));
+                const header_stream = yield* PROTO.MIPS.deserialize(serialized_header);
+                const header = yield* PROTO.Header.deserialize(header_stream);
                 for (let i = 0; i < listeners.length; i++) {
-                    yield* listeners[i](payload, event.message);
+                    yield* listeners[i](header, event.message);
                 }
             }
         })());
     });
-    function create_listener(namespace, listener) {
-        let listeners = namespace_listeners.get(namespace);
+    function create_listener(endpoint, listener) {
+        let listeners = ENDPOINTS.get(endpoint);
         if (!listeners) {
             listeners = new Array();
-            namespace_listeners.set(namespace, listeners);
+            ENDPOINTS.set(endpoint, listeners);
         }
         listeners.push(listener);
         return () => {
@@ -419,21 +490,10 @@ export var NET;
             if (idx !== -1)
                 listeners.splice(idx, 1);
             if (listeners.length === 0) {
-                namespace_listeners.delete(namespace);
+                ENDPOINTS.delete(endpoint);
             }
         };
     }
-    let Payload;
-    (function (Payload) {
-        function toString(p) {
-            return JSON.stringify(p);
-        }
-        Payload.toString = toString;
-        function fromString(s) {
-            return JSON.parse(s);
-        }
-        Payload.fromString = fromString;
-    })(Payload || (Payload = {}));
     function generate_id() {
         const r = (Math.random() * 0x100000000) >>> 0;
         return ((r & 0xff).toString(16).padStart(2, '0') +
@@ -441,66 +501,93 @@ export var NET;
             ((r >> 16) & 0xff).toString(16).padStart(2, '0') +
             ((r >> 24) & 0xff).toString(16).padStart(2, '0')).toUpperCase();
     }
-    function* emit(namespace, event, channel, args) {
-        const id = generate_id();
-        const enc_namespace = yield* SERDE.encode(namespace);
-        const enc_args_str = yield* SERDE.encode(JSON.stringify(args));
-        const RUN = function* (payload, data_str) {
-            const enc_payload = yield* SERDE.encode(Payload.toString(payload));
-            world.getDimension('overworld').runCommand(`scriptevent ${enc_namespace}:${enc_payload} ${data_str}`);
+    function* emit(endpoint, serializer, value) {
+        const guid = generate_id();
+        const endpoint_stream = new PROTO.ByteQueue();
+        yield* PROTO.Endpoint.serialize(endpoint, endpoint_stream);
+        const serialized_endpoint = yield* PROTO.MIPS.serialize(endpoint_stream);
+        const RUN = function* (header, serialized_packet) {
+            const header_stream = new PROTO.ByteQueue();
+            yield* PROTO.Header.serialize(header, header_stream);
+            const serialized_header = yield* PROTO.MIPS.serialize(header_stream);
+            world
+                .getDimension('overworld')
+                .runCommand(`scriptevent ${serialized_endpoint}:${serialized_header} ${serialized_packet}`);
         };
-        let len = 0;
-        let str = '';
-        let str_size = 0;
-        for (let i = 0; i < enc_args_str.length; i++) {
-            const char = enc_args_str[i];
-            const code = char.charCodeAt(0);
-            const char_size = code <= 0x7f ? 1 : code <= 0x7ff ? 2 : code <= 0xffff ? 3 : 4;
-            if (str_size + char_size < FRAG_MAX) {
-                str += char;
-                str_size += char_size;
-            }
-            else {
-                yield* RUN([event, channel, id, len], str);
-                len++;
-                str = char;
-                str_size = char_size;
-            }
-            yield;
+        const packet_stream = new PROTO.ByteQueue();
+        yield* serializer.serialize(value, packet_stream);
+        const serialized_packets = yield* serialize(packet_stream, FRAG_MAX);
+        for (let i = 0; i < serialized_packets.length; i++) {
+            const serialized_packet = serialized_packets[i];
+            yield* RUN({ guid, encoding: ENCODING, index: i, final: i === serialized_packets.length - 1 }, serialized_packet);
         }
-        yield* RUN(len === 0 ? [event, channel, id] : [event, channel, id, len, 1], str);
     }
     NET.emit = emit;
-    function listen(namespace, event, channel, callback) {
+    function listen(endpoint, serializer, callback) {
         const buffer = new Map();
-        const listener = function* ([p_event, p_channel, p_id, p_index, p_final], data) {
-            if (p_event === event && p_channel === channel) {
-                if (p_index === undefined) {
-                    yield* callback(JSON.parse(yield* SERDE.decode(data)));
-                }
-                else {
-                    let fragment = buffer.get(p_id);
-                    if (!fragment) {
-                        fragment = { size: -1, data_strs: [], data_size: 0 };
-                        buffer.set(p_id, fragment);
-                    }
-                    if (p_final === 1)
-                        fragment.size = p_index + 1;
-                    fragment.data_strs[p_index] = data;
-                    fragment.data_size += p_index + 1;
-                    if (fragment.size !== -1 && fragment.data_size === (fragment.size * (fragment.size + 1)) / 2) {
-                        let full_str = '';
-                        for (let i = 0; i < fragment.data_strs.length; i++) {
-                            full_str += fragment.data_strs[i];
-                            yield;
-                        }
-                        yield* callback(JSON.parse(yield* SERDE.decode(full_str)));
-                        buffer.delete(p_id);
-                    }
-                }
+        const listener = function* (payload, serialized_packet) {
+            let fragment = buffer.get(payload.guid);
+            if (!fragment) {
+                fragment = { size: -1, serialized_packets: [], data_size: 0 };
+                buffer.set(payload.guid, fragment);
+            }
+            if (payload.final) {
+                fragment.size = payload.index + 1;
+            }
+            fragment.serialized_packets[payload.index] = serialized_packet;
+            fragment.data_size += payload.index + 1;
+            if (fragment.size !== -1 && fragment.data_size === (fragment.size * (fragment.size + 1)) / 2) {
+                const stream = yield* deserialize(fragment.serialized_packets);
+                const value = yield* serializer.deserialize(stream);
+                yield* callback(value);
+                buffer.delete(payload.guid);
             }
         };
-        return create_listener(namespace, listener);
+        return create_listener(endpoint, listener);
     }
     NET.listen = listen;
 })(NET || (NET = {}));
+export var IPC;
+(function (IPC) {
+    /** Sends a message with `args` to `channel` */
+    function send(channel, serializer, value) {
+        system.runJob(NET.emit(`ipc:${channel}:send`, serializer, value));
+    }
+    IPC.send = send;
+    /** Sends an `invoke` message through IPC, and expects a result asynchronously. */
+    function invoke(channel, serializer, value, deserializer) {
+        system.runJob(NET.emit(`ipc:${channel}:invoke`, serializer, value));
+        return new Promise(resolve => {
+            const terminate = NET.listen(`ipc:${channel}:handle`, deserializer, function* (value) {
+                resolve(value);
+                terminate();
+            });
+        });
+    }
+    IPC.invoke = invoke;
+    /** Listens to `channel`. When a new message arrives, `listener` will be called with `listener(args)`. */
+    function on(channel, deserializer, listener) {
+        return NET.listen(`ipc:${channel}:send`, deserializer, function* (value) {
+            listener(value);
+        });
+    }
+    IPC.on = on;
+    /** Listens to `channel` once. When a new message arrives, `listener` will be called with `listener(args)`, and then removed. */
+    function once(channel, deserializer, listener) {
+        const terminate = NET.listen(`ipc:${channel}:send`, deserializer, function* (value) {
+            listener(value);
+            terminate();
+        });
+        return terminate;
+    }
+    IPC.once = once;
+    /** Adds a handler for an `invoke` IPC. This handler will be called whenever `invoke(channel, ...args)` is called */
+    function handle(channel, deserializer, serializer, listener) {
+        return NET.listen(`ipc:${channel}:invoke`, deserializer, function* (value) {
+            const result = listener(value);
+            yield* NET.emit(`ipc:${channel}:handle`, serializer, result);
+        });
+    }
+    IPC.handle = handle;
+})(IPC || (IPC = {}));
+export default IPC;

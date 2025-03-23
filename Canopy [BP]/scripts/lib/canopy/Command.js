@@ -1,4 +1,3 @@
-import IPC from "../ipc/ipc";
 import { Commands } from "./Commands";
 import { Extensions } from "./Extensions";
 
@@ -84,16 +83,10 @@ class Command {
 	}
 	
 	runCallback(sender, args) {
-		if (this.#extension) {
-			// console.warn(`[Canopy] Sending ${this.#extensionName} command callback from ${sender?.name}: '${this.#name} ${JSON.stringify(args)}'`);
-			IPC.send(`canopyExtension:${this.#extension.getID()}:commandCallbackRequest`, { 
-				commandName: this.#name,
-				senderName: sender?.name,
-				args: args
-			});
-			return;
-		}
-		this.#callback(sender, args);
+		if (this.#extension)
+			this.#extension.runCommand(sender, this.#name, args);
+		else
+			this.#callback(sender, args);
 	}
 	
 	sendUsage(sender) {

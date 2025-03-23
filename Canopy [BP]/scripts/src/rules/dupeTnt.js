@@ -4,10 +4,10 @@ import { system, world } from '@minecraft/server';
 new Rule({
     category: 'Rules',
     identifier: 'dupeTnt',
-    description: { translate: 'rules.dupeTnt' },
+    description: { translate: 'rules.dupeTnt' }
 });
 
-let spawnedEntitiesThisTick = [];
+export let spawnedEntitiesThisTick = [];
 
 system.runInterval(() => {
     system.runTimeout(() => {
@@ -31,20 +31,13 @@ world.afterEvents.pistonActivate.subscribe((event) => {
     } catch {
         return 'Piston was removed';
     }
-    const attachedLocations = correctAttachedLocations(event.piston.getAttachedBlocksLocations(), pistonState, direction);
+    const attachedLocations = getAttachedLocationAfterMovement(event.piston.getAttachedBlocksLocations(), pistonState, direction);
     system.runTimeout(() => {
-        if (isOverlapping(spawnedEntitiesThisTick, attachedLocations)) {
-            for (let i = 0; i < attachedLocations.length; i++) {
-                const tntBlock = event.dimension.getBlock(attachedLocations[i]);
-                const tntEntity = getEntityAtLocation(spawnedEntitiesThisTick, attachedLocations[i]);
-                if (tntBlock && tntEntity)
-                    dupeTnt(tntBlock, tntEntity);
-            }
-        }
+        handleTntDuplication(attachedLocations, event);
     }, 4);
 });
 
-function correctAttachedLocations(attachedLocations, pistonState, direction) {
+function getAttachedLocationAfterMovement(attachedLocations, pistonState, direction) {
     const directionToOffsetExpandMap = {
         0: { x: 0, y: -1, z: 0 },
         1: { x: 0, y: 1, z: 0 },
@@ -54,8 +47,20 @@ function correctAttachedLocations(attachedLocations, pistonState, direction) {
         5: { x: -1, y: 0, z: 0 }
     };
     let offset = directionToOffsetExpandMap[direction];
-    if (pistonState === 'Retracting') offset = { x: -offset.x, y: -offset.y, z: -offset.z };
+    if (pistonState === 'Retracting')
+        offset = { x: -offset.x, y: -offset.y, z: -offset.z };
     return attachedLocations.map((location) => ({ x: location.x + offset.x, y: location.y + offset.y, z: location.z + offset.z }));
+}
+
+export function handleTntDuplication(attachedLocations, event) {
+    if (isOverlapping(spawnedEntitiesThisTick, attachedLocations)) {
+        for (let i = 0; i < attachedLocations.length; i++) {
+            const tntBlock = event.dimension.getBlock(attachedLocations[i]);
+            const tntEntity = getEntityAtLocation(spawnedEntitiesThisTick, attachedLocations[i]);
+            if (tntBlock && tntEntity)
+                dupeTnt(tntBlock, tntEntity);
+        }
+    }
 }
 
 function isOverlapping(entityList, locationList) {
@@ -78,7 +83,7 @@ function dupeTnt(block, tntEntity) {
         { x: 0, y: 0, z: -1 },
         { x: 0, y: 1, z: 0 },
         { x: 0, y: -1, z: 0 }
-    ]
+    ];
     const adjcentBlockIds = adjacentSpaces.map((adjacentSpace) => block.offset(adjacentSpace).typeId);
     if (adjcentBlockIds.includes('minecraft:noteblock')) {
         block.setType('minecraft:tnt');

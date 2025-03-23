@@ -15,14 +15,19 @@ vi.mock("@minecraft/server", () => ({
                 subscribe: vi.fn()
             }
         },
+        runJob: vi.fn(),
         runInterval: vi.fn(),
-        runTimeout: vi.fn(),
+        runTimeout: vi.fn()
     },
     MinecraftDimensionTypes: {
         overworld: "minecraft:overworld",
         nether: "minecraft:the_nether",
         theEnd: "minecraft:the_end"
     }
+}));
+
+vi.mock("@minecraft/server-ui", () => ({
+    ModalFormData: vi.fn()
 }));
 
 describe('healthCommand', () => {

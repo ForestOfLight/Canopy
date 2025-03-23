@@ -5,7 +5,7 @@ import { usedDurability, getRemainingDurability } from 'src/rules/durabilityNoti
 const rule = new Rule({
     category: 'Rules',
     identifier: 'durabilitySwap',
-    description: { translate: 'rules.durabilitySwap' },
+    description: { translate: 'rules.durabilitySwap' }
 });
 
 world.afterEvents.playerBreakBlock.subscribe((event) => durabilitySwap(event.player, event.itemStackBeforeBreak, event.itemStackAfterBreak));

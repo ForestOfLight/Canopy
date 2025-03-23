@@ -4,6 +4,7 @@ import { Rules } from '../../../../../Canopy [BP]/scripts/lib/canopy/Rules.js';
 import IPC from '../../../../../Canopy [BP]/scripts/lib/ipc/ipc.js';
 import { Extensions } from '../../../../../Canopy [BP]/scripts/lib/canopy/Extensions.js';
 import { Extension } from '../../../../../Canopy [BP]/scripts/lib/canopy/Extension.js';
+import { RuleValueSet } from '../../../../../Canopy [BP]/scripts/lib/canopy/extension.ipc.js';
 
 vi.mock('@minecraft/server', () => ({
     world: { 
@@ -11,7 +12,8 @@ vi.mock('@minecraft/server', () => ({
             chatSend: {
                 subscribe: vi.fn()
             }
-        }
+        },
+        setDynamicProperty: vi.fn()
     },
     system: {
         afterEvents: {
@@ -21,6 +23,10 @@ vi.mock('@minecraft/server', () => ({
         },
         runJob: vi.fn()
     }
+}));
+
+vi.mock("@minecraft/server-ui", () => ({
+    ModalFormData: vi.fn()
 }));
 
 describe('Rule', () => {
@@ -148,8 +154,9 @@ describe('Rule', () => {
     describe('getValue', () => {
         it('should return the value from the extension if it exists', async () => {
             const ipcInvokeMock = vi.spyOn(IPC, "invoke");
-            ipcInvokeMock.mockResolvedValue('{"test": "value"}');
-            expect(await Rules.get('test_rule').getValue()).toEqual({ test: 'value' });
+            ipcInvokeMock.mockResolvedValue({ value: {"test": "value"} });
+            const value = await Rules.get('test_rule').getValue();
+            expect(value).toEqual({ test: 'value' });
         });
 
         it.skip('should return the value from the world if it does not exist in the extension', async () => {
@@ -172,12 +179,41 @@ describe('Rule', () => {
             // Gametest DP
         });
 
+        it('should call onEnable if the value is true', () => {
+            const onEnableCallback = vi.fn();
+            const rule = new Rule({
+                category: 'test_category',
+                identifier: 'test_rule_2',
+                description: 'test_description',
+                contingentRules: [],
+                independentRules: [],
+                onEnableCallback: onEnableCallback
+            });
+            rule.setValue(true);
+            expect(onEnableCallback).toHaveBeenCalled();
+        });
+
+        it('should call onDisable if the value is false', () => {
+            const onDisableCallback = vi.fn();
+            const rule = new Rule({
+                category: 'test_category',
+                identifier: 'test_rule_2',
+                description: 'test_description',
+                contingentRules: [],
+                independentRules: [],
+                onDisableCallback: onDisableCallback
+            });
+            rule.setValue(false);
+            expect(onDisableCallback).toHaveBeenCalled();
+        });
+
         it('should should set the value in the extension if it exists', async () => {
             const ipcSendMock = vi.spyOn(IPC, "send");
             ipcSendMock.mockResolvedValue(true);
             await Rules.get('test_rule').setValue(true);
             expect(ipcSendMock).toHaveBeenCalledWith(
                 `canopyExtension:${Rules.get('test_rule').getExtension().getID()}:ruleValueSet`,
+                RuleValueSet,
                 { 
                     ruleID: 'test_rule',
                     value: true 
@@ -186,31 +222,35 @@ describe('Rule', () => {
         });
     });
 
-    describe('parseValue', () => {
-        it('should parse JSON strings to objects', () => {
-            expect(Rules.get('test_rule').parseValue('{"test": "value"}')).toEqual({ test: 'value' });
-            expect(Rules.get('test_rule').parseValue('["test", "value"]')).toEqual(['test', 'value']);
-            expect(Rules.get('test_rule').parseValue('true')).toBe(true);
-            expect(Rules.get('test_rule').parseValue('null')).toBeNull();
-            expect(Rules.get('test_rule').parseValue('1')).toBe(1);
-            expect(Rules.get('test_rule').parseValue('"test"')).toBe('test');
-            expect(Rules.get('test_rule').parseValue(1)).toBe(1);
+    describe('onEnable', () => {
+        it('should call the onEnable callback of the rule', () => {
+            const onEnableCallback = vi.fn();
+            const rule = new Rule({
+                category: 'test_category',
+                identifier: 'test_rule_2',
+                description: 'test_description',
+                contingentRules: [],
+                independentRules: [],
+                onEnableCallback: onEnableCallback
+            });
+            rule.onEnable();
+            expect(onEnableCallback).toHaveBeenCalled();
         });
-    
-        it('should return undefined if the value is \'undefined\'', () => {
-            expect(Rules.get('test_rule').parseValue('undefined')).toBeUndefined();
-        });
-    
-        it('should return NaN if the value is \'NaN\'', () => {
-            expect(Rules.get('test_rule').parseValue('NaN')).toBeNaN();
-        });
-    
-        it('should return null for invalid JSON strings', () => {
-            const warn = console.warn;
-            console.warn = vi.fn();
-            expect(Rules.get('test_rule').parseValue('invalid')).toBeNull();
-            expect(console.warn).toHaveBeenCalled();
-            console.warn = warn;
+    });
+
+    describe ('onDisable', () => {
+        it('should call the onDisable function of the rule', () => {
+            const onDisableCallback = vi.fn();
+            const rule = new Rule({
+                category: 'test_category',
+                identifier: 'test_rule_2',
+                description: 'test_description',
+                contingentRules: [],
+                independentRules: [],
+                onDisableCallback: onDisableCallback
+            });
+            rule.onDisable();
+            expect(onDisableCallback).toHaveBeenCalled();
         });
     });
 });

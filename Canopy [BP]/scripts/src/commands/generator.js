@@ -1,11 +1,13 @@
 import { Rule, Command } from "../../lib/canopy/Canopy";
-import GeneratorChannels from "../classes/GeneratorChannels";
+import generatorChannels from "../classes/GeneratorChannels";
 import { formatColorStr, broadcastActionBar } from "../../include/utils";
 
 new Rule({
     category: 'Rules',
     identifier: 'hopperGenerators',
-    description: { translate: 'rules.hopperGenerators' }
+    description: { translate: 'rules.hopperGenerators' },
+    onEnableCallback: () => generatorChannels.enable(),
+    onDisableCallback: () => generatorChannels.disable()
 });
 
 const cmd = new Command({
@@ -45,7 +47,7 @@ function generatorCommand(sender, args) {
         resetAll(sender);
     else if (argOne === 'realtime')
         queryAll(sender, { useRealTime: true });
-    else if (GeneratorChannels.isValidColor(argOne) && !argTwo)
+    else if (generatorChannels.isValidColor(argOne) && !argTwo)
         query(sender, argOne);
     else if (!argOne && !argTwo || argOne === 'all' && !argTwo)
         queryAll(sender);
@@ -53,30 +55,30 @@ function generatorCommand(sender, args) {
         query(sender, argOne, { useRealTime: true });
     else if (argOne && argTwo === 'reset')
         reset(sender, argOne);
-    else if (argOne && !GeneratorChannels.isValidColor(argOne))
+    else if (argOne && !generatorChannels.isValidColor(argOne))
         sender.sendMessage({ translate: 'commands.generator.channel.notfound', with: [argOne] });
     else
         cmd.sendUsage(sender);
 }
 
 function reset(sender, color) {
-    GeneratorChannels.resetCounts(color);
+    generatorChannels.resetCounts(color);
     sender.sendMessage({ translate: 'commands.generator.reset.single', with: [formatColorStr(color)] });
     broadcastActionBar({ translate: 'commands.generator.reset.single.actionbar', with: [sender.name, formatColorStr(color)]}, sender);
 }
 
 function resetAll(sender) {
-    GeneratorChannels.resetAllCounts();
+    generatorChannels.resetAllCounts();
     sender.sendMessage({ translate: 'commands.generator.reset.all' });
     broadcastActionBar({ translate: 'commands.generator.reset.all.actionbar', with: [sender.name] }, sender);
 }
 
 function query(sender, color, { useRealTime = false } = {}) {
-    sender.sendMessage(GeneratorChannels.getQueryOutput(color, useRealTime));
+    sender.sendMessage(generatorChannels.getQueryOutput(color, useRealTime));
 }
 
 function queryAll(sender, { useRealTime = false } = {}) {
-    sender?.sendMessage(GeneratorChannels.getAllQueryOutput(useRealTime));
+    sender?.sendMessage(generatorChannels.getAllQueryOutput(useRealTime));
 }
 
 export { query, queryAll };
