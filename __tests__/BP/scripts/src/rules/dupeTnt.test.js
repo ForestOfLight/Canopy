@@ -48,7 +48,7 @@ vi.mock('../../../../../Canopy [BP]/scripts/lib/canopy/Canopy', () => ({
 }));
 
 vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn(),
+    ModalFormData: vi.fn()
 }));
 
 describe('dupeTnt Rule', () => {
@@ -60,7 +60,7 @@ describe('dupeTnt Rule', () => {
         expect(Rule).toHaveBeenCalledWith({
             category: 'Rules',
             identifier: 'dupeTnt',
-            description: { translate: 'rules.dupeTnt' },
+            description: { translate: 'rules.dupeTnt' }
         });
     });
 
@@ -90,8 +90,8 @@ describe('dupeTnt Rule', () => {
         const event = {
             entity: {
                 typeId: 'minecraft:tnt',
-                location: { x: 0, y: 0, z: 0 },
-            },
+                location: { x: 0, y: 0, z: 0 }
+            }
         };
 
         Rules.getNativeValue.mockReturnValue(true);
@@ -105,16 +105,16 @@ describe('dupeTnt Rule', () => {
         const event = {
             block: {
                 permutation: {
-                    getState: vi.fn().mockReturnValue(0),
-                },
+                    getState: vi.fn().mockReturnValue(0)
+                }
             },
             piston: {
                 state: 'Retracting',
-                getAttachedBlocksLocations: vi.fn().mockReturnValue([{ x: 0, y: 0, z: 0 }]),
+                getAttachedBlocksLocations: vi.fn().mockReturnValue([{ x: 0, y: 0, z: 0 }])
             },
             dimension: {
-                getBlock: vi.fn().mockReturnValue({ typeId: 'minecraft:tnt' }),
-            },
+                getBlock: vi.fn().mockReturnValue({ typeId: 'minecraft:tnt' })
+            }
         };
 
         Rules.getNativeValue.mockReturnValue(true);
@@ -128,16 +128,16 @@ describe('dupeTnt Rule', () => {
         const event = {
             block: {
                 permutation: {
-                    getState: vi.fn().mockReturnValue(0),
-                },
+                    getState: vi.fn().mockReturnValue(0)
+                }
             },
             piston: {
                 state: 'Retracting',
-                getAttachedBlocksLocations: vi.fn().mockReturnValue([{ x: 0, y: 0, z: 0 }]),
+                getAttachedBlocksLocations: vi.fn().mockReturnValue([{ x: 0, y: 0, z: 0 }])
             },
             dimension: {
-                getBlock: vi.fn().mockReturnValue({ typeId: 'minecraft:tnt' }),
-            },
+                getBlock: vi.fn().mockReturnValue({ typeId: 'minecraft:tnt' })
+            }
         };
 
         Rules.getNativeValue.mockReturnValue(true);
