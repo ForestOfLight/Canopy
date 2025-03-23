@@ -9,7 +9,6 @@ const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 const gitignorePath = path.resolve(dirname, ".gitignore");
 
-/** @type {import('eslint').Linter.Config[]} */
 export default [
   {
     ignores: [

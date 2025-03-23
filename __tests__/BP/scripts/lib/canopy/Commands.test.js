@@ -223,7 +223,7 @@ describe('Commands', () => {
                 isAdminOnly: () => false, 
                 getContingentRules: () => ['rule1'],
                 getArgs: () => [
-                    { type: 'string|boolean|number|identifier', name: 'multiArg' },
+                    { type: 'string|boolean|number|identifier', name: 'multiArg' }
                 ],
                 runCallback: vi.fn() };
             Commands.register(command2);
@@ -237,7 +237,7 @@ describe('Commands', () => {
                 isAdminOnly: () => false, 
                 getContingentRules: () => ['rule1'],
                 getArgs: () => [
-                    { type: 'string|boolean|number|identifier', name: 'multiArg' },
+                    { type: 'string|boolean|number|identifier', name: 'multiArg' }
                 ],
                 runCallback: vi.fn() };
             Commands.register(command2);
@@ -251,7 +251,7 @@ describe('Commands', () => {
                 isAdminOnly: () => false, 
                 getContingentRules: () => ['rule1'],
                 getArgs: () => [
-                    { type: 'string|boolean|number|identifier', name: 'multiArg' },
+                    { type: 'string|boolean|number|identifier', name: 'multiArg' }
                 ],
                 runCallback: vi.fn() };
             Commands.register(command2);
@@ -265,7 +265,7 @@ describe('Commands', () => {
                 isAdminOnly: () => false, 
                 getContingentRules: () => ['rule1'],
                 getArgs: () => [
-                    { type: 'string|boolean|number|identifier', name: 'multiArg' },
+                    { type: 'string|boolean|number|identifier', name: 'multiArg' }
                 ],
                 runCallback: vi.fn() };
             Commands.register(command2);
