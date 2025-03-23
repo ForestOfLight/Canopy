@@ -23,12 +23,11 @@ const cmd = new Command({
 });
 
 world.afterEvents.entitySpawn.subscribe((event) => {
-    if (event.entity?.typeId !== 'minecraft:tnt') return;
+    if (event.entity?.typeId !== 'minecraft:tnt' || event.cause === 'Event') return;
     const fuseTimeProperty = world.getDynamicProperty('tntFuseTime');
     let fuseTime = 80;
     if (fuseTimeProperty !== undefined && Rules.getNativeValue('commandTntFuse'))
         fuseTime = fuseTimeProperty;
-
     if (fuseTime === 1) {
         event.entity.triggerEvent('canopy:explode');
     } else {
