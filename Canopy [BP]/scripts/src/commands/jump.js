@@ -3,7 +3,7 @@ import { Rule, Rules, Command } from "../../lib/canopy/Canopy";
 new Rule({
     category: 'Rules',
     identifier: 'commandJumpSurvival',
-    description: { translate: 'rules.commandJumpSurvival' },
+    description: { translate: 'rules.commandJumpSurvival' }
 });
 
 new Command({

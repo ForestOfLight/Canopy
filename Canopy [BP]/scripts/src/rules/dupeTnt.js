@@ -4,7 +4,7 @@ import { system, world } from '@minecraft/server';
 new Rule({
     category: 'Rules',
     identifier: 'dupeTnt',
-    description: { translate: 'rules.dupeTnt' },
+    description: { translate: 'rules.dupeTnt' }
 });
 
 export let spawnedEntitiesThisTick = [];

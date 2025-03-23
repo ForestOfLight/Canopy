@@ -7,7 +7,7 @@ const CURRENT_CONVERSIONS = {};
 new Rule({
     category: 'Rules',
     identifier: 'cauldronConcreteConversion',
-    description: { translate: 'rules.cauldronConcreteConversion' },
+    description: { translate: 'rules.cauldronConcreteConversion' }
 });
 
 world.afterEvents.entitySpawn.subscribe((event) => {

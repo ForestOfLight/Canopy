@@ -4,7 +4,7 @@ import { Rule, Rules } from "../../lib/canopy/Canopy";
 new Rule({
     category: 'Rules',
     identifier: 'creativeOneHitKill',
-    description: { translate: 'rules.creativeOneHitKill' },
+    description: { translate: 'rules.creativeOneHitKill' }
 });
 
 world.afterEvents.entityHitEntity.subscribe((event) => {

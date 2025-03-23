@@ -6,7 +6,7 @@ new Command({
     description: { translate: 'commands.sit' },
     usage: 'sit',
     args: [
-        { type: 'number', name: 'distance' },
+        { type: 'number', name: 'distance' }
     ],
     callback: sitCommand,
     contingentRules: ['playerSit']

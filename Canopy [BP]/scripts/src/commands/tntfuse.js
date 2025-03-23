@@ -41,15 +41,17 @@ world.afterEvents.entitySpawn.subscribe((event) => {
 
 function tntfuseCommand(sender, args) {
     let { ticks } = args;
-    if (ticks === null) {
-        return cmd.sendUsage(sender);
-    } else if (ticks === 'reset') {
+    if (ticks === 'reset') {
         ticks = 80;
         sender.sendMessage({ translate: 'commands.tntfuse.reset.success' });
-    } else if (!isNumeric(ticks) || ticks < MIN_FUSE_TICKS || ticks > MAX_FUSE_TICKS) {
-        return sender.sendMessage({ translate: 'commands.tntfuse.set.fail', with: [String(ticks), String(MIN_FUSE_TICKS), String(MAX_FUSE_TICKS)] });
-    } else {
+    } else if (isNumeric(ticks) && ticks >= MIN_FUSE_TICKS && ticks <= MAX_FUSE_TICKS) {
         sender.sendMessage({ translate: 'commands.tntfuse.set.success', with: [String(ticks)] });
+    } else if (!isNumeric(ticks) || ticks < MIN_FUSE_TICKS || ticks > MAX_FUSE_TICKS) {
+        sender.sendMessage({ translate: 'commands.tntfuse.set.fail', with: [String(ticks), String(MIN_FUSE_TICKS), String(MAX_FUSE_TICKS)] });
+        return;
+    } else {
+        cmd.sendUsage(sender);
+        return;
     }
     world.setDynamicProperty('tntFuseTime', ticks);
 }

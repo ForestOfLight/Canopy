@@ -49,7 +49,7 @@ class InfoDisplay {
 			new SimulationMap(player, 12),
 			new LookingAt(player, 13),
 			new SignalStrength(player, 13),
-			new PeekInventory(player, 14),
+			new PeekInventory(player, 14)
 		];
 		playerToInfoDisplayMap[player.id] = this;
 	}

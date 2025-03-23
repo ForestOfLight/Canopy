@@ -6,7 +6,7 @@ import { Profiler } from "../classes/Profiler";
 new Rule({
     category: 'Rules',
     identifier: 'commandTick',
-    description: { translate: 'rules.commandTick' },
+    description: { translate: 'rules.commandTick' }
 });
 
 const cmd = new Command({

@@ -26,7 +26,7 @@ const cmd = new Command({
         { type: 'number|string', name: 'argOne' },
         { type: 'string|number', name: 'argTwo' },
         { type: 'number', name: 'argThree' },
-        { type: 'number', name: 'argFour' },
+        { type: 'number', name: 'argFour' }
     ],
     callback: simmapCommand,
     helpEntries: [
@@ -61,7 +61,7 @@ function handleInfoDisplayConfig(sender, args) {
     } else if (argTwo === 'here') {
         resetLocation(sender);
     } else {
-        return cmd.sendUsage(sender);
+        cmd.sendUsage(sender);
     }
 }
 
@@ -119,7 +119,7 @@ function handleChatCommand(sender, args) {
     } else if (isNumeric(argOne) && argTwo === null) {
         printLoadedChunks(sender, dimensionLocation, argOne);
     } else if (argOne !== null && argTwo !== null && argThree === null) {
-        return cmd.sendUsage(sender);
+        cmd.sendUsage(sender);
     } else if (isNumeric(argOne) && argTwo !== null && argThree !== null && argFour !== null) {
         dimensionLocation.dimension = world.getDimension(validDimensions[argTwo]);
         dimensionLocation.location = { x: argThree, z: argFour };
@@ -129,7 +129,7 @@ function handleChatCommand(sender, args) {
         dimensionLocation.location = { x: argTwo, z: argThree };
         printLoadedChunks(sender, dimensionLocation, DEFAULT_CHUNK_DISTANCE);
     } else {
-        return cmd.sendUsage(sender);
+        cmd.sendUsage(sender);
     }
 }
 

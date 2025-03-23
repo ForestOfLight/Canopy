@@ -6,7 +6,7 @@ import DirectionStateFinder from 'src/classes/DirectionState';
 new Rule({
     category: 'Rules',
     identifier: 'flippinArrows',
-    description: { translate: 'rules.flippinArrows' },
+    description: { translate: 'rules.flippinArrows' }
 });
 
 const WAIT_TIME_BETWEEN_USE = 5; // in ticks

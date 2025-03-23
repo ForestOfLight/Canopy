@@ -6,7 +6,7 @@ const DROP_CHANCE = 0.01;
 new Rule({
     category: 'Rules',
     identifier: 'renewableElytra',
-    description: { translate: 'rules.renewableElytra' },
+    description: { translate: 'rules.renewableElytra' }
 });
 
 world.afterEvents.entityDie.subscribe((event) => {

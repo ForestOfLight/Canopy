@@ -137,7 +137,7 @@ describe('Commands', () => {
                     { type: 'number', name: 'numArg' },
                     { type: 'identifier', name: 'entityArg' },
                     { type: 'array', name: 'arrayArg' },
-                    { type: 'player', name: 'playerArg' },
+                    { type: 'player', name: 'playerArg' }
                 ],
                 runCallback: vi.fn() };
             sender = { sendMessage: vi.fn() };

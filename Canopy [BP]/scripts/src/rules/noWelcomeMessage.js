@@ -5,7 +5,7 @@ import { PACK_VERSION } from "../../constants";
 new Rule({
     category: 'Rules',
     identifier: 'noWelcomeMessage',
-    description: { translate: 'rules.noWelcomeMessage' },
+    description: { translate: 'rules.noWelcomeMessage' }
 });
 
 const hasShownWelcome = {};

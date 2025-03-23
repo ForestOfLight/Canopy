@@ -18,8 +18,10 @@ const cmd = new Command({
 function entityDensityCommand(sender, args) {
     const firstArg = args.firstArg;
     let gridSize = args.gridSize;
-    if (firstArg === null)
-        return cmd.sendUsage(sender);
+    if (firstArg === null) {
+        cmd.sendUsage(sender);
+        return;
+    }
     const { validDimensionId, parsedGridSize, hasNoErrors } = parseArgs(sender, firstArg, gridSize);
     if (hasNoErrors === false)
         return;
@@ -28,13 +30,15 @@ function entityDensityCommand(sender, args) {
     
     printDimensionEntities(sender);
     const denseAreas = findDenseAreas(validDimensionId, gridSize, NUM_RESULTS);
-    if (denseAreas.length === 0)
-        return sender.sendMessage({ translate: 'commands.entitydensity.fail.noentities', with: [validDimensionId] });
+    if (denseAreas.length === 0) {
+        sender.sendMessage({ translate: 'commands.entitydensity.fail.noentities', with: [validDimensionId] });
+        return;
+    }
 
     const message = { rawtext: [{ translate: 'commands.entitydensity.success.header', with: [validDimensionId, String(gridSize), String(gridSize)] }] };
     denseAreas.forEach(area => {
         message.rawtext.push({ text: '\n' });
-        message.rawtext.push(formatAreaMessage(area))
+        message.rawtext.push(formatAreaMessage(area));
     });
     sender.sendMessage(message);
 }
@@ -51,7 +55,7 @@ function parseArgs(sender, firstArg, gridSize) {
         'nether': 'nether',
         'e': 'the_end',
         'end': 'the_end',
-        'the_end': 'the_end',
+        'the_end': 'the_end'
     };
 
     if (isString(firstArg)) {

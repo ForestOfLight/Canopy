@@ -7,16 +7,15 @@ const cmd = new Command({
     usage: 'loop <times> <"command to run">',
     args: [
         { type: 'number', name: 'times' },
-        { type: 'string', name: 'command' },
+        { type: 'string', name: 'command' }
     ],
-    callback: loopCommand,
+    callback: loopCommand
 })
 
 function loopCommand(sender, args) {
     const { times, command } = args;
     if (times === null || command === null)
         return cmd.sendUsage(sender);
-
     loop(times, command, sender);
 }
 

@@ -64,7 +64,7 @@ vi.mock("@minecraft/server", () => ({
 }));
 
 vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn(),
+    ModalFormData: vi.fn()
 }));
 
 describe('playerSit', () => {

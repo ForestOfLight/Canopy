@@ -4,8 +4,10 @@ import { broadcastActionBar, getScriptEventSourceName, isNumeric } from "../../.
 
 system.afterEvents.scriptEventReceive.subscribe((event) => {
     if (event.id !== "canopy:tick") return;
-    if (!Rules.getNativeValue('commandTick')) 
-        return broadcastActionBar({ translate: 'rules.generic.blocked', with: ['commandTick'] });
+    if (!Rules.getNativeValue('commandTick')) {
+        broadcastActionBar({ translate: 'rules.generic.blocked', with: ['commandTick'] });
+        return;
+    }
     const message = event.message;
     const args = message.split(' ');
     const sourceName = getScriptEventSourceName(event);

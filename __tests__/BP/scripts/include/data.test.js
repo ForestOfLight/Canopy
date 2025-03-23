@@ -14,7 +14,7 @@ vi.mock('@minecraft/server', {
 });
 
 vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn(),
+    ModalFormData: vi.fn()
 }));
 
 const bedrockSamplesRawUrl = `https://raw.githubusercontent.com/Mojang/bedrock-samples/refs/tags/v${MC_VERSION}/behavior_pack/spawn_rules/`;
