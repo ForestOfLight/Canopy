@@ -9,6 +9,27 @@ vi.mock("@minecraft/server", () => ({
     ItemComponentTypes: {
         Durability: 'durability',
         Enchantable: 'enchantable'
+    },
+    system: {
+        afterEvents: {
+            scriptEventReceive: {
+                subscribe: vi.fn()
+            }
+        },
+        runJob: vi.fn(),
+        currentTick: (Date.now() / 50),
+        runInterval: vi.fn((callback, interval) => {
+            const intervalId = setInterval(callback, interval * 50);
+            return {
+                clear: () => clearInterval(intervalId)
+            };
+        }),
+        clearRun: vi.fn((runner) => {
+            runner.clear();
+        }),
+        run: vi.fn((callback) => {
+            callback();
+        })
     }
 }));
 

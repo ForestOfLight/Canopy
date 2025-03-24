@@ -19,6 +19,9 @@ vi.mock("@minecraft/server", () => ({
         }),
         clearRun: vi.fn((runner) => {
             runner.clear();
+        }),
+        run: vi.fn((callback) => {
+            callback();
         })
     },
     world: {

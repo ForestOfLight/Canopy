@@ -83,7 +83,7 @@ describe('playerSit', () => {
     });
 
     test('should do nothing when rule is not enabled', () => {
-        const onPlayerStartSneakSpy = vi.spyOn(playerSit, 'onPlayerStartSneak');
+        const onPlayerStartSneakSpy = vi.spyOn(playerSit, 'onPlayerStartSneakBound');
         playerSit.setValue(true);
         playerSit.setValue(false);
         playerStartSneakEvent.sendEvents();
@@ -91,7 +91,7 @@ describe('playerSit', () => {
     });
 
     test('should process rule when it is enabled', () => {
-        const onPlayerStartSneakSpy = vi.spyOn(playerSit, 'onPlayerStartSneak');
+        const onPlayerStartSneakSpy = vi.spyOn(playerSit, 'onPlayerStartSneakBound');
         playerSit.setValue(true);
         playerStartSneakEvent.playersSneakingThisTick.push({ id: 'player1' });
         playerStartSneakEvent.sendEvents();
