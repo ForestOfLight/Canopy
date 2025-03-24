@@ -9,14 +9,16 @@ class PlayerSit extends GlobalRule {
     sneakCount = SNEAK_COUNT;
     sneakSpeedMs = 4*50;
     playerSneaks = {};
+    onPlayerStartSneakBound;
 
     constructor() {
         super({
             identifier: ruleID,
             description: { translate: `rules.${ruleID}`, with: [SNEAK_COUNT.toString()] },
-            onEnableCallback: () => playerStartSneakEvent.subscribe(this.onPlayerStartSneak.bind(this)),
-            onDisableCallback: () => playerStartSneakEvent.unsubscribe(this.onPlayerStartSneak.bind(this))
+            onEnableCallback: () => playerStartSneakEvent.subscribe(this.onPlayerStartSneakBound),
+            onDisableCallback: () => playerStartSneakEvent.unsubscribe(this.onPlayerStartSneakBound)
         });
+        this.onPlayerStartSneakBound = this.onPlayerStartSneak.bind(this);
         this.startEntityCleanup();
     }
 

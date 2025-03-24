@@ -1,6 +1,6 @@
 import { Command } from "../../lib/canopy/Canopy";
-import { titleCase, getRaycastResults, getClosestTarget, parseName, stringifyLocation, forceShow } from "../../include/utils";
-import { ChestFormData } from "../../lib/chestui/forms.js"
+import { getRaycastResults, getClosestTarget, stringifyLocation } from "../../include/utils";
+import { InventoryUI } from "../classes/InventoryUI";
 
 const MAX_DISTANCE = 6*16;
 const currentQuery = {};
@@ -22,10 +22,9 @@ function peekCommand(sender, args) {
     updateQueryMap(sender, itemQuery);
     const target = getTarget(sender);
     if (!target) return;
-    const inventory = getInventory(sender, target);
-    if (!inventory) return;
 
-    showInventoryUI(sender, target, inventory);
+    const invUI = new InventoryUI(target);
+    showUI(sender, target, invUI);
 }
 
 function updateQueryMap(sender, itemQuery) {
@@ -45,72 +44,20 @@ function getTarget(sender) {
     const {blockRayResult, entityRayResult} = getRaycastResults(sender, MAX_DISTANCE);
     if (!blockRayResult && !entityRayResult[0])
         return sender.sendMessage({ translate: 'generic.target.notfound' });
-    const targetEntity = getClosestTarget(sender, blockRayResult, entityRayResult);
-    const targetData = {
-        name: parseName(targetEntity),
-        entity: targetEntity
-    };
-    return targetData;
+    return getClosestTarget(sender, blockRayResult, entityRayResult);
 }
 
-function getInventory(sender, target) {
-    let inventory;
+function showUI(sender, target, invUI) {
     try {
-        inventory = target.entity.getComponent('inventory');
-    } catch {
-        return sender.sendMessage({ translate: 'commands.peek.fail.unloaded', with: [stringifyLocation(target.entity.location, 0)] });
+        invUI.show(sender);
+    } catch (error) {
+        if (error.message.includes('entity may be unloaded or removed'))
+            sender.sendMessage({ translate: 'commands.peek.fail.unloaded', with: [stringifyLocation(target.entity.location, 0)] });
+        else if (error.message.includes('no inventory component found'))
+            sender.sendMessage({ translate: 'commands.peek.fail.noinventory', with: [target.name, stringifyLocation(target.entity.location, 0)] });
+        else
+            new Error(`[Canopy] Error showing inventory UI:`, { cause: error });
     }
-    if (!inventory)
-        return sender.sendMessage({ translate: 'commands.peek.fail.noinventory', with: [target.name, stringifyLocation(target.entity.location, 0)] });
-    return inventory;
-}
-
-export function showInventoryUI(sender, target, inventory) {
-    forceShow(sender, buildInventoryUI(target, inventory));
-}
-
-function buildInventoryUI(target, inventory) {
-    const numSlots = inventory.container.size;
-    const form = new ChestFormData(numSlots);
-    form.title(formatContainerName(target.name));
-    for (let slotNum = 0; slotNum < numSlots; slotNum++) {
-        const itemStack = inventory.container.getItem(slotNum);
-        if (!itemStack) continue;
-        // if (itemQuery && itemName.includes(itemQuery)) {
-            // format it differently
-        // } else {
-        const itemName = formatItemName(itemStack);
-        const itemDesc = formatItemDescription(itemStack);
-        let durabilityRatio = undefined;
-        const durabilityComponent = itemStack.getComponent('durability');
-        if (durabilityComponent && durabilityComponent.damage !== 0)
-            durabilityRatio = (durabilityComponent.maxDurability - durabilityComponent.damage) / durabilityComponent.maxDurability * 100;
-        const isEnchanted = itemStack.getComponent('enchantable')?.getEnchantments().length > 0;
-        form.button(slotNum, itemName, itemDesc, itemStack.typeId, itemStack.amount, durabilityRatio, isEnchanted);
-        // }
-    }
-    return form;
-}
-
-function formatContainerName(name) {
-    return titleCase(name.replace('minecraft:', ''));
-}
-
-function formatItemName(itemStack) {
-    if (itemStack.nameTag)
-        return `§o${itemStack.nameTag}`;
-    return titleCase(itemStack.typeId.replace('minecraft:', ''));
-}
-
-function formatItemDescription(itemStack) {
-    const enchantments = itemStack.getComponent('enchantable')?.getEnchantments();
-    if (!enchantments)
-        return [];
-    const itemDesc = enchantments.map(enchantment => {
-        const enchantmentName = titleCase(enchantment.type.id.replace('minecraft:', ''));
-        return `§7${enchantmentName} ${enchantment.level}`;
-    });
-    return itemDesc;
 }
 
 export { currentQuery };

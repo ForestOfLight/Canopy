@@ -110,7 +110,7 @@ describe('playerSit', () => {
             isOnGround: true, 
             location: { x: 0, y: 0, z: 0 }, 
             getRotation: () => ({ x: 0, y: 0 }), 
-            dimension: { spawnEntity: () => rideableEntity } 
+            dimension: { spawnEntity: () => rideableEntity }
         };
         for (let i = 0; i < playerSit.sneakCount; i++) {
             vi.advanceTimersByTime(playerSit.sneakSpeedMs - 1);

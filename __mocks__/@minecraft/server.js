@@ -6,3 +6,4 @@ export const ScriptEventSource = {};
 export const InputButton = {};
 export const ButtonState = {};
 export const EntityComponentTypes = {};
+export const ItemComponentTypes = {};
