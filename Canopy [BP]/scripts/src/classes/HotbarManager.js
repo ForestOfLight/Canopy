@@ -5,7 +5,7 @@ class HotbarManager {
         this.player = player;
         const tableName = 'bar' + player.id.toString().substr(0, 9);
         this.itemDatabase = new SRCItemDatabase(tableName);
-        this.lastLoadedHotbar = this.#getLastLoadedHotbar();
+        this.lastLoadedHotbar = this.getLastLoadedHotbar();
     }
 
     getActiveHotbarItems() {
@@ -21,7 +21,7 @@ class HotbarManager {
     }
 
     saveHotbar() {
-        const index = this.#getLastLoadedHotbar();
+        const index = this.getLastLoadedHotbar();
         const items = this.getActiveHotbarItems().map(item => ({ ...item, key: `${index}-${item.key}` }));
         this.itemDatabase.setMany(items);
         for (let slotIndex = 0; slotIndex < 9; slotIndex++) {
@@ -51,7 +51,7 @@ class HotbarManager {
         return output;
     }
 
-    #getLastLoadedHotbar() {
+    getLastLoadedHotbar() {
         const lastLoadedHotbar = this.player.getDynamicProperty('lastLoadedHotbar');
         if (lastLoadedHotbar === undefined) 
             return 0;
