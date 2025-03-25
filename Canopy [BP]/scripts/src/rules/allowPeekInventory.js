@@ -15,13 +15,11 @@ class AllowPeekInventory extends GlobalRule {
     }
 
     subscribeToEvent() {
-        console.warn('[Canopy] AllowPeekInventory rule is enabled. Players can peek inventories using a spyglass.');
         world.beforeEvents.playerInteractWithBlock.subscribe(this.onPlayerInteractionBound);
         world.beforeEvents.playerInteractWithEntity.subscribe(this.onPlayerInteractionBound);
     }
 
     unsubscribeFromEvent() {
-        console.warn('[Canopy] AllowPeekInventory rule is disabled.');
         world.beforeEvents.playerInteractWithBlock.unsubscribe(this.onPlayerInteractionBound);
         world.beforeEvents.playerInteractWithEntity.unsubscribe(this.onPlayerInteractionBound);
     }
