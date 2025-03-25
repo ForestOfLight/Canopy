@@ -91,8 +91,11 @@ async function updateRule(sender, ruleID, enable) {
 }
 
 async function updateRules(sender, ruleIDs, enable) {
-    for (const ruleID of ruleIDs)
-        await updateRule(sender, ruleID, enable);
+    for (const ruleID of ruleIDs) {
+        await updateRule(sender, ruleID, enable).catch(error => {
+            console.warn(`Error updating rule ${ruleID}: ${error.message}`);
+        });
+    }
 }
 
 async function openMenu(sender) {
@@ -122,8 +125,10 @@ async function updateChangedValues(sender, formValues) {
     const rules = Rules.getByCategory("Rules").sort((a, b) => a.getID().localeCompare(b.getID()));
     for (let i = 0; i < rules.length; i++) {
         const rule = rules[i];
-        if (await rule.getValue() !== formValues[i]) 
-            await handleRuleChange(sender, rule.getID(), formValues[i]);
-        
+        if (await rule.getValue() !== formValues[i]) {
+            await handleRuleChange(sender, rule.getID(), formValues[i]).catch(error => {
+                console.warn(`Error updating rule ${rule.getID()}: ${error.message}`);
+            });
+        }
     }
 }
