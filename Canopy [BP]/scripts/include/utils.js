@@ -260,5 +260,5 @@ export async function forceShow(player, form, { timeout = Infinity, showBusyMess
         if (response.cancelationReason !== FormCancelationReason.UserBusy)
             return response;
     }
-	player.sendMessage({ translate: 'commands.canopy.menu.timeout', with: [String(timeout)] });
+	throw new Error({ translate: 'commands.canopy.menu.timeout', with: [String(timeout)] });
 };
