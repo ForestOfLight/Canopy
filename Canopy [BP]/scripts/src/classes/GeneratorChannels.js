@@ -1,5 +1,6 @@
 import ItemCounterChannels from "./ItemCounterChannels.js";
 import GeneratorChannel from "./GeneratorChannel";
+import { world } from "@minecraft/server";
 
 class GeneratorChannels extends ItemCounterChannels {
     constructor() {
@@ -35,6 +36,9 @@ class GeneratorChannels extends ItemCounterChannels {
     }
 }
 
-const generatorChannels = new GeneratorChannels();
+let generatorChannels;
+world.afterEvents.worldLoad.subscribe(() => {
+    generatorChannels = new GeneratorChannels();
+});
 
-export default generatorChannels;
+export { generatorChannels };

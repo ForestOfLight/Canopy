@@ -1,7 +1,7 @@
 import { system } from "@minecraft/server";
 import { getScriptEventSourceName, broadcastActionBar } from "../../../include/utils";
-import CounterChannels from "../../classes/CounterChannels";
-import GeneratorChannels from "../../classes/GeneratorChannels";
+import { counterChannels } from "../../classes/CounterChannels";
+import { generatorChannels } from "../../classes/GeneratorChannels";
 import { worldSpawns } from "../../commands/spawn";
 
 system.afterEvents.scriptEventReceive.subscribe((event) => {
@@ -9,7 +9,7 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
     const sourceName = getScriptEventSourceName(event);
     if (worldSpawns !== null)
         worldSpawns.reset();
-    CounterChannels.resetAllCounts();
-    GeneratorChannels.resetAllCounts();
+    counterChannels.resetAllCounts();
+    generatorChannels.resetAllCounts();
     broadcastActionBar({ translate: 'commands.resettest.success.actionbar', with: [sourceName] });
 });

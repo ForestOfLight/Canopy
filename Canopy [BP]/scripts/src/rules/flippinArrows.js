@@ -1,7 +1,7 @@
 import { Rule, Rules } from "../../lib/canopy/Canopy";
 import { system, world, StructureMirrorAxis, BlockPistonState, EquipmentSlot } from "@minecraft/server";
-import BlockRotator from 'src/classes/BlockRotator';
-import DirectionStateFinder from 'src/classes/DirectionState';
+import BlockRotator from "../classes/BlockRotator";
+import DirectionStateFinder from "../classes/DirectionState";
 
 new Rule({
     category: 'Rules',
@@ -23,7 +23,6 @@ system.runInterval(() => {
     previousBlocks.shift();
     if (previousBlocks.length < WAIT_TIME_BETWEEN_USE) 
         previousBlocks.push(null);
-    
 });
 
 world.afterEvents.playerPlaceBlock.subscribe((event) => {

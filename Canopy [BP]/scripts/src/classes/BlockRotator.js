@@ -88,7 +88,6 @@ world.afterEvents.worldLoad.subscribe(() => {
     world.structureManager.getWorldStructureIds().forEach(id => {
         if (id.startsWith(BlockRotator.idPrefix)) 
             world.structureManager.delete(id);
-        
     });
 });
 

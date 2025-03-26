@@ -1,40 +1,53 @@
-import { Rule, Rules } from "lib/canopy/Canopy";
+import { Rule } from "lib/canopy/Canopy";
 import { system, world, DimensionTypes, ItemStack, FluidType, BlockComponentTypes } from "@minecraft/server";
 
 const CONVERSION_TIME = 20*7;
 const CURRENT_CONVERSIONS = {};
 
+let runner;
+const onEntitySpawnBound = onEntitySpawn.bind(this);
+const onEntityRemoveBound = onEntityRemove.bind(this);
 new Rule({
     category: 'Rules',
     identifier: 'cauldronConcreteConversion',
-    description: { translate: 'rules.cauldronConcreteConversion' }
+    description: { translate: 'rules.cauldronConcreteConversion' },
+    onEnableCallback: () => {
+        runner = system.runInterval(onTick.bind(this));
+        world.afterEvents.entitySpawn.subscribe(onEntitySpawnBound);
+        world.afterEvents.entityRemove.subscribe(onEntityRemoveBound);
+    },
+    onDisableCallback: () => {
+        system.clearRun(runner);
+        world.afterEvents.entitySpawn.unsubscribe(onEntitySpawnBound);
+        world.afterEvents.entityRemove.unsubscribe(onEntityRemoveBound);
+        for (const id in CURRENT_CONVERSIONS) {
+            delete CURRENT_CONVERSIONS[id];
+        }
+    }
 });
 
-world.afterEvents.entitySpawn.subscribe((event) => {
-    if (!Rules.getNativeValue('cauldronConcreteConversion') || event.entity?.typeId !== "minecraft:item" || !event.entity.hasComponent('item')) return;
+function onEntitySpawn(event) {
+    if (!event.entity.isValid || event.entity?.typeId !== "minecraft:item" || !event.entity.hasComponent('item')) return;
     const itemStack = event.entity.getComponent('item').itemStack;
     if (itemStack && itemStack.typeId.includes('concrete_powder')) 
         event.entity.addTag('concrete_powder');
-});
+}
 
-world.afterEvents.entityRemove.subscribe((event) => {
+function onEntityRemove(event) {
     if (CURRENT_CONVERSIONS[event.removedEntityId] !== undefined) 
         delete CURRENT_CONVERSIONS[event.removedEntityId];
-    
-});
+}
 
-system.runInterval(() => {
-    if (!Rules.getNativeValue('cauldronConcreteConversion')) return;
+function onTick() {
     DimensionTypes.getAll().forEach((dimensionType) => {
         const dimension = world.getDimension(dimensionType.typeId);
         const concretePowderItems = dimension.getEntities({ type: 'minecraft:item', tags: ['concrete_powder'] });
         for (const itemEntity of concretePowderItems) {
             if (isInWaterCauldron(dimension, itemEntity) && isDoneConverting(itemEntity)) 
                 convertToConcrete(dimension, itemEntity);
-            
         }
     });
-});
+}
 
 function isInWaterCauldron(dimension, itemEntity) {
     const block = dimension.getBlock(itemEntity.location);

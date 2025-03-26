@@ -1,5 +1,5 @@
 import { Extension } from "./Extension";
-import IPC from "../ipc/ipc";
+import IPC from "../MCBE-IPC/ipc";
 import { Ready, RegisterExtension } from "./extension.ipc";
 
 class Extensions {
