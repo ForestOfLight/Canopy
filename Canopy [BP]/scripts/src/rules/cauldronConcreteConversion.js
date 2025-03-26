@@ -20,9 +20,9 @@ new Rule({
         system.clearRun(runner);
         world.afterEvents.entitySpawn.unsubscribe(onEntitySpawnBound);
         world.afterEvents.entityRemove.unsubscribe(onEntityRemoveBound);
-        for (const id in CURRENT_CONVERSIONS) {
+        for (const id in CURRENT_CONVERSIONS) 
             delete CURRENT_CONVERSIONS[id];
-        }
+        
     }
 });
 
