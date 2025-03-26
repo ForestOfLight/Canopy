@@ -1,5 +1,5 @@
 import { Rule, Rules } from "lib/canopy/Canopy";
-import { system, world, DimensionTypes, ItemStack, FluidType } from "@minecraft/server";
+import { system, world, DimensionTypes, ItemStack, FluidType, BlockComponentTypes } from "@minecraft/server";
 
 const CONVERSION_TIME = 20*7;
 const CURRENT_CONVERSIONS = {};
@@ -40,7 +40,7 @@ function isInWaterCauldron(dimension, itemEntity) {
     const block = dimension.getBlock(itemEntity.location);
     if (block?.typeId !== 'minecraft:cauldron') 
         return false;
-    const fluidContainerComponent = block.getComponent('fluidContainer');
+    const fluidContainerComponent = block.getComponent(BlockComponentTypes.FluidContainer);
     if (fluidContainerComponent.getFluidType() === FluidType.Water && fluidContainerComponent?.fillLevel === 6)
         return true;
 }

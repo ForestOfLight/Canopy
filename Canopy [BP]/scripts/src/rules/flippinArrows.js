@@ -34,15 +34,15 @@ world.afterEvents.playerPlaceBlock.subscribe((event) => {
     if (offhandStack?.typeId !== 'minecraft:arrow') return;
     
     const block = event.block;
-    if (flipOnPlaceIds.includes(block.typeId.replace('minecraft:', '')))
-        flip(event.block);
+    if (isFlippableOnPlace(block))
+        flip(block);
 });
 
-world.beforeEvents.itemUseOn.subscribe((event) => {
-    if (event.source === undefined || !Rules.getNativeValue('flippinArrows')) return;
-    if (event.itemStack.typeId !== 'minecraft:arrow') return;
+world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
+    if (event.player === undefined || !Rules.getNativeValue('flippinArrows')) return;
+    if (event.itemStack?.typeId !== 'minecraft:arrow') return;
     const block = event.block;
-    if (needsCooldown(block)) return;
+    if (isOnCooldown(block)) return;
     previousBlocks.push(block);
 
     const blockId = block.typeId.replace('minecraft:', '');
@@ -54,11 +54,15 @@ world.beforeEvents.itemUseOn.subscribe((event) => {
         else if (flipIds.includes(blockId))
             flip(block);
         else if (openIds.includes(blockId))
-            open(event.source, block);
+            open(event.player, block);
         else
             rotate(block);
     }, 0);
 });
+
+function isFlippableOnPlace(block) {
+    return flipOnPlaceIds.includes(block.typeId.replace('minecraft:', ''));
+}
 
 function flip(block) {
     const structure = BlockRotator.saveBlock(block);
@@ -139,7 +143,7 @@ function safeSetblock(player, blockData) {
     return block.dimension.getBlock(block.location);
 }
 
-function needsCooldown(block) {
+function isOnCooldown(block) {
     return previousBlocks.some(b => 
         b?.typeId === block.typeId 
         && b?.location.x === block.location.x 

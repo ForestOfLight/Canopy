@@ -19,7 +19,7 @@ const trackers = {
     after: {}
 };
 
-world.afterEvents.worldInitialize.subscribe(() => {
+world.afterEvents.worldLoad.subscribe(() => {
     const trackedEventsJSON = world.getDynamicProperty('trackedEvents')
     const trackedEvents = trackedEventsJSON ? JSON.parse(trackedEventsJSON) : [];
     for (const savedTracker of trackedEvents) {
