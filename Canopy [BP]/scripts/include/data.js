@@ -2,6 +2,7 @@ export const categoryToMobMap = {
     'animal' : [
         'armadillo',
         'bee',
+        'camel',
         'chicken',
         'cow',
         'dolphin',
@@ -61,7 +62,6 @@ export const categoryToMobMap = {
     'none' : [
         'allay',
         'breeze',
-        'camel',
         'cave_spider',
         'creaking',
         'elder_guardian',
