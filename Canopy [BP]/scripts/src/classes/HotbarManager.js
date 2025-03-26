@@ -1,4 +1,4 @@
-import SRCItemDatabase from 'lib/SRCItemDatabase';
+import SRCItemDatabase from "../../lib/SRCItemDatabase/ItemDatabase.js";
 
 class HotbarManager {
     constructor(player) {

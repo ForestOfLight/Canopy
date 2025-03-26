@@ -33,7 +33,7 @@ world.afterEvents.entitySpawn.subscribe((event) => {
     } else {
         event.entity.triggerEvent('canopy:fuse');
         system.runTimeout(() => {
-            if (event.entity.isValid())
+            if (event.entity.isValid)
                 event.entity.triggerEvent('canopy:explode');
         }, fuseTime - 1);
     }

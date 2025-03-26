@@ -1,5 +1,5 @@
-import InfoDisplayElement from './InfoDisplayElement.js';
-import { Vector } from 'src/classes/Vector';
+import InfoDisplayElement from "./InfoDisplayElement.js";
+import { Vector } from "../../../lib/Vector.js";
 
 class Entities extends InfoDisplayElement {
     player;

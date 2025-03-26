@@ -8,18 +8,18 @@ class AllowPeekInventory extends GlobalRule {
     constructor() {
         super({
             identifier: 'allowPeekInventory',
-            onEnableCallback: () => this.subscribeToEvent(),
-            onDisableCallback: () => this.unsubscribeFromEvent()
+            onEnableCallback: () => this.subscribeToEvents(),
+            onDisableCallback: () => this.unsubscribeFromEvents()
         });
         this.onPlayerInteractionBound = this.onPlayerInteraction.bind(this);
     }
 
-    subscribeToEvent() {
+    subscribeToEvents() {
         world.beforeEvents.playerInteractWithBlock.subscribe(this.onPlayerInteractionBound);
         world.beforeEvents.playerInteractWithEntity.subscribe(this.onPlayerInteractionBound);
     }
 
-    unsubscribeFromEvent() {
+    unsubscribeFromEvents() {
         world.beforeEvents.playerInteractWithBlock.unsubscribe(this.onPlayerInteractionBound);
         world.beforeEvents.playerInteractWithEntity.unsubscribe(this.onPlayerInteractionBound);
     }

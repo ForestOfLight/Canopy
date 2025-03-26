@@ -1,6 +1,6 @@
 import { Rule } from "../../../lib/canopy/Canopy";
 import { system, world } from "@minecraft/server";
-import GeneratorChannels from "../../classes/GeneratorChannels";
+import { generatorChannels } from "../../classes/GeneratorChannels";
 import { broadcastActionBar, getScriptEventSourceName, formatColorStr } from "../../../include/utils";
 
 system.afterEvents.scriptEventReceive.subscribe(async (event) => {
@@ -11,16 +11,16 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
     const message = event.message;
     
     if (message === '') {
-        world.getAllPlayers().forEach(player => { GeneratorChannels.getAllQueryOutput(player); });
-    } else if (GeneratorChannels.isValidColor(message)) {
-        world.getAllPlayers().forEach(player => { GeneratorChannels.getQueryOutput(player, message); });
+        world.getAllPlayers().forEach(player => { generatorChannels.getAllQueryOutput(player); });
+    } else if (generatorChannels.isValidColor(message)) {
+        world.getAllPlayers().forEach(player => { generatorChannels.getQueryOutput(player, message); });
     } else if (message === 'reset') {
-        GeneratorChannels.resetAllCounts();
+        generatorChannels.resetAllCounts();
         broadcastActionBar({ translate: 'commands.generator.reset.all.actionbar', with: [sourceName] });
     }
     const args = message.split(' ');
-    if (GeneratorChannels.isValidColor(args[0]) && args[1] === 'reset') {
-        GeneratorChannels.resetCounts(args[0]);
+    if (generatorChannels.isValidColor(args[0]) && args[1] === 'reset') {
+        generatorChannels.resetCounts(args[0]);
         broadcastActionBar({ translate: 'commands.generator.reset.single.actionbar', with: [sourceName, formatColorStr(args[0])] });
     }
 });

@@ -10,7 +10,7 @@ class Probe {
 
     attachToPlayer() {
         this.attachRunner = system.runInterval(() => {
-            if (this.entity.isValid()) {
+            if (this.entity.isValid) {
                 try {
                     this.entity.teleport(this.getTeleportLocation(), { dimension: this.assignedPlayer.dimension });
                 } catch (error) {

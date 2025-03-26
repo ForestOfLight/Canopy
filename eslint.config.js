@@ -14,7 +14,7 @@ export default [
     ignores: [
       '**/scripts/lib/mt.js',
       '**/scripts/lib/ipc/',
-      '**/scripts/lib/SRCItemDatabase.js',
+      '**/scripts/lib/SRCItemDatabase/',
       '**/scripts/lib/chestui/'
     ]
   },

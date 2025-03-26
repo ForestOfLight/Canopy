@@ -1,5 +1,5 @@
 /* eslint-disable new-cap */
-import { PROTO } from '../ipc/ipc'
+import { PROTO } from '../MCBE-IPC/ipc'
 
 export const Ready = PROTO.Void;
 

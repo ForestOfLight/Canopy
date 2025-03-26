@@ -1,6 +1,6 @@
 import { Command } from "./Command";
 import { Rule } from "./Rule";
-import IPC from "../ipc/ipc";
+import IPC from "../MCBE-IPC/ipc";
 import { RegisterCommand, RegisterRule, RuleValueRequest, RuleValueSet, CommandCallbackRequest, Ready, RuleValueResponse } from "./extension.ipc";
 
 class Extension {
