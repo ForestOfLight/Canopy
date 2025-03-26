@@ -15,7 +15,7 @@ world.afterEvents.entitySpawn.subscribe((event) => {
     const entity = event.entity;
     if (Rules.getNativeValue('dupeTnt')) {
         system.runTimeout(() => {
-            if (!entity.isValid()) return;
+            if (!entity.isValid) return;
             haltHorizontalVelocity(entity);
             applyHardcodedImpulse(entity);
         }, 1);

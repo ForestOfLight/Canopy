@@ -9,7 +9,7 @@ world.afterEvents.playerJoin.subscribe((event) => {
         const players = world.getPlayers({ name: event.playerName });
         players.forEach(player => {
             if (!player) return;
-            if (player?.isValid()) {
+            if (player?.isValid) {
                 system.clearRun(runner);
                 onValidPlayer(player);
                 if (!worldIsValid)

@@ -19,10 +19,12 @@ vi.mock("@minecraft/server", () => ({
         runInterval: vi.fn(),
         runTimeout: vi.fn()
     },
-    MinecraftDimensionTypes: {
-        overworld: "minecraft:overworld",
-        nether: "minecraft:the_nether",
-        theEnd: "minecraft:the_end"
+    DimensionTypes: {
+        getAll: () => [
+            { typeId: "minecraft:overworld" },
+            { typeId: "minecraft:nether" },
+            { typeId: "minecraft:the_end" }
+        ]
     }
 }));
 
