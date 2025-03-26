@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Command } from "../../../../../Canopy [BP]/scripts/lib/canopy/Command";
 import { Commands } from "../../../../../Canopy [BP]/scripts/lib/canopy/Commands";
-import IPC from "../../../../../Canopy [BP]/scripts/lib/ipc/ipc";
+import IPC from "../../../../../Canopy [BP]/scripts/lib/MCBE-IPC/ipc";
 import { Extension } from "../../../../../Canopy [BP]/scripts/lib/canopy/Extension";
 import { Extensions } from "../../../../../Canopy [BP]/scripts/lib/canopy/Extensions";
 import { CommandCallbackRequest } from "../../../../../Canopy [BP]/scripts/lib/canopy/extension.ipc";
@@ -10,6 +10,11 @@ vi.mock("@minecraft/server", () => ({
     world: { 
         beforeEvents: {
             chatSend: {
+                subscribe: vi.fn()
+            }
+        },
+        afterEvents: {
+            worldLoad: {
                 subscribe: vi.fn()
             }
         }

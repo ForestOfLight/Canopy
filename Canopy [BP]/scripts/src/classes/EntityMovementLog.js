@@ -69,7 +69,7 @@ class EntityMovementLog extends EntityLog {
     updateLastTickEntities() {
         this.lastTickEntities = [];
         for (const entity of this.thisTickEntities) {
-            if (!entity.isValid()) return;
+            if (!entity.isValid) return;
             this.lastTickEntities.push({
                 id: entity.id,
                 location: entity.location,

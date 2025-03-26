@@ -50,7 +50,7 @@ class SpawnTracker {
     recieveMob(entity) {
         if (!world.getDynamicProperty('isTrackingSpawns') && wasTrackingLastTick) this.stopTracking();
         else if (!world.getDynamicProperty('isTrackingSpawns')) return;
-        if (!entity.isValid()) return;
+        if (!entity.isValid) return;
         if (entity.dimension.id !== this.dimensionId || !this.isTracking(entity.typeId.replace('minecraft:', ''))) return;
 
         const position = { location: entity.location, dimensionId: entity.dimension.id };

@@ -5,8 +5,7 @@ import { calcDistance } from "../../include/utils";
 new Rule({
     category: 'Rules',
     identifier: 'autoItemPickup',
-    description: { translate: 'rules.autoItemPickup' },
-    contingentRules: ['carefulBreak']
+    description: { translate: 'rules.autoItemPickup' }
 });
 
 new Rule({

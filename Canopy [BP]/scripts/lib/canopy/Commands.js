@@ -1,5 +1,5 @@
 import { world, system } from "@minecraft/server";
-import IPC from "../ipc/ipc";
+import IPC from "../MCBE-IPC/ipc";
 import { ArgumentParser } from "./ArgumentParser";
 import { Rules } from "./Rules";
 import { CommandPrefixRequest, CommandPrefixResponse } from "./extension.ipc";

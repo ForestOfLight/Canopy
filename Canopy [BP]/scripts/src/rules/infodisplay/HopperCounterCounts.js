@@ -1,5 +1,5 @@
 import InfoDisplayElement from "./InfoDisplayElement";
-import CounterChannels from "../../classes/CounterChannels";
+import { counterChannels } from "../../classes/CounterChannels";
 import { getColorCode } from "../../../include/utils";
 
 class HopperCounterCounts extends InfoDisplayElement {
@@ -9,7 +9,7 @@ class HopperCounterCounts extends InfoDisplayElement {
     }
 
     getFormattedDataOwnLine() {
-        const activeChannels = CounterChannels.getActiveChannels();
+        const activeChannels = counterChannels.getActiveChannels();
         let output = '';
         if (activeChannels.length > 0 && activeChannels.length <= 4)
             output += 'Counters: ';

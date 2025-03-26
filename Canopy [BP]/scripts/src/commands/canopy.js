@@ -82,22 +82,29 @@ async function handleRuleChange(sender, ruleID, enable) {
     await updateRule(sender, ruleID, enable);
 }
 
+async function updateRules(sender, ruleIDs, enable) {
+    for (const ruleID of ruleIDs) {
+        await updateRule(sender, ruleID, enable).catch(error => {
+            console.warn(`Error updating rule ${ruleID}: ${error.message}`);
+        });
+    }
+}
+
 async function updateRule(sender, ruleID, enable) {
     const ruleValue = await Rules.getValue(ruleID);
     if (ruleValue === enable) return;
     Rules.get(ruleID).setValue(enable);
-    const enabledRawText = enable ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' };
-    return sender.sendMessage({ rawtext: [{ translate: 'rules.generic.updated', with: [ruleID] }, enabledRawText, { text: '§r§7.' }] });
+    sendUpdatedMessage(sender, ruleID, enable);
 }
 
-async function updateRules(sender, ruleIDs, enable) {
-    for (const ruleID of ruleIDs)
-        await updateRule(sender, ruleID, enable);
+function sendUpdatedMessage(sender, ruleID, enable) {
+    const enabledRawText = enable ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' };
+    sender.sendMessage({ rawtext: [{ translate: 'rules.generic.updated', with: [ruleID] }, enabledRawText, { text: '§r§7.' }] });
 }
 
 async function openMenu(sender) {
     const form = new ModalFormData().title("§l§aCanopy§r §aRules");
-    const rules = Rules.getByCategory("Rules").sort((a, b) => a.getID().localeCompare(b.getID()));
+    const rules = getRulesInAlphabeticalOrder();
     for (const rule of rules) {
         try {
             const ruleValue = await rule.getValue();
@@ -119,11 +126,17 @@ async function openMenu(sender) {
 }
 
 async function updateChangedValues(sender, formValues) {
-    const rules = Rules.getByCategory("Rules").sort((a, b) => a.getID().localeCompare(b.getID()));
+    const rules = getRulesInAlphabeticalOrder();
     for (let i = 0; i < rules.length; i++) {
         const rule = rules[i];
-        if (await rule.getValue() !== formValues[i]) 
-            await handleRuleChange(sender, rule.getID(), formValues[i]);
-        
+        if (await rule.getValue() !== formValues[i]) {
+            await handleRuleChange(sender, rule.getID(), formValues[i]).catch(error => {
+                console.warn(`Error updating rule ${rule.getID()}: ${error.message}`);
+            });
+        }
     }
+}
+
+function getRulesInAlphabeticalOrder() {
+    return Rules.getByCategory("Rules").sort((a, b) => a.getID().localeCompare(b.getID()));
 }

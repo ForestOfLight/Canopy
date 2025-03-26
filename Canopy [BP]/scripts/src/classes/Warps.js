@@ -54,6 +54,6 @@ class Warps {
     }
 }
 
-Warps.init();
+world.afterEvents.worldLoad.subscribe(() => { Warps.init(); })
 
 export default Warps;

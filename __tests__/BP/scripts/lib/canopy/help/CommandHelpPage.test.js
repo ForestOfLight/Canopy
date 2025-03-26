@@ -10,6 +10,11 @@ vi.mock("@minecraft/server", () => ({
             chatSend: {
                 subscribe: vi.fn()
             }
+        },
+        afterEvents: {
+            worldLoad: {
+                subscribe: vi.fn()
+            }
         }
     },
     system: {

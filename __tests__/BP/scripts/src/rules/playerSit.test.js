@@ -42,6 +42,11 @@ vi.mock("@minecraft/server", () => ({
                 subscribe: vi.fn()
             }
         },
+        afterEvents: {
+            worldLoad: {
+                subscribe: vi.fn()
+            }
+        },
         getDynamicProperty: vi.fn(),
         setDynamicProperty: vi.fn(),
         getDimension: vi.fn(() => ({
@@ -83,7 +88,7 @@ describe('playerSit', () => {
     });
 
     test('should do nothing when rule is not enabled', () => {
-        const onPlayerStartSneakSpy = vi.spyOn(playerSit, 'onPlayerStartSneak');
+        const onPlayerStartSneakSpy = vi.spyOn(playerSit, 'onPlayerStartSneakBound');
         playerSit.setValue(true);
         playerSit.setValue(false);
         playerStartSneakEvent.sendEvents();
@@ -91,7 +96,7 @@ describe('playerSit', () => {
     });
 
     test('should process rule when it is enabled', () => {
-        const onPlayerStartSneakSpy = vi.spyOn(playerSit, 'onPlayerStartSneak');
+        const onPlayerStartSneakSpy = vi.spyOn(playerSit, 'onPlayerStartSneakBound');
         playerSit.setValue(true);
         playerStartSneakEvent.playersSneakingThisTick.push({ id: 'player1' });
         playerStartSneakEvent.sendEvents();
@@ -110,7 +115,7 @@ describe('playerSit', () => {
             isOnGround: true, 
             location: { x: 0, y: 0, z: 0 }, 
             getRotation: () => ({ x: 0, y: 0 }), 
-            dimension: { spawnEntity: () => rideableEntity } 
+            dimension: { spawnEntity: () => rideableEntity }
         };
         for (let i = 0; i < playerSit.sneakCount; i++) {
             vi.advanceTimersByTime(playerSit.sneakSpeedMs - 1);

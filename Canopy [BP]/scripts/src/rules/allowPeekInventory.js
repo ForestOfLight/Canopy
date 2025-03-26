@@ -1,36 +1,41 @@
-import { Rule, Rules } from '../../lib/canopy/Canopy';
-import { system, world } from '@minecraft/server';
-import { showInventoryUI } from '../commands/peek';
-import { parseName } from '../../include/utils';
+import { GlobalRule } from '../../lib/canopy/Canopy';
+import { world, EntityComponentTypes } from '@minecraft/server';
+import { InventoryUI } from '../classes/InventoryUI';
 
-const peekItem = 'minecraft:spyglass';
+class AllowPeekInventory extends GlobalRule {
+    peekItemId = 'minecraft:spyglass';
 
-new Rule({
-    category: 'Rules',
-    identifier: 'allowPeekInventory',
-    description: { translate: 'rules.allowPeekInventory' },
-    onEnableCallback: () => {
-        world.beforeEvents.playerInteractWithBlock.subscribe(onPlayerInteraction);
-        world.beforeEvents.playerInteractWithEntity.subscribe(onPlayerInteraction);
-    },
-    onDisableCallback: () => {
-        world.beforeEvents.playerInteractWithBlock.unsubscribe(onPlayerInteraction);
-        world.beforeEvents.playerInteractWithEntity.unsubscribe(onPlayerInteraction);
+    constructor() {
+        super({
+            identifier: 'allowPeekInventory',
+            onEnableCallback: () => this.subscribeToEvents(),
+            onDisableCallback: () => this.unsubscribeFromEvents()
+        });
+        this.onPlayerInteractionBound = this.onPlayerInteraction.bind(this);
     }
-});
 
-function onPlayerInteraction(event) {
-    if (!Rules.getNativeValue('allowPeekInventory')) return;
-    if (!event.player || event.itemStack?.typeId !== peekItem) return;
-    const target = event.block || event.target;
-    const inventory = target?.getComponent('inventory');
-    if (!inventory) return;
-    event.cancel = true;
-    const targetData = {
-        name: parseName(target),
-        entity: target
-    };
-    system.run(() => {
-        showInventoryUI(event.player, targetData, inventory);
-    });
+    subscribeToEvents() {
+        world.beforeEvents.playerInteractWithBlock.subscribe(this.onPlayerInteractionBound);
+        world.beforeEvents.playerInteractWithEntity.subscribe(this.onPlayerInteractionBound);
+    }
+
+    unsubscribeFromEvents() {
+        world.beforeEvents.playerInteractWithBlock.unsubscribe(this.onPlayerInteractionBound);
+        world.beforeEvents.playerInteractWithEntity.unsubscribe(this.onPlayerInteractionBound);
+    }
+
+    onPlayerInteraction(event) {
+        if (!event.player || event.itemStack?.typeId !== this.peekItemId) return;
+        const target = event.block || event.target;
+        if (!this.hasInventory(target)) return;
+        event.cancel = true;
+        const invUI = new InventoryUI(target);
+        invUI.show(event.player);
+    }
+
+    hasInventory(target) {
+        return target?.getComponent(EntityComponentTypes.Inventory) !== undefined;
+    }
 }
+
+export const allowPeekInventory = new AllowPeekInventory();
