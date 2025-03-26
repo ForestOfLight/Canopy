@@ -74,9 +74,8 @@ class Rules {
     }
 
     static registerQueuedRules() {
-        for (const rule of this.rulesToRegister) {
+        for (const rule of this.rulesToRegister)
             this.register(rule);
-        }
         this.rulesToRegister = [];
     }
 }

@@ -30,6 +30,9 @@ vi.mock("@minecraft/server", () => ({
         afterEvents: {
             entitySpawn: {
                 subscribe: vi.fn()
+            },
+            worldLoad: {
+                subscribe: vi.fn()
             }
         },
         beforeEvents: {

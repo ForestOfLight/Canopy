@@ -9,6 +9,13 @@ vi.mock("@minecraft/server", () => ({
             chatSend: {
                 subscribe: vi.fn()
             }
+        },
+        afterEvents: {
+            worldLoad: {
+                subscribe: (callback) => {
+                    callback();
+                }
+            }
         }
     },
     system: {

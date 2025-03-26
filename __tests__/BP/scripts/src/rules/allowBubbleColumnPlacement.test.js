@@ -24,6 +24,11 @@ vi.mock("@minecraft/server", () => ({
                 unsubscribe: vi.fn()
             }
         },
+        afterEvents: {
+            worldLoad: {
+                subscribe: vi.fn()
+            }
+        },
         getDynamicProperty: vi.fn(),
         setDynamicProperty: vi.fn(),
         structureManager: {

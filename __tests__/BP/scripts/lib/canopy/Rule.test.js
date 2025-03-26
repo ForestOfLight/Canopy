@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Rule } from '../../../../../Canopy [BP]/scripts/lib/canopy/Rule.js';
 import { Rules } from '../../../../../Canopy [BP]/scripts/lib/canopy/Rules.js';
-import IPC from '../../../../../Canopy [BP]/scripts/lib/ipc/ipc.js';
+import IPC from '../../../../../Canopy [BP]/scripts/lib/MCBE-IPC/ipc.js';
 import { Extensions } from '../../../../../Canopy [BP]/scripts/lib/canopy/Extensions.js';
 import { Extension } from '../../../../../Canopy [BP]/scripts/lib/canopy/Extension.js';
 import { RuleValueSet } from '../../../../../Canopy [BP]/scripts/lib/canopy/extension.ipc.js';
@@ -11,6 +11,13 @@ vi.mock('@minecraft/server', () => ({
         beforeEvents: {
             chatSend: {
                 subscribe: vi.fn()
+            }
+        },
+        afterEvents: {
+            worldLoad: {
+                subscribe: (callback) => {
+                    callback();
+                }
             }
         },
         setDynamicProperty: vi.fn()

@@ -38,6 +38,11 @@ vi.mock("@minecraft/server", () => ({
                 unsubscribe: vi.fn()
             }
         },
+        afterEvents: {
+            worldLoad: {
+                subscribe: vi.fn()
+            }
+        },
         getDynamicProperty: vi.fn(),
         setDynamicProperty: vi.fn()
     },
@@ -51,7 +56,10 @@ vi.mock("@minecraft/server", () => ({
 }));
 
 vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn()
+    ModalFormData: vi.fn(),
+    uiManager: {
+        closeAllForms: vi.fn()
+    }
 }));
 
 describe('allowPeekInventory', () => {
@@ -60,19 +68,19 @@ describe('allowPeekInventory', () => {
     });
 
     it('should subscribe to player block placements when enabled', () => {
-        const subscribeSpy = vi.spyOn(allowPeekInventory, 'subscribeToEvent');
+        const subscribeSpy = vi.spyOn(allowPeekInventory, 'subscribeToEvents');
         allowPeekInventory.onEnable();
         expect(subscribeSpy).toHaveBeenCalled();
     });
 
     it('should unsubscribe from player block placements when disabled', () => {
-        const unsubscribeSpy = vi.spyOn(allowPeekInventory, 'unsubscribeFromEvent');
+        const unsubscribeSpy = vi.spyOn(allowPeekInventory, 'unsubscribeFromEvents');
         allowPeekInventory.onDisable();
         expect(unsubscribeSpy).toHaveBeenCalled();
     });
 
     it('should show the inventory UI when a player holds the spyglass and interacts with an entity', () => {
-        const showSpy = vi.spyOn(InventoryUI.prototype, 'show');
+        const showSpy = vi.spyOn(InventoryUI.prototype, 'show').mockImplementation(() => {});
         const target = {
             typeId: 'minecraft:test_target', 
             getComponent: vi.fn().mockReturnValue({ 
@@ -101,7 +109,7 @@ describe('allowPeekInventory', () => {
     });
 
     it('should show the inventory UI when a player holds the spyglass and interacts with a block', () => {
-        const showSpy = vi.spyOn(InventoryUI.prototype, 'show');
+        const showSpy = vi.spyOn(InventoryUI.prototype, 'show').mockImplementation(() => {});
         const block = {
             typeId: 'minecraft:test_target', 
             getComponent: vi.fn().mockReturnValue({ 
@@ -130,7 +138,7 @@ describe('allowPeekInventory', () => {
     });
 
     it('should not show the inventory UI if the player does not hold a spyglass', () => {
-        const showSpy = vi.spyOn(InventoryUI.prototype, 'show');
+        const showSpy = vi.spyOn(InventoryUI.prototype, 'show').mockImplementation(() => {});
         const target = { typeId: 'minecraft:test_target' };
         const player = {
             typeId: 'minecraft:player',

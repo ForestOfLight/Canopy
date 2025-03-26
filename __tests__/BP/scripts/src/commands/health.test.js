@@ -7,6 +7,11 @@ vi.mock("@minecraft/server", () => ({
             chatSend: {
                 subscribe: vi.fn()
             }
+        },
+        afterEvents: {
+            worldLoad: {
+                subscribe: vi.fn()
+            }
         }
     },
     system: {
@@ -14,6 +19,7 @@ vi.mock("@minecraft/server", () => ({
             scriptEventReceive: {
                 subscribe: vi.fn()
             }
+
         },
         runJob: vi.fn(),
         runInterval: vi.fn(),
