@@ -23,18 +23,17 @@ const cmd = new Command({
 });
 
 world.afterEvents.entitySpawn.subscribe((event) => {
-    if (event.entity?.typeId !== 'minecraft:tnt') return;
+    if (event.entity?.typeId !== 'minecraft:tnt' || event.cause === 'Event') return;
     const fuseTimeProperty = world.getDynamicProperty('tntFuseTime');
     let fuseTime = 80;
     if (fuseTimeProperty !== undefined && Rules.getNativeValue('commandTntFuse'))
         fuseTime = fuseTimeProperty;
-
     if (fuseTime === 1) {
         event.entity.triggerEvent('canopy:explode');
     } else {
         event.entity.triggerEvent('canopy:fuse');
         system.runTimeout(() => {
-            if (event.entity.isValid())
+            if (event.entity.isValid)
                 event.entity.triggerEvent('canopy:explode');
         }, fuseTime - 1);
     }
@@ -42,15 +41,20 @@ world.afterEvents.entitySpawn.subscribe((event) => {
 
 function tntfuseCommand(sender, args) {
     let { ticks } = args;
-    if (ticks === null) {
-        return cmd.sendUsage(sender);
-    } else if (ticks === 'reset') {
+    if (ticks === 'reset') {
         ticks = 80;
         sender.sendMessage({ translate: 'commands.tntfuse.reset.success' });
-    } else if (!isNumeric(ticks) || ticks < MIN_FUSE_TICKS || ticks > MAX_FUSE_TICKS) {
-        return sender.sendMessage({ translate: 'commands.tntfuse.set.fail', with: [String(ticks), String(MIN_FUSE_TICKS), String(MAX_FUSE_TICKS)] });
-    } else {
+        setFuseTime(ticks);
+    } else if (isNumeric(ticks) && ticks >= MIN_FUSE_TICKS && ticks <= MAX_FUSE_TICKS) {
         sender.sendMessage({ translate: 'commands.tntfuse.set.success', with: [String(ticks)] });
+        setFuseTime(ticks);
+    } else if (!isNumeric(ticks) || ticks < MIN_FUSE_TICKS || ticks > MAX_FUSE_TICKS) {
+        sender.sendMessage({ translate: 'commands.tntfuse.set.fail', with: [String(ticks), String(MIN_FUSE_TICKS), String(MAX_FUSE_TICKS)] });
+    } else {
+        cmd.sendUsage(sender);
     }
-    world.setDynamicProperty('tntFuseTime', ticks);
+}
+
+function setFuseTime(ticks) {
+    world.setDynamicProperty('tntFuseTime', Number(ticks));
 }

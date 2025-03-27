@@ -1,6 +1,6 @@
 import { Command } from "../../lib/canopy/Canopy";
 import  { printDimensionEntities } from "../commands/entitydensity";
-import Profiler from '../classes/Profiler';
+import { Profiler } from '../classes/Profiler';
 
 new Command({
     name: 'health',

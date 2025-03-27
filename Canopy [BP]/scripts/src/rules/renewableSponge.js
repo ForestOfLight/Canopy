@@ -4,7 +4,7 @@ import { Rule, Rules } from "../../lib/canopy/Canopy";
 new Rule({
     category: 'Rules',
     identifier: 'renewableSponge',
-    description: { translate: 'rules.renewableSponge' },
+    description: { translate: 'rules.renewableSponge' }
 });
 
 world.afterEvents.entityHurt.subscribe((event) => {

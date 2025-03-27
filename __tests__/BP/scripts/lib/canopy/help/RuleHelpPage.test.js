@@ -11,6 +11,11 @@ vi.mock("@minecraft/server", () => ({
                 subscribe: vi.fn()
             }
         },
+        afterEvents: {
+            worldLoad: {
+                subscribe: vi.fn()
+            }
+        },
         getDynamicProperty: vi.fn()
     },
     system: {

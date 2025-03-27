@@ -7,7 +7,7 @@ const REMOVAL_DISTANCE = 2.5;
 new Rule({
     category: 'Rules',
     identifier: 'creativeNoTileDrops',
-    description: { translate: 'rules.creativeNoTileDrops' },
+    description: { translate: 'rules.creativeNoTileDrops' }
 });
 
 let brokenBlockEventsThisTick = [];

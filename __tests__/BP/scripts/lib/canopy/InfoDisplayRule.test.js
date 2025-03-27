@@ -9,6 +9,13 @@ vi.mock('@minecraft/server', () => ({
             chatSend: {
                 subscribe: vi.fn()
             }
+        },
+        afterEvents: {
+            worldLoad: {
+                subscribe: (callback) => {
+                    callback();
+                }
+            }
         }
     },
     system: {
@@ -29,7 +36,7 @@ describe('InfoDisplayRule', () => {
             category: 'test', 
             identifier: 'test_rule',
             description: 'This is a test rule',
-            contingentRules: ['test_rule_2'],
+            contingentRules: ['test_rule_2']
         });
     });
 

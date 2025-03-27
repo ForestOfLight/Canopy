@@ -10,6 +10,11 @@ vi.mock("@minecraft/server", () => ({
             chatSend: {
                 subscribe: vi.fn()
             }
+        },
+        afterEvents: {
+            worldLoad: {
+                subscribe: vi.fn()
+            }
         }
     },
     system: {
@@ -142,13 +147,13 @@ describe('CommandHelpPage', () => {
                     { translate: "commands.help.page.header", with: ["Test Title"] },
                     { rawtext: [
                         { text: "\n§2" },
-                        { text: "Test Description" },
+                        { text: "Test Description" }
                     ]},
                     { rawtext:  [
                         { text: "\n  " },
                         { rawtext:  [
                             { text: `§2${Commands.getPrefix()}testCommand§8 - ` },
-                            { text: "Test Command" },
+                            { text: "Test Command" }
                         ]}
                     ]}
                 ]

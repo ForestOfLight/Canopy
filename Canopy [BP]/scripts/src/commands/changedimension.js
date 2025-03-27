@@ -29,7 +29,7 @@ const cmd = new Command({
         { type: 'string', name: 'dimension' },
         { type: 'number', name: 'x' },
         { type: 'number', name: 'y' },
-        { type: 'number', name: 'z' },
+        { type: 'number', name: 'z' }
     ],
     callback: changedimensionCommand,
     contingentRules: ['commandChangeDimension']

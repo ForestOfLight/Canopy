@@ -2,8 +2,16 @@ import { Rule } from './Rule';
 import { Rules } from './Rules';
 
 class InfoDisplayRule extends Rule {
-    constructor({ identifier, description = '', contingentRules = [], independentRules = [], extensionName = false }) {
-        super({ category: "InfoDisplay", identifier, description, contingentRules, independentRules, extensionName });
+    globalContingentRules;
+
+    constructor(options) {
+        options.category = "InfoDisplay";
+        super({ ...options });
+        this.globalContingentRules = options.globalContingentRules || [];
+    }
+
+    getGlobalContingentRuleIDs() {
+        return this.globalContingentRules;
     }
 
     getValue(player) {
@@ -12,6 +20,10 @@ class InfoDisplayRule extends Rule {
 
     setValue(player, value) {
         player.setDynamicProperty(super.getID(), value);
+        if (value === true)
+            this.onEnable(player);
+        else if (value === false)
+            this.onDisable(player);
     }
 
     static get(identifier) {

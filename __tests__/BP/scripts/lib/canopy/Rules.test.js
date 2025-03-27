@@ -8,6 +8,13 @@ vi.mock('@minecraft/server', () => ({
             chatSend: {
                 subscribe: vi.fn()
             }
+        },
+        afterEvents: {
+            worldLoad: {
+                subscribe: (callback) => {
+                    callback();
+                }
+            }
         }
     },
     system: {
@@ -35,22 +42,25 @@ describe('Rules', () => {
     });
 
     describe('register', () => {
-        it('should add a new rule if it does not exist', () => {
+        it('should add a new rule if it does not exist', async () => {
             const ruleMock = {
                 identifier: 'test_rule_2',
-                getID: () => 'test_rule_2'
+                getID: () => 'test_rule_2',
+                getCategory: () => 'test',
+                getValue: () => false
             }
-            Rules.register(ruleMock);
+            await Rules.register(ruleMock);
             expect(Rules.get('test_rule_2')).toBe(ruleMock);
         });
 
-        it('should not add a rule if the rule already exists', () => {
+        it('should not add a rule if the rule already exists', async () => {
             const ruleMock = {
                 identifier : 'test_rule',
-                getID: () => 'test_rule'
+                getID: () => 'test_rule',
+                getCategory: () => 'test',
+                getValue: () => false
             }
-            expect(() => Rules.register(ruleMock)).toThrow();
-            expect(Rules.getAll().length).toBe(1);
+            await expect(async () => await Rules.register(ruleMock)).rejects.toThrow();
         });
     });
 

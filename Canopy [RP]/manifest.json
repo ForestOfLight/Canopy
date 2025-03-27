@@ -1,7 +1,7 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Canopy [RP] v1.3.8",
+    "name": "Canopy [RP] v1.3.9",
     "description": "Technical informatics & features addon by §aForestOfLight§r.",
     "uuid": "bcf34368-ed0c-4cf7-938e-582cccf9950d",
     "version": [1, 0, 2],
@@ -17,7 +17,11 @@
   "dependencies": [
     {
       "uuid": "7f6b23df-a583-476b-b0e4-87457e65f7c0",
-      "version": [1, 3, 8]
+      "version": [1, 3, 9]
     }
-  ]
+  ],
+  "metadata": {
+    "authors": [ "ForestOfLight" ],
+    "license": "MIT"
+  }
 }

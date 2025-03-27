@@ -1,19 +1,25 @@
-import { Rules, Rule } from "lib/canopy/Canopy";
-import { system, world, InputButton, ButtonState } from '@minecraft/server';
+import { Rule } from "lib/canopy/Canopy";
+import { system, world, InputButton, ButtonState, EntityComponentTypes } from '@minecraft/server';
 import HotbarManager from 'src/classes/HotbarManager';
 
+let runner;
 new Rule({
     category: 'Rules',
     identifier: 'hotbarSwitching',
     description: { translate: 'rules.hotbarSwitching' },
+    onEnableCallback: () => {
+        runner = system.runInterval(onTick.bind(this));
+    },
+    onDisableCallback: () => {
+        system.clearRun(runner);
+    }
 });
 
 const ARROW_SLOT = 17;
 const lastSelectedSlots = {};
 const hotbarManagers = {};
 
-system.runInterval(() => {
-    if (!Rules.getNativeValue('hotbarSwitching')) return;
+function onTick() {
     const players = world.getAllPlayers();
     for (const player of players) {
         if (!player) continue;
@@ -22,7 +28,7 @@ system.runInterval(() => {
             hotbarManagers[player.id] = new HotbarManager(player);
         processHotbarSwitching(player);
     }
-});
+}
 
 function hasAppropriateGameMode(player) {
     return player.getGameMode() === 'creative';
@@ -32,12 +38,11 @@ function processHotbarSwitching(player) {
     if (lastSelectedSlots[player.id] !== undefined && (!hasArrowInCorrectSlot(player) || !hasAppropriateGameMode(player))) {
         delete lastSelectedSlots[player.id];
         return;
-    } else if (lastSelectedSlots[player.id] === undefined && (!hasArrowInCorrectSlot(player) || !hasAppropriateGameMode(player))) {
-        return;
     }
+    if (lastSelectedSlots[player.id] === undefined && (!hasArrowInCorrectSlot(player) || !hasAppropriateGameMode(player)))
+        return;
     if (hasScrolled(player) && player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed) 
         switchToHotbar(player, player.selectedSlotIndex);
-    
     lastSelectedSlots[player.id] = player.selectedSlotIndex;
 }
 
@@ -49,7 +54,7 @@ function switchToHotbar(player, index) {
 }
 
 function hasArrowInCorrectSlot(player) {
-    const container = player.getComponent('inventory')?.container;
+    const container = player.getComponent(EntityComponentTypes.Inventory)?.container;
     return container?.getItem(ARROW_SLOT)?.typeId === 'minecraft:arrow';
 }
 

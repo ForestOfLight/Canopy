@@ -1,5 +1,6 @@
 import ItemCounterChannels from "./ItemCounterChannels.js";
 import CounterChannel from "./CounterChannel";
+import { world } from "@minecraft/server";
 
 class CounterChannels extends ItemCounterChannels {
     constructor() {
@@ -51,6 +52,9 @@ class CounterChannels extends ItemCounterChannels {
     }
 }
 
-const counterChannels = new CounterChannels();
+let counterChannels;
+world.afterEvents.worldLoad.subscribe(() => {
+    counterChannels = new CounterChannels();
+});
 
-export default counterChannels;
+export { counterChannels };

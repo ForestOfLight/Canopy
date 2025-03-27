@@ -7,6 +7,11 @@ vi.mock('@minecraft/server', () => ({
             chatSend: {
                 subscribe: vi.fn()
             }
+        },
+        afterEvents: {
+            worldLoad: {
+                subscribe: vi.fn()
+            }
         }
     },
     system: {
@@ -17,6 +22,10 @@ vi.mock('@minecraft/server', () => ({
         },
         runJob: vi.fn()
     }
+}));
+
+vi.mock("@minecraft/server-ui", () => ({
+    ModalFormData: vi.fn()
 }));
 
 describe('Canopy module', () => {
@@ -34,6 +43,10 @@ describe('Canopy module', () => {
 
     it('should export Rule', () => {
         expect(Canopy.Rule).toBeDefined();
+    });
+
+    it('should export GlobalRule', () => {
+        expect(Canopy.GlobalRule).toBeDefined();
     });
 
     it('should export InfoDisplayRule', () => {

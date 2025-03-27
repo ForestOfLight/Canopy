@@ -96,4 +96,4 @@ class Profiler {
 
 Profiler.start();
 
-export default Profiler;
+export { Profiler };

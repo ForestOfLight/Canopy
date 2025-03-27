@@ -7,6 +7,11 @@ vi.mock("@minecraft/server", () => ({
             chatSend: {
                 subscribe: vi.fn()
             }
+        },
+        afterEvents: {
+            worldLoad: {
+                subscribe: vi.fn()
+            }
         }
     },
     system: {
@@ -14,15 +19,23 @@ vi.mock("@minecraft/server", () => ({
             scriptEventReceive: {
                 subscribe: vi.fn()
             }
+
         },
+        runJob: vi.fn(),
         runInterval: vi.fn(),
-        runTimeout: vi.fn(),
+        runTimeout: vi.fn()
     },
-    MinecraftDimensionTypes: {
-        overworld: "minecraft:overworld",
-        nether: "minecraft:the_nether",
-        theEnd: "minecraft:the_end"
+    DimensionTypes: {
+        getAll: () => [
+            { typeId: "minecraft:overworld" },
+            { typeId: "minecraft:nether" },
+            { typeId: "minecraft:the_end" }
+        ]
     }
+}));
+
+vi.mock("@minecraft/server-ui", () => ({
+    ModalFormData: vi.fn()
 }));
 
 describe('healthCommand', () => {

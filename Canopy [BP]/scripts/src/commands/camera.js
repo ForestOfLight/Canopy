@@ -2,10 +2,22 @@ import { Rule, Command } from "../../lib/canopy/Canopy";
 import { system, world } from "@minecraft/server";
 import { stringifyLocation } from "../../include/utils";
 
+const MAX_EFFECT_DURATION = 20000000;
+
 new Rule({
     category: 'Rules',
     identifier: 'commandCamera',
     description: { translate: 'rules.commandCamera' },
+    onEnableCallback: () => {
+        world.afterEvents.playerGameModeChange.subscribe(onPlayerGameModeChange);
+        world.beforeEvents.playerLeave.subscribe(onPlayerLeave);
+        world.afterEvents.playerDimensionChange.subscribe(onPlayerDimensionChange);
+    },
+    onDisableCallback: () => {
+        world.afterEvents.playerGameModeChange.unsubscribe(onPlayerGameModeChange);
+        world.beforeEvents.playerLeave.unsubscribe(onPlayerLeave);
+        world.afterEvents.playerDimensionChange.unsubscribe(onPlayerDimensionChange);
+    }
 });
 
 const cmd = new Command({
@@ -59,13 +71,11 @@ class BeforeSpectatorPlayer {
         this.rotation = player.getRotation();
         this.dimensionId = player.dimension.id;
         this.gamemode = player.getGameMode();
-        this.effects = [];
-        for (const effect of player.getEffects())
-            this.effects.push({ typeId: effect.typeId, duration: effect.duration, amplifier: effect.amplifier });
+        this.effects = player.getEffects().map(effect => ({ typeId: effect.typeId, duration: effect.duration, amplifier: effect.amplifier }));
     }
 }
 
-world.beforeEvents.playerGameModeChange.subscribe((event) => {
+function onPlayerGameModeChange(event) {
     const player = event.player;
     if (player?.getDynamicProperty('isSpectating') && event.fromGameMode === 'spectator' && event.toGameMode !== 'spectator') {
         system.run(() => {
@@ -73,18 +83,18 @@ world.beforeEvents.playerGameModeChange.subscribe((event) => {
             player.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.gamemode'});
         });
     }
-});
+}
 
-world.beforeEvents.playerLeave.subscribe((event) => {
+function onPlayerLeave(event) {
     event.player?.setDynamicProperty('isViewingCamera', false);
-});
+}
 
-world.afterEvents.playerDimensionChange.subscribe((event) => {
+function onPlayerDimensionChange(event) {
     const player = event.player;
     if (!player?.getDynamicProperty('isViewingCamera')) return;
     player.camera.clear();
     player.setDynamicProperty('isViewingCamera', false);
-});
+}
 
 function cameraCommand(sender, args) {
     const { action, option } = args;
@@ -191,10 +201,15 @@ function startSpectate(sender) {
     
     system.runTimeout(() => {
         sender.setGameMode('spectator');
-        for (const effect of sender.getEffects())
-            sender.removeEffect(effect?.typeId);
-        sender.addEffect('night_vision', 20000000, { amplifier: 0, showParticles: false });
-        sender.addEffect('conduit_power', 20000000, { amplifier: 0, showParticles: false });
+        for (const effect of sender.getEffects()) {
+            try {
+                sender.removeEffect(effect.typeId);
+            } catch (error) {
+                console.warn(`[Canopy] Failed to remove ${effect?.typeId} effect from player ${sender.name} while starting spectate. Error: ${error}`);
+            }
+        }
+        sender.addEffect('night_vision', MAX_EFFECT_DURATION, { amplifier: 0, showParticles: false });
+        sender.addEffect('conduit_power', MAX_EFFECT_DURATION, { amplifier: 0, showParticles: false });
         sender.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.started' });
     }, 8);
 }
@@ -205,15 +220,20 @@ function endSpectate(sender) {
     sender.setDynamicProperty('isSpectating', false);
     system.runTimeout(() => {
         for (const effect of sender.getEffects()) {
-            if (!effect) continue;
-            sender.removeEffect(effect.typeId);
+            try {
+                sender.removeEffect(effect.typeId);
+            } catch (error) {
+                console.warn(`[Canopy] Failed to remove ${effect?.typeId} effect from player ${sender.name} while ending spectate. Error: ${error}`);
+            }
         }
         sender.teleport(beforeSpectatorPlayer.location, { dimension: world.getDimension(beforeSpectatorPlayer.dimensionId), rotation: beforeSpectatorPlayer.rotation });
         for (const effect of beforeSpectatorPlayer.effects) {
             try {
-                sender.addEffect(effect.typeId, Math.min(20000000, effect.duration), { amplifier: effect.amplifier });
+                if (effect.duration === -1)
+                    effect.duration = MAX_EFFECT_DURATION;
+                sender.addEffect(effect.typeId, Math.min(MAX_EFFECT_DURATION, effect.duration), { amplifier: effect.amplifier });
             } catch (error) {
-                console.warn(`Failed to add effect back to player ${sender.name}. Error: ${error}`);
+                console.warn(`[Canopy] Failed to add ${effect?.typeId} effect back to player ${sender.name} while ending spectate. Error: ${error}`);
             }
         }
         sender.setGameMode(beforeSpectatorPlayer.gamemode);

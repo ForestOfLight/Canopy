@@ -1,4 +1,4 @@
-import { Rule, Command } from 'lib/canopy/Canopy';
+import { Rule, Command } from '../../lib/canopy/Canopy';
 
 new Rule({
     category: 'Rules',
@@ -11,7 +11,7 @@ new Command({
     description: { translate: 'commands.cleanup' },
     usage: 'cleanup [distance]',
     args: [
-        { type: 'number', name: 'distance' },
+        { type: 'number', name: 'distance' }
     ],
     callback: cleanupCommand,
     contingentRules: ['commandCleanup']
@@ -22,7 +22,7 @@ new Command({
     description: { translate: 'commands.cleanup' },
     usage: 'k [distance]',
     args: [
-        { type: 'number', name: 'distance' },
+        { type: 'number', name: 'distance' }
     ],
     callback: cleanupCommand,
     contingentRules: ['commandCleanup'],

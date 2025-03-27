@@ -1,16 +1,39 @@
-import { Rule, Rules } from "../../lib/canopy/Canopy";
+import { GlobalRule } from "../../lib/canopy/Canopy";
 import { world, system } from '@minecraft/server';
 
-new Rule({
-    category: 'Rules',
-    identifier: 'allowBubbleColumnPlacement',
-    description: { translate: 'rules.allowBubbleColumnPlacement' }
-});
+class AllowBubbleColumnPlacement extends GlobalRule {
+    constructor() {
+        super({
+            identifier: 'allowBubbleColumnPlacement',
+            onEnableCallback: () => this.subscribeToEvent(),
+            onDisableCallback: () => this.unsubscribeFromEvent()
+        });
+        this.onPlayerPlaceBlockBound = this.onPlayerPlaceBlock.bind(this);
+    }
 
-world.beforeEvents.playerPlaceBlock.subscribe((event) => {
-    if (!event.player || !Rules.getNativeValue('allowBubbleColumnPlacement')) return;
-    system.run(() => {
-        if (event.player.getComponent('equippable').getEquipment('Mainhand')?.typeId === 'minecraft:bubble_column')
-            world.structureManager.place('mystructure:bubble_column', event.dimension, event.block.location);
-    });
-});
+    subscribeToEvent() {
+        world.beforeEvents.playerPlaceBlock.subscribe(this.onPlayerPlaceBlockBound);
+    }
+
+    unsubscribeFromEvent() {
+        world.beforeEvents.playerPlaceBlock.unsubscribe(this.onPlayerPlaceBlockBound);
+    }
+
+    onPlayerPlaceBlock(event) {
+        if (!event.player) return;
+        system.run(() => {
+            if (this.hasBubbleColumnInMainhand(event))
+                this.placeBubbleColumn(event.dimension, event.block.location);
+        });
+    }
+
+    hasBubbleColumnInMainhand(event) {
+        return event.player.getComponent('equippable').getEquipment('Mainhand')?.typeId === 'minecraft:bubble_column';
+    }
+
+    placeBubbleColumn(dimension, location) {
+        world.structureManager.place('mystructure:bubble_column', dimension, location);
+    }
+}
+
+export const allowBubbleColumnPlacement = new AllowBubbleColumnPlacement();

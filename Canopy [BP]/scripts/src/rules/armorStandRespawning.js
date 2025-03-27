@@ -4,7 +4,7 @@ import { world } from "@minecraft/server";
 new Rule({
     category: 'Rules',
     identifier: 'armorStandRespawning',
-    description: { translate: 'rules.armorStandRespawning' },
+    description: { translate: 'rules.armorStandRespawning' }
 });
 
 world.afterEvents.projectileHitEntity.subscribe((event) => {

@@ -1,12 +1,12 @@
 import { Rule, Rules } from "../../lib/canopy/Canopy";
-import { system, world, StructureMirrorAxis, BlockPistonState } from "@minecraft/server";
-import BlockRotator from 'src/classes/BlockRotator';
-import DirectionStateFinder from 'src/classes/DirectionState';
+import { system, world, StructureMirrorAxis, BlockPistonState, EquipmentSlot } from "@minecraft/server";
+import BlockRotator from "../classes/BlockRotator";
+import DirectionStateFinder from "../classes/DirectionState";
 
 new Rule({
     category: 'Rules',
     identifier: 'flippinArrows',
-    description: { translate: 'rules.flippinArrows' },
+    description: { translate: 'rules.flippinArrows' }
 });
 
 const WAIT_TIME_BETWEEN_USE = 5; // in ticks
@@ -17,51 +17,51 @@ const flipOnPlaceIds = ['piston', 'sticky_piston', 'dropper', 'dispenser', 'obse
 const flipIds = ['piston', 'sticky_piston', 'observer', 'end_rod', 'lightning_rod'];
 const flipWhenVerticalIds = ['dropper', 'dispenser', 'barrel', 'command_block', 'chain_command_block', 'repeating_command_block'];
 const openIds = ['iron_trapdoor', 'iron_door'];
-const noInteractBlockIds = ['piston_arm_collision', 'sticky_piston_arm_collision', 'bed'];
+const noInteractBlockIds = ['piston_arm_collision', 'sticky_piston_arm_collision', 'bed', 'frame'];
 
 system.runInterval(() => {
     previousBlocks.shift();
     if (previousBlocks.length < WAIT_TIME_BETWEEN_USE) 
         previousBlocks.push(null);
-    
 });
 
-world.beforeEvents.playerPlaceBlock.subscribe((event) => {
+world.afterEvents.playerPlaceBlock.subscribe((event) => {
     if (!Rules.getNativeValue('flippinArrows')) return;
     const player = event.player;
     if (!player) return;
-    const offhandStack = player.getComponent('equippable').getEquipment("Offhand");
+    const offhandStack = player.getComponent('equippable').getEquipment(EquipmentSlot.Offhand);
     if (offhandStack?.typeId !== 'minecraft:arrow') return;
-
+    
     const block = event.block;
-    if (flipOnPlaceIds.includes(block.typeId.replace('minecraft:', ''))) {
-        system.runTimeout(() => {
-            flip(event.block);
-        }, 0);
-    }
+    if (isFlippableOnPlace(block))
+        flip(block);
 });
 
-world.beforeEvents.itemUseOn.subscribe((event) => {
-    if (event.source === undefined || !Rules.getNativeValue('flippinArrows')) return;
-    if (event.itemStack.typeId !== 'minecraft:arrow') return;
+world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
+    if (event.player === undefined || !Rules.getNativeValue('flippinArrows')) return;
+    if (event.itemStack?.typeId !== 'minecraft:arrow') return;
     const block = event.block;
-    if (needsCooldown(block)) return;
+    if (isOnCooldown(block)) return;
     previousBlocks.push(block);
 
-    event.cancel = true;
     const blockId = block.typeId.replace('minecraft:', '');
+    if (checkForAbort(block, blockId)) return;
+    event.cancel = true;
     system.runTimeout(() => {
-        if (checkForAbort(block, blockId)) return;
         if (flipWhenVerticalIds.includes(blockId))
             flipWhenVertical(block);
         else if (flipIds.includes(blockId))
             flip(block);
         else if (openIds.includes(blockId))
-            open(event.source, block);
+            open(event.player, block);
         else
             rotate(block);
     }, 0);
 });
+
+function isFlippableOnPlace(block) {
+    return flipOnPlaceIds.includes(block.typeId.replace('minecraft:', ''));
+}
 
 function flip(block) {
     const structure = BlockRotator.saveBlock(block);
@@ -142,7 +142,7 @@ function safeSetblock(player, blockData) {
     return block.dimension.getBlock(block.location);
 }
 
-function needsCooldown(block) {
+function isOnCooldown(block) {
     return previousBlocks.some(b => 
         b?.typeId === block.typeId 
         && b?.location.x === block.location.x 

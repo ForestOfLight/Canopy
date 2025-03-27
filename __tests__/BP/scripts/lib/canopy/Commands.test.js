@@ -9,6 +9,13 @@ vi.mock("@minecraft/server", () => ({
             chatSend: {
                 subscribe: vi.fn()
             }
+        },
+        afterEvents: {
+            worldLoad: {
+                subscribe: (callback) => {
+                    callback();
+                }
+            }
         }
     },
     system: {
@@ -137,7 +144,7 @@ describe('Commands', () => {
                     { type: 'number', name: 'numArg' },
                     { type: 'identifier', name: 'entityArg' },
                     { type: 'array', name: 'arrayArg' },
-                    { type: 'player', name: 'playerArg' },
+                    { type: 'player', name: 'playerArg' }
                 ],
                 runCallback: vi.fn() };
             sender = { sendMessage: vi.fn() };
@@ -153,7 +160,7 @@ describe('Commands', () => {
 
         it('should send an error message if the command is admin only and the sender is not an admin', () => {
             command.isAdminOnly = () => true;
-            sender.hasTag = () => false;
+            sender.getTags = () => [];
             Commands.executeCommand(sender, 'test', []);
             expect(sender.sendMessage).toHaveBeenCalledWith({ translate: 'commands.generic.nopermission' });
         });
@@ -202,7 +209,7 @@ describe('Commands', () => {
                 isAdminOnly: () => false, 
                 getContingentRules: () => ['rule1'],
                 getArgs: () => [
-                    { type: 'string|boolean|number|identifier|array|player', name: 'multiArg' },
+                    { type: 'string|boolean|number|identifier|array|player', name: 'multiArg' }
                 ],
                 runCallback: vi.fn() };
             Commands.register(command2);
@@ -223,7 +230,7 @@ describe('Commands', () => {
                 isAdminOnly: () => false, 
                 getContingentRules: () => ['rule1'],
                 getArgs: () => [
-                    { type: 'string|boolean|number|identifier', name: 'multiArg' },
+                    { type: 'string|boolean|number|identifier', name: 'multiArg' }
                 ],
                 runCallback: vi.fn() };
             Commands.register(command2);
@@ -237,7 +244,7 @@ describe('Commands', () => {
                 isAdminOnly: () => false, 
                 getContingentRules: () => ['rule1'],
                 getArgs: () => [
-                    { type: 'string|boolean|number|identifier', name: 'multiArg' },
+                    { type: 'string|boolean|number|identifier', name: 'multiArg' }
                 ],
                 runCallback: vi.fn() };
             Commands.register(command2);
@@ -251,7 +258,7 @@ describe('Commands', () => {
                 isAdminOnly: () => false, 
                 getContingentRules: () => ['rule1'],
                 getArgs: () => [
-                    { type: 'string|boolean|number|identifier', name: 'multiArg' },
+                    { type: 'string|boolean|number|identifier', name: 'multiArg' }
                 ],
                 runCallback: vi.fn() };
             Commands.register(command2);
@@ -265,7 +272,7 @@ describe('Commands', () => {
                 isAdminOnly: () => false, 
                 getContingentRules: () => ['rule1'],
                 getArgs: () => [
-                    { type: 'string|boolean|number|identifier', name: 'multiArg' },
+                    { type: 'string|boolean|number|identifier', name: 'multiArg' }
                 ],
                 runCallback: vi.fn() };
             Commands.register(command2);

@@ -4,7 +4,7 @@ import { GameMode, world } from "@minecraft/server";
 new Rule({
     category: 'Rules',
     identifier: 'refillHand',
-    description: { translate: 'rules.refillHand' },
+    description: { translate: 'rules.refillHand' }
 });
 
 const ARROW_SLOT = 10;

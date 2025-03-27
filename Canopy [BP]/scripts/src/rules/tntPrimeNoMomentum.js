@@ -6,7 +6,7 @@ new Rule({
     category: 'Rules',
     identifier: 'tntPrimeNoMomentum',
     description: { translate: 'rules.tntPrimeNoMomentum' },
-    independentRules: ['tntPrimeMaxMomentum'],
+    independentRules: ['tntPrimeMaxMomentum']
 });
 
 world.afterEvents.entitySpawn.subscribe((event) => {
@@ -14,7 +14,7 @@ world.afterEvents.entitySpawn.subscribe((event) => {
     const entity = event.entity;
     if (Rules.getNativeValue('dupeTnt')) {
         system.runTimeout(() => {
-            if (!entity.isValid()) return;
+            if (!entity.isValid) return;
             haltHorizontalVelocity(entity);
         }, 1);
     } else {

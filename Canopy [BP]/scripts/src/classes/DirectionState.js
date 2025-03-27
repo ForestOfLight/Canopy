@@ -1,4 +1,98 @@
+/* eslint-disable camelcase */
 import { StructureMirrorAxis } from "@minecraft/server";
+
+const mirrored = {
+    facing_direction: {
+        0: 1,
+        1: 0,
+        2: StructureMirrorAxis.X,
+        3: StructureMirrorAxis.X,
+        4: StructureMirrorAxis.Z,
+        5: StructureMirrorAxis.Z
+    },
+    direction: {
+        0: StructureMirrorAxis.Z,
+        1: StructureMirrorAxis.X,
+        2: StructureMirrorAxis.Z,
+        3: StructureMirrorAxis.X
+    },
+    orientation: {
+        'north_up': 'south_up',
+        'south_up': 'north_up',
+        'east_up': 'west_up',
+        'west_up': 'east_up',
+        'up_east': 'down_west',
+        'up_west': 'down_east',
+        'up_north': 'down_south',
+        'up_south': 'down_north',
+        'down_east': 'up_west',
+        'down_west': 'up_east',
+        'down_north': 'up_south',
+        'down_south': 'up_north'
+    },
+    rail_direction: {
+        0: StructureMirrorAxis.Z,
+        1: StructureMirrorAxis.X
+    },
+    raw: {
+        facing_direction: {
+            0: 1,
+            1: 0,
+            2: 3,
+            3: 2,
+            4: 5,
+            5: 4
+        },
+        direction: {
+            0: 2,
+            1: 3,
+            2: 0,
+            3: 1
+        },
+        rail_direction: {
+            0: 1,
+            1: 0
+        }
+    }
+}
+
+const rotated = {
+    facing_direction: {
+        0: 1,
+        1: 0,
+        2: StructureMirrorAxis.X,
+        3: StructureMirrorAxis.X,
+        4: StructureMirrorAxis.Z,
+        5: StructureMirrorAxis.Z
+    },
+    direction: {
+        2: 4,
+        4: 3,
+        3: 5,
+        5: 2,
+        0: 1,
+        1: 0
+    },
+    orientation: {
+        'north_up': 'east_up',
+        'south_up': 'west_up',
+        'east_up': 'south_up',
+        'west_up': 'north_up',
+        'up_east': 'down_west',
+        'up_west': 'down_east',
+        'up_north': 'down_south',
+        'up_south': 'down_north',
+        'down_east': 'up_west',
+        'down_west': 'up_east',
+        'down_north': 'up_south',
+        'down_south': 'up_north'
+    },
+    pillar_axis: {
+        'y': 'x',
+        'x': 'z',
+        'z': 'y'
+    }
+}
 
 class DirectionStateFinder {
     static getDirectionState(permutation) {
@@ -18,140 +112,27 @@ class DirectionStateFinder {
     
     static getMirroredDirection(block) {
         const directionState = this.getDirectionState(block.permutation);
-        switch (directionState.name) {
-            case 'facing_direction':
-                return {
-                    0: 1,
-                    1: 0,
-                    2: StructureMirrorAxis.X,
-                    3: StructureMirrorAxis.X,
-                    4: StructureMirrorAxis.Z,
-                    5: StructureMirrorAxis.Z
-                }[directionState.value];
-            case 'direction':
-                return {
-                    0: StructureMirrorAxis.Z,
-                    1: StructureMirrorAxis.X,
-                    2: StructureMirrorAxis.Z,
-                    3: StructureMirrorAxis.X
-                }[directionState.value];
-            case 'orientation':
-                return {
-                    'north_up': 'south_up',
-                    'south_up': 'north_up',
-                    'east_up': 'west_up',
-                    'west_up': 'east_up',
-                    'up_east': 'down_west',
-                    'up_west': 'down_east',
-                    'up_north': 'down_south',
-                    'up_south': 'down_north',
-                    'down_east': 'up_west',
-                    'down_west': 'up_east',
-                    'down_north': 'up_south',
-                    'down_south': 'up_north'
-                }[directionState.value];
-            case 'rail_direction':
-                return {
-                    0: StructureMirrorAxis.Z,
-                    1: StructureMirrorAxis.X
-                }[directionState.value];
-            default:
-                throw new Error('Could not mirror direction. Invalid direction state.');
-        }
+        const mirroredState = mirrored[directionState.name]?.[directionState.value];
+        if (!mirroredState)
+            throw new Error('Could not mirror direction. Invalid direction state.');
+        return mirroredState;
     }
 
     static getRotatedDirection(block) {
         const directionState = this.getDirectionState(block.permutation);
-        switch (directionState.name) {
-            case 'facing_direction':
-                return {
-                    0: 1,
-                    1: 0,
-                    2: StructureMirrorAxis.X,
-                    3: StructureMirrorAxis.X,
-                    4: StructureMirrorAxis.Z,
-                    5: StructureMirrorAxis.Z
-                }[directionState.value];
-            case 'direction':
-                return {
-                    2: 4,
-                    4: 3,
-                    3: 5,
-                    5: 2,
-                    0: 1,
-                    1: 0
-                }[directionState.value];
-            case 'orientation':
-                return {
-                    'north_up': 'east_up',
-                    'south_up': 'west_up',
-                    'east_up': 'south_up',
-                    'west_up': 'north_up',
-                    'up_east': 'down_west',
-                    'up_west': 'down_east',
-                    'up_north': 'down_south',
-                    'up_south': 'down_north',
-                    'down_east': 'up_west',
-                    'down_west': 'up_east',
-                    'down_north': 'up_south',
-                    'down_south': 'up_north'
-                }[directionState.value];
-            case 'rail_direction':
-                return (directionState.value + 1) % 2;
-            case 'pillar_axis':
-                return {
-                    'y': 'x',
-                    'x': 'z',
-                    'z': 'y'
-                }[directionState.value];
-            default:
-                throw new Error('Could not rotate direction. Invalid direction state.');
-        }
+        const rotatedState = rotated[directionState.name]?.[directionState.value];
+        if (!rotatedState)
+            throw new Error('Could not rotate direction. Invalid direction state.');
+        return rotatedState;
     }
 
     static getRawMirroredDirection(block) {
         const directionState = this.getDirectionState(block.permutation);
         if (!directionState) return 0;
-        switch (directionState.name) {
-            case 'facing_direction':
-                return {
-                    0: 1,
-                    1: 0,
-                    2: 3,
-                    3: 2,
-                    4: 5,
-                    5: 4
-                }[directionState.value];
-            case 'direction':
-                return {
-                    0: 2,
-                    1: 3,
-                    2: 0,
-                    3: 1
-                }[directionState.value];
-            case 'orientation':
-                return {
-                    'north_up': 'south_up',
-                    'south_up': 'north_up',
-                    'east_up': 'west_up',
-                    'west_up': 'east_up',
-                    'up_east': 'down_west',
-                    'up_west': 'down_east',
-                    'up_north': 'down_south',
-                    'up_south': 'down_north',
-                    'down_east': 'up_west',
-                    'down_west': 'up_east',
-                    'down_north': 'up_south',
-                    'down_south': 'up_north'
-                }[directionState.value];
-            case 'rail_direction':
-                return {
-                    0: 1,
-                    1: 0
-                }[directionState.value];
-            default:
-                throw new Error('Could not mirror direction. Invalid direction state.');
-        }
+        const mirroredState = mirrored.raw[directionState.name]?.[directionState.value];
+        if (!mirroredState)
+            throw new Error('Could not mirror direction. Invalid direction state.');
+        return mirroredState;
     }
 
     static getRelativeBlock(block, directionState) {
@@ -170,11 +151,13 @@ class DirectionStateFinder {
                     0: block.north(),
                     1: block.east(),
                     2: block.south(),
-                    3: block.east()
+                    3: block.west()
                 }[directionState.value];
             case 'orientation':
-                if (directionState.value.startsWith('up')) return block.above();
-                else if (directionState.value.startsWith('down')) return block.below();
+                if (directionState.value.startsWith('up'))
+                    return block.above();
+                else if (directionState.value.startsWith('down'))
+                    return block.below();
                 return {
                     'north_up': block.north(),
                     'south_up': block.south(),

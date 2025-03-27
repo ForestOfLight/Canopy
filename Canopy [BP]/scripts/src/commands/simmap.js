@@ -1,21 +1,21 @@
 import { Command } from "../../lib/canopy/Canopy";
-import { MinecraftDimensionTypes, world } from "@minecraft/server";
+import { DimensionTypes, world } from "@minecraft/server";
 import { isNumeric, getColoredDimensionName } from "../../include/utils";
 
 const DEFAULT_CHUNK_DISTANCE = 7;
 const MAX_CHUNK_DISTANCE = 30;
 
 const validDimensions = {
-    'o': MinecraftDimensionTypes.overworld,
-    'overworld': MinecraftDimensionTypes.overworld,
-    'minecraft:overworld': MinecraftDimensionTypes.overworld,
-    'n': MinecraftDimensionTypes.nether,
-    'nether': MinecraftDimensionTypes.nether,
-    'minecraft:nether': MinecraftDimensionTypes.nether,
-    'e': MinecraftDimensionTypes.theEnd,
-    'end': MinecraftDimensionTypes.theEnd,
-    'the_end': MinecraftDimensionTypes.theEnd,
-    'minecraft:the_end': MinecraftDimensionTypes.theEnd
+    'o': DimensionTypes.get('overworld'),
+    'overworld': DimensionTypes.get('overworld'),
+    'minecraft:overworld': DimensionTypes.get('overworld'),
+    'n': DimensionTypes.get('nether'),
+    'nether': DimensionTypes.get('nether'),
+    'minecraft:nether': DimensionTypes.get('nether'),
+    'e': DimensionTypes.get('the_end'),
+    'end': DimensionTypes.get('the_end'),
+    'the_end': DimensionTypes.get('the_end'),
+    'minecraft:the_end': DimensionTypes.get('the_end')
 };
 
 const cmd = new Command({
@@ -26,7 +26,7 @@ const cmd = new Command({
         { type: 'number|string', name: 'argOne' },
         { type: 'string|number', name: 'argTwo' },
         { type: 'number', name: 'argThree' },
-        { type: 'number', name: 'argFour' },
+        { type: 'number', name: 'argFour' }
     ],
     callback: simmapCommand,
     helpEntries: [
@@ -61,7 +61,7 @@ function handleInfoDisplayConfig(sender, args) {
     } else if (argTwo === 'here') {
         resetLocation(sender);
     } else {
-        return cmd.sendUsage(sender);
+        cmd.sendUsage(sender);
     }
 }
 
@@ -98,7 +98,7 @@ function getConfig(player) {
     
     const config = {
         isLocked: false,
-        dimension: MinecraftDimensionTypes.overworld,
+        dimension: DimensionTypes.get('overworld'),
         location: { x: 0, z: 0 },
         distance: 7
     };
@@ -119,7 +119,7 @@ function handleChatCommand(sender, args) {
     } else if (isNumeric(argOne) && argTwo === null) {
         printLoadedChunks(sender, dimensionLocation, argOne);
     } else if (argOne !== null && argTwo !== null && argThree === null) {
-        return cmd.sendUsage(sender);
+        cmd.sendUsage(sender);
     } else if (isNumeric(argOne) && argTwo !== null && argThree !== null && argFour !== null) {
         dimensionLocation.dimension = world.getDimension(validDimensions[argTwo]);
         dimensionLocation.location = { x: argThree, z: argFour };
@@ -129,7 +129,7 @@ function handleChatCommand(sender, args) {
         dimensionLocation.location = { x: argTwo, z: argThree };
         printLoadedChunks(sender, dimensionLocation, DEFAULT_CHUNK_DISTANCE);
     } else {
-        return cmd.sendUsage(sender);
+        cmd.sendUsage(sender);
     }
 }
 

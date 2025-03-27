@@ -9,6 +9,11 @@ vi.mock('@minecraft/server', () => ({
             chatSend: {
                 subscribe: vi.fn()
             }
+        },
+        afterEvents: {
+            worldLoad: {
+                subscribe: vi.fn()
+            }
         }
     },
     system: {
@@ -50,6 +55,23 @@ describe('Extension', () => {
             };
             const extensionWithRawTextDescription = new Extension(extensionDataWithRawTextDescription);
             expect(extensionWithRawTextDescription.getDescription()).toEqual({ text: 'This is a test extension' });
+        });
+
+        it('should throw error for invalid name', () => {
+            expect(() => new Extension({ ...extensionData, name: '123456789012345678901234567890abc' })).toThrow('[Canopy] Extension name must be a string, contain at least one alphanumeric character, and be less than 32 characters.');
+        });
+        
+        it('should throw error for invalid version', () => {
+            expect(() => new Extension({ ...extensionData, version: 'invalid_version' })).toThrow('[Canopy] Version must be in format #.#.#');
+        });
+
+        it('should throw error for invalid author', () => {
+            expect(() => new Extension({ ...extensionData, author: '' })).toThrow('[Canopy] Extension author must be a string, contain at least one alphanumeric character, and be less than 32 characters.');
+            expect(() => new Extension({ ...extensionData, author: 123 })).toThrow('[Canopy] Extension author must be a string, contain at least one alphanumeric character, and be less than 32 characters.');
+        });
+
+        it('should throw error for null description', () => {
+            expect(() => new Extension({ ...extensionData, description: null })).toThrow('[Canopy] Extension description cannot be null.');
         });
     });
 

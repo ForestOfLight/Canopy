@@ -1,10 +1,20 @@
+import { world } from "@minecraft/server";
+
 class Rules {
     static #rules = {};
+    static worldLoaded = false;
+    static rulesToRegister = [];
 
-    static register(rule) {
-        if (this.exists(rule.getID())) 
-            throw new Error(`[Canopy] Rule with identifier '${rule.getID()}' already exists.`);
-        this.#rules[rule.getID()] = rule;
+    static async register(rule) {
+        if (this.worldLoaded) {
+            if (this.exists(rule.getID())) 
+                throw new Error(`[Canopy] Rule with identifier '${rule.getID()}' already exists.`);
+            this.#rules[rule.getID()] = rule;
+            if (rule.getCategory() === "Rules" && await rule.getValue() === true)
+                rule.onEnable();
+        } else {
+            this.rulesToRegister.push(rule);
+        }
     }
 
     static get(identifier) {
@@ -62,6 +72,17 @@ class Rules {
     static getByCategory(category) {
         return this.getAll().filter(rule => rule.getCategory() === category);
     }
+
+    static registerQueuedRules() {
+        for (const rule of this.rulesToRegister)
+            this.register(rule);
+        this.rulesToRegister = [];
+    }
 }
+
+world.afterEvents.worldLoad.subscribe(() => {
+    Rules.worldLoaded = true;
+    Rules.registerQueuedRules();
+});
 
 export { Rules };

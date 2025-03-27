@@ -7,7 +7,7 @@ const ADDITIONAL_DURABILITIES = [20];
 const rule = new Rule({
     category: 'Rules',
     identifier: 'durabilityNotifier',
-    description: { translate: 'rules.durabilityNotifier', with: [ACTIVE_DURABILITY.toString()] },
+    description: { translate: 'rules.durabilityNotifier', with: [ACTIVE_DURABILITY.toString()] }
 });
 
 world.afterEvents.playerBreakBlock.subscribe((event) => durabilityClink(event.player, event.itemStackBeforeBreak, event.itemStackAfterBreak));

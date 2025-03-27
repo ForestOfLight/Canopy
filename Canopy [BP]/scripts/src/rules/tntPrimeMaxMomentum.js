@@ -5,7 +5,7 @@ new Rule({
     category: 'Rules',
     identifier: 'tntPrimeMaxMomentum',
     description: { translate: 'rules.tntPrimeMaxMomentum' },
-    independentRules: ['tntPrimeNoMomentum'],
+    independentRules: ['tntPrimeNoMomentum']
 });
 
 const MAX_VELOCITY = 0.019600000232548116; // From vanilla TNT: 49/2500 with some floating point error
@@ -15,7 +15,7 @@ world.afterEvents.entitySpawn.subscribe((event) => {
     const entity = event.entity;
     if (Rules.getNativeValue('dupeTnt')) {
         system.runTimeout(() => {
-            if (!entity.isValid()) return;
+            if (!entity.isValid) return;
             haltHorizontalVelocity(entity);
             applyHardcodedImpulse(entity);
         }, 1);

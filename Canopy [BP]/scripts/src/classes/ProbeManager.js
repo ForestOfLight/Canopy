@@ -30,7 +30,7 @@ class ProbeManager {
         const probe = this.probeMap[player?.id];
         if (!probe) return;
         probe.detachFromPlayer();
-        if (probe.entity.isValid())
+        if (probe.entity.isValid)
             probe.entity.remove();
         delete this.probeMap[player?.id];
     }
@@ -125,7 +125,7 @@ class ProbeManager {
             const probeEntities = getEntitiesByType('canopy:probe');
             let count = 0;
             for (const probeEntity of probeEntities) {
-                if (probeEntity.isValid()) {
+                if (probeEntity.isValid) {
                     try {
                         probeEntity.remove();
                         count++;

@@ -1,5 +1,6 @@
 import { Command } from "../../lib/canopy/Canopy";
-import { populateItems, getRaycastResults, getClosestTarget, parseName, stringifyLocation } from "../../include/utils";
+import { getRaycastResults, getClosestTarget, stringifyLocation } from "../../include/utils";
+import { InventoryUI } from "../classes/InventoryUI";
 
 const MAX_DISTANCE = 6*16;
 const currentQuery = {};
@@ -11,8 +12,9 @@ new Command({
     args: [
         { type: 'string', name: 'itemQuery' }
     ],
+    contingentRules: ['allowPeekInventory'],
     callback: peekCommand
-})
+});
 
 function peekCommand(sender, args) {
     const { itemQuery } = args;
@@ -20,61 +22,42 @@ function peekCommand(sender, args) {
     updateQueryMap(sender, itemQuery);
     const target = getTarget(sender);
     if (!target) return;
-    const inventory = getInventory(sender, target);
-    if (!inventory) return;
-    const items = populateItems(inventory);
-    sender.sendMessage(formatOutput(target, items, itemQuery));
+
+    const invUI = new InventoryUI(target);
+    showUI(sender, target, invUI);
 }
 
 function updateQueryMap(sender, itemQuery) {
     const oldQuery = currentQuery[sender.name];
-    if ([null, undefined].includes(oldQuery) && itemQuery === null) {return;}
-    else if (itemQuery === null && ![null, undefined].includes(oldQuery)) {
+    if ([null, undefined].includes(oldQuery) && itemQuery === null)
+        return;
+    if (itemQuery === null && ![null, undefined].includes(oldQuery)) {
         currentQuery[sender.name] = null;
-        return sender.sendMessage({ translate: 'commands.peek.query.cleared' });
+        sender.sendMessage({ translate: 'commands.peek.query.cleared' });
+        return;
     } 
-        currentQuery[sender.name] = itemQuery;
-        sender.sendMessage({ translate: 'commands.peek.query.set', with: [itemQuery] });   
+    currentQuery[sender.name] = itemQuery;
+    sender.sendMessage({ translate: 'commands.peek.query.set', with: [itemQuery] });   
 }
 
 function getTarget(sender) {
     const {blockRayResult, entityRayResult} = getRaycastResults(sender, MAX_DISTANCE);
     if (!blockRayResult && !entityRayResult[0])
         return sender.sendMessage({ translate: 'generic.target.notfound' });
-    const targetEntity = getClosestTarget(sender, blockRayResult, entityRayResult);
-    const targetData = {
-        name: parseName(targetEntity),
-        entity: targetEntity,
-    };
-    return targetData;
+    return getClosestTarget(sender, blockRayResult, entityRayResult);
 }
 
-function getInventory(sender, target) {
-    let inventory;
+function showUI(sender, target, invUI) {
     try {
-        inventory = target.entity.getComponent('inventory');
-    } catch {
-        return sender.sendMessage({ translate: 'commands.peek.fail.unloaded', with: [stringifyLocation(target.entity.location, 0)] });
-    }
-    if (!inventory)
-        return sender.sendMessage({ translate: 'commands.peek.fail.noinventory', with: [target.name, stringifyLocation(target.entity.location, 0)] });
-    return inventory;
-}
-
-function formatOutput(target, items, itemQuery) {
-    if (Object.keys(items).length === 0)
-        return { translate: 'commands.peek.fail.noitems', with: [target.name, stringifyLocation(target.entity.location, 0)] };
-
-    let output = '§g-------------\n';
-    output += `§l§e${target.name}§r: ${stringifyLocation(target.entity.location, 0)}`;
-    for (const itemName in items) {
-        if (itemQuery && itemName.includes(itemQuery))
-            output += `\n§c${itemName}§r: ${items[itemName]}`;
+        invUI.show(sender);
+    } catch (error) {
+        if (error.message.includes('entity may be unloaded or removed'))
+            sender.sendMessage({ translate: 'commands.peek.fail.unloaded', with: [stringifyLocation(target.entity.location, 0)] });
+        else if (error.message.includes('no inventory component found'))
+            sender.sendMessage({ translate: 'commands.peek.fail.noinventory', with: [target.name, stringifyLocation(target.entity.location, 0)] });
         else
-            output += `\n§e${itemName}§r: ${items[itemName]}`;
+            new Error(`[Canopy] Error showing inventory UI:`, { cause: error });
     }
-    output += '\n§g-------------';
-    return output;
 }
 
 export { currentQuery };

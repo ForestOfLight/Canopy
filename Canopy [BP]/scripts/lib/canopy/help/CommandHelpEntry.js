@@ -9,9 +9,8 @@ class CommandHelpEntry extends HelpEntry {
 
     toRawMessage() {
         const message = { rawtext: [{ text: `§2${this.command.getUsage()}§8 - ` }, this.description] };
-        for (const helpEntry of this.command.getHelpEntries()) 
+        for (const helpEntry of this.command.getHelpEntries())
             message.rawtext.push({ rawtext: [{ text: `\n  §7> §2${Commands.getPrefix()}${helpEntry.usage}§8 - ` }, helpEntry.description] });
-        
         return message;
     }
 }

@@ -7,7 +7,7 @@ const CLAIM_RADIUS = 25;
 new Rule({
     category: 'Rules',
     identifier: 'commandClaimProjectiles',
-    description: { translate: 'rules.commandClaimProjectiles' },
+    description: { translate: 'rules.commandClaimProjectiles' }
 });
 
 new Command({
@@ -61,7 +61,7 @@ function getTargetPlayer(sender, playerName) {
 }
 
 function getProjectilesInRange(sender, radius) {
-    const radiusProjectiles = new Array();
+    const radiusProjectiles = [];
     const radiusEntities = sender.dimension.getEntities({ location: sender.location, maxDistance: radius });
     for (const entity of radiusEntities) {
         if (entity?.hasComponent('minecraft:projectile'))
