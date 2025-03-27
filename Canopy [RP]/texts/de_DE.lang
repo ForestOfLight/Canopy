@@ -169,9 +169,9 @@ commands.removeentity.success=§7Entfernt %1 mit der id '%2'.
 commands.resetall=Setzt alle §lCanopy§r§8 Regeln und Daten zurück. Mit Vorsicht verwenden.
 commands.resetall.success=§7Alle Eigenschaften von §lCanopy§r§8 für Spieler und Welt- Dynamik wurden zurückgesetzt.
 
-commands.resettest=Resets spawn tracking, hopper counters, and hopper generators at the same time.
-commands.resettest.success=§7Reset spawn counters, hopper counters, and hopper generators.
-commands.resettest.success.actionbar=[%s] §7Reset spawn counters, hopper counters, and hopper generators.
+commands.resettest=Setzt Spawn-Tracking, Trichterzähler und Trichtergeneratoren gleichzeitig zurück.
+commands.resettest.success=§7Rücksetzen von Spawn-Zählern, Trichterzählern und Trichtergeneratoren.
+commands.resettest.success.actionbar=[%s] §7Rücksetzen von Spawn-Zählern, Trichterzählern und Trichtergeneratoren.
 
 commands.simmap=Zeigt eine Karte der geladenen Chunks in Ihrer Nähe oder am angegebenen Ort an.
 commands.simmap.help.distance=Zeigt die Karte mit einem Radius von Chunks an, der der angegebenen Entfernung entspricht.
