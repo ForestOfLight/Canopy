@@ -26,7 +26,7 @@ const cmd = new Command({
         { usage: 'counter <color/all> <count/hr/min/sec>', description: { translate: 'commands.counter.mode' } },
         { usage: 'counter [color/all] reset', description: { translate: 'commands.counter.reset' } }
     ]
-})
+});
 
 new Command({
     name: 'ct',
@@ -39,7 +39,7 @@ new Command({
     callback: counterCommand,
     contingentRules: ['hopperCounters'],
     helpHidden: true
-})
+});
 
 function counterCommand(sender, args) {
     const { argOne, argTwo } = args;

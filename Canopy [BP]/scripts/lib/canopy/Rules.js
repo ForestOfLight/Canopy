@@ -2,8 +2,8 @@ import { world } from "@minecraft/server";
 
 class Rules {
     static #rules = {};
-    static worldLoaded = false;
     static rulesToRegister = [];
+    static worldLoaded = false;
 
     static async register(rule) {
         if (this.worldLoaded) {
