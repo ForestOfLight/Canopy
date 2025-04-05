@@ -4,6 +4,7 @@ import { wait } from "../../include/utils";
 const MS_PER_SECOND = 1000;
 const SAMPLE_INTERVAL = 2;
 const NUM_SAMPLES = 50;
+const TPS_SAMPLE_SIZE = TicksPerSecond * 5;
 
 class Profiler {
     static lastTickDate = Date.now();
@@ -74,7 +75,7 @@ class Profiler {
         this.tickMS = Date.now() - this.lastTickDate;
         this.tickTps = MS_PER_SECOND / this.tickMS;
         this.#tpsValues.push(this.tickTps);
-        if (this.#tpsValues.length > TicksPerSecond)
+        if (this.#tpsValues.length > TPS_SAMPLE_SIZE)
             this.#tpsValues.shift();
         this.lastTickDate = Date.now();
         this.tps = this.#tpsValues.reduce((a, b) => a + b, 0) / this.#tpsValues.length;
