@@ -70,7 +70,7 @@ class InventoryUI {
 
     formatItemDescription(itemStack) {
         const itemDesc = this.formatEnchantments(itemStack)
-        return itemDesc;
+        return `§7${itemDesc}`;
     }
 
     formatEnchantments(itemStack) {
