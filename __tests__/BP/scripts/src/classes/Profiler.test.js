@@ -18,7 +18,8 @@ vi.mock("@minecraft/server", () => ({
         clearRun: vi.fn((runner) => {
             runner.clear();
         })
-    }
+    },
+    TicksPerSecond: 20.0
 }));
 
 vi.mock("@minecraft/server-ui", () => ({

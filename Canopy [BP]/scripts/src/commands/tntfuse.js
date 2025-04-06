@@ -1,15 +1,9 @@
-import { Rule, Rules, Command } from "../../lib/canopy/Canopy";
-import { system, world } from "@minecraft/server";
+import { Command } from "../../lib/canopy/Canopy";
 import { isNumeric } from "../../include/utils";
+import { commandTntFuse } from "../rules/commandTntFuse";
 
 const MIN_FUSE_TICKS = 1;
 const MAX_FUSE_TICKS = 72000;
-
-new Rule({
-    category: 'Rules',
-    identifier: 'commandTntFuse',
-    description: { translate: 'rules.commandTntFuse' }
-});
 
 const cmd = new Command({
     name: 'tntfuse',
@@ -22,39 +16,18 @@ const cmd = new Command({
     contingentRules: ['commandTntFuse']
 });
 
-world.afterEvents.entitySpawn.subscribe((event) => {
-    if (event.entity?.typeId !== 'minecraft:tnt' || event.cause === 'Event') return;
-    const fuseTimeProperty = world.getDynamicProperty('tntFuseTime');
-    let fuseTime = 80;
-    if (fuseTimeProperty !== undefined && Rules.getNativeValue('commandTntFuse'))
-        fuseTime = fuseTimeProperty;
-    if (fuseTime === 1) {
-        event.entity.triggerEvent('canopy:explode');
-    } else {
-        event.entity.triggerEvent('canopy:fuse');
-        system.runTimeout(() => {
-            if (event.entity.isValid)
-                event.entity.triggerEvent('canopy:explode');
-        }, fuseTime - 1);
-    }
-});
-
-function tntfuseCommand(sender, args) {
+export function tntfuseCommand(sender, args) {
     let { ticks } = args;
     if (ticks === 'reset') {
         ticks = 80;
         sender.sendMessage({ translate: 'commands.tntfuse.reset.success' });
-        setFuseTime(ticks);
+        commandTntFuse.setGlobalFuseTicks(ticks);
     } else if (isNumeric(ticks) && ticks >= MIN_FUSE_TICKS && ticks <= MAX_FUSE_TICKS) {
         sender.sendMessage({ translate: 'commands.tntfuse.set.success', with: [String(ticks)] });
-        setFuseTime(ticks);
-    } else if (!isNumeric(ticks) || ticks < MIN_FUSE_TICKS || ticks > MAX_FUSE_TICKS) {
+        commandTntFuse.setGlobalFuseTicks(ticks);
+    } else if (ticks !== null && (!isNumeric(ticks) || ticks < MIN_FUSE_TICKS || ticks > MAX_FUSE_TICKS)) {
         sender.sendMessage({ translate: 'commands.tntfuse.set.fail', with: [String(ticks), String(MIN_FUSE_TICKS), String(MAX_FUSE_TICKS)] });
     } else {
         cmd.sendUsage(sender);
     }
-}
-
-function setFuseTime(ticks) {
-    world.setDynamicProperty('tntFuseTime', Number(ticks));
 }

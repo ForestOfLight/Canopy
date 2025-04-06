@@ -31,7 +31,8 @@ vi.mock("@minecraft/server", () => ({
             { typeId: "minecraft:nether" },
             { typeId: "minecraft:the_end" }
         ]
-    }
+    },
+    TicksPerSecond: 20.0
 }));
 
 vi.mock("@minecraft/server-ui", () => ({
