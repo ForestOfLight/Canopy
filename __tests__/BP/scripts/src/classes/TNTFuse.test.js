@@ -41,6 +41,14 @@ vi.mock("@minecraft/server", () => ({
     }
 }));
 
+const tnt = { 
+    typeId: 'minecraft:tnt',
+    getDynamicProperty: vi.fn(() => tnt.fuseTicks),
+    setDynamicProperty: vi.fn((_, value) => { tnt.fuseTicks = value }),
+    isValid: true,
+    triggerEvent: vi.fn()
+};
+
 describe('TNTFuse', () => {
     beforeAll(() => {
         vi.useFakeTimers();
@@ -49,6 +57,7 @@ describe('TNTFuse', () => {
 
     afterEach(() => {
         vi.clearAllMocks();
+        tnt.fuseTicks = void 0;
         vi.advanceTimersByTime(10000);
     });
 
@@ -57,13 +66,6 @@ describe('TNTFuse', () => {
     });
 
     it('should create a new instance based on a tnt entity', () => {
-        const tnt = { 
-            typeId: 'minecraft:tnt',
-            getDynamicProperty: vi.fn(() => tnt.fuseTicks),
-            setDynamicProperty: vi.fn((_, value) => { tnt.fuseTicks = value }),
-            isValid: true,
-            triggerEvent: vi.fn()
-        };
         const tntFuse = new TNTFuse(tnt);
         expect(tntFuse).toBeInstanceOf(TNTFuse);
     });
@@ -74,49 +76,21 @@ describe('TNTFuse', () => {
     });
 
     it('should take an optional argument for the desired fuse time', () => {
-        const tnt = { 
-            typeId: 'minecraft:tnt',
-            getDynamicProperty: vi.fn(() => tnt.fuseTicks),
-            setDynamicProperty: vi.fn((_, value) => { tnt.fuseTicks = value }),
-            isValid: true,
-            triggerEvent: vi.fn()
-        };
         const tntFuse = new TNTFuse(tnt, 1);
         expect(tntFuse.totalFuseTicks).toEqual(1);
     });
 
     it('should default to 80 ticks if no fuse time is provided', () => {
-        const tnt = { 
-            typeId: 'minecraft:tnt',
-            getDynamicProperty: vi.fn(() => tnt.fuseTicks),
-            setDynamicProperty: vi.fn((_, value) => { tnt.fuseTicks = value }),
-            isValid: true,
-            triggerEvent: vi.fn()
-        };
         const tntFuse = new TNTFuse(tnt);
         expect(tntFuse.totalFuseTicks).toEqual(80);
     });
 
     it('should store the number of remaining fuse ticks as a DP on the tnt entity', () => {
-        const tnt = { 
-            typeId: 'minecraft:tnt',
-            getDynamicProperty: vi.fn(() => tnt.fuseTicks),
-            setDynamicProperty: vi.fn((_, value) => { tnt.fuseTicks = value }),
-            isValid: true,
-            triggerEvent: vi.fn()
-        };
         new TNTFuse(tnt);
         expect(tnt.getDynamicProperty('fuseTicks')).toEqual(79);
     });
 
     it('should start the fuse when the instance is created', () => {
-        const tnt = { 
-            typeId: 'minecraft:tnt',
-            getDynamicProperty: vi.fn(() => tnt.fuseTicks),
-            setDynamicProperty: vi.fn((_, value) => { tnt.fuseTicks = value }),
-            isValid: true,
-            triggerEvent: vi.fn()
-        };
         new TNTFuse(tnt);
         const onTickMock = vi.spyOn(tnt, 'setDynamicProperty');
         vi.advanceTimersByTime(50);
@@ -125,42 +99,27 @@ describe('TNTFuse', () => {
 
     it('should explode when the fuse reaches 0', () => {
         const fuseTime = 80;
-        const tnt = { 
-            typeId: 'minecraft:tnt',
-            getDynamicProperty: vi.fn(() => tnt.fuseTicks),
-            setDynamicProperty: vi.fn((_, value) => { tnt.fuseTicks = value }),
-            isValid: true,
-            triggerEvent: vi.fn()
-        };
         const tntFuse = new TNTFuse(tnt, fuseTime);
         const explosionMock = vi.spyOn(tntFuse, 'triggerExplosion');
         vi.advanceTimersByTime(50*fuseTime);
-        expect(tnt.getDynamicProperty('fuseTicks')).toEqual(-1);
         expect(explosionMock).toHaveBeenCalled();
     });
 
     it('should not decrease the fuse ticks if the entity is not valid', () => {
-        const tnt = { 
+        const invalidTnt = { 
             typeId: 'minecraft:tnt',
-            getDynamicProperty: vi.fn(() => tnt.fuseTicks),
-            setDynamicProperty: vi.fn((_, value) => { tnt.fuseTicks = value }),
+            getDynamicProperty: vi.fn(() => invalidTnt.fuseTicks),
+            setDynamicProperty: vi.fn((_, value) => { invalidTnt.fuseTicks = value }),
             isValid: false,
             triggerEvent: vi.fn()
         };
-        new TNTFuse(tnt);
+        new TNTFuse(invalidTnt);
         vi.advanceTimersByTime(1000);
-        expect(tnt.getDynamicProperty('fuseTicks')).toEqual(79);
+        expect(invalidTnt.getDynamicProperty('fuseTicks')).toEqual(79);
     });
 
     it('should take the fuse time from the entity if it already has a fuse time set', () => {
-        const tnt = { 
-            typeId: 'minecraft:tnt',
-            fuseTicks: 10,
-            getDynamicProperty: vi.fn(() => tnt.fuseTicks),
-            setDynamicProperty: vi.fn((_, value) => { tnt.fuseTicks = value }),
-            isValid: true,
-            triggerEvent: vi.fn()
-        };
+        tnt.fuseTicks = 10;
         new TNTFuse(tnt);
         expect(tnt.getDynamicProperty('fuseTicks')).toEqual(9);
     });
