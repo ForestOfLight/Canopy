@@ -56,7 +56,7 @@ function handleInfoDisplayConfig(sender, args) {
     if (isNumeric(argTwo)) {
         updateDistance(sender, argTwo);
     } else if (validDimensions[argTwo] && x !== null && z !== null) {
-        const dimensionLocation = { dimension: validDimensions[argTwo], x, z };
+        const dimensionLocation = { dimension: validDimensions[argTwo].typeId, x, z };
         updateLocation(sender, dimensionLocation);
     } else if (argTwo === 'here') {
         resetLocation(sender);

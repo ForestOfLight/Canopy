@@ -29,9 +29,13 @@ export class TNTFuse {
     }
 
     onTick() {
-        if (!this.tntEntity.isValid) return;
+        if (!this.tntEntity.isValid) {
+            this.stopFuse();
+            return;
+        }
+        if (this.tntIsUnloaded()) return;
         const currentFuseTicks = this.tntEntity.getDynamicProperty('fuseTicks');
-        if (currentFuseTicks <= 0) {
+        if (currentFuseTicks <= 1) {
             this.triggerExplosion();
             this.stopFuse();
         }
@@ -44,5 +48,9 @@ export class TNTFuse {
 
     triggerExplosion() {
         this.tntEntity.triggerEvent('canopy:explode');
+    }
+
+    tntIsUnloaded() {
+        return !this.tntEntity.dimension.getBlock(this.tntEntity.location);
     }
 }
