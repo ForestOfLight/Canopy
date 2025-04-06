@@ -72,7 +72,7 @@ class SRCItemDatabase {
         });
     }
     get(key) {
-        const item = itemMemory.get(this.table + key)
+        const item = itemMemory.get(this.table + key);
         return item ? item : undefined;
     };
     async set(key, itemStack) {
@@ -84,7 +84,8 @@ class SRCItemDatabase {
             if (existingStructure) {
                 world.structureManager.delete(newId);
                 itemMemory.delete(newId)
-                Databases.structureIds.set(this.table, Array.from(Databases.structureIds.get(this.table) ?? []).filter(id => id !== newId));
+                const structureIds = Array.from(Databases.structureIds.get(this.table) ?? []);
+                Databases.structureIds.set(this.table, structureIds.filter(id => id !== newId));
             };
             const newItem = SRCItemDatabase.dimension.spawnItem(itemStack, { x: location.x + 0.5, y: location.y, z: location.z + 0.5 });
             world.structureManager.createFromWorld(newId, SRCItemDatabase.dimension, location, location, {
@@ -94,7 +95,9 @@ class SRCItemDatabase {
             });
             itemMemory.set(newId, newItem.getComponent(EntityItemComponent.componentId).itemStack);
             newItem.remove();
-            Databases.structureIds.set(this.table, Array.from(Databases.structureIds.get(this.table) ?? []).push(newId));
+            const structureIds = Array.from(Databases.structureIds.get(this.table) ?? []);
+            structureIds.push(newId);
+            Databases.structureIds.set(this.table, structureIds);
             success = true;
         });
         return success;
@@ -107,8 +110,9 @@ class SRCItemDatabase {
         world.structureManager.place(newId, SRCItemDatabase.dimension, location, { includeBlocks: false, includeEntities: true });
         const item = SRCItemDatabase.dimension.getEntities({ closest: 1, type: 'minecraft:item', location: location, maxDistance: 3 })[0];
         if (!item) return undefined;
+        const itemStack = item.getComponent(EntityItemComponent.componentId).itemStack;
         item.remove();
-        return item.getComponent(EntityItemComponent.componentId).itemStack;
+        return itemStack;
     };
     getOnce(key) {
         const item = this.get(key);
