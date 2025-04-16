@@ -28,8 +28,8 @@
         }
       },
       "minecraft:collision_box": {
-        "width": 0.0001,
-        "height": 0.0001
+        "width": 0.0,
+        "height": 0.0
       },
       "minecraft:health": {
         "value": 1,
