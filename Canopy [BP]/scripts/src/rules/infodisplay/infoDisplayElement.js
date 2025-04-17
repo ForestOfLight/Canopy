@@ -27,4 +27,4 @@ class InfoDisplayElement {
     }
 }
 
-export default InfoDisplayElement;
+export { InfoDisplayElement };

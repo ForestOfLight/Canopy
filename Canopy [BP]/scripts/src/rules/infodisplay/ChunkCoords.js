@@ -1,4 +1,4 @@
-import InfoDisplayElement from './InfoDisplayElement.js';
+import { InfoDisplayElement } from './InfoDisplayElement.js';
 
 class ChunkCoords extends InfoDisplayElement {
     constructor(player, displayLine) {

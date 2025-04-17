@@ -1,4 +1,4 @@
-import InfoDisplayElement from './InfoDisplayElement.js';
+import { InfoDisplayElement } from './InfoDisplayElement.js';
 import { Profiler } from '../../classes/Profiler.js';
 import { TicksPerSecond } from '@minecraft/server';
 

@@ -46,7 +46,10 @@ const tnt = {
     getDynamicProperty: vi.fn(() => tnt.fuseTicks),
     setDynamicProperty: vi.fn((_, value) => { tnt.fuseTicks = value }),
     isValid: true,
-    triggerEvent: vi.fn()
+    triggerEvent: vi.fn(),
+    dimension: {
+        getBlock: vi.fn(() => true)
+    }
 };
 
 describe('TNTFuse', () => {
@@ -105,13 +108,16 @@ describe('TNTFuse', () => {
         expect(explosionMock).toHaveBeenCalled();
     });
 
-    it('should not decrease the fuse ticks if the entity is not valid', () => {
+    it('should not decrease the fuse ticks if the entity is not loaded', () => {
         const invalidTnt = { 
             typeId: 'minecraft:tnt',
             getDynamicProperty: vi.fn(() => invalidTnt.fuseTicks),
             setDynamicProperty: vi.fn((_, value) => { invalidTnt.fuseTicks = value }),
-            isValid: false,
-            triggerEvent: vi.fn()
+            isValid: true,
+            triggerEvent: vi.fn(),
+            dimension: {
+                getBlock: vi.fn(() => false)
+            }
         };
         new TNTFuse(invalidTnt);
         vi.advanceTimersByTime(1000);

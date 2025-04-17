@@ -1,4 +1,4 @@
-import InfoDisplayElement from './InfoDisplayElement.js';
+import { InfoDisplayElement } from './InfoDisplayElement.js';
 import { getAllTrackerInfoString } from 'src/commands/trackevent';
 
 class EventTrackers extends InfoDisplayElement {

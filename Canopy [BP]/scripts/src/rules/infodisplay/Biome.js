@@ -1,4 +1,4 @@
-import InfoDisplayElement from './InfoDisplayElement.js';
+import { InfoDisplayElement } from './InfoDisplayElement.js';
 import ProbeManager from '../../classes/ProbeManager';
 
 class Biome extends InfoDisplayElement {

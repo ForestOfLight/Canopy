@@ -19,6 +19,7 @@ import SimulationMap from './SimulationMap';
 import LookingAt from './LookingAt';
 import SignalStrength from './SignalStrength';
 import PeekInventory from './PeekInventory';
+import { BlockStates } from './BlockStates';
 
 const playerToInfoDisplayMap = {};
 let currentTickWorldwideElementData = {};
@@ -49,7 +50,8 @@ class InfoDisplay {
 			new SimulationMap(player, 12),
 			new LookingAt(player, 13),
 			new SignalStrength(player, 13),
-			new PeekInventory(player, 14)
+			new BlockStates(player, 14),
+			new PeekInventory(player, 15)
 		];
 		playerToInfoDisplayMap[player.id] = this;
 	}

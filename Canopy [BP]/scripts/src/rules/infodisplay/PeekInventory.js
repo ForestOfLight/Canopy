@@ -1,4 +1,4 @@
-import InfoDisplayElement from "./InfoDisplayElement";
+import { InfoDisplayElement } from "./InfoDisplayElement";
 import { getRaycastResults, getClosestTarget, populateItems } from "../../../include/utils";
 import { currentQuery } from "../../commands/peek";
 

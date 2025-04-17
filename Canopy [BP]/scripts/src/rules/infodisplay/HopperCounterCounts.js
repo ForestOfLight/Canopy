@@ -1,4 +1,4 @@
-import InfoDisplayElement from "./InfoDisplayElement";
+import { InfoDisplayElement } from "./InfoDisplayElement";
 import { counterChannels } from "../../classes/CounterChannels";
 import { getColorCode } from "../../../include/utils";
 

@@ -1,4 +1,4 @@
-import InfoDisplayElement from './InfoDisplayElement.js';
+import { InfoDisplayElement } from './InfoDisplayElement.js';
 import MT from 'lib/mt.js';
 
 class SlimeChunk extends InfoDisplayElement {

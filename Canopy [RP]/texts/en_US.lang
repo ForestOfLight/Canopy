@@ -356,4 +356,5 @@ rules.infoDisplay.hopperCounterCounts=Shows all active hopper counter counts in 
 rules.infoDisplay.simulationMap=Shows a map of the loaded chunks around you. The simmap command can be used to configure this. Warning: This is a very laggy rule.
 rules.infoDisplay.lookingAt=Shows the identifier of the block or entity you are looking at.
 rules.infoDisplay.signalStrength=Shows the signal strength of the block you are looking at.
+rules.infoDisplay.blockStates=Shows the states of the block you are looking at.
 rules.infoDisplay.peekInventory=Shows the inventory of the block or entity you are looking at.

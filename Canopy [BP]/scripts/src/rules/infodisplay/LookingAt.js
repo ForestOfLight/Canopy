@@ -1,4 +1,4 @@
-import InfoDisplayElement from "./InfoDisplayElement";
+import { InfoDisplayElement } from "./InfoDisplayElement";
 import { getRaycastResults, parseName, stringifyLocation } from "../../../include/utils";
 
 class LookingAt extends InfoDisplayElement {
