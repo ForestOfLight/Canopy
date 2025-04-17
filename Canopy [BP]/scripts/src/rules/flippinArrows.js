@@ -48,14 +48,17 @@ world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
     if (checkForAbort(block, blockId)) return;
     event.cancel = true;
     system.runTimeout(() => {
+        let succeeded = false;
         if (flipWhenVerticalIds.includes(blockId))
-            flipWhenVertical(block);
+            succeeded = flipWhenVertical(block);
         else if (flipIds.includes(blockId))
-            flip(block);
+            succeeded = flip(block);
         else if (openIds.includes(blockId))
-            open(event.player, block);
+            succeeded = open(event.player, block);
         else
-            rotate(block);
+            succeeded = rotate(block);
+        if (succeeded)
+            event.player.playSound('block.itemframe.rotate_item', { pitch: 1.3 });
     }, 0);
 });
 
@@ -65,14 +68,18 @@ function isFlippableOnPlace(block) {
 
 function flip(block) {
     const structure = BlockRotator.saveBlock(block);
-    if (structure === undefined) return;
+    if (structure === undefined)
+        return false;
     BlockRotator.placeMirrored(structure.id, block);
+    return true;
 }
 
 function rotate(block) {
     const structure = BlockRotator.saveBlock(block);
-    if (structure === undefined) return;
+    if (structure === undefined)
+        return false;
     BlockRotator.placeRotated(structure.id, block);
+    return true;
 }
 
 function open(player, block) {
@@ -111,6 +118,7 @@ function open(player, block) {
         otherPermutations
     }
     safeSetblock(player, blockData);
+    return true;
 }
 
 function flipWhenVertical(block) {
@@ -119,6 +127,7 @@ function flipWhenVertical(block) {
         rotate(block);
     else
         flip(block);
+    return true;
 }
 
 function checkForAbort(block, blockId) {

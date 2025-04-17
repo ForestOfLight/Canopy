@@ -9,7 +9,7 @@ class HopperCounterCounts extends InfoDisplayElement {
     }
 
     getFormattedDataOwnLine() {
-        const activeChannels = counterChannels.getActiveChannels();
+        const activeChannels = counterChannels?.getActiveChannels() || [];
         let output = '';
         if (activeChannels.length > 0 && activeChannels.length <= 4)
             output += 'Counters: ';
