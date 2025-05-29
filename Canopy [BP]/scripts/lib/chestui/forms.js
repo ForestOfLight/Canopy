@@ -1,4 +1,4 @@
-import { Container } from '@minecraft/server';
+import { Container, ItemComponentTypes } from '@minecraft/server';
 import { ActionFormData } from '@minecraft/server-ui';
 import { typeIdToDataId, typeIdToID } from './typeIds.js';
 
@@ -159,7 +159,7 @@ class ChestFormData {
 			const typeId = item.typeId;
 			const targetTexture = custom_content_keys.has(typeId) ? custom_content[typeId]?.texture : typeId;
 			const ID = typeIdToDataId.get(targetTexture) ?? typeIdToID.get(targetTexture);
-			const durability = item.getComponent('durability');
+			const durability = item.getComponent(ItemComponentTypes.Durability);
 			const durDamage = durability ? Math.round((durability.maxDurability - durability.damage) / durability.maxDurability * 99) : 0;
 			const amount = item.amount;
 			const formattedItemName = typeId.replace(/.*(?<=:)/, '').replace(/_/g, ' ').replace(/(^\w|\s\w)/g, (m) => m.toUpperCase());
@@ -243,7 +243,7 @@ class FurnaceFormData {
 			const typeId = item.typeId;
 			const targetTexture = custom_content_keys.has(typeId) ? custom_content[typeId]?.texture : typeId;
 			const ID = typeIdToDataId.get(targetTexture) ?? typeIdToID.get(targetTexture);
-			const durability = item.getComponent('durability');
+			const durability = item.getComponent(ItemComponentTypes.Durability);
 			const durDamage = durability ? Math.round((durability.maxDurability - durability.damage) / durability.maxDurability * 99) : 0;
 			const amount = item.amount;
 			const formattedItemName = typeId.replace(/.*(?<=:)/, '').replace(/_/g, ' ').replace(/(^\w|\s\w)/g, (m) => m.toUpperCase());
