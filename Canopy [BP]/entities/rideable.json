@@ -54,6 +54,7 @@
         "seats": {
           "position": [ 0.0, 0.0, 0.0 ]
         }
+        // "dismount_mode": "on_top_center"
       }
     }
   }
