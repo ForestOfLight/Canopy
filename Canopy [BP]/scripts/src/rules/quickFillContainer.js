@@ -27,7 +27,7 @@ world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
 
     system.run(() => {
         const successfulTransfers = transferAllItemType(playerInv, blockInv, handItemStack.typeId);
-        if (successfulTransfers === 0) // true either no items were transferred OR the stacks in the container were only topped off
+        if (successfulTransfers === 0) // true means either no items were transferred OR the stacks in the container were only topped off
             return;
         const feedback = { rawtext: [{ translate: 'rules.quickFillContainer.filled', with: [block.typeId.replace('minecraft:', ''), handItemStack.typeId.replace('minecraft:', '')] }] };
         feedback.rawtext.push({ text: ` (§a${blockInv.size - blockInv.emptySlotsCount}§7/§a${blockInv.size}§7)` });
