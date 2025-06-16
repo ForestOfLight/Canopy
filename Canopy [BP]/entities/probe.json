@@ -9,7 +9,7 @@
             "properties": {
                 "canopy:biome": {
                     "type": "int",
-                    "range": [-1, 85],
+                    "range": [-1, 86],
                     "default": -1
                 },
 				"canopy:light":{
@@ -36,7 +36,7 @@
             },
             "minecraft:damage_sensor": {
                 "triggers": {
-                    "deals_damage": false
+                    "deals_damage": "no"
                 }
             },
             "minecraft:collision_box": {
@@ -896,11 +896,18 @@
 							]
 						}
 					},
-					// Pale Gardens
+					// Pale Garden
 					{
 						"event": "canopy:pale_garden",
 						"filters": {
-                            "all_of": [{ "test": "has_biome_tag", "value": "pale_garden" }]
+                            "all_of": [
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "pale_garden" }
+							],
+							"none_of": [
+								{ "test": "has_biome_tag", "value": "nether" }
+							]
                         }
 					},
 					// Plains
