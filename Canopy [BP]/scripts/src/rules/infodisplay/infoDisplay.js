@@ -3,7 +3,7 @@ import { system, world } from '@minecraft/server';
 import Coords from './Coords';
 import CardinalFacing from './CardinalFacing';
 import Facing from './Facing';
-import ChunkCoords from './ChunkCoords';
+import { ChunkCoords } from './ChunkCoords';
 import SlimeChunk from './SlimeChunk';
 import TPS from './TPS';
 import Entities from './Entities';

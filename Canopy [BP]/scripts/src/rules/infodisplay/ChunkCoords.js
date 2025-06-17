@@ -34,4 +34,4 @@ class ChunkCoords extends InfoDisplayElement {
     }
 }
 
-export default ChunkCoords;
+export { ChunkCoords };
