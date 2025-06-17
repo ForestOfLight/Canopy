@@ -896,20 +896,6 @@
 							]
 						}
 					},
-					// Pale Garden
-					{
-						"event": "canopy:pale_garden",
-						"filters": {
-                            "all_of": [
-								{ "test": "has_biome_tag", "value": "monster" },
-								{ "test": "has_biome_tag", "value": "overworld" },
-								{ "test": "has_biome_tag", "value": "pale_garden" }
-							],
-							"none_of": [
-								{ "test": "has_biome_tag", "value": "nether" }
-							]
-                        }
-					},
 					// Plains
 					{
 						"event": "canopy:plains",
@@ -1219,6 +1205,20 @@
 								{ "test": "has_biome_tag", "value": "spawn_endermen" }
 							]
 						}
+					},
+					// Pale Garden
+					{
+						"event": "canopy:pale_garden",
+						"filters": {
+                            "all_of": [
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "pale_garden" }
+							],
+							"none_of": [
+								{ "test": "has_biome_tag", "value": "nether" }
+							]
+                        }
 					},
 
 					{"filters": {"test": "light_level", "value": 0},"event": "light_0"},
