@@ -1,5 +1,5 @@
 import { EntityComponentTypes, ItemComponentTypes, system } from "@minecraft/server";
-import { forceShow, titleCase, parseName } from "../../include/utils";
+import { forceShow, titleCase } from "../../include/utils";
 import { ChestFormData } from "../../lib/chestui/forms";
 
 class InventoryUI {
@@ -59,13 +59,15 @@ class InventoryUI {
     }
 
     formatContainerName() {
-        return titleCase(parseName(this.target).replace('minecraft:', ''));
+        if (this.target.typeId === 'minecraft:player') 
+		    return `§o${this.target.name}§r`;
+        return { translate: this.target.localizationKey } || this.target.typeId;
     }
 
     formatItemName(itemStack) {
         if (itemStack.nameTag)
             return `§o${itemStack.nameTag}`;
-        return titleCase(itemStack.typeId.replace('minecraft:', ''));
+        return { rawtext: [{ translate: itemStack.localizationKey }] } || itemStack.typeId;
     }
 
     formatItemDescription(itemStack) {

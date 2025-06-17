@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { 
 	calcDistance, isString, isNumeric, parseName, getClosestTarget, stringifyLocation, 
-	populateItems, getColorCode, wait, getInventory, locationInArea, getColoredDimensionName, 
+	getColorCode, wait, getInventory, locationInArea, getColoredDimensionName, 
 	getScriptEventSourceName, getScriptEventSourceObject, recolor, titleCase, formatColorStr
 } from '../../../../Canopy [BP]/scripts/include/utils.js';
 
@@ -168,65 +168,6 @@ describe('stringifyLocation()', () => {
 	it('returns correct string with large precision', () => {
 		const location = { x: 1.23456789, y: 5.67890123, z: 9.01234567 };
 		expect(stringifyLocation(location, 8)).toBe('[1.23456789, 5.67890123, 9.01234567]');
-	});
-});
-
-describe('populateItems()', () => {
-	it('returns correct item counts for non-empty inventory', () => {
-		const inventory = {
-			container: {
-				size: 3,
-				getSlot: vi.fn((i) => {
-					if (i === 0) return { typeId: 'minecraft:stone', amount: 10 };
-					if (i === 1) return { typeId: 'minecraft:dirt', amount: 5 };
-					if (i === 2) return { typeId: 'minecraft:stone', amount: 15 };
-				})
-			}
-		};
-		const items = populateItems(inventory);
-		expect(items).toEqual({ stone: 25, dirt: 5 });
-	});
-
-	it('returns empty object for empty inventory', () => {
-		const inventory = {
-			container: {
-				size: 3,
-				getSlot: vi.fn(() => undefined)
-			}
-		};
-		const items = populateItems(inventory);
-		expect(items).toEqual({});
-	});
-
-	it('handles inventory with undefined slots', () => {
-		const inventory = {
-			container: {
-				size: 3,
-				getSlot: vi.fn((i) => {
-					if (i === 0) return { typeId: 'minecraft:stone', amount: 10 };
-					if (i === 1) return undefined;
-					if (i === 2) return { typeId: 'minecraft:stone', amount: 15 };
-				})
-			}
-		};
-		const items = populateItems(inventory);
-		expect(items).toEqual({ stone: 25 });
-	});
-
-	it('handles inventory with different item types', () => {
-		const inventory = {
-			container: {
-				size: 4,
-				getSlot: vi.fn((i) => {
-					if (i === 0) return { typeId: 'minecraft:stone', amount: 10 };
-					if (i === 1) return { typeId: 'minecraft:dirt', amount: 5 };
-					if (i === 2) return { typeId: 'minecraft:wood', amount: 20 };
-					if (i === 3) return { typeId: 'minecraft:stone', amount: 15 };
-				})
-			}
-		};
-		const items = populateItems(inventory);
-		expect(items).toEqual({ stone: 25, dirt: 5, wood: 20 });
 	});
 });
 

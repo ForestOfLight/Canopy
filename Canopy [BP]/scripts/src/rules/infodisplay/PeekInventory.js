@@ -1,6 +1,7 @@
 import { InfoDisplayElement } from "./InfoDisplayElement";
-import { getRaycastResults, getClosestTarget, populateItems } from "../../../include/utils";
+import { getRaycastResults, getClosestTarget } from "../../../include/utils";
 import { currentQuery } from "../../commands/peek";
+import { ItemStack } from "@minecraft/server";
 
 class PeekInventory extends InfoDisplayElement {
     player;
@@ -16,7 +17,7 @@ class PeekInventory extends InfoDisplayElement {
     }
 
     getFormattedDataOwnLine() {
-        return { text: `${this.parsePeekInventory()}` };
+        return this.parsePeekInventory() || { text: '' };
     }
 
     getFormattedDataSharedLine() {
@@ -25,31 +26,54 @@ class PeekInventory extends InfoDisplayElement {
 
     parsePeekInventory() {
         const { blockRayResult, entityRayResult } = getRaycastResults(this.player, 7);
-		if (!blockRayResult && !entityRayResult) return '';
+		if (!blockRayResult && !entityRayResult)
+			return;
 		const target = getClosestTarget(this.player, blockRayResult, entityRayResult);
-		if (!target) return '';
-		
-        let inventory;
+		if (!target)
+			return;
+        let container;
 		try {
-			inventory = target.getComponent('inventory');
+			container = target.getComponent('inventory')?.container;
+			if (!container)
+				return;
 		} catch {
-			return '';
+			return;
 		}
-		if (!inventory) return '';
-	
-		let output = '';
-		const items = populateItems(inventory);
-		if (Object.keys(items).length > 0) {
-			for (const itemName in items) {
-				if (itemName.includes(currentQuery[this.player.name]))
-					output += `§c${itemName}: ${items[itemName]}\n`;
+		const itemCounts = this.countItems(container);
+		return this.formatCountedItems(itemCounts);
+	}
+
+	countItems(container) {
+		const items = {};
+		for (let i = 0; i < container.size; i++) {
+			try {
+				const itemStack = container.getItem(i);
+				const itemType = itemStack.typeId;
+				if (items[itemType])
+					items[itemType] += itemStack.amount;
 				else
-					output += `§r${itemName}: ${items[itemName]}\n`;
+					items[itemType] = itemStack.amount;
+			} catch {
+				continue;
 			}
-		} else {output = '§rEmpty';}
-				
+		}
+		return items;
+	}
+
+	formatCountedItems(itemCounts) {
+		const output = { rawtext: [{ text: `§r` }] };
+		if (Object.keys(itemCounts).length > 0) {
+			for (const itemType in itemCounts) {
+				if (itemType.includes(currentQuery[this.player.name]))
+					output.rawtext.push({ text: `§c` });
+				output.rawtext.push({ translate: new ItemStack(itemType).localizationKey });
+				output.rawtext.push({ text: `: ${itemCounts[itemType]}\n` });
+			}
+		} else {
+			output.rawtext.push({ translate: 'rules.infoDisplay.peekInventory.empty' });
+		}
 		return output;
 	}
 }
 
-export default PeekInventory;
+export { PeekInventory };

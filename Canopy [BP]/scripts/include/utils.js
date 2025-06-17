@@ -45,22 +45,6 @@ export function stringifyLocation(location, precision = 0) {
 	return `[${location.x.toFixed(precision)}, ${location.y.toFixed(precision)}, ${location.z.toFixed(precision)}]`
 }
 
-export function populateItems(inventory) {
-	const items = {};
-	inventory = inventory.container;
-	for (let i = 0; i < inventory.size; i++) {
-		try {
-			const itemStack = inventory.getSlot(i);
-			const data = itemStack.typeId.replace('minecraft:','');
-			if (items[data]) items[data] += itemStack.amount;
-			else items[data] = itemStack.amount;
-		} catch {
-			continue;
-		}
-	}
-	return items;
-}
-
 export function getColorCode(color) {
 	color = color.toLowerCase();
 	switch (color) {
