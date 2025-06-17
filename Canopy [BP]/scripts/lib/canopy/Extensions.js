@@ -45,7 +45,7 @@ class Extensions {
         IPC.on('canopyExtension:registerExtension', RegisterExtension, (extensionData) => {
             const extension = new Extension(extensionData);
             this.extensions[extension.getID()] = extension;
-            console.warn(`[Canopy] Registered ${extensionData.name} v${extensionData.version}.`);
+            console.info(`[Canopy] Registered ${extensionData.name} v${extensionData.version}.`);
         });
         IPC.send('canopyExtension:ready', Ready, {});
     }
