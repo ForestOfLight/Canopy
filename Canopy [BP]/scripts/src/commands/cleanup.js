@@ -30,21 +30,20 @@ new Command({
 });
 
 const TRASH_ENTITY_TYPES = ['minecraft:item', 'minecraft:xp_orb'];
+const DEFAULT_DISTANCE = 50;
 
 function cleanupCommand(sender, args) {
-    const { distance } = args;
+    let { distance } = args;
+    if (distance === null)
+        distance = DEFAULT_DISTANCE;
     const removedCount = removeTrashEntities(sender, distance);
-    sender.sendMessage({ translate: 'commands.cleanup.success', with: [removedCount.toString()] });
+    sender.sendMessage({ translate: 'commands.cleanup.success', with: [removedCount.toString(), distance.toString()] });
 }
 
 function removeTrashEntities(player, distance) {
     let removedCount = 0;
     for (const type of TRASH_ENTITY_TYPES) {
-        let entities;
-        if (distance === null)
-            entities = player.dimension.getEntities({ type: type });
-        else
-            entities = player.dimension.getEntities({ type: type, location: player.location, maxDistance: distance });
+        const entities = player.dimension.getEntities({ type: type, location: player.location, maxDistance: distance });
         for (const entity of entities) {
             entity.remove();
             removedCount++;

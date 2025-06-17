@@ -68,7 +68,7 @@ commands.claimprojectiles.success.self=§7Successfully became the owner of %1 pr
 commands.claimprojectiles.success.other=§7Successfully changed the owner of %1 projectiles within %2 blocks of %3.
 
 commands.cleanup=Removes all items and experience orbs within a radius. (Alias: k)
-commands.cleanup.success=§7Cleaned up %s entities.
+commands.cleanup.success=§7Cleaned up %1 entities (r%2).
 
 commands.counter=Manages hopper counters. (Alias: ct)
 commands.counter.channel.notfound=§cInvalid color: %s. Please use one of the wool block colors.
