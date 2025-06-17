@@ -6,7 +6,10 @@ const tntEntity = {
     getDynamicProperty: vi.fn(() => this.fuseTicks),
     setDynamicProperty: vi.fn((_, value) => { this.fuseTicks = value; }),
     triggerEvent: vi.fn(),
-    isValid: true
+    isValid: true,
+    dimension: {
+        getBlock: vi.fn((location) => true)
+    }
 };
 let fuseTicks = 80;
 let commandTntFuseDP = false;
