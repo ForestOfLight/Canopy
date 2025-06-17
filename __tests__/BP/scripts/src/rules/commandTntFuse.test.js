@@ -8,7 +8,7 @@ const tntEntity = {
     triggerEvent: vi.fn(),
     isValid: true,
     dimension: {
-        getBlock: vi.fn((location) => true)
+        getBlock: vi.fn(() => true)
     }
 };
 let fuseTicks = 80;

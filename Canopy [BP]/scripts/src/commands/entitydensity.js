@@ -1,5 +1,5 @@
 import { Command } from "../../lib/canopy/Canopy";
-import { DimensionTypes, world } from '@minecraft/server';
+import { world } from '@minecraft/server';
 import { isString } from "../../include/utils";
 
 const NUM_RESULTS = 10;
