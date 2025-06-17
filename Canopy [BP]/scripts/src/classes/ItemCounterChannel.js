@@ -1,4 +1,4 @@
-import { system, world } from "@minecraft/server";
+import { system, world, ItemStack } from "@minecraft/server";
 import { formatColorStr, getColorCode } from "../../include/utils";
 import ItemCounterChannels from "./ItemCounterChannels";
 
@@ -120,7 +120,11 @@ class ItemCounterChannel {
             ]}
         ]};
         for (const item of Object.keys(this.itemMap))
-            message.rawtext.push({ text: `\n §7- ${item}: ${this.#getAllModeOutput(item)}` });
+            message.rawtext.push({ rawtext: [
+                { text: `\n §7- ` },
+                { translate: new ItemStack(item).localizationKey },
+                { text: `: ${this.#getAllModeOutput(item)}` }
+            ]});
         return message;
     }
 

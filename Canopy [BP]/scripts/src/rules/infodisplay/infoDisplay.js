@@ -18,7 +18,7 @@ import HopperCounterCounts from './HopperCounterCounts';
 import SimulationMap from './SimulationMap';
 import LookingAt from './LookingAt';
 import SignalStrength from './SignalStrength';
-import PeekInventory from './PeekInventory';
+import { PeekInventory } from './PeekInventory';
 import { BlockStates } from './BlockStates';
 
 const playerToInfoDisplayMap = {};
