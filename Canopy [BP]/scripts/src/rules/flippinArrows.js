@@ -48,7 +48,7 @@ world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
     if (checkForAbort(block, blockId)) return;
     event.cancel = true;
     system.runTimeout(() => {
-        let succeeded = false;
+        let succeeded;
         if (flipWhenVerticalIds.includes(blockId))
             succeeded = flipWhenVertical(block);
         else if (flipIds.includes(blockId))

@@ -61,13 +61,13 @@ class InventoryUI {
     formatContainerName() {
         if (this.target.typeId === 'minecraft:player') 
 		    return `§o${this.target.name}§r`;
-        return { translate: this.target.localizationKey } || this.target.typeId;
+        return { translate: this.target.localizationKey };
     }
 
     formatItemName(itemStack) {
         if (itemStack.nameTag)
             return `§o${itemStack.nameTag}`;
-        return { rawtext: [{ translate: itemStack.localizationKey }] } || itemStack.typeId;
+        return { rawtext: [{ translate: itemStack.localizationKey }] };
     }
 
     formatItemDescription(itemStack) {
