@@ -1,10 +1,4 @@
-import { Rule, Command } from '../../lib/canopy/Canopy';
-
-new Rule({
-    category: 'Rules',
-    identifier: 'commandGamemode',
-    description: { translate: 'rules.commandGamemode' }
-});
+import { Command } from '../../lib/canopy/Canopy';
 
 const gamemodeMap = {
     's': 'survival',
@@ -19,6 +13,6 @@ for (const key in gamemodeMap) {
         description: { translate: `commands.gamemode.${key}` },
         usage: key,
         callback: (sender) => sender.runCommand(`gamemode ${gamemodeMap[key]}`),
-        contingentRules: ['commandGamemode']
+        opOnly: true
     });
 }

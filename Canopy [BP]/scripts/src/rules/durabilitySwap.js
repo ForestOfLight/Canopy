@@ -1,5 +1,5 @@
 import { Rule, Rules} from "../../lib/canopy/Canopy";
-import { world, GameMode } from '@minecraft/server';
+import { world, GameMode, ItemComponentTypes, EntityComponentTypes } from '@minecraft/server';
 import { usedDurability, getRemainingDurability } from 'src/rules/durabilityNotifier';
 
 const rule = new Rule({
@@ -14,7 +14,7 @@ world.afterEvents.playerInteractWithEntity.subscribe((event) => durabilitySwap(e
 
 function durabilitySwap(player, beforeItemStack, itemStack) {
     if (!Rules.getNativeValue(rule.getID()) || !player || !itemStack || !beforeItemStack
-        || player.getGameMode() === GameMode.creative
+        || player.getGameMode() === GameMode.Creative
         || !usedDurability(beforeItemStack, itemStack)
     ) return;
     const durability = getRemainingDurability(itemStack);
@@ -23,7 +23,7 @@ function durabilitySwap(player, beforeItemStack, itemStack) {
 }
 
 function swapOutItem(player) {
-    const playerInventory = player.getComponent('inventory')?.container;
+    const playerInventory = player.getComponent(EntityComponentTypes.Inventory)?.container;
     if (!playerInventory) return;
     let swapSlot = findEmptySlot(playerInventory);
     if (swapSlot === -1)
@@ -47,7 +47,7 @@ function findEmptySlot(playerInventory) {
 function findSlotWithoutDurabilityComponent(playerInventory) {
     for (let slotIndex = 0; slotIndex < playerInventory.size; slotIndex++) {
         const slot = playerInventory.getSlot(slotIndex);
-        if (slot.hasItem() && !slot.getItem()?.hasComponent('durability')) 
+        if (slot.hasItem() && !slot.getItem()?.hasComponent(ItemComponentTypes.Durability)) 
             return slotIndex;
         
     }

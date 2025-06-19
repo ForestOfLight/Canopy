@@ -126,7 +126,7 @@ function openMenu(sender) {
     for (const rule of rules) {
         try {
             const ruleValue = rule.getValue(sender);
-            form.toggle(rule.getID(), ruleValue);
+            form.toggle(rule.getID(), { defaultValue: ruleValue, tooltip: rule.getDescription() });
         } catch (error) {
             sender.sendMessage(`§cError: ${error.message} for rule ${rule.getID()}`);
         }

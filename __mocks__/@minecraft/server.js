@@ -7,3 +7,4 @@ export const InputButton = {};
 export const ButtonState = {};
 export const EntityComponentTypes = {};
 export const ItemComponentTypes = {};
+export const TicksPerSecond = 20.0;

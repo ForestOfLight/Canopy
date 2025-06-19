@@ -24,7 +24,8 @@ const cmd = new Command({
         { usage: 'counter <color>', description: { translate: 'commands.counter.query' } },
         { usage: 'counter [color/all] realtime', description: { translate: 'commands.counter.realtime' } },
         { usage: 'counter <color/all> <count/hr/min/sec>', description: { translate: 'commands.counter.mode' } },
-        { usage: 'counter [color/all] reset', description: { translate: 'commands.counter.reset' } }
+        { usage: 'counter [color/all] reset', description: { translate: 'commands.counter.reset' } },
+        { usage: 'counter [color/all] remove', description: { translate: 'commands.counter.remove' } }
     ]
 });
 
@@ -52,6 +53,8 @@ function counterCommand(sender, args) {
         resetAll(sender);
     else if (argOne === 'all' && counterChannels.isValidMode(argTwo))
         setAllMode(sender, argTwo);
+    else if ((argOne === 'remove') || (argOne === 'all' && argTwo === 'remove'))
+        removeAll(sender);
     else if (counterChannels.isValidColor(argOne) && !argTwo)
         query(sender, argOne);
     else if (counterChannels.isValidColor(argOne) && argTwo === 'realtime')
@@ -60,6 +63,8 @@ function counterCommand(sender, args) {
         reset(sender, argOne);
     else if (counterChannels.isValidColor(argOne) && counterChannels.isValidMode(argTwo))
         setMode(sender, argOne, argTwo);
+    else if (counterChannels.isValidColor(argOne) && argTwo === 'remove')
+        remove(sender, argOne);
     else if (argOne && !counterChannels.isValidColor(argOne))
         sender.sendMessage({ translate: 'commands.counter.channel.notfound', with: [argOne] });
     else
@@ -96,6 +101,18 @@ function setAllMode(sender, mode) {
     counterChannels.setAllModes(mode);
     sender.sendMessage({ translate: 'commands.counter.mode.all', with: [mode] });
     broadcastActionBar({ translate: 'commands.counter.mode.all.actionbar', with: [sender.name, mode] }, sender);
+}
+
+function removeAll(sender) {
+    counterChannels.removeAllHoppers();
+    sender.sendMessage({ translate: 'commands.counter.remove.all' });
+    broadcastActionBar({ translate: 'commands.counter.remove.all.actionbar', with: [sender.name] }, sender);
+}
+
+function remove(sender, color) {
+    counterChannels.removeHoppers(color);
+    sender.sendMessage({ translate: 'commands.counter.remove.single', with: [formatColorStr(color)] });
+    broadcastActionBar({ translate: 'commands.counter.remove.single.actionbar', with: [sender.name, formatColorStr(color)] }, sender);
 }
 
 export { query, queryAll };

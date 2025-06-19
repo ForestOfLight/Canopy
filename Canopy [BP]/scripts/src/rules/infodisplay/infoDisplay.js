@@ -3,7 +3,7 @@ import { system, world } from '@minecraft/server';
 import Coords from './Coords';
 import CardinalFacing from './CardinalFacing';
 import Facing from './Facing';
-import ChunkCoords from './ChunkCoords';
+import { ChunkCoords } from './ChunkCoords';
 import SlimeChunk from './SlimeChunk';
 import TPS from './TPS';
 import Entities from './Entities';
@@ -18,7 +18,8 @@ import HopperCounterCounts from './HopperCounterCounts';
 import SimulationMap from './SimulationMap';
 import LookingAt from './LookingAt';
 import SignalStrength from './SignalStrength';
-import PeekInventory from './PeekInventory';
+import { PeekInventory } from './PeekInventory';
+import { BlockStates } from './BlockStates';
 
 const playerToInfoDisplayMap = {};
 let currentTickWorldwideElementData = {};
@@ -49,7 +50,8 @@ class InfoDisplay {
 			new SimulationMap(player, 12),
 			new LookingAt(player, 13),
 			new SignalStrength(player, 13),
-			new PeekInventory(player, 14)
+			new BlockStates(player, 14),
+			new PeekInventory(player, 15)
 		];
 		playerToInfoDisplayMap[player.id] = this;
 	}

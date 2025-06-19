@@ -2,8 +2,9 @@ import { system, TicksPerSecond } from "@minecraft/server";
 import { wait } from "../../include/utils";
 
 const MS_PER_SECOND = 1000;
-const SAMPLE_INTERVAL = 2;
+const SAMPLE_INTERVAL = 3;
 const NUM_SAMPLES = 50;
+const TPS_SAMPLE_SIZE = TicksPerSecond * 2;
 
 class Profiler {
     static lastTickDate = Date.now();
@@ -11,7 +12,7 @@ class Profiler {
     static tickTps = 0;
     static tps = 0;
     static profileTime = SAMPLE_INTERVAL * NUM_SAMPLES;
-    static #tpsValues = [];
+    static #tickMsValues = [];
     static #isRunning = false;
 
     get lastTickDate() { return this.lastTickDate; }
@@ -20,7 +21,8 @@ class Profiler {
     get tps() { return this.tps; }
 
     static start() {
-        if (this.#isRunning) return;
+        if (this.#isRunning)
+            return;
         this.lastTickDate = Date.now();
         system.runInterval(() => this.#updateTPS(), 1);
         this.#isRunning = true;
@@ -73,11 +75,11 @@ class Profiler {
     static #updateTPS() {
         this.tickMS = Date.now() - this.lastTickDate;
         this.tickTps = MS_PER_SECOND / this.tickMS;
-        this.#tpsValues.push(this.tickTps);
-        if (this.#tpsValues.length > TicksPerSecond)
-            this.#tpsValues.shift();
+        this.#tickMsValues.push(this.tickMS);
+        if (this.#tickMsValues.length > TPS_SAMPLE_SIZE)
+            this.#tickMsValues.shift();
         this.lastTickDate = Date.now();
-        this.tps = this.#tpsValues.reduce((a, b) => a + b, 0) / this.#tpsValues.length;
+        this.tps = MS_PER_SECOND / (this.#tickMsValues.reduce((a, b) => a + b, 0) / TPS_SAMPLE_SIZE);
     }
 
     static #getRealMspt() {

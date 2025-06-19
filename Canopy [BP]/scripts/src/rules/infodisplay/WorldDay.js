@@ -1,4 +1,4 @@
-import InfoDisplayElement from './InfoDisplayElement.js';
+import { InfoDisplayElement } from './InfoDisplayElement.js';
 import { world } from '@minecraft/server';
 
 class WorldDay extends InfoDisplayElement {

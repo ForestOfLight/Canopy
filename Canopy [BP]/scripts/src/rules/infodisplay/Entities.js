@@ -1,4 +1,4 @@
-import InfoDisplayElement from "./InfoDisplayElement.js";
+import { InfoDisplayElement } from "./InfoDisplayElement.js";
 import { Vector } from "../../../lib/Vector.js";
 
 class Entities extends InfoDisplayElement {

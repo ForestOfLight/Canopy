@@ -1,4 +1,4 @@
-import InfoDisplayElement from './InfoDisplayElement.js';
+import { InfoDisplayElement } from './InfoDisplayElement.js';
 
 class SessionTime extends InfoDisplayElement {
     player;

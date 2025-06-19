@@ -1,10 +1,9 @@
-import { world, system } from "@minecraft/server";
+import { world, system, CommandPermissionLevel } from "@minecraft/server";
 import IPC from "../MCBE-IPC/ipc";
 import { ArgumentParser } from "./ArgumentParser";
 import { Rules } from "./Rules";
 import { CommandPrefixRequest, CommandPrefixResponse } from "./extension.ipc";
 
-const ADMIN_ONLY_TAG = 'CanopyAdmin';
 const COMMAND_PREFIX = './';
 
 class Commands {
@@ -51,7 +50,7 @@ class Commands {
         if (!this.exists(cmdName))
             return sender.sendMessage({ translate: 'commands.generic.unknown', with: [cmdName, this.getPrefix()] });
         const command = this.get(cmdName);
-        if (command.isAdminOnly() && !this.#isAdmin(sender))
+        if (command.isOpOnly() && !this.#isOp(sender))
             return sender.sendMessage({ translate: 'commands.generic.nopermission' });
         
         await system.run(async () => {
@@ -66,12 +65,8 @@ class Commands {
         });
     }
 
-    static #isAdmin(player) {
-        for (const tag of player.getTags()) {
-            if (tag.toLowerCase() === ADMIN_ONLY_TAG.toLowerCase())
-                return true;
-        }
-        return false;
+    static #isOp(player) {
+        return player.commandPermissionLevel !== CommandPermissionLevel.Any;
     }
 
     static async #getDisabledContingentRules(command) {

@@ -1,5 +1,5 @@
 import { world } from '@minecraft/server';
-import InfoDisplayElement from './InfoDisplayElement.js';
+import { InfoDisplayElement } from './InfoDisplayElement.js';
 import { getConfig, getLoadedChunksMessage } from '../../commands/simmap.js';
 
 class SimulationMap extends InfoDisplayElement {

@@ -1,11 +1,5 @@
+import { Command } from 'lib/canopy/Canopy';
 import { Player, world } from '@minecraft/server';
-import { Rule, Command } from 'lib/canopy/Canopy';
-
-new Rule({
-    category: 'Rules',
-    identifier: 'commandRemoveEntity',
-    description: { translate: 'rules.commandRemoveEntity' }
-});
 
 new Command({
     name: 'removeentity',
@@ -15,7 +9,7 @@ new Command({
         { type: 'number', name: 'id' }
     ],
     callback: removeEntityCommand,
-    contingentRules: ['commandRemoveEntity']
+    opOnly: true
 });
 
 function removeEntityCommand(sender, args) {

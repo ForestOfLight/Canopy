@@ -8,19 +8,19 @@ class Command {
     #callback;
     #args;
     #contingentRules;
-	#adminOnly;
+	#OpOnly;
 	#helpEntries;
 	#helpHidden;
 	#extension;
 
-	constructor({ name, description = { text: '' }, usage, callback, args = [], contingentRules = [], adminOnly = false, helpEntries = [], helpHidden = false, extensionName = undefined }) {
+	constructor({ name, description = { text: '' }, usage, callback, args = [], contingentRules = [], opOnly = false, helpEntries = [], helpHidden = false, extensionName = undefined }) {
 		this.#name = name;
         this.#description = description;
         this.#usage = usage;
         this.#callback = callback;
         this.#args = args;
         this.#contingentRules = contingentRules;
-		this.#adminOnly = adminOnly;
+		this.#OpOnly = opOnly;
 		this.#helpEntries = helpEntries;
 		this.#helpHidden = helpHidden;
 		this.#extension = Extensions.getFromName(extensionName);
@@ -41,7 +41,7 @@ class Command {
 		if (!this.#usage) throw new Error('[Command] usage is required.');
 		if (!Array.isArray(this.#args)) throw new Error('[Command] args must be an array.');
 		if (!Array.isArray(this.#contingentRules)) throw new Error('[Command] contingentRules must be an array.');
-		if (typeof this.#adminOnly !== 'boolean') throw new Error('[Command] adminOnly must be a boolean.');
+		if (typeof this.#OpOnly !== 'boolean') throw new Error('[Command] opOnly must be a boolean.');
 		if (!Array.isArray(this.#helpEntries)) throw new Error('[Command] helpEntries must be an array.');
 		if (extensionName && !this.#extension) throw new Error('[Command] extensionName must be a valid Extension.');
 	}
@@ -66,8 +66,8 @@ class Command {
 		return this.#contingentRules;
 	}
 	
-	isAdminOnly() {
-		return this.#adminOnly;
+	isOpOnly() {
+		return this.#OpOnly;
 	}
 	
 	getHelpEntries() {

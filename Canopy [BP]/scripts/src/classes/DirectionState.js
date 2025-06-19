@@ -104,7 +104,7 @@ class DirectionStateFinder {
             'pillar_axis': permutation.getState('pillar_axis')
         };
         for (const state in potentialStates) {
-            if (potentialStates[state] === undefined) continue;
+            if (potentialStates[state] === void 0) continue;
             return { name: state, value: potentialStates[state] };
         }
         return undefined;
@@ -113,7 +113,7 @@ class DirectionStateFinder {
     static getMirroredDirection(block) {
         const directionState = this.getDirectionState(block.permutation);
         const mirroredState = mirrored[directionState.name]?.[directionState.value];
-        if (!mirroredState)
+        if (mirroredState === void 0)
             throw new Error('Could not mirror direction. Invalid direction state.');
         return mirroredState;
     }
@@ -121,16 +121,16 @@ class DirectionStateFinder {
     static getRotatedDirection(block) {
         const directionState = this.getDirectionState(block.permutation);
         const rotatedState = rotated[directionState.name]?.[directionState.value];
-        if (!rotatedState)
+        if (rotatedState === void 0)
             throw new Error('Could not rotate direction. Invalid direction state.');
         return rotatedState;
     }
 
     static getRawMirroredDirection(block) {
         const directionState = this.getDirectionState(block.permutation);
-        if (!directionState) return 0;
+        if (directionState === void 0) return 0;
         const mirroredState = mirrored.raw[directionState.name]?.[directionState.value];
-        if (!mirroredState)
+        if (mirroredState === void 0)
             throw new Error('Could not mirror direction. Invalid direction state.');
         return mirroredState;
     }

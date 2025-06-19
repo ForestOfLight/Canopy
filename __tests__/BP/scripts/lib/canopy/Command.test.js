@@ -51,8 +51,8 @@ describe("Command", () => {
             expect(() => new Command({ name: "test", usage: "test", contingentRules: "notArray" })).toThrow('[Command] contingentRules must be an array.');
         });
 
-        it("should throw an error if adminOnly is not a boolean", () => {
-            expect(() => new Command({ name: "test", usage: "test", adminOnly: "notBoolean" })).toThrow('[Command] adminOnly must be a boolean.');
+        it("should throw an error if opOnly is not a boolean", () => {
+            expect(() => new Command({ name: "test", usage: "test", opOnly: "notBoolean" })).toThrow('[Command] opOnly must be a boolean.');
         });
 
         it("should throw an error if helpEntries is not an array", () => {
@@ -79,7 +79,7 @@ describe("Command", () => {
                 usage: "test",
                 args: ["arg1"],
                 contingentRules: ["rule1"],
-                adminOnly: true,
+                opOnly: true,
                 helpEntries: ["entry1"],
                 helpHidden: true,
                 extensionName: undefined
@@ -106,8 +106,8 @@ describe("Command", () => {
             expect(command.getContingentRules()).toEqual(["rule1"]);
         });
 
-        it("should return the correct adminOnly status", () => {
-            expect(command.isAdminOnly()).toBe(true);
+        it("should return the correct opOnly status", () => {
+            expect(command.isOpOnly()).toBe(true);
         });
 
         it("should return the correct helpEntries", () => {

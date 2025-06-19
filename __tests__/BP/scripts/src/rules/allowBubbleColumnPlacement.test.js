@@ -63,7 +63,8 @@ describe('allowBubbleColumnPlacement', () => {
     test('should ensure placement when placing bubble column', () => {
         const placeBubbleColumnSpy = vi.spyOn(allowBubbleColumnPlacement, 'placeBubbleColumn')
         const event = {
-            player: { getComponent: vi.fn(() => ({ getEquipment: vi.fn(() => ({ typeId: 'minecraft:bubble_column' }) ) }) ) },
+            player: { name: 'MockPlayer' },
+            permutationToPlace: { type: { id: 'minecraft:bubble_column' } },
             dimension: 'overworld',
             block: { location: { x: 0, y: 0, z: 0 } }
         };

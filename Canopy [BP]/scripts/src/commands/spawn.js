@@ -1,14 +1,8 @@
-import { world, DimensionTypes } from "@minecraft/server";
-import { Rule, Command, Rules, Commands } from "../../lib/canopy/Canopy";
+import { Command, Commands } from "../../lib/canopy/Canopy";
+import { world, DimensionTypes, CommandPermissionLevel } from "@minecraft/server";
 import { getColoredDimensionName, stringifyLocation, broadcastActionBar } from "../../include/utils";
 import WorldSpawns from "../classes/WorldSpawns";
 import { categoryToMobMap } from "../../include/data";
-
-const thisRule = new Rule({
-    category: 'Rules',
-    identifier: 'commandSpawnMocking',
-    description: { translate: 'rules.commandSpawnMocking' }
-});
 
 const cmd = new Command({
     name: 'spawn',
@@ -46,7 +40,7 @@ world.afterEvents.entitySpawn.subscribe((event) => {
     if (worldSpawns && entity.typeId !== 'minecraft:item')
         worldSpawns.sendMobToTrackers(event.entity);
 
-    if (!isMocking || event.cause === 'Loaded' || !Rules.getNativeValue('commandSpawnMocking')) return;
+    if (!isMocking || event.cause === 'Loaded') return;
     let shouldCancelSpawn = false;
     for (const category in categoryToMobMap) {
         if (categoryToMobMap[category].includes(event.entity.typeId.replace('minecraft:', '')))
@@ -101,9 +95,9 @@ function printAllEntities(sender) {
     });
 }
 
-async function handleMockingCmd(sender, enable) {
-    if (!await Rules.getNativeValue('commandSpawnMocking'))
-        return sender.sendMessage({ translate: 'rules.generic.blocked', with: [thisRule.getID()] });
+function handleMockingCmd(sender, enable) {
+    if (sender.commandPermissionLevel === CommandPermissionLevel.Any)
+        return sender.sendMessage({ translate: 'commands.generic.nopermission' });
     if (enable === null)
         return sender.sendMessage({ translate: 'commands.generic.usage', with: [`${Commands.getPrefix()}spawn mocking <true/false>`] });
     isMocking = enable;

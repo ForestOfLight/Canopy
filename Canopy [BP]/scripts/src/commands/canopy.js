@@ -18,7 +18,7 @@ const cmd = new Command({
         { usage: 'canopy <[rule1,rule2,...]> [true/false]', description: { translate: 'commands.canopy.multiple' } },
         { usage: 'canopy version', description: { translate: 'commands.canopy.version' } }
     ],
-    adminOnly: true
+    opOnly: true
 });
 
 async function canopyCommand(sender, args) {
@@ -108,7 +108,7 @@ async function openMenu(sender) {
     for (const rule of rules) {
         try {
             const ruleValue = await rule.getValue();
-            form.toggle(rule.getID(), ruleValue);
+            form.toggle(rule.getID(), { defaultValue: ruleValue, tooltip: rule.getDescription() });
         } catch (error) {
             sender.sendMessage(`§cError: ${error.message} for rule ${rule.getID()}`);
         }

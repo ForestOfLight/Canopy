@@ -1,6 +1,20 @@
-import { Rule, Command } from "../../lib/canopy/Canopy";
+import { Command } from "../../lib/canopy/Canopy";
 import { world } from "@minecraft/server";
 import { isNumeric, stringifyLocation, getColoredDimensionName } from "../../include/utils";
+
+const cmd = new Command({
+    name: 'dtp',
+    description: { translate: 'commands.changedimension' },
+    usage: 'dtp <dimension> [x y z]',
+    args: [
+        { type: 'string', name: 'dimension' },
+        { type: 'number', name: 'x' },
+        { type: 'number', name: 'y' },
+        { type: 'number', name: 'z' }
+    ],
+    callback: changeDimensionCommand,
+    opOnly: true
+});
 
 const validDimensions = {
     'o': 'overworld',
@@ -15,27 +29,7 @@ const validDimensions = {
     'minecraft:the_end': 'the_end'
 };
 
-new Rule({
-    category: 'Rules',
-    identifier: 'commandChangeDimension',
-    description: { translate: 'rules.commandChangeDimension' }
-});
-
-const cmd = new Command({
-    name: 'dtp',
-    description: { translate: 'commands.changedimension' },
-    usage: 'dtp <dimension> [x y z]',
-    args: [
-        { type: 'string', name: 'dimension' },
-        { type: 'number', name: 'x' },
-        { type: 'number', name: 'y' },
-        { type: 'number', name: 'z' }
-    ],
-    callback: changedimensionCommand,
-    contingentRules: ['commandChangeDimension']
-});
-
-function changedimensionCommand(player, args) {
+function changeDimensionCommand(player, args) {
     const { dimension, x, y, z } = args;
     if (!dimension)
         return cmd.sendUsage(player);

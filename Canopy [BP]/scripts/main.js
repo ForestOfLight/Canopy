@@ -67,6 +67,7 @@ import './src/rules/playerSit'
 import './src/rules/refillHand'
 import './src/rules/durabilitySwap'
 import './src/rules/allowPeekInventory'
+import './src/rules/commandTntFuse'
 
 // Load Time Processes
 import './src/onStart'

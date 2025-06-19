@@ -9,7 +9,7 @@
             "properties": {
                 "canopy:biome": {
                     "type": "int",
-                    "range": [-1, 85],
+                    "range": [-1, 86],
                     "default": -1
                 },
 				"canopy:light":{
@@ -36,12 +36,12 @@
             },
             "minecraft:damage_sensor": {
                 "triggers": {
-                    "deals_damage": false
+                    "deals_damage": "no"
                 }
             },
             "minecraft:collision_box": {
-                "width": 0.0001,
-                "height": 0.0001
+                "width": 0.001,
+                "height": 0.001
             },
             "minecraft:health": {
                 "value": 1,
@@ -896,8 +896,6 @@
 							]
 						}
 					},
-					// Pale Gardens - whenever it gets added to the official docs
-
 					// Plains
 					{
 						"event": "canopy:plains",
@@ -1208,6 +1206,20 @@
 							]
 						}
 					},
+					// Pale Garden
+					{
+						"event": "canopy:pale_garden",
+						"filters": {
+                            "all_of": [
+								{ "test": "has_biome_tag", "value": "monster" },
+								{ "test": "has_biome_tag", "value": "overworld" },
+								{ "test": "has_biome_tag", "value": "pale_garden" }
+							],
+							"none_of": [
+								{ "test": "has_biome_tag", "value": "nether" }
+							]
+                        }
+					},
 
 					{"filters": {"test": "light_level", "value": 0},"event": "light_0"},
 					{"filters": {"test": "light_level", "value": 1},"event": "light_1"},
@@ -1316,6 +1328,7 @@
 			"canopy:the_end": { "set_property": { "canopy:biome": 83 } },
 			"canopy:warm_ocean": { "set_property": { "canopy:biome": 84 } },
 			"canopy:warped_forest": { "set_property": { "canopy:biome": 85 } },
+			"canopy:pale_garden": { "set_property": { "canopy:biome": 86 } },
 
 			"light_0": {"set_property": {"canopy:light": 0}},
 			"light_1": {"set_property": {"canopy:light": 1}},

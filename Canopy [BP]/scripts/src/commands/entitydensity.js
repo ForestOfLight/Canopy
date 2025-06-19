@@ -1,5 +1,5 @@
 import { Command } from "../../lib/canopy/Canopy";
-import { DimensionTypes, world } from '@minecraft/server';
+import { world } from '@minecraft/server';
 import { isString } from "../../include/utils";
 
 const NUM_RESULTS = 10;
@@ -79,15 +79,15 @@ function parseArgs(sender, firstArg, gridSize) {
 function printDimensionEntities(sender) {
     const dimensionColors = ['§a', '§c', '§d'];
     let totalEntities = 0;
-    const dimensionTypes = DimensionTypes.getAll();
+    const dimensionIds = ['minecraft:overworld', 'minecraft:nether', 'minecraft:the_end'];
     let output = '§7Dimension entities: '
-    for (let i = 0; i < dimensionTypes.length; i++) {
-        const dimensionId = dimensionTypes[i].typeId;
+    for (let i = 0; i < dimensionIds.length; i++) {
+        const dimensionId = dimensionIds[i];
         const color = dimensionColors[i];
         const dimensionEntities = world.getDimension(dimensionId).getEntities();
         totalEntities += dimensionEntities.length;
         output += `${color}${dimensionEntities.length}§r`;
-        if (i < dimensionTypes.length - 1)
+        if (i < dimensionIds.length - 1)
             output += '/';
         else output += ` §7Total: §f${totalEntities}`;
     }

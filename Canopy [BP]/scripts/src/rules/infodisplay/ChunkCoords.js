@@ -1,4 +1,4 @@
-import InfoDisplayElement from './InfoDisplayElement.js';
+import { InfoDisplayElement } from './InfoDisplayElement.js';
 
 class ChunkCoords extends InfoDisplayElement {
     constructor(player, displayLine) {
@@ -8,8 +8,9 @@ class ChunkCoords extends InfoDisplayElement {
     }
 
     getFormattedDataOwnLine() {
-        const chunkLocation = this.getChunkCoords(this.player);
-        return { translate: 'rules.infoDisplay.chunkCoords.display', with: [`${chunkLocation.x} ${chunkLocation.y} ${chunkLocation.z}`] };
+        const chunkCoord = this.getChunkCoords(this.player);
+        const withinChunkCoord = this.getWithinChunkCoords(this.player);
+        return { translate: 'rules.infoDisplay.chunkCoords.display', with: [`${withinChunkCoord.x} ${withinChunkCoord.y} ${withinChunkCoord.z}`, `${chunkCoord.x} ${chunkCoord.y} ${chunkCoord.z}`] };
     }
 
     getFormattedDataSharedLine() {
@@ -22,6 +23,15 @@ class ChunkCoords extends InfoDisplayElement {
         const chunkZ = Math.floor(this.player.location.z / 16);
         return { x: chunkX, y: chunkY, z: chunkZ };
     }
+
+    getWithinChunkCoords() {
+        const chunkCoord = this.getChunkCoords(this.player);
+        return {
+            x: Math.floor(this.player.location.x - (chunkCoord.x * 16)), 
+            y: Math.floor(this.player.location.y - (chunkCoord.y * 16)), 
+            z: Math.floor(this.player.location.z - (chunkCoord.z * 16))
+        };
+    }
 }
 
-export default ChunkCoords;
+export { ChunkCoords };

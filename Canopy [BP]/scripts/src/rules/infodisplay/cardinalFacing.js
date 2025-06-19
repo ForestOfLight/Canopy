@@ -1,4 +1,4 @@
-import InfoDisplayElement from './InfoDisplayElement.js';
+import { InfoDisplayElement } from './InfoDisplayElement.js';
 
 class CardinalFacing extends InfoDisplayElement {
     player;

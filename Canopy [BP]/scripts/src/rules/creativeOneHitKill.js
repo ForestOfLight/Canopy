@@ -9,6 +9,7 @@ new Rule({
 
 world.afterEvents.entityHitEntity.subscribe((event) => {
     if (!Rules.getNativeValue('creativeOneHitKill') || event.damagingEntity?.typeId !== 'minecraft:player') return;
+    if (!event.hitEntity) return;
     const player = event.damagingEntity;
     if (player.getGameMode() === 'creative') {
         if (player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed) {

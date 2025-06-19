@@ -184,5 +184,6 @@ export const intToBiomeMap = {
     82: 'Taiga M',
     83: 'The End',
     84: 'Warm Ocean',
-    85: 'Warped Forest'
+    85: 'Warped Forest',
+    86: 'Pale Garden'
 };
