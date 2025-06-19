@@ -104,6 +104,10 @@ class ItemCounterChannel {
         }, 0);
     }
 
+    removeAllHoppers() {
+        this.hopperList = [];
+    }
+
     isEmpty() {
         return this.hopperList.length === 0;
     }
