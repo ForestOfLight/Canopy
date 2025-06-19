@@ -18,7 +18,7 @@ const cmd = new Command({
         { usage: 'canopy <[rule1,rule2,...]> [true/false]', description: { translate: 'commands.canopy.multiple' } },
         { usage: 'canopy version', description: { translate: 'commands.canopy.version' } }
     ],
-    adminOnly: true
+    opOnly: true
 });
 
 async function canopyCommand(sender, args) {

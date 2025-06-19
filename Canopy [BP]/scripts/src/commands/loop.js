@@ -9,7 +9,8 @@ const cmd = new Command({
         { type: 'number', name: 'times' },
         { type: 'string', name: 'command' }
     ],
-    callback: loopCommand
+    callback: loopCommand,
+    opOnly: true
 })
 
 function loopCommand(sender, args) {

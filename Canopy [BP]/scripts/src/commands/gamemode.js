@@ -13,12 +13,7 @@ for (const key in gamemodeMap) {
         name: key,
         description: { translate: `commands.gamemode.${key}` },
         usage: key,
-        callback: (sender) => { gamemodeCommand(sender, gamemodeMap[key]) }
+        callback: (sender) => sender.runCommand(`gamemode ${gamemodeMap[key]}`),
+        opOnly: true
     });
-}
-
-function gamemodeCommand(sender, gamemode) {
-    if (sender.commandPermissionLevel === CommandPermissionLevel.Any)
-        return sender.sendMessage({ translate: 'commands.generic.nopermission' });
-    sender.runCommand(`gamemode ${gamemode}`);
 }

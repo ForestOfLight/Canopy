@@ -1,10 +1,4 @@
-import { Rule, Command } from '../../lib/canopy/Canopy';
-
-new Rule({
-    category: 'Rules',
-    identifier: 'commandCleanup',
-    description: { translate: 'rules.commandCleanup' }
-});
+import { Command } from '../../lib/canopy/Canopy';
 
 new Command({
     name: 'cleanup',
@@ -14,7 +8,7 @@ new Command({
         { type: 'number', name: 'distance' }
     ],
     callback: cleanupCommand,
-    contingentRules: ['commandCleanup']
+    opOnly: true
 });
 
 new Command({
@@ -25,8 +19,8 @@ new Command({
         { type: 'number', name: 'distance' }
     ],
     callback: cleanupCommand,
-    contingentRules: ['commandCleanup'],
-    helpHidden: true
+    helpHidden: true,
+    opOnly: true
 });
 
 const TRASH_ENTITY_TYPES = ['minecraft:item', 'minecraft:xp_orb'];

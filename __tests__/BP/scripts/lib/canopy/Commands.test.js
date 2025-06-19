@@ -26,6 +26,13 @@ vi.mock("@minecraft/server", () => ({
         },
         runJob: vi.fn(),
         run: (callback) => callback()
+    },
+    CommandPermissionLevel: {
+        Any: 0,
+        GameDirectors: 1,
+        Admin: 2,
+        Host: 3,
+        Owner: 4
     }
 }));
 
@@ -136,7 +143,7 @@ describe('Commands', () => {
             Rules.clear();
             command = { name: 'test', 
                 getName: () => 'test', 
-                isAdminOnly: () => false, 
+                isOpOnly: () => false, 
                 getContingentRules: () => ['rule1'],
                 getArgs: () => [
                     { type: 'string', name: 'strArg' },
@@ -159,8 +166,8 @@ describe('Commands', () => {
         });
 
         it('should send an error message if the command is admin only and the sender is not an admin', () => {
-            command.isAdminOnly = () => true;
-            sender.getTags = () => [];
+            command.isOpOnly = () => true;
+            sender.commandPermissionLevel = 0; // 0 = Any
             Commands.executeCommand(sender, 'test', []);
             expect(sender.sendMessage).toHaveBeenCalledWith({ translate: 'commands.generic.nopermission' });
         });
@@ -206,7 +213,7 @@ describe('Commands', () => {
         it('should interpret any multiarguments', async () => {
             const command2 = { name: 'test2', 
                 getName: () => 'test2', 
-                isAdminOnly: () => false, 
+                isOpOnly: () => false, 
                 getContingentRules: () => ['rule1'],
                 getArgs: () => [
                     { type: 'string|boolean|number|identifier|array|player', name: 'multiArg' }
@@ -227,7 +234,7 @@ describe('Commands', () => {
         it('should interpret the identifier argument with brackets', async () => {
             const command2 = { name: 'test2', 
                 getName: () => 'test2', 
-                isAdminOnly: () => false, 
+                isOpOnly: () => false, 
                 getContingentRules: () => ['rule1'],
                 getArgs: () => [
                     { type: 'string|boolean|number|identifier', name: 'multiArg' }
@@ -241,7 +248,7 @@ describe('Commands', () => {
         it('should interpret the identifier argument without brackets', async () => {
             const command2 = { name: 'test2', 
                 getName: () => 'test2', 
-                isAdminOnly: () => false, 
+                isOpOnly: () => false, 
                 getContingentRules: () => ['rule1'],
                 getArgs: () => [
                     { type: 'string|boolean|number|identifier', name: 'multiArg' }
@@ -255,7 +262,7 @@ describe('Commands', () => {
         it('should interpret the player argument with spaces', async () => {
             const command2 = { name: 'test2', 
                 getName: () => 'test2', 
-                isAdminOnly: () => false, 
+                isOpOnly: () => false, 
                 getContingentRules: () => ['rule1'],
                 getArgs: () => [
                     { type: 'string|boolean|number|identifier', name: 'multiArg' }
@@ -269,7 +276,7 @@ describe('Commands', () => {
         it('should interpret the player argument without spaces', async () => {
             const command2 = { name: 'test2', 
                 getName: () => 'test2', 
-                isAdminOnly: () => false, 
+                isOpOnly: () => false, 
                 getContingentRules: () => ['rule1'],
                 getArgs: () => [
                     { type: 'string|boolean|number|identifier', name: 'multiArg' }

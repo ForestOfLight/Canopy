@@ -1,13 +1,7 @@
-import { Rule, Command } from "../../lib/canopy/Canopy";
+import { Command } from "../../lib/canopy/Canopy";
 import { system, world } from "@minecraft/server";
 import { isNumeric } from "../../include/utils";
 import { Profiler } from "../classes/Profiler";
-
-new Rule({
-    category: 'Rules',
-    identifier: 'commandTick',
-    description: { translate: 'rules.commandTick' }
-});
 
 const cmd = new Command({
     name: 'tick',
@@ -18,13 +12,13 @@ const cmd = new Command({
         { type: 'number', name: 'steps' }
     ],
     callback: tickCommand,
-    contingentRules: ['commandTick'],
     helpEntries: [
         { usage: 'tick <mspt>', description: { translate: 'commands.tick.mspt' } },
         { usage: 'tick step [steps]', description: { translate: 'commands.tick.step' } },
         { usage: 'tick reset', description: { translate: 'commands.tick.reset' } },
         { usage: 'tick sleep [milliseconds]', description: { translate: 'commands.tick.sleep' } }
-    ]
+    ],
+    opOnly: true
 });
 
 let targetMSPT = 50.0;

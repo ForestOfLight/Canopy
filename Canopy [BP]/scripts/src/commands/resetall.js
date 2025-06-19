@@ -6,7 +6,7 @@ new Command({
     description: { translate: 'commands.resetall' },
     usage: 'resetall',
     callback: resetallCommand,
-    adminOnly: true
+    opOnly: true
 });
 
 function resetallCommand() {
