@@ -1,5 +1,5 @@
 import { Rule, Command } from "../../lib/canopy/Canopy";
-import { system, world } from "@minecraft/server";
+import { GameMode, system, world } from "@minecraft/server";
 import { stringifyLocation } from "../../include/utils";
 
 const MAX_EFFECT_DURATION = 20000000;
@@ -200,7 +200,7 @@ function startSpectate(sender) {
     sender.setDynamicProperty('beforeSpectatorPlayer', JSON.stringify(savedPlayer));
     
     system.runTimeout(() => {
-        sender.setGameMode('spectator');
+        sender.setGameMode(GameMode.Spectator);
         for (const effect of sender.getEffects()) {
             try {
                 sender.removeEffect(effect.typeId);
