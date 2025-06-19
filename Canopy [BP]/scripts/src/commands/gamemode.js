@@ -1,10 +1,5 @@
-import { Rule, Command } from '../../lib/canopy/Canopy';
-
-new Rule({
-    category: 'Rules',
-    identifier: 'commandGamemode',
-    description: { translate: 'rules.commandGamemode' }
-});
+import { Command } from '../../lib/canopy/Canopy';
+import { CommandPermissionLevel } from '@minecraft/server';
 
 const gamemodeMap = {
     's': 'survival',
@@ -18,7 +13,12 @@ for (const key in gamemodeMap) {
         name: key,
         description: { translate: `commands.gamemode.${key}` },
         usage: key,
-        callback: (sender) => sender.runCommand(`gamemode ${gamemodeMap[key]}`),
-        contingentRules: ['commandGamemode']
+        callback: (sender) => { gamemodeCommand(sender, gamemodeMap[key]) }
     });
+}
+
+function gamemodeCommand(sender, gamemode) {
+    if (sender.commandPermissionLevel === CommandPermissionLevel.Any)
+        return sender.sendMessage({ translate: 'commands.generic.nopermission' });
+    sender.runCommand(`gamemode ${gamemode}`);
 }
