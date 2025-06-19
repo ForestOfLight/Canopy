@@ -1,4 +1,4 @@
-import { Command, Rules, Commands } from "../../lib/canopy/Canopy";
+import { Command, Commands } from "../../lib/canopy/Canopy";
 import { world, DimensionTypes, CommandPermissionLevel } from "@minecraft/server";
 import { getColoredDimensionName, stringifyLocation, broadcastActionBar } from "../../include/utils";
 import WorldSpawns from "../classes/WorldSpawns";
@@ -95,7 +95,7 @@ function printAllEntities(sender) {
     });
 }
 
-async function handleMockingCmd(sender, enable) {
+function handleMockingCmd(sender, enable) {
     if (sender.commandPermissionLevel === CommandPermissionLevel.Any)
         return sender.sendMessage({ translate: 'commands.generic.nopermission' });
     if (enable === null)

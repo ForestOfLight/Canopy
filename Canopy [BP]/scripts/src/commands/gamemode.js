@@ -1,5 +1,4 @@
 import { Command } from '../../lib/canopy/Canopy';
-import { CommandPermissionLevel } from '@minecraft/server';
 
 const gamemodeMap = {
     's': 'survival',

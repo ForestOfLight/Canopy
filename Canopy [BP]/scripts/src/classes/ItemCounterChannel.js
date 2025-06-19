@@ -124,11 +124,11 @@ class ItemCounterChannel {
             ]}
         ]};
         for (const item of Object.keys(this.itemMap))
-            message.rawtext.push({ rawtext: [
+            {message.rawtext.push({ rawtext: [
                 { text: `\n §7- ` },
                 { translate: new ItemStack(item).localizationKey },
                 { text: `: ${this.#getAllModeOutput(item)}` }
-            ]});
+            ]});}
         return message;
     }
 
