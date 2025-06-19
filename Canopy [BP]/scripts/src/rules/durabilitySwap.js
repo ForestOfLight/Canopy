@@ -14,7 +14,7 @@ world.afterEvents.playerInteractWithEntity.subscribe((event) => durabilitySwap(e
 
 function durabilitySwap(player, beforeItemStack, itemStack) {
     if (!Rules.getNativeValue(rule.getID()) || !player || !itemStack || !beforeItemStack
-        || player.getGameMode() === GameMode.creative
+        || player.getGameMode() === GameMode.Creative
         || !usedDurability(beforeItemStack, itemStack)
     ) return;
     const durability = getRemainingDurability(itemStack);

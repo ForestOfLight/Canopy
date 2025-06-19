@@ -13,7 +13,8 @@ const cmd = new Command({
         { type: 'number|string', name: 'ticks' }
     ],
     callback: tntfuseCommand,
-    contingentRules: ['commandTntFuse']
+    contingentRules: ['commandTntFuse'],
+    opOnly: true
 });
 
 export function tntfuseCommand(sender, args) {

@@ -15,7 +15,7 @@ world.afterEvents.playerInteractWithEntity.subscribe((event) => captureEvent(eve
 function captureEvent(event) {
     if (!Rules.getNativeValue('refillHand')) return;
     const player = event.player;
-    if (!player || player.getGameMode() !== GameMode.survival) return;
+    if (!player || player.getGameMode() !== GameMode.Survival) return;
     processRefillHand(player, event.beforeItemStack, event.itemStack);
 }
 

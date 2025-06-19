@@ -22,13 +22,9 @@ class AllowBubbleColumnPlacement extends GlobalRule {
     onPlayerPlaceBlock(event) {
         if (!event.player) return;
         system.run(() => {
-            if (this.hasBubbleColumnInMainhand(event))
+            if (event.permutationToPlace.type.id === 'minecraft:bubble_column')
                 this.placeBubbleColumn(event.dimension, event.block.location);
         });
-    }
-
-    hasBubbleColumnInMainhand(event) {
-        return event.player.getComponent('equippable').getEquipment('Mainhand')?.typeId === 'minecraft:bubble_column';
     }
 
     placeBubbleColumn(dimension, location) {

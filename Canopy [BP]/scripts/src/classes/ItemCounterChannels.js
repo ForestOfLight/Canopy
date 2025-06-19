@@ -12,12 +12,9 @@ class ItemCounterChannels {
         this.modes = ItemCounterChannels.modes;
         this.controllingRuleID = controllingRuleID;
         this.channels = {};
+        this.ChannelClass = ChannelClass;
 
-        for (const color of this.colors) {
-            const channel = new ChannelClass(color);
-            channel.loadSavedData();
-            this.channels[color] = channel;
-        }
+        this.restartAllChannels();
     }
 
     enable() {
@@ -56,6 +53,18 @@ class ItemCounterChannels {
         return block?.typeId === 'minecraft:hopper';
     }
 
+    restartChannel(color) {
+        if (!this.isValidColor(color))
+            return;
+        this.channels[color] = new this.ChannelClass(color);
+        this.channels[color].loadSavedData();
+    }
+
+    restartAllChannels() {
+        for (const color of this.colors)
+            this.restartChannel(color);
+    }
+
     resetCounts(color) {
         this.channels[color].reset();
     }
@@ -74,6 +83,16 @@ class ItemCounterChannels {
         if (!this.isValidMode(mode)) return;
         for (const channel of Object.values(this.channels))
             channel.mode = mode;
+    }
+
+    removeHoppers(color) {
+        if (!this.isValidColor(color)) return;
+        this.channels[color].removeAllHoppers();
+    }
+
+    removeAllHoppers() {
+        for (const channel of Object.values(this.channels))
+            channel.removeAllHoppers();
     }
 
     isValidColor(color) {
