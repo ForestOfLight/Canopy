@@ -1,5 +1,5 @@
 import { Rule, Command } from "../../lib/canopy/Canopy";
-import { system, world } from "@minecraft/server";
+import { GameMode, system, world } from "@minecraft/server";
 import { stringifyLocation } from "../../include/utils";
 
 const MAX_EFFECT_DURATION = 20000000;
@@ -77,7 +77,7 @@ class BeforeSpectatorPlayer {
 
 function onPlayerGameModeChange(event) {
     const player = event.player;
-    if (player?.getDynamicProperty('isSpectating') && event.fromGameMode === 'spectator' && event.toGameMode !== 'spectator') {
+    if (player?.getDynamicProperty('isSpectating') && event.fromGameMode === GameMode.Spectator && event.toGameMode !== GameMode.Spectator) {
         system.run(() => {
             player.setGameMode(event.fromGameMode);
             player.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.gamemode'});
@@ -200,7 +200,7 @@ function startSpectate(sender) {
     sender.setDynamicProperty('beforeSpectatorPlayer', JSON.stringify(savedPlayer));
     
     system.runTimeout(() => {
-        sender.setGameMode('spectator');
+        sender.setGameMode(GameMode.Spectator);
         for (const effect of sender.getEffects()) {
             try {
                 sender.removeEffect(effect.typeId);

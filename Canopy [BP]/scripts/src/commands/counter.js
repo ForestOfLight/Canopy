@@ -13,7 +13,7 @@ new Rule({
 const cmd = new Command({
     name: 'counter',
     description: { translate: 'commands.counter' },
-    usage: 'counter <color/all/reset/realtime> [<mode>/reset/realtime]',
+    usage: 'counter <color/all/reset/realtime> [<mode>/reset/realtime/remove]',
     args: [
         { type: 'string', name: 'argOne' },
         { type: 'string', name: 'argTwo' }
@@ -21,9 +21,9 @@ const cmd = new Command({
     callback: counterCommand,
     contingentRules: ['hopperCounters'],
     helpEntries: [
-        { usage: 'counter <color>', description: { translate: 'commands.counter.query' } },
+        { usage: 'counter [color/all]', description: { translate: 'commands.counter.query' } },
         { usage: 'counter [color/all] realtime', description: { translate: 'commands.counter.realtime' } },
-        { usage: 'counter <color/all> <count/hr/min/sec>', description: { translate: 'commands.counter.mode' } },
+        { usage: 'counter [color/all] <count/hr/min/sec>', description: { translate: 'commands.counter.mode' } },
         { usage: 'counter [color/all] reset', description: { translate: 'commands.counter.reset' } },
         { usage: 'counter [color/all] remove', description: { translate: 'commands.counter.remove' } }
     ]
@@ -32,7 +32,7 @@ const cmd = new Command({
 new Command({
     name: 'ct',
     description: { translate: 'commands.counter' },
-    usage: 'ct <color/all/reset/realtime> [<mode>/reset/realtime]',
+    usage: 'ct <color/all/reset/realtime> [<mode>/reset/realtime/remove]',
     args: [
         { type: 'string', name: 'argOne' },
         { type: 'string', name: 'argTwo' }
@@ -51,6 +51,8 @@ function counterCommand(sender, args) {
         queryAll(sender, { useRealTime: true });
     else if ((argOne === 'reset') || (argOne === 'all' && argTwo === 'reset'))
         resetAll(sender);
+    else if (counterChannels.isValidMode(argOne))
+        setAllMode(sender, argOne);
     else if (argOne === 'all' && counterChannels.isValidMode(argTwo))
         setAllMode(sender, argTwo);
     else if ((argOne === 'remove') || (argOne === 'all' && argTwo === 'remove'))

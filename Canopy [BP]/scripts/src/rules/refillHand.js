@@ -1,5 +1,5 @@
 import { Rule, Rules} from "../../lib/canopy/Canopy";
-import { GameMode, world } from "@minecraft/server";
+import { EntityComponentTypes, GameMode, world } from "@minecraft/server";
 
 new Rule({
     category: 'Rules',
@@ -20,7 +20,7 @@ function captureEvent(event) {
 }
 
 function processRefillHand(player, beforeItemStack, afterItemStack) {
-    const playerInventory = player.getComponent('inventory')?.container;
+    const playerInventory = player.getComponent(EntityComponentTypes.Inventory)?.container;
     if (beforeItemStack === undefined || !hasArrowInCorrectSlot(playerInventory)) return;
     if (hasRunOutOfItems(beforeItemStack, afterItemStack)) 
         refillHand(player, playerInventory, beforeItemStack);

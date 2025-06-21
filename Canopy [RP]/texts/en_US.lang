@@ -138,6 +138,11 @@ commands.generator.reset.single=§7Reset and time restarted: %s
 commands.generator.reset.single.actionbar=[%1] Reset %2 hopper generator.
 commands.generator.reset.all=§7All channels have been reset and hopper generator timer started.
 commands.generator.reset.all.actionbar=[%s] Reset all hopper generators.
+commands.generator.remove=Removes all hopper generators in the specified channel.
+commands.generator.remove.single=§7Removed all hopper generators in %s.
+commands.generator.remove.single.actionbar=[%1] Removed all hopper generators in %2
+commands.generator.remove.all=§7Removed all hopper generators in all channels.
+commands.generator.remove.all.actionbar=[%s] Removed all hopper generators in all channels.
 
 commands.health=Displays the server's current TPS, MSPT, and entity counts.
 commands.health.fail.mspt=§cCould not compute MSPT. Please report this error.

@@ -13,7 +13,7 @@ new Rule({
 const cmd = new Command({
     name: 'generator',
     description: { translate: 'commands.generator' },
-    usage: 'generator <color/all/reset/realtime> [reset/realtime]',
+    usage: 'generator <color/all/reset/realtime> [reset/realtime/remove]',
     args: [
         { type: 'string', name: 'argOne' },
         { type: 'string', name: 'argTwo' }
@@ -21,16 +21,17 @@ const cmd = new Command({
     callback: generatorCommand,
     contingentRules: ['hopperGenerators'],
     helpEntries: [
-        { usage: 'generator <color>', description: { translate: 'commands.generator.query' } },
-        { usage: 'generator [color] realtime', description: { translate: 'commands.generator.realtime' } },
-        { usage: 'generator [color] reset', description: { translate: 'commands.generator.reset' } }
+        { usage: 'generator [color/all]', description: { translate: 'commands.generator.query' } },
+        { usage: 'generator [color/all] realtime', description: { translate: 'commands.generator.realtime' } },
+        { usage: 'generator [color/all] reset', description: { translate: 'commands.generator.reset' } },
+        { usage: 'generator [color/all remove', description: { translate: 'commands.counter.remove' } }
     ]
 });
 
 new Command({
     name: 'gt',
     description: { translate: 'commands.generator' },
-    usage: 'gt <color/all/reset/realtime> [reset/realtime]',
+    usage: 'gt <color/all/reset/realtime> [reset/realtime/remove]',
     args: [
         { type: 'string', name: 'argOne' },
         { type: 'string', name: 'argTwo' }
@@ -42,21 +43,25 @@ new Command({
 
 function generatorCommand(sender, args) {
     const { argOne, argTwo } = args;
-    
-    if (argOne === 'reset')
-        resetAll(sender);
-    else if (argOne === 'realtime')
+
+    if ((!argOne && !argTwo) || (argOne === 'all' && !argTwo))
+        queryAll(sender);
+    else if ((argOne === 'realtime') || (argOne === 'all' && argTwo === 'realtime'))
         queryAll(sender, { useRealTime: true });
+    else if ((argOne === 'reset') || (argOne === 'all' && argTwo === 'reset'))
+        resetAll(sender);
+    else if ((argOne === 'remove') || (argOne === 'all' && argTwo === 'remove'))
+        removeAll(sender);
     else if (generatorChannels.isValidColor(argOne) && !argTwo)
         query(sender, argOne);
-    else if (!argOne && !argTwo || argOne === 'all' && !argTwo)
-        queryAll(sender);
-    else if (argOne && argTwo === 'realtime')
+    else if (generatorChannels.isValidColor(argOne) && argTwo === 'realtime')
         query(sender, argOne, { useRealTime: true });
-    else if (argOne && argTwo === 'reset')
+    else if (generatorChannels.isValidColor(argOne) && argTwo === 'reset')
         reset(sender, argOne);
+    else if (generatorChannels.isValidColor(argOne) && argTwo === 'remove')
+        remove(sender, argOne);
     else if (argOne && !generatorChannels.isValidColor(argOne))
-        sender.sendMessage({ translate: 'commands.generator.channel.notfound', with: [argOne] });
+        sender.sendMessage({ translate: 'commands.counter.channel.notfound', with: [argOne] });
     else
         cmd.sendUsage(sender);
 }
@@ -79,6 +84,18 @@ function query(sender, color, { useRealTime = false } = {}) {
 
 function queryAll(sender, { useRealTime = false } = {}) {
     sender?.sendMessage(generatorChannels.getAllQueryOutput(useRealTime));
+}
+
+function remove(sender, color) {
+    generatorChannels.removeHoppers(color);
+    sender.sendMessage({ translate: 'commands.generator.remove.single', with: [formatColorStr(color)] });
+    broadcastActionBar({ translate: 'commands.generator.remove.single.actionbar', with: [sender.name, formatColorStr(color)] }, sender);
+}
+
+function removeAll(sender) {
+    generatorChannels.removeAllHoppers();
+    sender.sendMessage({ translate: 'commands.generator.remove.all' });
+    broadcastActionBar({ translate: 'commands.generator.remove.all.actionbar', with: [sender.name] }, sender);
 }
 
 export { query, queryAll };
