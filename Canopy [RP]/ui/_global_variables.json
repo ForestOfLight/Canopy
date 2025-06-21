@@ -6,7 +6,7 @@
 		*It is important to only enable the layouts that you're going to use and disable others to decrease lag*
 	*/
 
-	"$disable_furnace_ui": true,
+	"$disable_furnace_ui": false,
 
 	"$disable_1_slots_layout": true,
 
