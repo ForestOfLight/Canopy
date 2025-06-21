@@ -1,4 +1,5 @@
 import { Rule, Command, Rules } from "../../lib/canopy/Canopy";
+import { GameMode } from "@minecraft/server";
 import Warps from '../classes/Warps';
 
 new Rule({
@@ -52,7 +53,7 @@ new Command({
 });
 
 function warpActionCommand(sender, args) {
-    if (!Rules.getNativeValue('commandWarpSurvival') && ['survival', 'adventure'].includes(sender.getGameMode()))
+    if (!Rules.getNativeValue('commandWarpSurvival') && [GameMode.Survival, GameMode.Adventure].includes(sender.getGameMode()))
         return sender.sendMessage({ translate: 'commands.generic.blocked.survival' });
 
     let { action, name } = args;
@@ -106,7 +107,7 @@ function warpTP(sender, name) {
 }
 
 function warpListCommand(sender) {
-    if (!Rules.getNativeValue('commandWarpSurvival') && sender.getGameMode() === 'survival')
+    if (!Rules.getNativeValue('commandWarpSurvival') && sender.getGameMode() === GameMode.Survival)
         return sender.sendMessage({ translate: 'commands.generic.blocked.survival' });
     sender.sendMessage(getWarpListMessage());
 }
