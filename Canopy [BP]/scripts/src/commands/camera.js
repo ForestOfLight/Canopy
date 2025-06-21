@@ -77,7 +77,7 @@ class BeforeSpectatorPlayer {
 
 function onPlayerGameModeChange(event) {
     const player = event.player;
-    if (player?.getDynamicProperty('isSpectating') && event.fromGameMode === 'spectator' && event.toGameMode !== 'spectator') {
+    if (player?.getDynamicProperty('isSpectating') && event.fromGameMode === GameMode.Spectator && event.toGameMode !== GameMode.Spectator) {
         system.run(() => {
             player.setGameMode(event.fromGameMode);
             player.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.gamemode'});

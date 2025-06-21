@@ -1,4 +1,5 @@
 import { Rule, Rules, Command } from "../../lib/canopy/Canopy";
+import { GameMode } from "@minecraft/server";
 
 new Rule({
     category: 'Rules',
@@ -22,7 +23,7 @@ new Command({
 })
 
 function jumpCommand(sender) {
-    if (!Rules.getNativeValue('commandJumpSurvival') && sender.getGameMode() === 'survival')
+    if (!Rules.getNativeValue('commandJumpSurvival') && sender.getGameMode() === GameMode.Survival)
         return sender.sendMessage({ translate: 'rules.generic.blocked', with: ['commandJumpSurvival'] });
     
     const blockRayResult = sender.getBlockFromViewDirection({ includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: 64*16 });

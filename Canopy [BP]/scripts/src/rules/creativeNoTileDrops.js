@@ -1,5 +1,5 @@
 import { Rule, Rules } from "../../lib/canopy/Canopy";
-import { system, world } from "@minecraft/server";
+import { system, world, GameMode } from "@minecraft/server";
 import { calcDistance } from "../../include/utils";
 
 const REMOVAL_DISTANCE = 2.5;
@@ -19,7 +19,7 @@ system.runInterval(() => {
 });
 
 world.afterEvents.playerBreakBlock.subscribe((blockEvent) => {
-    if (blockEvent.player?.getGameMode() !== 'creative' 
+    if (blockEvent.player?.getGameMode() !== GameMode.Creative 
         || !Rules.getNativeValue('creativeNoTileDrops')) 
         return;
     brokenBlockEventsThisTick.push(blockEvent);

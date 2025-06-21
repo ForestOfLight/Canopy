@@ -1,5 +1,5 @@
 import { Rule } from "lib/canopy/Canopy";
-import { system, world, InputButton, ButtonState, EntityComponentTypes } from '@minecraft/server';
+import { system, world, InputButton, ButtonState, EntityComponentTypes, GameMode } from '@minecraft/server';
 import HotbarManager from 'src/classes/HotbarManager';
 
 let runner;
@@ -31,7 +31,7 @@ function onTick() {
 }
 
 function hasAppropriateGameMode(player) {
-    return player.getGameMode() === 'creative';
+    return player.getGameMode() === GameMode.Creative;
 }
 
 function processHotbarSwitching(player) {

@@ -1,5 +1,5 @@
 import { Rule, Rules } from "../../lib/canopy/Canopy";
-import { system, world } from "@minecraft/server";
+import { system, world, GameMode } from "@minecraft/server";
 
 new Rule({
     category: 'Rules',
@@ -9,7 +9,7 @@ new Rule({
 
 
 world.beforeEvents.playerInteractWithEntity.subscribe((event) => {
-    if (!Rules.getNativeValue('creativeInstantTame') || event.player?.getGameMode() !== 'creative') return;
+    if (!Rules.getNativeValue('creativeInstantTame') || event.player?.getGameMode() !== GameMode.Creative) return;
     const tameable = event.target?.getComponent('tameable');
     if (tameable !== undefined && isUsingTameItem(tameable.getTameItems, event.itemStack)) {
         system.run(() => {

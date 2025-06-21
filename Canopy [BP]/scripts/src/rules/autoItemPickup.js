@@ -1,5 +1,5 @@
 import { Rule, Rules } from "../../lib/canopy/Canopy";
-import { ItemStack, system, world } from "@minecraft/server";
+import { ItemStack, system, world, GameMode } from "@minecraft/server";
 import { calcDistance } from "../../include/utils";
 
 new Rule({
@@ -22,7 +22,7 @@ system.runInterval(() => {
 
 world.afterEvents.playerBreakBlock.subscribe((blockEvent) => {
     if (!shouldPickup(blockEvent.player)) return;
-    if (blockEvent.player?.getGameMode() === 'creative') return;
+    if (blockEvent.player?.getGameMode() === GameMode.Creative) return;
     brokenBlockEventsThisTick.push(blockEvent);
 });
 
