@@ -33,7 +33,8 @@ export class TNTFuse {
             this.stopFuse();
             return;
         }
-        if (this.tntIsUnloaded()) return;
+        if (this.tntIsUnloaded())
+            return;
         const currentFuseTicks = this.tntEntity.getDynamicProperty('fuseTicks');
         if (currentFuseTicks <= 1) {
             this.triggerExplosion();
@@ -51,6 +52,12 @@ export class TNTFuse {
     }
 
     tntIsUnloaded() {
-        return !this.tntEntity.dimension.getBlock(this.tntEntity.location);
+        try {
+            return !this.tntEntity.dimension.getBlock(this.tntEntity.location);
+        } catch (e) {
+            if (e.name === 'PositionInUnloadedChunkError' || e.name === 'PositionOutOfWorldBoundariesError')
+                return true;
+            throw e;
+        }
     }
 }
