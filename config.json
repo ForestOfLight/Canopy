@@ -1,0 +1,26 @@
+{
+	"$schema": "https://raw.githubusercontent.com/Bedrock-OSS/regolith-schemas/main/config/v1.4.json",
+	"author": "ForestOfLight",
+	"name": "Canopy",
+	"packs": {
+		"behaviorPack": "./Canopy [BP]",
+		"resourcePack": "./Canopy [RP]"
+	},
+	"regolith": {
+		"dataPath": "./data",
+		"filterDefinitions": {},
+		"formatVersion": "1.4.0",
+		"profiles": {
+			"default": {
+				"export": {
+					"build": "standard",
+					"readOnly": false,
+					"target": "development",
+					"rpName": "project.name+'[RP]'",
+					"bpName": "project.name+'[BP]'"
+				},
+				"filters": []
+			}
+		}
+	}
+}
