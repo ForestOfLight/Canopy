@@ -8,7 +8,8 @@
             "mode": "listen",
             "targetModuleUuid": "3d753132-e3c9-4305-a995-eae30b486093",
             "localRoot": "${workspaceFolder}/Canopy [BP]/scripts",
-            "port": 19144
+            "port": 19144,
+            "preLaunchTask": "regolith: watch"
         }
     ]
 }
