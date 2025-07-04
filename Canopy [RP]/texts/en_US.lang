@@ -9,14 +9,14 @@ generic.welcome.extensions=§7Loaded extensions:
 generic.player.notfound=§cPlayer '%s' not found.
 generic.target.notfound=§cTarget not found.
 generic.entity.notfound=§cEntity not found.
-generic.source.notfound=§cThis command cannot be run from this source.
 generic.total=Total
 
 ## commands
 commands.generic.unknown=§cInvalid command: '%1'. Use %2help for more information.
 commands.generic.nopermission=§cYou do not have permission to run this command.
 commands.generic.usage=§cUsage: %s
-commands.generic.blocked.survival=§cThis command can only be used in creative mode or spectator mode.
+commands.generic.blocked.survival=§cThis command cannot be used in survival mode.
+commands.generic.source.notfound=§cThis command cannot be run from this source.
 
 commands.help=Displays help pages.
 commands.help.search.noresult=§cNo results found for '%s'.
@@ -27,11 +27,8 @@ commands.help.rules=Togglable global rules.
 commands.help.extension.rules=Togglable rules for §o§a%s§r§8.
 commands.help.extension.commands=Commands for §o§a%s§r§2.
 
-commands.camera=Place a camera, view it, or use a survival-friendly spectator mode.
-commands.camera.place=Places a camera at your current location. (Alias: cp)
-commands.camera.view=Toggles viewing your latest camera placement. (Alias: cv)
-commands.camera.view.load=For when your placed camera is unloaded. Attempts to load the chunk for one second.
-commands.camera.spectate=Toggles a survival-friendly spectator mode. (Alias: cs)
+commands.camera=Place a camera, toggle viewing your placed camera, or toggle a survival-friendly spectator mode.
+commands.camera.spectate=Toggles a survival-friendly spectator mode.
 commands.camera.place.viewing=§cYou cannot place a camera while viewing one.
 commands.camera.place.success=§7Camera placed at %s.
 commands.camera.view.spectating=§cYou cannot view a camera while spectating.
@@ -43,6 +40,7 @@ commands.camera.spectate.viewing=§cYou cannot spectate while viewing a camera.
 commands.camera.spectate.gamemode=§cYou cannot change your gamemode while spectating.
 commands.camera.spectate.started=§aSpectating
 commands.camera.spectate.ended=§7Spectating ended
+commands.camera.invalidaction=§cInvalid camera action.
 
 commands.canopy=Enable or disable a rule.
 commands.canopy.version=Displays the current version of Canopy and all loaded extensions.

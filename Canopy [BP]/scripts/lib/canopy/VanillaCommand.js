@@ -1,12 +1,11 @@
-import { CustomCommandSource, system } from "@minecraft/server";
+import { Block, CustomCommandSource, CustomCommandStatus, system } from "@minecraft/server";
+import { Rules } from "./Rules";
 
 export class VanillaCommand {
     customCommand;
-    callback;
 
-    constructor(customCommand, callback) {
+    constructor(customCommand) {
         this.customCommand = customCommand;
-        this.callback = callback;
         this.setupForRegistry();
     }
 
@@ -18,9 +17,21 @@ export class VanillaCommand {
     }
 
     registerCommand(customCommandRegistry) {
+        this.addPreCallback();
         this.registerEnums(customCommandRegistry);
         this.registerSingleCommand(customCommandRegistry);
         this.registerAliasCommands(customCommandRegistry);
+    }
+
+    addPreCallback() {
+        this.callback = (origin, ...args) => {
+            const source = VanillaCommand.resolveCommandSource(origin);
+            const disabledContingentRules = this.#getDisabledContingentRules();
+            this.#printDisabledContingentRules(disabledContingentRules, source);
+            if (disabledContingentRules.length > 0)
+                return { status: CustomCommandStatus.Failure };
+            return this.customCommand.callback(source, ...args);
+        }
     }
 
     registerEnums(customCommandRegistry) {
@@ -59,5 +70,22 @@ export class VanillaCommand {
             default:
                 return void 0;
         }
+    }
+
+    #getDisabledContingentRules() {
+        const disabledRules = new Array();
+        for (const ruleID of this.customCommand.contingentRules || []) {
+            const ruleValue = Rules.getNativeValue(ruleID);
+            if (!ruleValue)
+                disabledRules.push(ruleID);
+        }
+        return disabledRules;
+    }
+
+    #printDisabledContingentRules(disabledContingentRules, source) {
+        if (source instanceof Block)
+            return;
+        for (const ruleID of disabledContingentRules)
+            source.sendMessage({ translate: 'rules.generic.blocked', with: [ruleID] });
     }
 }
