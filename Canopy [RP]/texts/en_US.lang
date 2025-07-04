@@ -9,6 +9,7 @@ generic.welcome.extensions=§7Loaded extensions:
 generic.player.notfound=§cPlayer '%s' not found.
 generic.target.notfound=§cTarget not found.
 generic.entity.notfound=§cEntity not found.
+generic.source.notfound=§cThis command cannot be run from this source.
 generic.total=Total
 
 ## commands
