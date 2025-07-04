@@ -1,5 +1,6 @@
 import { Commands } from "./Commands";
 import { Command } from "./Command";
+import { VanillaCommand } from "./VanillaCommand";
 import { Rules } from "./Rules";
 import { Rule } from "./Rule";
 import { GlobalRule } from "./GlobalRule";
@@ -13,5 +14,5 @@ import { InfoDisplayRuleHelpPage } from "./help/InfoDisplayRuleHelpPage";
 import { HelpBook } from "./help/HelpBook";
 import { Extensions } from "./Extensions";
 
-export { Commands, Command, Rules, Rule, GlobalRule, InfoDisplayRule, RuleHelpEntry, CommandHelpEntry, InfoDisplayRuleHelpEntry, 
+export { Commands, Command, VanillaCommand, Rules, Rule, GlobalRule, InfoDisplayRule, RuleHelpEntry, CommandHelpEntry, InfoDisplayRuleHelpEntry, 
     RuleHelpPage, CommandHelpPage, InfoDisplayRuleHelpPage, HelpBook, Extensions };

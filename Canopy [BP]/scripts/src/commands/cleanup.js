@@ -1,23 +1,14 @@
+import { VanillaCommand } from '../../lib/canopy/Canopy';
 import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, system } from '@minecraft/server';
 
-system.beforeEvents.startup.subscribe((event) => {
-    const commandRegistry = event.customCommandRegistry;
-    commandRegistry.registerCommand({
-        name: 'canopy:cleanup',
-        description: 'commands.cleanup',
-        optionalParameters: [{ name: 'radius', type: CustomCommandParamType.Integer }],
-        permissionLevel: CommandPermissionLevel.GameDirectors,
-        cheatsRequired: true
-    }, cleanupCommand);
-
-    commandRegistry.registerCommand({
-        name: 'canopy:k',
-        description: 'commands.cleanup',
-        optionalParameters: [{ name: 'radius', type: CustomCommandParamType.Integer }],
-        permissionLevel: CommandPermissionLevel.GameDirectors,
-        cheatsRequired: true
-    }, cleanupCommand);
-});
+new VanillaCommand({
+    name: 'canopy:cleanup',
+    description: 'commands.cleanup',
+    optionalParameters: [{ name: 'radius', type: CustomCommandParamType.Integer }],
+    permissionLevel: CommandPermissionLevel.GameDirectors,
+    cheatsRequired: true,
+    aliases: ['canopy:k']
+}, cleanupCommand);
 
 const TRASH_ENTITY_TYPES = ['minecraft:item', 'minecraft:xp_orb'];
 const DEFAULT_RADIUS = 50;
@@ -25,8 +16,8 @@ const DEFAULT_RADIUS = 50;
 function cleanupCommand(origin, radius) {
     if (!radius)
         radius = DEFAULT_RADIUS;
-    const source = origin.sourceBlock || origin.sourceEntity;
-    if (!source)
+    const source = VanillaCommand.resolveCommandSource(origin);
+    if (!source.location)
         return { status: CustomCommandStatus.Failure, message: 'generic.source.notfound' };
     const removedCount = removeTrashEntities(source, radius);
     if (origin.sourceBlock)
