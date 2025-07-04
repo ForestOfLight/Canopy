@@ -1,4 +1,4 @@
-import { Block, CustomCommandSource, CustomCommandStatus, system } from "@minecraft/server";
+import { Block, CustomCommandSource, system } from "@minecraft/server";
 import { Rules } from "./Rules";
 
 export class VanillaCommand {
@@ -29,7 +29,7 @@ export class VanillaCommand {
             const disabledContingentRules = this.#getDisabledContingentRules();
             this.#printDisabledContingentRules(disabledContingentRules, source);
             if (disabledContingentRules.length > 0)
-                return { status: CustomCommandStatus.Failure };
+                return;
             return this.customCommand.callback(source, ...args);
         }
     }

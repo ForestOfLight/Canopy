@@ -18,7 +18,7 @@ function cleanupCommand(source, radius) {
     if (!radius)
         radius = DEFAULT_RADIUS;
     if (!source || source === "Server")
-        return { status: CustomCommandStatus.Failure, message: 'commands.generic.source.notfound' };
+        return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
     const removedCount = removeTrashEntities(source, radius);
     if (source instanceof Block)
         return { status: CustomCommandStatus.Success, message: 'commands.cleanup.success' };

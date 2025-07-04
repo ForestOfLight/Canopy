@@ -3,6 +3,7 @@ import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, Ga
 import { stringifyLocation } from "../../include/utils";
 
 const MAX_EFFECT_DURATION = 20000000;
+const TICKS_TO_COMPLETE_FADE = 10;
 
 new Rule({
     category: 'Rules',
@@ -78,7 +79,7 @@ function onPlayerDimensionChange(event) {
 
 function cameraCommand(source, action) {
     if (!(source instanceof Player))
-        return { status: CustomCommandStatus.Failure, message: 'commands.generic.source.notfound' };
+        return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
     switch (action) {
         case CAM_ACTION_ENUM.Place:
             placeCameraAction(source);
@@ -144,7 +145,7 @@ function endCameraView(source) {
     cameraFadeOut(source);
     system.runTimeout(() => {
         source.camera.clear();
-    }, 8);
+    }, TICKS_TO_COMPLETE_FADE);
     source.setDynamicProperty('isViewingCamera', false);
     source.onScreenDisplay.setActionBar({ translate: 'commands.camera.view.ended' });
 }
@@ -178,7 +179,7 @@ function startSpectate(source) {
         source.addEffect('night_vision', MAX_EFFECT_DURATION, { amplifier: 0, showParticles: false });
         source.addEffect('conduit_power', MAX_EFFECT_DURATION, { amplifier: 0, showParticles: false });
         source.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.started' });
-    }, 8);
+    }, TICKS_TO_COMPLETE_FADE);
 }
 
 function endSpectate(source) {
@@ -205,7 +206,7 @@ function endSpectate(source) {
         }
         source.setGameMode(beforeSpectatorPlayer.gamemode);
         source.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.ended' });
-    }, 8);
+    }, TICKS_TO_COMPLETE_FADE);
 }
 
 function cameraFadeOut(source) {

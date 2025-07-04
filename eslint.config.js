@@ -49,7 +49,6 @@ export default [
       "max-depth": ["warn"],
       "max-lines": ["warn"],
       "max-lines-per-function": ["warn"],
-      "max-params": ["warn"],
       "new-cap": "error",
       "no-else-return": "error",
       "no-lonely-if": "error",

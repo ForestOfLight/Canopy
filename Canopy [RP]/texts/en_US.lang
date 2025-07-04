@@ -16,7 +16,7 @@ commands.generic.unknown=§cInvalid command: '%1'. Use %2help for more informati
 commands.generic.nopermission=§cYou do not have permission to run this command.
 commands.generic.usage=§cUsage: %s
 commands.generic.blocked.survival=§cThis command cannot be used in survival mode.
-commands.generic.source.notfound=§cThis command cannot be run from this source.
+commands.generic.invalidsource=§cThis command cannot be run from this source.
 
 commands.help=Displays help pages.
 commands.help.search.noresult=§cNo results found for '%s'.
@@ -55,8 +55,8 @@ commands.canopy.single=Enables or disables a single rule.
 commands.canopy.multiple=Enables or disables multiple rules.
 commands.canopy.infodisplayRule=§cThe rule '%1' is part of the InfoDisplay, and must be toggled using %2info. Use %2help for more information.
 
-commands.changedimension=Teleports you to the specified dimension.
-commands.changedimension.notfound=§cInvalid dimension. Please use one of these: %s
+commands.changedimension=Teleports entities to the specified dimension.
+commands.changedimension.notfound=§cInvalid dimension.
 commands.changedimension.success.coords=§7Teleported to %1 in the %2§7.
 commands.changedimension.success=§7Changed to the %s§7.
 commands.changedimension.fail.coords=§cInvalid coordinates. Please provide all x, y, z numeric values or none.
