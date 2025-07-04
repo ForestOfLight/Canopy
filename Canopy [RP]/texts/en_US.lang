@@ -92,7 +92,7 @@ commands.counter.remove.single.actionbar=[%1] Removed all hoppers in %2
 commands.counter.remove.all=§7Removed all hoppers in all channels.
 commands.counter.remove.all.actionbar=[%s] Removed all hoppers in all channels.
 
-commands.data=Displays information about the block or entity you are looking at.
+commands.data=Displays information about a block or entity you are looking at or one you select.
 commands.data.notarget.id=§cNo entity found with id '%2'.
 commands.data.properties=§aProperties:§r %s
 commands.data.states=§aStates:§r %s

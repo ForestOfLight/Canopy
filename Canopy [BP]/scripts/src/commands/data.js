@@ -1,49 +1,45 @@
-import { Command } from "../../lib/canopy/Canopy";
-import { world } from "@minecraft/server";
-import { parseName, stringifyLocation } from "../../include/utils";
+import { VanillaCommand } from "../../lib/canopy/Canopy";
+import { BlockComponentTypes, CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, Player } from "@minecraft/server";
+import { getColoredDimensionName, stringifyLocation } from "../../include/utils";
 
-const BLOCK_COMPONENTS = ['minecraft:inventory', 'minecraft:lavaContainer', 'minecraft:piston', 'minecraft:potionContainer', 'minecraft:record_player',
-    'minecraft:sign', 'minecraft:snowContainer', 'minecraft:waterContainer'];
+const TARGET_DISTANCE = 100;
 
-new Command({
-    name: 'data',
-    description: { translate: 'commands.data' },
-    usage: 'data [id]',
-    args: [
-        { type: 'number', name: 'id' }
-    ],
+new VanillaCommand({
+    name: 'canopy:data',
+    description: 'commands.data',
+    optionalParameters: [{ name: 'entity', type: CustomCommandParamType.EntitySelector }],
+    permissionLevel: CommandPermissionLevel.Any,
     callback: dataCommand
 });
 
-function dataCommand(sender, args) {
-    const targetId = args.id;
-    let message;
-    if (targetId === null) 
-        message = getTargetedMessage(sender);
-    else 
-        message = getIdentifierMessage(targetId);
-    sender.sendMessage(message);
+function dataCommand(source, entity) {
+    if (!(source instanceof Player))
+        return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
+    let message = [];
+    if (!entity) {
+        message = getTargetedMessage(source);
+    } else if (entity.length > 0) {
+        entity.forEach((currEntity) => {
+            message.push(formatEntityOutput(currEntity));
+        });
+    } else {
+        message = { translate: 'generic.target.notfound' };
+    }
+    source.sendMessage(message);
 }
 
 function getTargetedMessage(sender) {
-    const blockRayResult = sender.getBlockFromViewDirection({ includeLiquidBlocks: true, includePassableBlocks: true, maxDistance: 7 });
-    const entityRayResult = sender.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: 7 });
+    const blockRayResult = sender.getBlockFromViewDirection({ includeLiquidBlocks: true, includePassableBlocks: true, maxDistance: TARGET_DISTANCE });
+    const entityRayResult = sender.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: TARGET_DISTANCE });
     const block = blockRayResult?.block;
     const entity = entityRayResult[0]?.entity;
     if (!block && !entity)
-        return sender.sendMessage({ translate: 'generic.target.notfound' });
+        return { translate: 'generic.target.notfound' };
 
     if (entity)
         return formatEntityOutput(entity);
     else if (block)
         return formatBlockOutput(block);
-}
-
-function getIdentifierMessage(targetId) {
-    const entity = world.getEntity(String(targetId));
-    if (entity)
-        return formatEntityOutput(entity);
-    return { translate: 'commands.data.notarget.id', with: [targetId] };
 }
 
 function formatBlockOutput(block) {
@@ -55,7 +51,7 @@ function formatBlockOutput(block) {
 
     const message = {
         rawtext: [
-            { text: `§l§a${parseName(block)}§r: ${stringifyLocation(block.location, 0)}, ${dimensionId}\n` },
+            { text: `§l§a${block.typeId}§r: ${stringifyLocation(block.location, 0)}, ${getColoredDimensionName(dimensionId)}\n` },
             { rawtext: [
                 { translate: 'commands.data.properties', with: [properties] }, { text: '\n' },
                 { translate: 'commands.data.states', with: [states] }, { text: '\n' },
@@ -64,12 +60,11 @@ function formatBlockOutput(block) {
             ]}
         ]
     };
-
     return message;
 }
 
 function formatEntityOutput(entity) {
-    const nameTag = entity.nameTag ? `(${entity.nameTag})` : '';
+    const nameTag = entity.nameTag ? `§r§a(§o${entity.nameTag}§r§a)` : '';
     const dimensionId = entity.dimension.id.replace('minecraft:', '');
     const properties = formatProperties(entity);
     const components = formatComponents(entity, entity.getComponents());
@@ -83,7 +78,7 @@ function formatEntityOutput(entity) {
     
     const message = {
         rawtext: [
-            { text: `§l§a${parseName(entity)}${nameTag}§r: §2id:${entity.id}§r, ${stringifyLocation(entity.location, 2)}, ${dimensionId}\n` },
+            { text: `§l§a${entity.typeId}${nameTag}§r: §2id:${entity.id}§r, ${stringifyLocation(entity.location, 2)}, ${getColoredDimensionName(dimensionId)}\n` },
             { rawtext: [
                 { translate: 'commands.data.properties', with: [properties] }, { text: '\n' },
                 { translate: 'commands.data.components', with: [components] }, { text: '\n' },
@@ -99,7 +94,6 @@ function formatEntityOutput(entity) {
 
 function formatProperties(target) {
     let output = '';
-
     for (const key in target) {
         try {
             let value = target[key];
@@ -116,14 +110,12 @@ function formatProperties(target) {
             console.warn(error);
         }
     }
-
     return output.slice(0, -2);
 }
 
 function tryGetBlockComponents(target) {
     const components = [];
-    
-    for (const componentType of BLOCK_COMPONENTS) {
+    for (const componentType of Object.values(BlockComponentTypes)) {
         try {
             const component = target.getComponent(componentType);
             if (component) components.push(component);
@@ -131,7 +123,6 @@ function tryGetBlockComponents(target) {
             console.warn(error);
         }
     }
-
     return components;
 }
 
@@ -141,7 +132,6 @@ function formatComponents(target, components) {
     let output = '';
     for (const component of components) 
         output += formatComponent(target, component);
-    
     return output;
 }
 

@@ -22,6 +22,7 @@ new VanillaCommand({
         { name: 'victim', type: CustomCommandParamType.EntitySelector }
     ],
     permissionLevel: CommandPermissionLevel.GameDirectors,
+    cheatsRequired: true,
     callback: changeDimensionCommand
 });
 
