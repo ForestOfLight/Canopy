@@ -68,7 +68,7 @@ commands.claimprojectiles.fail.nonefound=§7No projectiles found in range (%s bl
 commands.claimprojectiles.success.self=§7Successfully became the owner of %1 projectiles within %2 blocks of you.
 commands.claimprojectiles.success.other=§7Successfully changed the owner of %1 projectiles within %2 blocks of %3.
 
-commands.cleanup=Removes all items and experience orbs within a radius. (Alias: k)
+commands.cleanup=Removes all items and experience orbs within a radius.
 commands.cleanup.success=§7Cleaned up %1 entities (r%2).
 
 commands.counter=Manages hopper counters. (Alias: ct)
