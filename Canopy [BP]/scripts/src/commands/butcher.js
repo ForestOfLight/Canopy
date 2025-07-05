@@ -1,5 +1,5 @@
 import { Command } from 'lib/canopy/Canopy';
-import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, Player, system } from '@minecraft/server';
+import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, Entity, Player, system } from '@minecraft/server';
 import { VanillaCommand } from '../../lib/canopy/VanillaCommand';
 
 new Command({
@@ -41,9 +41,9 @@ function butcherCommand(sender, entity) {
 }
 
 function getTargetEntity(sender, entity) {
-    if (!entity)
+    if (!entity && entity instanceof Entity)
         return sender.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: false, maxDistance: 16 })[0]?.entity;
-    return entity
+    return entity;
 }
 
 function removeManyEntities(sender, entities) {
