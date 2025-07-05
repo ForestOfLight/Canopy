@@ -144,6 +144,7 @@ commands.generator.remove.all=§7Removed all hopper generators in all channels.
 commands.generator.remove.all.actionbar=[%s] Removed all hopper generators in all channels.
 
 commands.health=Displays the server's current TPS, MSPT, and entity counts.
+commands.health.startprofile=§7Profiling tick time...
 commands.health.fail.mspt=§cCould not compute MSPT. Please report this error.
 
 commands.info=Toggle InfoDisplay rules. (Alias: i)

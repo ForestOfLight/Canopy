@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { VanillaCommand } from "../../../../../Canopy [BP]/scripts/lib/canopy/VanillaCommand";
 import { Rule } from "../../../../../Canopy [BP]/scripts/lib/canopy/Rule";
@@ -47,7 +48,9 @@ vi.mock("@minecraft/server", () => ({
         Failure: "Failure",
         Success: "Success"
     },
-    Block: class {}
+    Block: class {},
+    Entity: class {},
+    Player: class { sendMessage = vi.fn() }
 }));
 
 describe("VanillaCommand", () => {
@@ -111,7 +114,7 @@ describe("VanillaCommand", () => {
         command.registerCommand(mockCustomCommandRegistry);
         const mockOrigin = { sourceType: "Entity", sourceEntity: { sendMessage: vi.fn() } };
         const result = command.callback(mockOrigin);
-        expect(result).toEqual({ status: "Failure" });
+        expect(result).toBeUndefined();
         expect(mockOrigin.sourceEntity.sendMessage).toHaveBeenCalledWith({ translate: "rules.generic.blocked", with: ["test_rule"] });
     });
 

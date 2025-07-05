@@ -1,4 +1,4 @@
-import { Block, CustomCommandSource, system } from "@minecraft/server";
+import { Block, CustomCommandSource, Entity, system } from "@minecraft/server";
 import { Rules } from "./Rules";
 
 export class VanillaCommand {
@@ -26,6 +26,7 @@ export class VanillaCommand {
     addPreCallback() {
         this.callback = (origin, ...args) => {
             const source = VanillaCommand.resolveCommandSource(origin);
+            VanillaCommand.addSendMessageMethod(source);
             const disabledContingentRules = this.#getDisabledContingentRules();
             this.#printDisabledContingentRules(disabledContingentRules, source);
             if (disabledContingentRules.length > 0)
@@ -70,6 +71,15 @@ export class VanillaCommand {
             default:
                 return void 0;
         }
+    }
+    
+    static addSendMessageMethod(source) {
+        if (source === "Server") 
+            source.sendMessage = (message) => console.log(message);
+        else if (source instanceof Block || source instanceof Entity)
+            source.sendMessage = () => {};
+        else if (!source)
+            source.sendMessage = (message) => console.warn(`Unknown source type: ${source}`, message);
     }
 
     #getDisabledContingentRules() {
