@@ -115,10 +115,10 @@ commands.distance.cylindrical=§7Cartesian(XZ): §r§l%s§r
 commands.distance.manhattan=§7§7Manhattan: §r§l%s§r
 
 commands.entitydensity=Find entity-dense areas in a dimension.
-commands.entitydensity.fail.noentities=§7No dense areas found in %s. No entities in the dimension?
+commands.entitydensity.fail.noentities=§7No dense areas found in %s§r§7. No entities in the dimension?
 commands.entitydensity.fail.dimension=§cInvalid dimension. Please use one of these: %s
 commands.entitydensity.fail.gridsize=§cInvalid grid size. Please use a value between 1 and 2048. Recommended: 100-1024.
-commands.entitydensity.success.header=§7Entity-dense areas in %1 (grid size %2x%3):
+commands.entitydensity.success.header=§7Entity-dense areas in %1§r§7 (grid size %2x%3):
 commands.entitydensity.success.area=§7- %1 entities at %2, %3
 
 commands.gamemode.s=Set your gamemode to survival.

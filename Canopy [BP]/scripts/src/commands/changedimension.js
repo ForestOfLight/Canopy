@@ -1,30 +1,7 @@
 import { VanillaCommand } from "../../lib/canopy/Canopy";
 import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, world, system, Entity } from "@minecraft/server";
 import { stringifyLocation, getColoredDimensionName } from "../../include/utils";
-
-const DIMENSION_ENUM = Object.freeze({
-    Overworld: 'overworld',
-    Nether: 'nether',
-    TheEnd: 'the_end',
-    OverworldShort: 'o',
-    NetherShort: 'n',
-    TheEndShort: 'e',
-    End: 'end'
-});
-
-new VanillaCommand({
-    name: 'canopy:dtp',
-    description: 'commands.changedimension',
-    enums: [{ name: 'canopy:dimension', values: Object.values(DIMENSION_ENUM) }],
-    mandatoryParameters: [{ name: 'canopy:dimension', type: CustomCommandParamType.Enum }],
-    optionalParameters: [
-        { name: 'destination', type: CustomCommandParamType.Location },
-        { name: 'victim', type: CustomCommandParamType.EntitySelector }
-    ],
-    permissionLevel: CommandPermissionLevel.GameDirectors,
-    cheatsRequired: true,
-    callback: changeDimensionCommand
-});
+import { Dimension } from "./commandEnums";
 
 const validDimensions = {
     'o': 'overworld',
@@ -35,6 +12,19 @@ const validDimensions = {
     'end': 'the_end',
     'the_end': 'the_end',
 };
+
+new VanillaCommand({
+    name: 'canopy:dtp',
+    description: 'commands.changedimension',
+    mandatoryParameters: [{ name: 'canopy:dimension', type: CustomCommandParamType.Enum }],
+    optionalParameters: [
+        { name: 'destination', type: CustomCommandParamType.Location },
+        { name: 'victim', type: CustomCommandParamType.EntitySelector }
+    ],
+    permissionLevel: CommandPermissionLevel.GameDirectors,
+    cheatsRequired: true,
+    callback: changeDimensionCommand
+});
 
 function changeDimensionCommand(source, dimension, destination, victim) {
     const toDimensionId = validDimensions[dimension.toLowerCase()];
@@ -63,9 +53,9 @@ function resolveVictim(source, victim) {
 }
 
 function convertCoords(fromDimension, toDimension, destination) {
-    if (fromDimension === DIMENSION_ENUM.Overworld && toDimension === DIMENSION_ENUM.Nether)
+    if (fromDimension === Dimension.Overworld && toDimension === Dimension.Nether)
         return { x: destination.x / 8, y: destination.y, z: destination.z / 8 };
-    else if (fromDimension === DIMENSION_ENUM.Nether && toDimension === DIMENSION_ENUM.Overworld)
+    else if (fromDimension === Dimension.Nether && toDimension === Dimension.Overworld)
         return { x: destination.x * 8, y: destination.y, z: destination.z * 8 };
     return destination;
 }
