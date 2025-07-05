@@ -1,4 +1,4 @@
-import { Block, CustomCommandSource, Entity, system } from "@minecraft/server";
+import { Block, CustomCommandSource, Entity, Player, system } from "@minecraft/server";
 import { Rules } from "./Rules";
 
 export class VanillaCommand {
@@ -76,7 +76,7 @@ export class VanillaCommand {
     static addSendMessageMethod(source) {
         if (source === "Server") 
             source.sendMessage = (message) => console.log(message);
-        else if (source instanceof Block || source instanceof Entity)
+        else if (source instanceof Block || (source instanceof Entity && !(source instanceof Player)))
             source.sendMessage = () => {};
         else if (!source)
             source.sendMessage = (message) => console.warn(`Unknown source type: ${source}`, message);

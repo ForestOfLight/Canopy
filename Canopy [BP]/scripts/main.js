@@ -1,5 +1,5 @@
 // Commands
-import './src/commands/commandEnums'
+import './src/commands/CommandEnums'
 import './src/commands/info'
 import './src/commands/help'
 import './src/commands/peek'

@@ -28,7 +28,7 @@ commands.help.extension.rules=Togglable rules for §o§a%s§r§8.
 commands.help.extension.commands=Commands for §o§a%s§r§2.
 
 commands.camera=Place a camera, toggle viewing your placed camera, or toggle a survival-friendly spectator mode.
-commands.camera.spectate=Toggles a survival-friendly spectator mode.
+commands.camera.spectate=Toggle a survival-friendly spectator mode.
 commands.camera.place.viewing=§cYou cannot place a camera while viewing one.
 commands.camera.place.success=§7Camera placed at %s.
 commands.camera.view.spectating=§cYou cannot view a camera while spectating.

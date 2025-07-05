@@ -1,7 +1,7 @@
 import { VanillaCommand } from "../../lib/canopy/Canopy";
 import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, world, system, Entity } from "@minecraft/server";
 import { stringifyLocation, getColoredDimensionName } from "../../include/utils";
-import { Dimension } from "./commandEnums";
+import { Dimension } from "./CommandEnums";
 
 const validDimensions = {
     'o': 'overworld',

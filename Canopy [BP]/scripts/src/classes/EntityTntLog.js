@@ -60,7 +60,7 @@ class EntityTntLog extends EntityLog {
             const endLocation = stringifyLocation(tntEntity.location, precision);
             output += `§a${startLocation}§7 --> §c${endLocation}`;
             if (i < this.removedTntThisTick.length - 1)
-                output += ', ';
+                output += '§r§7, ';
             delete this.tntSpawnLocations[tntEntity.id];
         }
         if (output.length > 0)
