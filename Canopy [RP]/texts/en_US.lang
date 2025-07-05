@@ -27,6 +27,12 @@ commands.help.rules=Togglable global rules.
 commands.help.extension.rules=Togglable rules for §o§a%s§r§8.
 commands.help.extension.commands=Commands for §o§a%s§r§2.
 
+commands.butcher=Instantly remove selected entities or the one you are looking at.
+commands.butcher.fail.player=§cCannot remove players.
+commands.butcher.fail.noneremoved=§cNo entities removed.
+commands.butcher.success=§7Removed %1.
+commands.butcher.success.many=§7Removed %1 entities: 
+
 commands.camera=Place a camera, toggle viewing your placed camera, or toggle a survival-friendly spectator mode.
 commands.camera.spectate=Toggle a survival-friendly spectator mode.
 commands.camera.place.viewing=§cYou cannot place a camera while viewing one.
@@ -173,17 +179,12 @@ commands.peek.fail.noitems=§cNo items found in %1 at %2.
 commands.peek.query.cleared=§7Peek query cleared.
 commands.peek.query.set=§7Peek query set to '%s'.
 
-commands.pos=Shows your current position, or the position of another player.
+commands.pos=Shows your current position, or the positions of other players.
 commands.pos.self=§aYour position: §f%s
 commands.pos.other=§a%1's position: §f%2
 commands.pos.dimension=§7Dimension: §7%s
 commands.pos.relative.overworld=§7Relative Overworld position: §a%s
 commands.pos.relative.nether=§7Relative Nether position: §c%s
-
-commands.removeentity=Instantly remove the entity you are looking at or by id.
-commands.removeentity.fail.player=§cCannot remove players.
-commands.removeentity.fail.noid=§cNo entity found with id '%s'.
-commands.removeentity.success=§7Removed %1 with id '%2'.
 
 commands.resetall=Resets all §lCanopy§r§8 rules and data. Use with caution.
 commands.resetall.success=§7All §lCanopy§r§8 player and world dynamic properties have been reset.
