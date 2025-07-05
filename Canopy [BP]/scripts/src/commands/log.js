@@ -34,6 +34,8 @@ export function logCommand(source, type, precision) {
     }
     if (Object.keys(entityLogs).includes(type))
         toggleLogging(source, type);
+    else
+        return { status: CustomCommandStatus.Failure, message: 'commands.log.invalidtype' };
 }
 
 function setLogPrecision(source, value) {

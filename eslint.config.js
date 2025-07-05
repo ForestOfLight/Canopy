@@ -76,7 +76,8 @@ export default [
     files: ["**/__tests__/**"],
     rules: {
       "max-lines-per-function": "off",
-      "max-lines": "off"
+      "max-lines": "off",
+      "max-classes-per-file": "off"
     }
   }
 ];

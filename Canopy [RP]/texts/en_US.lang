@@ -162,6 +162,7 @@ commands.log=Log tnt, projectile, and falling block movement.
 commands.log.precision=§7Log precision set to %s.
 commands.log.started=§7Started logging %s.
 commands.log.stopped=§7Stopped logging %s.
+commands.log.invalidtype=§cInvalid log type.
 
 commands.loop=Run a vanilla command multiple times in a single tick.
 
