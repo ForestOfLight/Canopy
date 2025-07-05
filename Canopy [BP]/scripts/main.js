@@ -36,7 +36,6 @@ import './src/commands/scriptevents/spawn'
 import './src/commands/scriptevents/tick'
 import './src/commands/scriptevents/generator'
 import './src/commands/scriptevents/resettest'
-import './src/commands/scriptevents/loop'
 
 // Rules
 import './src/rules/infodisplay/InfoDisplay'
