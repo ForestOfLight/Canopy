@@ -1,17 +1,5 @@
-import { Command } from 'lib/canopy/Canopy';
+import { VanillaCommand } from '../../lib/canopy/Canopy';
 import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, Entity, Player, system } from '@minecraft/server';
-import { VanillaCommand } from '../../lib/canopy/VanillaCommand';
-
-new Command({
-    name: 'butcher',
-    description: { translate: 'commands.butcher' },
-    usage: 'butcher [id]',
-    args: [
-        { type: 'number', name: 'id' }
-    ],
-    callback: butcherCommand,
-    opOnly: true
-});
 
 new VanillaCommand({
     name: 'canopy:butcher',

@@ -1,6 +1,6 @@
-import { VanillaCommand } from "../../lib/canopy/Canopy"
-import { playerSit } from "../rules/playerSit"
-import { CommandPermissionLevel, CustomCommandStatus, EntityComponentTypes, Player, system } from "@minecraft/server"
+import { VanillaCommand } from "../../lib/canopy/Canopy";
+import { playerSit } from "../rules/playerSit";
+import { CommandPermissionLevel, CustomCommandStatus, EntityComponentTypes, Player, system } from "@minecraft/server";
 
 new VanillaCommand({
     name: 'canopy:sit',
