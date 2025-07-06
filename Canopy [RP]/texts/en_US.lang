@@ -186,12 +186,8 @@ commands.pos.dimension=§7Dimension: §7%s
 commands.pos.relative.overworld=§7Relative Overworld position: §a%s
 commands.pos.relative.nether=§7Relative Nether position: §c%s
 
-commands.resetall=Resets all §lCanopy§r§8 rules and data. Use with caution.
-commands.resetall.success=§7All §lCanopy§r§8 player and world dynamic properties have been reset.
-
-commands.resettest=Resets spawn tracking, hopper counters, and hopper generators at the same time.
-commands.resettest.success=§7Reset spawn counters, hopper counters, and hopper generators.
-commands.resettest.success.actionbar=[%s] §7Reset spawn counters, hopper counters, and hopper generators.
+commands.retest=Resets spawn tracking, hopper counters, and hopper generators.
+commands.retest.success=§7Reset spawn counters, hopper counters, and hopper generators.
 
 commands.simmap=Displays a map of the loaded chunks near you or the specified location.
 commands.simmap.help.distance=Displays the map with a radius of chunks equal to the specified distance.
