@@ -1,5 +1,5 @@
-import { Rule, Rules, Command } from "../../lib/canopy/Canopy";
-import { GameMode } from "@minecraft/server";
+import { Rule, Rules, VanillaCommand } from "../../lib/canopy/Canopy";
+import { CommandPermissionLevel, CustomCommandStatus, Entity, GameMode, system } from "@minecraft/server";
 
 new Rule({
     category: 'Rules',
@@ -7,30 +7,21 @@ new Rule({
     description: { translate: 'rules.commandJumpSurvival' }
 });
 
-new Command({
-    name: 'jump',
-    description: { translate: 'commands.jump' },
-    usage: 'jump',
-    callback: jumpCommand
+new VanillaCommand({
+    name: 'canopy:jump',
+    description: 'commands.jump',
+    permissionLevel: CommandPermissionLevel.GameDirectors,
+    cheatsRequired: true,
+    callback: jumpCommand,
+    aliases: ['canopy:j']
 });
 
-new Command({
-    name: 'j',
-    description: { translate: 'commands.jump' },
-    usage: 'j',
-    callback: jumpCommand,
-    helpHidden: true
-})
-
-function jumpCommand(sender) {
-    if (!Rules.getNativeValue('commandJumpSurvival') && sender.getGameMode() === GameMode.Survival)
-        return sender.sendMessage({ translate: 'rules.generic.blocked', with: ['commandJumpSurvival'] });
-    
-    const blockRayResult = sender.getBlockFromViewDirection({ includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: 64*16 });
-    if (!blockRayResult?.block)
-        return sender.sendMessage({ translate: 'commands.jump.fail.noblock' });
-    const jumpLocation = getBlockLocationFromFace(blockRayResult.block, blockRayResult.face);
-    sender.teleport(jumpLocation);
+function jumpCommand(source) {
+    if (!(source instanceof Entity))
+        return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
+    if (!Rules.getNativeValue('commandJumpSurvival') && source.getGameMode() === GameMode.Survival)
+        return source.sendMessage({ translate: 'rules.generic.blocked', with: ['commandJumpSurvival'] });
+    jumpToViewDirectionBlock(source);
 }
 
 function getBlockLocationFromFace(block, face) {
@@ -48,6 +39,16 @@ function getBlockLocationFromFace(block, face) {
         case 'West':
             return { x: block.x - 1, y: block.y, z: block.z};
         default:
-            throw new Error('Invalid face');
+            throw new Error('Invalid block face');
     }
+}
+
+function jumpToViewDirectionBlock(entity) {
+    const blockRayResult = entity.getBlockFromViewDirection({ includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: 64*16 });
+    if (!blockRayResult?.block)
+        return entity.sendMessage({ translate: 'commands.jump.fail.noblock' });
+    const jumpLocation = getBlockLocationFromFace(blockRayResult.block, blockRayResult.face);
+    system.run(() => {
+        entity.teleport(jumpLocation);
+    });
 }

@@ -1,5 +1,5 @@
-import { Rule, Command, Rules } from "../../lib/canopy/Canopy";
-import { world } from "@minecraft/server";
+import { Rule, Rules, VanillaCommand } from "../../lib/canopy/Canopy";
+import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, Player } from "@minecraft/server";
 import { stringifyLocation, getColoredDimensionName } from "../../include/utils";
 
 const NETHER_SCALE_FACTOR = 8;
@@ -10,36 +10,43 @@ new Rule({
     description: { translate: 'rules.commandPosOthers' }
 });
 
-new Command({
-    name: 'pos',
-    description: { translate: 'commands.pos' },
-    usage: 'pos [player]',
-    args: [
-        { type: 'string|number', name: 'player' }
-    ],
+new VanillaCommand({
+    name: 'canopy:pos',
+    description: 'commands.pos',
+    optionalParameters: [{ name: 'player', type: CustomCommandParamType.PlayerSelector }],
+    permissionLevel: CommandPermissionLevel.Any,
     callback: posCommand
 });
 
-function posCommand(sender, args) {
-    const { player } = args;
-    if (!Rules.getNativeValue('commandPosOthers') && player !== null)
-        return sender.sendMessage({ translate: 'rules.generic.blocked', with: ['commandPosOthers'] });
-    const target = player === null ? sender : world.getPlayers({ name: String(player) })[0];
-    if (!target)
-        return sender.sendMessage({ translate: 'generic.player.notfound', with: [player] });
+function posCommand(source, player) {
+    if (!Rules.getNativeValue('commandPosOthers') && player)
+        return source.sendMessage({ translate: 'rules.generic.blocked', with: ['commandPosOthers'] });
+    if (player?.length > 0) {
+        for (const currPlayer of player) {
+            if (!currPlayer)
+                continue;
+            sendPosMessage(source, currPlayer);
+        }
+    } else if (source instanceof Player) {
+        sendPosMessage(source);
+    } else {
+        return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
+    }
+}
 
-    const message = {
+function sendPosMessage(source, target = void 0) {
+    target = target === void 0 ? source : target;
+    source.sendMessage({
         rawtext: [
-            getPositionText(player, target), { text: '\n' },
+            getPositionText(source, target), { text: '\n' },
             getDimensionText(target), { text: '\n' },
             getRelativeDimensionPositionText(target)
         ]
-    };
-    sender.sendMessage(message);
+    });
 }
 
 function getPositionText(player, target) {
-    if (player === null)
+    if (player === target)
         return { translate: 'commands.pos.self', with: [stringifyLocation(target.location, 2)] };
     return { translate: 'commands.pos.other', with: [target.name, stringifyLocation(target.location, 2)] };
 }

@@ -1,16 +1,32 @@
-import { Command } from "../../lib/canopy/Canopy";
-import { world } from "@minecraft/server";
+import { VanillaCommand } from "../../lib/canopy/Canopy";
+import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, system, world } from "@minecraft/server";
 import EventTracker from "../classes/EventTracker";
-import { broadcastActionBar } from "../../include/utils";
 
-const cmd = new Command({
-    name: 'trackevent',
-    description: { translate: 'commands.trackevent' },
-    usage: 'trackevent <eventName> [beforeEvent/afterEvent]',
-    args: [
-        { type: 'string', name: 'eventName' },
-        { type: 'string', name: 'eventType' }
+const EVENT_TYPES = Object.freeze({
+    Before: 'beforeEvent',
+    After: 'afterEvent'
+});
+
+function getAllWorldEventNames() {
+    const beforeEventNames = [];
+    const afterEventNames = [];
+    for (const prop in world.beforeEvents)
+        beforeEventNames.push(prop);
+    for (const prop in world.afterEvents)
+        afterEventNames.push(prop);
+    return Array.from(new Set(beforeEventNames.concat(afterEventNames)));
+}
+    
+new VanillaCommand({
+    name: 'canopy:trackevent',
+    description: 'commands.trackevent',
+    enums: [
+        { name: 'canopy:eventName', values: getAllWorldEventNames() },
+        { name: 'canopy:eventType', values: Object.values(EVENT_TYPES) }
     ],
+    mandatoryParameters: [{ name: 'canopy:eventName', type: CustomCommandParamType.Enum }],
+    optionalParameters: [{ name: 'canopy:eventType', type: CustomCommandParamType.Enum }],
+    permissionLevel: CommandPermissionLevel.Any,
     callback: trackCommand
 });
 
@@ -30,53 +46,49 @@ world.afterEvents.worldLoad.subscribe(() => {
     }
 });
 
-function trackCommand(sender, args) {
-    const { eventName, eventType } = args;
+function trackCommand(source, eventName, eventType) {
     let isAfterEvent;
-    if (eventName === null)
-        return cmd.sendUsage(sender);
-    if (eventType === 'beforeEvent')
+    if (eventType === EVENT_TYPES.Before)
         isAfterEvent = false;
-    else if (eventType === 'afterEvent' || eventType === null)
+    else if (!eventType || eventType === EVENT_TYPES.After)
         isAfterEvent = true;
     else
-        return cmd.sendUsage(sender);
-
-    if (alreadyTracking(eventName, isAfterEvent))
-        stopTracking(sender, eventName, isAfterEvent);
-    else
-        startTracking(sender, eventName, isAfterEvent);
+        return { status: CustomCommandStatus.Failure, message: 'commands.trackevent.invalid' };
+    system.run(() => {
+        if (alreadyTracking(eventName, isAfterEvent))
+            stopTracking(source, eventName, isAfterEvent);
+        else
+            startTracking(source, eventName, isAfterEvent);
+    });
 }
 
 function alreadyTracking(eventName, isAfterEvent) {
     return (isAfterEvent && trackers.after[eventName]) || (!isAfterEvent && trackers.before[eventName]);
 }
 
-function stopTracking(sender, eventName, isAfterEvent) {
-    if (!isValidEvent(sender, eventName, isAfterEvent))
+function stopTracking(source, eventName, isAfterEvent) {
+    if (!isValidEvent(source, eventName, isAfterEvent))
         return;
     const tracker = trackers[isAfterEvent ? 'after' : 'before'][eventName];
     tracker.stop();
     delete trackers[isAfterEvent ? 'after' : 'before'][eventName];
     const eventFullName = eventName + (isAfterEvent ? 'After' : 'Before') + 'Event';
-    sender.sendMessage({ translate: 'commands.trackevent.stop', with: [eventFullName] });
-    broadcastActionBar({ rawtext: [{ text: `[${sender.name}] `},{ translate: 'commands.trackevent.stop', with: [eventFullName] }] });
+    source.sendMessage({ translate: 'commands.trackevent.stop', with: [eventFullName] });
 }
 
-function startTracking(sender, eventName, isAfterEvent) {
-    if (!isValidEvent(sender, eventName, isAfterEvent))
+function startTracking(source, eventName, isAfterEvent) {
+    if (!isValidEvent(source, eventName, isAfterEvent))
         return;
     const tracker = new EventTracker(eventName, isAfterEvent);
     tracker.start();
     trackers[isAfterEvent ? 'after' : 'before'][eventName] = tracker;
     const eventFullName = eventName + (isAfterEvent ? 'After' : 'Before') + 'Event';
-    sender.sendMessage({ translate: 'commands.trackevent.start', with: [eventFullName] });
-    broadcastActionBar({ rawtext: [{ text: `[${sender.name}] `},{ translate: 'commands.trackevent.start', with: [eventFullName] }] });
+    source.sendMessage({ translate: 'commands.trackevent.start', with: [eventFullName] });
 }
 
-function isValidEvent(sender, eventName, isAfterEvent) {
+function isValidEvent(source, eventName, isAfterEvent) {
     if ((isAfterEvent && !world.afterEvents[eventName]) || (!isAfterEvent && !world.beforeEvents[eventName])) {
-        sender.sendMessage({ translate: 'commands.trackevent.invalid', with: [eventName,isAfterEvent ? 'afterEvents' : 'beforeEvents'] });
+        source.sendMessage({ translate: 'commands.trackevent.invalid', with: [eventName,isAfterEvent ? 'afterEvents' : 'beforeEvents'] });
         return false;
     }
     return true;

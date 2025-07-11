@@ -1,19 +1,24 @@
-import { Command } from "../../lib/canopy/Canopy";
-import  { printDimensionEntities } from "../commands/entitydensity";
+import { VanillaCommand } from "../../lib/canopy/Canopy";
+import { printDimensionEntities } from "../commands/entitydensity";
 import { Profiler } from '../classes/Profiler';
+import { CommandPermissionLevel, CustomCommandStatus, Player, system } from "@minecraft/server";
 
-new Command({
-    name: 'health',
-    description: { translate: 'commands.health' },
-    usage: 'health',
+new VanillaCommand({
+    name: 'canopy:health',
+    description: 'commands.health',
+    permissionLevel: CommandPermissionLevel.Any,
     callback: healthCommand
-})
+});
 
-export async function healthCommand(sender) {
-    sender.sendMessage(`§7Profiling tick time...`);
-    const profile = await Profiler.profile();
-    printDimensionEntities(sender);
-    sender.sendMessage(formatProfileMessage(profile));
+export function healthCommand(source) {
+    if (source instanceof Player) {
+        system.runTimeout(async () => {
+            const profile = await Profiler.profile();
+            printDimensionEntities(source);
+            source.sendMessage(formatProfileMessage(profile));
+        }, Profiler.profileTime);
+    }
+    return { status: CustomCommandStatus.Success, message: 'commands.health.startprofile' };
 }
 
 function formatProfileMessage(profile) {

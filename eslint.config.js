@@ -49,7 +49,6 @@ export default [
       "max-depth": ["warn"],
       "max-lines": ["warn"],
       "max-lines-per-function": ["warn"],
-      "max-params": ["warn"],
       "new-cap": "error",
       "no-else-return": "error",
       "no-lonely-if": "error",
@@ -77,7 +76,8 @@ export default [
     files: ["**/__tests__/**"],
     rules: {
       "max-lines-per-function": "off",
-      "max-lines": "off"
+      "max-lines": "off",
+      "max-classes-per-file": "off"
     }
   }
 ];

@@ -15,11 +15,10 @@ class EventTracker {
     setCallback(eventName, isAfterEvent = true) {
         if (isAfterEvent && this.afterEvents[eventName]) 
             this.callback = this.afterEvents[eventName];
-         else if (this.beforeEvents[eventName]) 
+        else if (this.beforeEvents[eventName])
             this.callback = this.beforeEvents[eventName];
-         else 
+        else 
             throw new Error(`[EventTracker] Event ${eventName} not found. Could not create new tracker.`);
-        
     }
 
     updateDynamicProperty() {
