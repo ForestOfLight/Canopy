@@ -13,7 +13,7 @@ const WAIT_TICKS_BETWEEN_USE = 5;
 
 const previousBlocks = new Array(WAIT_TICKS_BETWEEN_USE).fill(null);
 const flipOnPlaceIds = ['piston', 'sticky_piston', 'dropper', 'dispenser', 'observer', 'crafter', 'unpowered_repeater', 'unpowered_comparator', 
-    'powered_repeater', 'powered_comparator','hopper', 'end_rod', 'lightning_rod'];
+    'powered_repeater', 'powered_comparator', 'hopper', 'end_rod', 'lightning_rod'];
 const flipIds = ['piston', 'sticky_piston', 'observer', 'end_rod', 'lightning_rod'];
 const flipWhenVerticalIds = ['dropper', 'dispenser', 'barrel', 'command_block', 'chain_command_block', 'repeating_command_block'];
 const openIds = ['iron_trapdoor', 'iron_door'];
@@ -35,6 +35,10 @@ world.afterEvents.playerPlaceBlock.subscribe((event) => {
     const block = event.block;
     if (isFlippableOnPlace(block))
         flip(block);
+    else if (isStair(block))
+        stairFlip(player, block);
+    else if (isSlab(block))
+        slabFlip(player, block);
 });
 
 world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
@@ -55,9 +59,9 @@ world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
             succeeded = flip(block);
         else if (openIds.includes(blockId))
             succeeded = open(event.player, block);
-        else if (block.permutation.getState('upside_down_bit') !== void 0)
+        else if (isStair(block))
             succeeded = stairFlip(event.player, block);
-        else if (block.permutation.getState('minecraft:vertical_half'))
+        else if (isSlab(block))
             succeeded = slabFlip(event.player, block);
         else
             succeeded = rotate(block);
@@ -68,6 +72,14 @@ world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
 
 function isFlippableOnPlace(block) {
     return flipOnPlaceIds.includes(block.typeId.replace('minecraft:', ''));
+}
+
+function isStair(block) {
+    return block.permutation.getState('upside_down_bit') !== void 0;
+}
+
+function isSlab(block) {
+    return block.permutation.getState('minecraft:vertical_half') !== void 0;
 }
 
 function flip(block) {
