@@ -20,6 +20,7 @@ import LookingAt from './LookingAt';
 import SignalStrength from './SignalStrength';
 import { PeekInventory } from './PeekInventory';
 import { BlockStates } from './BlockStates';
+import { Speed } from './Speed';
 
 const playerToInfoDisplayMap = {};
 let currentTickWorldwideElementData = {};
@@ -35,23 +36,24 @@ class InfoDisplay {
 			new Coords(player, 1),
 			new CardinalFacing(player, 1),
 			new Facing(player, 2),
-			new ChunkCoords(player, 3),
-			new SlimeChunk(player, 3),
-			new TPS(4),
-			new Entities(player, 5),
-			new Light(player, 6),
-			new Biome(player, 6),
-			new WorldDay(7),
-			new TimeOfDay(7),
-			new SessionTime(player, 8),
-			new MoonPhase(9),
-			new EventTrackers(10),
-			new HopperCounterCounts(11),
-			new SimulationMap(player, 12),
-			new LookingAt(player, 13),
-			new SignalStrength(player, 13),
-			new BlockStates(player, 14),
-			new PeekInventory(player, 15)
+			new Speed(player, 3),
+			new ChunkCoords(player, 4),
+			new SlimeChunk(player, 4),
+			new TPS(5),
+			new Entities(player, 6),
+			new Light(player, 7),
+			new Biome(player, 7),
+			new WorldDay(8),
+			new TimeOfDay(8),
+			new SessionTime(player, 9),
+			new MoonPhase(10),
+			new EventTrackers(11),
+			new HopperCounterCounts(12),
+			new SimulationMap(player, 13),
+			new LookingAt(player, 14),
+			new SignalStrength(player, 14),
+			new BlockStates(player, 15),
+			new PeekInventory(player, 16)
 		];
 		playerToInfoDisplayMap[player.id] = this;
 	}
