@@ -331,6 +331,7 @@ rules.infoDisplay.facing=Shows your facing direction using yaw and pitch.
 rules.infoDisplay.facing.display=§rPitch: §7%1§r Yaw: §7%2§r
 rules.infoDisplay.cardinalFacing=Shows which direction you are facing using N, S, E, W & the coordinate direction (ex. N (-z)).
 rules.infoDisplay.cardinalFacing.display=§rFacing: §7%s§r
+rules.infoDisplay.speed=Shows your current speed in meters per second.
 rules.infoDisplay.tps=Shows the server's ticks per second.
 rules.infoDisplay.tps.display=§rTPS: %s§r
 rules.infoDisplay.entities=Shows the number of entities in front of you.
