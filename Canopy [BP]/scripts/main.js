@@ -66,6 +66,7 @@ import './src/rules/refillHand'
 import './src/rules/durabilitySwap'
 import './src/rules/allowPeekInventory'
 import './src/rules/commandTntFuse'
+import './src/rules/creativeNetherWaterPlacement'
 
 // Load Time Processes
 import './src/onStart'
