@@ -8,7 +8,6 @@ export const DEBUG_ACTION = Object.freeze({
     Remove: 'remove'
 });
 
-
 new VanillaCommand({
     name: 'canopy:debugentity',
     description: 'commands.debugentity',

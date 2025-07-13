@@ -1,12 +1,8 @@
-import { ComponentDebugDisplayElement } from './ComponentDebugDisplayElement.js';
+import { AttributeDebugDisplayElement } from './AttributeDebugDisplayElement.js';
 import { EntityComponentTypes } from '@minecraft/server';
 
-export class Exhaustion extends ComponentDebugDisplayElement {
+export class Exhaustion extends AttributeDebugDisplayElement {
     constructor(entity) {
         super(entity, EntityComponentTypes.Exhaustion);
-    }
-
-    getFormattedData() {
-        return `§7${this.component.currentValue}/${this.component.defaultValue} (effective: ${this.component.effectiveMin} to ${this.component.effectiveMax})`;
     }
 }

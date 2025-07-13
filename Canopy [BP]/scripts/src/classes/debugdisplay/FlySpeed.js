@@ -7,6 +7,8 @@ export class FlySpeed extends ComponentDebugDisplayElement {
     }
 
     getFormattedData() {
+        if (!this.component?.isValid)
+            return '';
         return `§7${this.component.value}`;
     }
 }

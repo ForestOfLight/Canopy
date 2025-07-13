@@ -4,7 +4,6 @@ export class ComponentDebugDisplayElement extends DebugDisplayElement {
     commonIrrelevantProperties = ['componentId', 'entity', 'typeId', 'isValid'];
     relevantProperties = [];
 
-
     constructor(entity, componentType) {
         super(entity);
         this.component = entity.getComponent(componentType);

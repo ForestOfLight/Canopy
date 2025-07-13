@@ -1,8 +1,8 @@
 import { AttributeDebugDisplayElement } from './AttributeDebugDisplayElement.js';
 import { EntityComponentTypes } from '@minecraft/server';
 
-export class Hunger extends AttributeDebugDisplayElement {
+export class LavaMovement extends AttributeDebugDisplayElement {
     constructor(entity) {
-        super(entity, EntityComponentTypes.Hunger);
+        super(entity, EntityComponentTypes.LavaMovement);
     }
 }

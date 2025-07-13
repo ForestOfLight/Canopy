@@ -1,14 +1,15 @@
 import { ComponentDebugDisplayElement } from './ComponentDebugDisplayElement.js';
 import { EntityComponentTypes } from '@minecraft/server';
 
-export class Friction extends ComponentDebugDisplayElement {
+export class Item extends ComponentDebugDisplayElement {
     constructor(entity) {
-        super(entity, EntityComponentTypes.FrictionModifier);
+        super(entity, EntityComponentTypes.Item);
     }
 
     getFormattedData() {
         if (!this.component?.isValid)
             return '';
-        return `§7${this.component.value}`;
+        const itemStack = this.component.itemStack;
+        return `§a${itemStack.typeId} x${itemStack.amount}`;
     }
 }

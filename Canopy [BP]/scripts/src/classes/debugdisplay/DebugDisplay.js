@@ -30,11 +30,17 @@ import { Exhaustion } from './Exhaustion';
 import { FlySpeed } from './FlySpeed';
 import { Friction } from './Friction';
 import { Hunger } from './Hunger';
+import { Container } from './Container';
+import { IsIllagerCaptain } from './IsIllagerCaptain';
+import { Item } from './Item';
+import { LavaMovement } from './LavaMovement';
+import { IsTamed } from './IsTamed';
 
 const entityToDebugDisplayMap = {};
 const debugableProperties = Object.freeze({
     age: Age,
     breath: Breath,
+    container: Container,
     effects: Effects,
     equipment: Equipment,
     exhaustion: Exhaustion,
@@ -47,13 +53,17 @@ const debugableProperties = Object.freeze({
     id: ID,
     isclimbing: IsClimbing,
     isfalling: IsFalling,
+    isillagercaptain: IsIllagerCaptain,
     isinwater: IsInWater,
     isonground: IsOnGround,
     issleeping: IsSleeping,
     issneaking: IsSneaking,
     issprinting: IsSprinting,
     isswimming: IsSwimming,
+    istamed: IsTamed,
     isvalid: IsValid,
+    item: Item,
+    lavamovement: LavaMovement,
     location: Location,
     nametag: NameTag,
     rotation: Rotation,
