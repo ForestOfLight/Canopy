@@ -24,16 +24,26 @@ import { ViewDirection } from './ViewDirection';
 import { Health } from './Health';
 import { Age } from './Age';
 import { GrowUp } from './GrowUp';
-import { Breathable } from './Breathable';
+import { Breath } from './Breath';
+import { Equipment } from './Equipment';
+import { Exhaustion } from './Exhaustion';
+import { FlySpeed } from './FlySpeed';
+import { Friction } from './Friction';
+import { Hunger } from './Hunger';
 
 const entityToDebugDisplayMap = {};
 const debugableProperties = Object.freeze({
     age: Age,
-    breathable: Breathable,
+    breath: Breath,
     effects: Effects,
+    equipment: Equipment,
+    exhaustion: Exhaustion,
+    flyspeed: FlySpeed,
+    friction: Friction,
     growup: GrowUp,
     headlocation: HeadLocation,
     health: Health,
+    hunger: Hunger,
     id: ID,
     isclimbing: IsClimbing,
     isfalling: IsFalling,

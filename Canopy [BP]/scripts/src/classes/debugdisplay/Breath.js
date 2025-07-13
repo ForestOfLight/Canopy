@@ -1,7 +1,7 @@
 import { ComponentDebugDisplayElement } from './ComponentDebugDisplayElement.js';
 import { EntityComponentTypes } from '@minecraft/server';
 
-export class Breathable extends ComponentDebugDisplayElement {
+export class Breath extends ComponentDebugDisplayElement {
     constructor(entity) {
         super(entity, EntityComponentTypes.Breathable);
     }

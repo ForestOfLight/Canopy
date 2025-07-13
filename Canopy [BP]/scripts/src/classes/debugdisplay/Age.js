@@ -30,7 +30,13 @@ export class Age extends DebugDisplayElement {
             return;
         if (entity && !Age.entitySpawnTicks[entity.id])
             Age.entitySpawnTicks[entity.id] = system.currentTick;
-        entity.setDynamicProperty('spawnTick', system.currentTick);
+        try {
+            entity.setDynamicProperty('spawnTick', system.currentTick);
+        } catch (error) {
+            if (error.message.includes('Failed to call function'))
+                return;
+            throw error;
+        }
     }
 
     static onEntityRemove(event) {
