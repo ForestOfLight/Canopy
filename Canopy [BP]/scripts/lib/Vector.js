@@ -65,5 +65,9 @@ Vector.prototype = {
     y: 0,
     z: 0,
     [isVec3Symbol]: true,
-    toString() { return `<${this.x}, ${this.y}, ${this.z}>`; }
+    toString(numDecimals = void 0) {
+        if (typeof numDecimals === "number")
+            return `<${this.x.toFixed(numDecimals)}, ${this.y.toFixed(numDecimals)}, ${this.z.toFixed(numDecimals)}>`;
+        return `<${this.x}, ${this.y}, ${this.z}>`;
+    }
 }
