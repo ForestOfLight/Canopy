@@ -7,8 +7,10 @@ export class Container extends ComponentDebugDisplayElement {
     }
 
     getFormattedData() {
-        if (!this.component?.isValid)
-            return '';
+        if (!this.component?.isValid) {
+            this.component = this.entity.getComponent(this.componentType);
+            return;
+        }
         const container = this.component.container;
         let message = `§7canBeSiphonedFrom: §3${this.component.canBeSiphonedFrom}`;
         message += `\n§7Filled Slots: ${container.size - container.emptySlotsCount}/${container.size}, Weight: ${container.weight}`;

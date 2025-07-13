@@ -41,7 +41,7 @@ export class Age extends DebugDisplayElement {
 
     static onEntityRemove(event) {
         const entity = event.removedEntity;
-        if (entity.id)
+        if (entity?.id)
             delete Age.entitySpawnTicks[entity.id];
     }
 

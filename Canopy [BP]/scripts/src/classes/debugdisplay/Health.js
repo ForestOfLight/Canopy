@@ -3,6 +3,6 @@ import { EntityComponentTypes } from '@minecraft/server';
 
 export class Health extends AttributeDebugDisplayElement {
     constructor(entity) {
-        super(entity, EntityComponentTypes.Health);
+        super(entity, EntityComponentTypes.Health, '§c');
     }
 }

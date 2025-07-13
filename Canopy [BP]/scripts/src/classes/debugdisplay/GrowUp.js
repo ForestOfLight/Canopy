@@ -10,8 +10,10 @@ export class GrowUp extends ComponentDebugDisplayElement {
     }
 
     getFormattedData() {
-        if (!this.component?.isValid)
-            return '';
+        if (!this.component?.isValid) {
+            this.component = this.entity.getComponent(this.componentType);
+            return;
+        }
         const age = system.currentTick - this.entity.getDynamicProperty('spawnTick');
         const totalTicks = this.component.duration * TicksPerSecond;
         const ageWithBias = (age + this.fedBias).toFixed(0);

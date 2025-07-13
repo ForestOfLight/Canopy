@@ -7,6 +7,6 @@ export class Equipment extends ComponentDebugDisplayElement {
     }
 
     getFormattedData() {
-        return this.relevantProperties.map((prop) => `§7${prop}: ${this.component[prop]}`).join(', ');
+        return super.getFormattedComponent();
     }
 }

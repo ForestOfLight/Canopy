@@ -1,9 +1,9 @@
 import { ComponentDebugDisplayElement } from './ComponentDebugDisplayElement.js';
 import { EntityComponentTypes } from '@minecraft/server';
 
-export class Item extends ComponentDebugDisplayElement {
+export class PushThrough extends ComponentDebugDisplayElement {
     constructor(entity) {
-        super(entity, EntityComponentTypes.Item);
+        super(entity, EntityComponentTypes.PushThrough);
     }
 
     getFormattedData() {
@@ -11,7 +11,6 @@ export class Item extends ComponentDebugDisplayElement {
             this.component = this.entity.getComponent(this.componentType);
             return;
         }
-        const itemStack = this.component.itemStack;
-        return `§a${itemStack.typeId} x${itemStack.amount}`;
+        return `§7${this.component.value}`;
     }
 }

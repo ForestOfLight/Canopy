@@ -1,12 +1,12 @@
 import { ComponentDebugDisplayElement } from './ComponentDebugDisplayElement.js';
 import { EntityComponentTypes } from '@minecraft/server';
 
-export class Breath extends ComponentDebugDisplayElement {
+export class Leash extends ComponentDebugDisplayElement {
     constructor(entity) {
-        super(entity, EntityComponentTypes.Breathable);
+        super(entity, EntityComponentTypes.Leashable);
     }
 
     getFormattedData() {
-        return super.getFormattedComponent({ valueColorCode: '§b' });
+        return super.getFormattedComponent({ hide: ['leashHolderEntityId'] });
     }
 }

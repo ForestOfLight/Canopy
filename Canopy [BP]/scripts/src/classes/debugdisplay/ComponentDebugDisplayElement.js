@@ -1,3 +1,4 @@
+import { Entity } from "@minecraft/server";
 import { DebugDisplayElement } from "./DebugDisplayElement";
 
 export class ComponentDebugDisplayElement extends DebugDisplayElement {
@@ -7,6 +8,7 @@ export class ComponentDebugDisplayElement extends DebugDisplayElement {
     constructor(entity, componentType) {
         super(entity);
         this.component = entity.getComponent(componentType);
+        this.componentType = componentType;
         this.populateRelevantProperties();
     }
 
@@ -24,7 +26,23 @@ export class ComponentDebugDisplayElement extends DebugDisplayElement {
         this.commonIrrelevantProperties.forEach(property => {
             const index = this.relevantProperties.indexOf(property);
             if (index !== -1)
-            this.relevantProperties.splice(index, 1);
+                this.relevantProperties.splice(index, 1);
         });
+    }
+
+    getFormattedComponent({ hide = [], noLinebreak = false, valueColorCode = '§7' } = {}) {
+        this.component = this.entity.getComponent(this.componentType);
+        const componentData = {};
+        this.relevantProperties.forEach(prop => {
+            if (hide.includes(prop))
+                delete componentData[prop];
+            else if (this.component[prop] instanceof Entity)
+                componentData[prop] = this.component[prop] ? (this.component[prop].id ?? 'Unknown') : 'None';
+            else
+                componentData[prop] = this.component[prop] === void 0 ? 'None' : this.component[prop];
+        });
+        if (noLinebreak)
+           return Object.keys(componentData).map((prop) => `§7${prop}: ${valueColorCode}${componentData[prop]}`).join('§r '); 
+        return '\n' + Object.keys(componentData).map((prop) => `§7${prop}: ${valueColorCode}${componentData[prop]}`).join('§r\n');
     }
 }

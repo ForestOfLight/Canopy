@@ -7,8 +7,10 @@ export class Friction extends ComponentDebugDisplayElement {
     }
 
     getFormattedData() {
-        if (!this.component?.isValid)
-            return '';
+        if (!this.component?.isValid) {
+            this.component = this.entity.getComponent(this.componentType);
+            return;
+        }
         return `§7${this.component.value}`;
     }
 }

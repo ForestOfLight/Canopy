@@ -16,15 +16,15 @@ new VanillaCommand({
         {name: 'canopy:debugableProperty', values: DebugDisplay.getDebugableProperties()}
     ],
     mandatoryParameters: [
-        {name: 'canopy:debugAction', type: CustomCommandParamType.Enum}, 
-        {name: 'canopy:debugableProperty', type: CustomCommandParamType.Enum},
-        {name: 'entity', type: CustomCommandParamType.EntitySelector}
+        {name: 'entity', type: CustomCommandParamType.EntitySelector},
+        {name: 'canopy:debugAction', type: CustomCommandParamType.Enum},
+        {name: 'canopy:debugableProperty', type: CustomCommandParamType.Enum}
     ],
     permissionLevel: CommandPermissionLevel.GameDirectors,
     callback: debugEntityCommand
 });
 
-function debugEntityCommand(source, addOrRemove, property, entities) {
+function debugEntityCommand(source, entities, addOrRemove, property) {
     if (!DebugDisplay.getDebugableProperties().includes(property))
         return { status: CustomCommandStatus.Failure, message: `commands.debugentity.invalidProperty` };
     if (addOrRemove === DEBUG_ACTION.Add)

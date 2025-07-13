@@ -35,6 +35,19 @@ import { IsIllagerCaptain } from './IsIllagerCaptain';
 import { Item } from './Item';
 import { LavaMovement } from './LavaMovement';
 import { IsTamed } from './IsTamed';
+import { Leash } from './Leash';
+import { Variant } from './Variant';
+import { OnFire } from './OnFire';
+import { Projectile } from './Projectile';
+import { PushThrough } from './PushThrough';
+import { Ride } from './Ride';
+import { Riding } from './Riding';
+import { Saturation } from './Saturation';
+import { Scale } from './Scale';
+import { SkinId } from './SkinId';
+import { Tame } from './Tame';
+import { TameMount } from './TameMount';
+import { Families } from './Families';
 
 const entityToDebugDisplayMap = {};
 const debugableProperties = Object.freeze({
@@ -64,12 +77,25 @@ const debugableProperties = Object.freeze({
     isvalid: IsValid,
     item: Item,
     lavamovement: LavaMovement,
+    leash: Leash,
     location: Location,
     nametag: NameTag,
+    onfire: OnFire,
+    projectile: Projectile,
+    pushthrough: PushThrough,
+    ride: Ride,
+    riding: Riding,
     rotation: Rotation,
+    saturation: Saturation,
+    scale: Scale,
+    skinid: SkinId,
     speed: Speed,
+    tame: Tame,
+    tamemount: TameMount,
     target: Target,
     typeid: TypeID,
+    families: Families,
+    variant: Variant,
     velocity: Velocity,
     viewdirection: ViewDirection,
 });
@@ -119,7 +145,9 @@ export class DebugDisplay {
 	updateElementData(elements, currIndex) {
 		const element = elements[currIndex];
 		let elementText = element.getFormattedData();
-        if (!this.isWhitespace(elementText))
+        if (elementText === void 0 ||this.isWhitespace(elementText))
+            elementText = element.type + ': §7n/a';
+        else
             elementText = element.type + ': ' + elementText;
 		if (currIndex !== 0 && !this.isWhitespace(elementText))
 			this.debugMessage += '\n§r';
