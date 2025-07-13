@@ -108,6 +108,12 @@ commands.data.dynamicProperties=§aDynamicProperties:§r %1 total byte count: %2
 commands.data.effects=§aEffects:§r %s
 commands.data.other=§aOther:§r head location: %1, rotation: [%2, %3], velocity: %4, view direction: %5
 
+commands.debugentity=Displays debug information about entities.
+commands.debugentity.invalidProperty=§cInvalid debug property.
+commands.debugentity.invalidAction=§cInvalid action.
+commands.debugentity.added=§7Added '%1' to the debug display for %2 entities: 
+commands.debugentity.removed=§7Removed '%1' from the debug display for %2 entities: 
+
 commands.distance=Calculates the distance between two locations. (Alias: d)
 commands.distance.target=Calculates distance between you and the block or entity you are looking at.
 commands.distance.fromto=Calculates the distance between two locations.

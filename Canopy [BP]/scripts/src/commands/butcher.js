@@ -1,3 +1,4 @@
+import { getTranslatedEntityList } from '../../include/utils';
 import { VanillaCommand } from '../../lib/canopy/Canopy';
 import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, Entity, Player, system } from '@minecraft/server';
 
@@ -47,11 +48,6 @@ function removeManyEntities(sender, entities) {
 
 function getManyRemovedMessage(entities) {
     const message = { rawtext: [{ translate: 'commands.butcher.success.many', with: [String(entities.length)] }] };
-    const localizationKeys = entities.map(e => ({ translate: e.localizationKey }));
-    localizationKeys.forEach((key, index) => {
-        if (index > 0) 
-            message.rawtext.push({ text: ', ' });
-        message.rawtext.push(key);
-    });
+    message.rawtext.push(getTranslatedEntityList(entities));
     return message;
 }

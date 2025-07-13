@@ -28,6 +28,7 @@ import './src/commands/generator'
 import './src/commands/retest'
 import './src/commands/simmap'
 import './src/commands/loop'
+import './src/commands/debugentity'
 
 // Script Events
 import './src/commands/scriptevents/counter'
