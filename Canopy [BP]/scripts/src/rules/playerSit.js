@@ -23,9 +23,7 @@ class PlayerSit extends GlobalRule {
     }
 
     onPlayerStartSneak(event) {
-        event.players.forEach(player => {
-            this.handlePlayerSneak(player);
-        });
+        this.handlePlayerSneak(event.player);
     }
 
     handlePlayerSneak(player) {

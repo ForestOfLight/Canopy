@@ -34,7 +34,6 @@ import { Container } from './Container';
 import { IsIllagerCaptain } from './IsIllagerCaptain';
 import { Item } from './Item';
 import { LavaMovement } from './LavaMovement';
-import { IsTamed } from './IsTamed';
 import { Leash } from './Leash';
 import { Variant } from './Variant';
 import { OnFire } from './OnFire';
@@ -46,7 +45,6 @@ import { Saturation } from './Saturation';
 import { Scale } from './Scale';
 import { SkinId } from './SkinId';
 import { Tame } from './Tame';
-import { TameMount } from './TameMount';
 import { Families } from './Families';
 
 const entityToDebugDisplayMap = {};
@@ -73,7 +71,6 @@ const debugableProperties = Object.freeze({
     issneaking: IsSneaking,
     issprinting: IsSprinting,
     isswimming: IsSwimming,
-    istamed: IsTamed,
     isvalid: IsValid,
     item: Item,
     lavamovement: LavaMovement,
@@ -91,7 +88,6 @@ const debugableProperties = Object.freeze({
     skinid: SkinId,
     speed: Speed,
     tame: Tame,
-    tamemount: TameMount,
     target: Target,
     typeid: TypeID,
     families: Families,

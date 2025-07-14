@@ -1,5 +1,5 @@
 import { Rule, Rules } from "../../lib/canopy/Canopy";
-import { system, world, GameMode } from "@minecraft/server";
+import { world, GameMode, EntityComponentTypes } from "@minecraft/server";
 
 new Rule({
     category: 'Rules',
@@ -8,20 +8,19 @@ new Rule({
 });
 
 
-world.beforeEvents.playerInteractWithEntity.subscribe((event) => {
-    if (!Rules.getNativeValue('creativeInstantTame') || event.player?.getGameMode() !== GameMode.Creative) return;
-    const tameable = event.target?.getComponent('tameable');
-    if (tameable !== undefined && isUsingTameItem(tameable.getTameItems, event.itemStack)) {
-        system.run(() => {
-            try {
-                tameable.tame(event.player);
-            } catch {
-                // was already tamed
-            }
-        });
+world.afterEvents.playerInteractWithEntity.subscribe((event) => {
+    if (!Rules.getNativeValue('creativeInstantTame') || event.player?.getGameMode() !== GameMode.Creative)
+        return;
+    const tameable = event.target?.getComponent(EntityComponentTypes.Tameable);
+    if (tameable !== void 0 && isUsingTameItem(tameable.getTameItems, event.beforeItemStack)) {
+        tameable.tame(event.player);
+        return;
     }
+    const tameMount = event.target?.getComponent(EntityComponentTypes.TameMount);
+    if (tameMount !== void 0)
+        tameMount.tameToPlayer(true, event.player);
 });
 
 function isUsingTameItem(tameItemStacks, playeritemStack) {
-    return tameItemStacks.map(stack => stack.typeId).includes(playeritemStack?.typeId);
+    return tameItemStacks.some(stack => stack.typeId === playeritemStack?.typeId);
 }
