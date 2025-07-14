@@ -5,7 +5,12 @@ export class Age extends DebugDisplayElement {
     static entitySpawnTicks = {};
 
     getFormattedData() {
-        const age = system.currentTick - Age.entitySpawnTicks[this.entity.id] || '?';
+        let spawnTick = Age.entitySpawnTicks[this.entity.id];
+        if (!spawnTick) {
+            Age.entitySpawnTicks[this.entity.id] = this.entity.getDynamicProperty('spawnTick');
+            spawnTick = Age.entitySpawnTicks[this.entity.id];
+        }
+        const age = system.currentTick - spawnTick || '?';
         return `§7${age} ticks`;
     }
 
@@ -16,7 +21,7 @@ export class Age extends DebugDisplayElement {
             entities.push(...dimension.getEntities());
         });
         entities.forEach(entity => {
-            if (!entity.id)
+            if (!entity?.id)
                 return;
             const spawnTick = entity.getDynamicProperty('spawnTick');
             if (!Age.entitySpawnTicks[entity.id])

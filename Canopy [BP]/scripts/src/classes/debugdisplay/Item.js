@@ -1,9 +1,10 @@
 import { ComponentDebugDisplayElement } from './ComponentDebugDisplayElement.js';
-import { EntityComponentTypes } from '@minecraft/server';
+import { EntityComponentTypes, system, TicksPerSecond } from '@minecraft/server';
 
 export class Item extends ComponentDebugDisplayElement {
     constructor(entity) {
         super(entity, EntityComponentTypes.Item);
+        this.spawnTick = this.entity.getDynamicProperty('spawnTick');
     }
 
     getFormattedData() {
@@ -12,6 +13,9 @@ export class Item extends ComponentDebugDisplayElement {
             return;
         }
         const itemStack = this.component.itemStack;
-        return `§a${itemStack.typeId} x${itemStack.amount}`;
+        const age = system.currentTick - this.spawnTick;
+        const ticksToDespawn = TicksPerSecond * 60 * 5;
+        const despawnTime = Math.max(0, ticksToDespawn - age);
+        return `§a${itemStack.typeId} §2x${itemStack.amount}\n§7(despawn in §2${despawnTime} ticks§7)`;
     }
 }

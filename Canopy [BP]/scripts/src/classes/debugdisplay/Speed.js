@@ -7,6 +7,6 @@ export class Speed extends DebugDisplayElement {
         const speed = Vector.from(this.entity.getVelocity());
         const blocksPerTick = speed.length;
         const blocksPerSecond = blocksPerTick * TicksPerSecond;
-        return `§7${blocksPerSecond.toFixed(3)} m/s`;
+        return `§7${blocksPerSecond.toFixed(4)} m/s`;
     }
 }
