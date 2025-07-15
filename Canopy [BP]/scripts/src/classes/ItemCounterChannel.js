@@ -106,6 +106,7 @@ class ItemCounterChannel {
 
     removeAllHoppers() {
         this.hopperList = [];
+        this.#updateData();
     }
 
     isEmpty() {
