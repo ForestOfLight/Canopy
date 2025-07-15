@@ -1,6 +1,7 @@
 import { DebugDisplayElement } from './DebugDisplayElement.js';
 import { playerTameEntity } from '../../events/PlayerTameEntity.js';
 import { EntityComponentTypes } from '@minecraft/server';
+import { getNameFromEntityId } from '../../../include/utils.js';
 
 export class Tame extends DebugDisplayElement {
     tameable;
@@ -29,12 +30,12 @@ export class Tame extends DebugDisplayElement {
     getTamedText() {
         let output = `§3true`;
         if (this.tamedToPlayerIdCache)
-            output += `§7, By: ${this.tamedToPlayerIdCache}`;
+            output += `§7, By: ${getNameFromEntityId(this.tamedToPlayerIdCache)}`;
         return output;
     }
 
     getTamedToPlayerIdText() {
-        return `§7, By: ${this.tamedToPlayerIdCache ?? 'None'}`;
+        return `§7, By: ${getNameFromEntityId(this.tamedToPlayerIdCache) ?? 'None'}`;
     }
 
     getTameableText() {

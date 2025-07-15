@@ -1,5 +1,6 @@
 import { Entity } from "@minecraft/server";
 import { DebugDisplayElement } from "./DebugDisplayElement";
+import { getNameFromEntityId } from "../../../include/utils";
 
 export class ComponentDebugDisplayElement extends DebugDisplayElement {
     commonIrrelevantProperties = ['componentId', 'entity', 'typeId', 'isValid'];
@@ -37,7 +38,7 @@ export class ComponentDebugDisplayElement extends DebugDisplayElement {
             if (hide.includes(prop))
                 delete componentData[prop];
             else if (this.component[prop] instanceof Entity)
-                componentData[prop] = this.component[prop] ? (this.component[prop].id ?? 'Unknown') : 'None';
+                componentData[prop] = this.component[prop] ? (getNameFromEntityId(this.component[prop].id) ?? 'Unknown') : 'None';
             else
                 componentData[prop] = this.component[prop] === void 0 ? 'None' : this.component[prop];
         });

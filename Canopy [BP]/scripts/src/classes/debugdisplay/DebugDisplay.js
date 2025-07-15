@@ -46,6 +46,7 @@ import { Scale } from './Scale';
 import { SkinId } from './SkinId';
 import { Tame } from './Tame';
 import { Families } from './Families';
+import { TNT } from './TNT';
 
 const entityToDebugDisplayMap = {};
 const debugableProperties = Object.freeze({
@@ -89,6 +90,7 @@ const debugableProperties = Object.freeze({
     speed: Speed,
     tame: Tame,
     target: Target,
+    tnt: TNT,
     typeid: TypeID,
     families: Families,
     variant: Variant,
