@@ -13,6 +13,8 @@ export class Ride extends ComponentDebugDisplayElement {
         }
         const riders = this.component.getRiders();
         const ridersText = riders.length === 0 ? '§7None' : riders.map(rider => rider?.id ?? 'Unknown').join(', ');
-        return `\n§7Riders: ${ridersText}` + super.getFormattedComponent({ hide: ['interactText'] });
+        const riderFamilyTypes = this.component.getFamilyTypes();
+        const riderFamilyText = riderFamilyTypes.length === 0 ? '§7None' : riderFamilyTypes.join(', ');
+        return `\n§7Riders: ${ridersText}` + super.getFormattedComponent({ hide: ['interactText'] }) + `\n§7allowedFamilies: ${riderFamilyText}`;
     }
 }

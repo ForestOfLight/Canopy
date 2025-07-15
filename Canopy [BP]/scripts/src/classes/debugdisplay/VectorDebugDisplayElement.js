@@ -1,8 +1,7 @@
 import { DebugDisplayElement } from "./DebugDisplayElement";
-import { Vector } from "../../../lib/Vector";
 
 export class VectorDebugDisplayElement extends DebugDisplayElement  {
-    getFormattedVector(vector, colorCode = '§7') {
-        return colorCode + Vector.from(vector).toString();
+    getFormattedVector(vector, { colorCode = '§7', precision = 4 } = {}) {
+        return colorCode + `<${vector.x.toFixed(precision)}, ${vector.y.toFixed(precision)}, ${vector.z.toFixed(precision)}>`;
     }
 }
