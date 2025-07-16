@@ -1,6 +1,9 @@
 import { PlayerStartSneakEvent, playerStartSneakEvent } from "../../../../../Canopy [BP]/scripts/src/events/PlayerStartSneakEvent";
 import { expect, test, describe, vi } from "vitest";
 
+const mockPlayer1 = { id: 'player1', inputInfo: { getButtonState: vi.fn(() => "Pressed" ) }, isOnGround: true, location: { x: 0, y: 0, z: 0 }, getRotation: vi.fn(() => ({ x: 0, y: 0 })) };
+const mockPlayer2 = { id: 'player2', inputInfo: { getButtonState: vi.fn(() => "Released" ) }, isOnGround: true, location: { x: 1, y: 1, z: 1 }, getRotation: vi.fn(() => ({ x: 0, y: 0 })) };
+
 vi.mock("@minecraft/server", () => ({
     system: {
         currentTick: (Date.now() / 50),
@@ -22,11 +25,7 @@ vi.mock("@minecraft/server", () => ({
         Released: 'Released'
     },
     world: {
-        getAllPlayers: vi.fn(() => [
-            undefined,
-            { id: 'player1', inputInfo: { getButtonState: vi.fn(() => "Pressed" ) }, isOnGround: true, location: { x: 0, y: 0, z: 0 }, getRotation: vi.fn(() => ({ x: 0, y: 0 })) },
-            { id: 'player2', inputInfo: { getButtonState: vi.fn(() => "Released" ) }, isOnGround: true, location: { x: 1, y: 1, z: 1 }, getRotation: vi.fn(() => ({ x: 0, y: 0 })) }
-        ])
+        getAllPlayers: vi.fn(() => [undefined, mockPlayer1, mockPlayer2])
     }
 }));
 
@@ -45,14 +44,14 @@ describe('SneakTracker', () => {
 
     test('should start a sneak tracking interval on first subscribe', () => {
         const tracker = new PlayerStartSneakEvent();
-        const subscribeSpy = vi.spyOn(tracker, 'startSneakTracking');
-        tracker.startSneakTracking(() => {});
+        const subscribeSpy = vi.spyOn(tracker, 'startTrackingEvent');
+        tracker.subscribe(() => {});
         expect(subscribeSpy).toHaveBeenCalled();
     });
 
     test('should not start a new interval if already started', () => {
         const tracker = new PlayerStartSneakEvent();
-        const subscribeSpy = vi.spyOn(tracker, 'startSneakTracking');
+        const subscribeSpy = vi.spyOn(tracker, 'startTrackingEvent');
         tracker.subscribe(() => {});
         tracker.subscribe(() => {});
         expect(subscribeSpy).toHaveBeenCalledTimes(1);
@@ -69,7 +68,7 @@ describe('SneakTracker', () => {
     test('should clear the interval when all callbacks are unsubscribed', () => {
         const tracker = new PlayerStartSneakEvent();
         const callback = () => {};
-        const clearRunSpy = vi.spyOn(tracker, 'endSneakTracking');
+        const clearRunSpy = vi.spyOn(tracker, 'stopTrackingEvent');
         tracker.subscribe(callback);
         tracker.unsubscribe(callback);
         expect(clearRunSpy).toHaveBeenCalled();
@@ -78,32 +77,31 @@ describe('SneakTracker', () => {
     test('should not clear the interval if there are still callbacks subscribed', () => {
         const tracker = new PlayerStartSneakEvent();
         const callback = () => {};
-        const clearRunSpy = vi.spyOn(tracker, 'endSneakTracking');
+        const clearRunSpy = vi.spyOn(tracker, 'stopTrackingEvent');
         tracker.subscribe(callback);
         tracker.subscribe(() => {});
         tracker.unsubscribe(callback);
         expect(clearRunSpy).not.toHaveBeenCalled();
     });
 
-    test('should send events to all subscribed callbacks', () => {
+    test('should send events to all subscribed callbacks when a player starts sneaking', () => {
         const tracker = new PlayerStartSneakEvent();
         const callback = vi.fn();
         tracker.subscribe(callback);
-        tracker.playersSneakingThisTick = [{ id: 'player1' }];
+        tracker.playersSneakingThisTick = [];
         tracker.playersSneakingLastTick = [];
-        tracker.sendEvents();
-        expect(callback).toHaveBeenCalledWith({ players: [{ id: 'player1' }] });
+        tracker.onTick();
+        expect(callback).toHaveBeenCalledWith({ player: mockPlayer1 });
     });
 
     test('should only send events for players who started sneaking', () => {
         const tracker = new PlayerStartSneakEvent();
         const callback = vi.fn();
-        const player1 = { id: 'player1' };
         tracker.subscribe(callback);
-        tracker.playersSneakingThisTick = [player1];
-        tracker.playersSneakingLastTick = [player1];
-        tracker.sendEvents();
-        expect(callback).not.toHaveBeenCalledWith({ players: [{ id: 'player1' }] });
+        tracker.playersSneakingThisTick = [mockPlayer1];
+        tracker.playersSneakingLastTick = [mockPlayer1];
+        tracker.onTick();
+        expect(callback).not.toHaveBeenCalledWith({ player: mockPlayer1 });
     });
 
     test('should export an instance of the class', () => {
