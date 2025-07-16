@@ -29,7 +29,7 @@ vi.mock('@minecraft/server', () => ({
     },
     LiquidType: {
         Water: 'Water'
-    },
+    }
 }));
 
 vi.mock("@minecraft/server-ui", () => ({
@@ -46,7 +46,8 @@ const mockPlayer = {
                     state1: 'value1',
                     state2: 'value2'
                 }))
-            }
+            },
+            canContainLiquid: vi.fn(() => false),
         }
     })),
     getEntitiesFromViewDirection: vi.fn(() => [])

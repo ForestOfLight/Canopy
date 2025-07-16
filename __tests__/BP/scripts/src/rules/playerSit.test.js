@@ -91,7 +91,7 @@ describe('playerSit', () => {
         const onPlayerStartSneakSpy = vi.spyOn(playerSit, 'onPlayerStartSneakBound');
         playerSit.setValue(true);
         playerSit.setValue(false);
-        playerStartSneakEvent.sendEvents();
+        playerStartSneakEvent.onTick();
         expect(onPlayerStartSneakSpy).not.toHaveBeenCalled();
     });
 
@@ -99,7 +99,7 @@ describe('playerSit', () => {
         const onPlayerStartSneakSpy = vi.spyOn(playerSit, 'onPlayerStartSneakBound');
         playerSit.setValue(true);
         playerStartSneakEvent.playersSneakingThisTick.push({ id: 'player1' });
-        playerStartSneakEvent.sendEvents();
+        playerStartSneakEvent.onTick();
         expect(onPlayerStartSneakSpy).toHaveBeenCalled();
     })
 
@@ -119,7 +119,7 @@ describe('playerSit', () => {
         };
         for (let i = 0; i < playerSit.sneakCount; i++) {
             vi.advanceTimersByTime(playerSit.sneakSpeedMs - 1);
-            playerSit.onPlayerStartSneak({ players: [player1] });
+            playerSit.onPlayerStartSneak({ player: player1 });
         }
         expect(sitSpy).toHaveBeenCalledWith(player1);
     });
@@ -132,7 +132,7 @@ describe('playerSit', () => {
         };
         for (let i = 0; i < playerSit.sneakCount - 1; i++) {
             vi.advanceTimersByTime(playerSit.sneakSpeedMs - 1);
-            playerSit.onPlayerStartSneak({ players: [player1] });
+            playerSit.onPlayerStartSneak({ player: player1 });
         }
         expect(sitSpy).not.toHaveBeenCalled();
     });
@@ -145,7 +145,7 @@ describe('playerSit', () => {
         };
         for (let i = 0; i < playerSit.sneakCount; i++) {
             vi.advanceTimersByTime(playerSit.sneakSpeedMs + 1);
-            playerSit.onPlayerStartSneak({ players: [player1] });
+            playerSit.onPlayerStartSneak({ player: player1 });
         }
         expect(sitSpy).not.toHaveBeenCalled();
     });
@@ -158,12 +158,12 @@ describe('playerSit', () => {
         };
         for (let i = 0; i < playerSit.sneakCount - 1; i++) {
             vi.advanceTimersByTime(playerSit.sneakSpeedMs - 1);
-            playerSit.onPlayerStartSneak({ players: [player1] });
+            playerSit.onPlayerStartSneak({ player: player1 });
         }
         vi.advanceTimersByTime(playerSit.sneakSpeedMs + 1);
-        playerSit.onPlayerStartSneak({ players: [player1] });
+        playerSit.onPlayerStartSneak({ player: player1 });
         vi.advanceTimersByTime(playerSit.sneakSpeedMs - 1);
-        playerSit.onPlayerStartSneak({ players: [player1] });
+        playerSit.onPlayerStartSneak({ player: player1 });
         expect(sitSpy).not.toHaveBeenCalled();
     });
 
