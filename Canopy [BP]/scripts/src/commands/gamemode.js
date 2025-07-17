@@ -12,7 +12,7 @@ for (const key in gamemodeMap) {
     new VanillaCommand({
         name: 'canopy:' + key,
         description: `commands.gamemode.${key}`,
-        permissionLevel: CommandPermissionLevel.Admin,
+        permissionLevel: CommandPermissionLevel.GameDirectors,
         callback: (source) => { system.run(() => source.runCommand(`gamemode ${gamemodeMap[key]}`)); }
     });
 }
