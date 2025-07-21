@@ -1,5 +1,5 @@
 import { GlobalRule } from "./GlobalRule";
-import { world } from "@minecraft/server";
+import { EntityComponentTypes, world } from "@minecraft/server";
 
 const DEFAULT_ACTION_ITEM = "minecraft:arrow";
 
@@ -13,19 +13,8 @@ export class AbilityRule extends GlobalRule {
         this.onPlayerEnable = onPlayerEnableCallback;
         this.onPlayerDisable = onPlayerDisableCallback;
         this.onActionSlotItemChangeBound = this.onActionSlotItemChange.bind(this);
-        const onEnableWithAdditions = () => {
-            world.afterEvents.playerInventoryItemChange.subscribe(
-                this.onActionSlotItemChangeBound,
-                { allowedSlots: [slotNumber], ignoreQuantityChange: true }
-            );
-            ruleOptions.onEnableCallback();
-        };
-        const onDisableWithAdditions = () => {
-            world.afterEvents.playerInventoryItemChange.unsubscribe(this.onActionSlotItemChangeBound);
-            ruleOptions.onDisableCallback();
-        };
-        this.onEnable = onEnableWithAdditions;
-        this.onDisable = onDisableWithAdditions;
+        this.onEnable = this.onEnableWithAdditions(ruleOptions);
+        this.onDisable = this.onDisableWithAdditions(ruleOptions);
     }
 
     onActionSlotItemChange(event) {
@@ -63,5 +52,41 @@ export class AbilityRule extends GlobalRule {
 
     isEnabledForPlayer(player) {
         return this.activePlayerIds.has(player?.id);
+    }
+
+    isActionItemInActionSlot(player) {
+        const inventory = player.getComponent(EntityComponentTypes.Inventory)?.container;
+        const itemStack = inventory.getItem(this.slotNumber);
+        return itemStack?.typeId === this.actionItemId;
+    }
+
+    refreshOnlinePlayers() {
+        world.getAllPlayers().forEach((player) => {
+            if (!player)
+                return;
+            if (this.isActionItemInActionSlot(player))
+                this.enableForPlayer(player);
+            else
+                this.disableForPlayer(player);
+        });
+    }
+    
+    onEnableWithAdditions(ruleOptions) {
+        return () => {
+                this.refreshOnlinePlayers();
+            world.afterEvents.playerInventoryItemChange.subscribe(
+                this.onActionSlotItemChangeBound,
+                { allowedSlots: [this.slotNumber], ignoreQuantityChange: true }
+            );
+            ruleOptions.onEnableCallback();
+        }
+    }
+
+    onDisableWithAdditions(ruleOptions) {
+        return () => {
+            this.refreshOnlinePlayers();
+            world.afterEvents.playerInventoryItemChange.unsubscribe(this.onActionSlotItemChangeBound);
+            ruleOptions.onDisableCallback();
+        }
     }
 }
