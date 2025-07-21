@@ -1,46 +1,58 @@
-import { Rule, Rules} from "../../lib/canopy/Canopy";
+import { AbilityRule } from "../../lib/canopy/Canopy";
 import { EntityComponentTypes, GameMode, world } from "@minecraft/server";
 
-new Rule({
-    category: 'Rules',
-    identifier: 'refillHand',
-    description: { translate: 'rules.refillHand' }
-});
+class RefillHand extends AbilityRule {
+    constructor() {
+        super({
+            identifier: 'refillHand',
+            onEnableCallback: () => this.subscribeToEvents(),
+            onDisableCallback: () => this.unsubscribeFromEvents()
+        }, { slotNumber: 10 });
+        this.captureEventBound = this.captureEvent.bind(this);
+    }
 
-const ARROW_SLOT = 10;
+    subscribeToEvents() {
+        world.afterEvents.playerInteractWithBlock.subscribe(this.captureEventBound);
+        world.afterEvents.playerInteractWithEntity.subscribe(this.captureEventBound);
+    }
 
-world.afterEvents.playerInteractWithBlock.subscribe((event) => captureEvent(event));
-world.afterEvents.playerInteractWithEntity.subscribe((event) => captureEvent(event));
+    unsubscribeFromEvents() {
+        world.afterEvents.playerInteractWithBlock.unsubscribe(this.captureEventBound);
+        world.afterEvents.playerInteractWithEntity.unsubscribe(this.captureEventBound);
+    }
 
-function captureEvent(event) {
-    if (!Rules.getNativeValue('refillHand')) return;
-    const player = event.player;
-    if (!player || player.getGameMode() !== GameMode.Survival) return;
-    processRefillHand(player, event.beforeItemStack, event.itemStack);
-}
-
-function processRefillHand(player, beforeItemStack, afterItemStack) {
-    const playerInventory = player.getComponent(EntityComponentTypes.Inventory)?.container;
-    if (beforeItemStack === undefined || !hasArrowInCorrectSlot(playerInventory)) return;
-    if (hasRunOutOfItems(beforeItemStack, afterItemStack)) 
-        refillHand(player, playerInventory, beforeItemStack);
-    
-}
-
-function hasArrowInCorrectSlot(playerInventory) {
-    return playerInventory?.getItem(ARROW_SLOT)?.typeId === 'minecraft:arrow';
-}
-
-function hasRunOutOfItems(beforeItemStack, afterItemStack) {
-    return beforeItemStack?.typeId !== afterItemStack?.typeId;
-}
-
-function refillHand(player, playerInventory, beforeItemStack) {
-    for (let slotIndex = 0; slotIndex < playerInventory.size; slotIndex++) {
-        const slot = playerInventory.getSlot(slotIndex);
-        if (slot.hasItem() && slot.isStackableWith(beforeItemStack)) {
-            playerInventory.swapItems(slotIndex, player.selectedSlotIndex, playerInventory);
+    captureEvent(event) {
+        const player = event.player;
+        if (!player || !this.isEnabledForPlayer(player) || player.getGameMode() !== GameMode.Survival)
             return;
+        this.processRefillHand(player, event.beforeItemStack, event.itemStack);
+    }
+
+    processRefillHand(player, beforeItemStack, afterItemStack) {
+        if (this.hasRunOutOfItems(beforeItemStack, afterItemStack))
+            this.refillHand(player, beforeItemStack);
+    }
+
+    refillHand(player, beforeItemStack) {
+        const playerInventory = player.getComponent(EntityComponentTypes.Inventory)?.container;
+        let minAmount = Infinity;
+        let minSlotIndex = -1;
+        for (let slotIndex = 0; slotIndex < playerInventory.size; slotIndex++) {
+            const slot = playerInventory.getSlot(slotIndex);
+            if (slot.hasItem() && slot.isStackableWith(beforeItemStack)) {
+                if (slot.amount < minAmount) {
+                    minAmount = slot.amount;
+                    minSlotIndex = slotIndex;
+                }
+            }
         }
+        if (minSlotIndex !== -1)
+            playerInventory.swapItems(minSlotIndex, player.selectedSlotIndex, playerInventory);
+    }
+
+    hasRunOutOfItems(beforeItemStack, afterItemStack) {
+        return beforeItemStack?.typeId !== afterItemStack?.typeId;
     }
 }
+
+export const refillHand = new RefillHand();
