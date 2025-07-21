@@ -287,6 +287,7 @@ rules.generic.nochange=§7%1 is already §l
 rules.generic.updated=§7%1 is now §l
 rules.generic.enabled=§aenabled
 rules.generic.disabled=§cdisabled
+rules.generic.ability=§7Ability 
 
 rules.commandCamera=Enables camera command.
 rules.commandClaimProjectiles=Enables claimprojectiles command.
