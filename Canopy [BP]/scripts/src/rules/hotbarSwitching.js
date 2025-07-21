@@ -36,11 +36,11 @@ class HotbarSwitching extends AbilityRule {
         for (const player of players) {
             if (!this.isEnabledForPlayer(player) || !this.hasAppropriateGameMode(player))
                 continue;
-            this.tryHotbarSwitch(player);
+            this.processHotbarSwitching(player);
         }
     }
 
-    tryHotbarSwitch(player) {
+    processHotbarSwitching(player) {
         if (this.hasScrolled(player) && player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed) 
             this.switchToHotbar(player, player.selectedSlotIndex);
         this.lastSelectedSlots[player.id] = player.selectedSlotIndex;
