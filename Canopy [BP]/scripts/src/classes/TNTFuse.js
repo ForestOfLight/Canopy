@@ -48,7 +48,14 @@ export class TNTFuse {
     }
 
     triggerExplosion() {
-        this.tntEntity.triggerEvent('canopy:explode');
+        const eventIdentifier = 'canopy:explode';
+        try {
+            this.tntEntity.triggerEvent(eventIdentifier);
+        } catch(error) {
+            if (error.includes(`${eventIdentifier} does not exist on minecraft:tnt`))
+                throw new Error(`[Canopy] ${eventIdentifier} could not be triggered on minecraft:tnt. Are you using another pack that overrides tnt?`);
+            throw error;
+        }
     }
 
     tntIsUnloaded() {
