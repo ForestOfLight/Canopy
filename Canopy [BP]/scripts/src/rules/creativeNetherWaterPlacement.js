@@ -30,7 +30,7 @@ class CreativeNetherWaterPlacement extends GlobalRule {
                 if (event.block.canContainLiquid(LiquidType.Water)) 
                     this.waterlog(event.block);
                 else
-                    this.placeWater(this.getBlockLocationFromFace(event.block, event.blockFace));
+                    this.setWater(this.getBlockLocationFromFace(event.block, event.blockFace));
             });
         }
     }
@@ -47,7 +47,7 @@ class CreativeNetherWaterPlacement extends GlobalRule {
         return faceToBlockMap[face];
     }
 
-    placeWater(block) {
+    setWater(block) {
         block.setType('minecraft:water');
     }
 
