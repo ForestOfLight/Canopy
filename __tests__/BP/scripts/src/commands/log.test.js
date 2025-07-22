@@ -47,6 +47,9 @@ vi.mock("@minecraft/server", () => ({
             },
             chatSend: {
                 subscribe: vi.fn()
+            },
+            playerLeave: {
+                subscribe: vi.fn()
             }
         },
         getDimension: vi.fn(() => ({

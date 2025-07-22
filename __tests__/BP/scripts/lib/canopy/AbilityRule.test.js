@@ -51,7 +51,7 @@ describe('AbilityRule', () => {
     it('should enable when the action item is placed in the correct slot', () => {
         abilityRule.onActionSlotItemChange({
             itemStack: { typeId: 'minecraft:arrow' },
-            player: { id: 'player1' }
+            player: { id: 'player1', onScreenDisplay: { setActionBar: vi.fn() } }
         });
         expect(onPlayerEnableCallback).toHaveBeenCalled();
     });
@@ -59,7 +59,7 @@ describe('AbilityRule', () => {
     it('should disable when the action item is removed from the correct slot', () => {
         abilityRule.onActionSlotItemChange({
             beforeItemStack: { typeId: 'minecraft:arrow' },
-            player: { id: 'player1' }
+            player: { id: 'player1', onScreenDisplay: { setActionBar: vi.fn() } }
         });
         expect(onPlayerDisableCallback).toHaveBeenCalled();
     });
