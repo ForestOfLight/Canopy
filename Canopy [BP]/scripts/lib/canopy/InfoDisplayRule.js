@@ -21,9 +21,9 @@ class InfoDisplayRule extends Rule {
     setValue(player, value) {
         player.setDynamicProperty(super.getID(), value);
         if (value === true)
-            this.enableForPlayer(player);
+            this.onEnable(player);
         else if (value === false)
-            this.disableForPlayer(player);
+            this.onDisable(player);
     }
 
     static get(identifier) {
