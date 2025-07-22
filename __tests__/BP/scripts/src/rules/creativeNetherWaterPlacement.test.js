@@ -76,7 +76,7 @@ describe('creativeNetherWaterPlacement', () => {
     });
 
     test('should ensure placement when placing water in the nether in creative mode', () => {
-        const placeWaterSpy = vi.spyOn(creativeNetherWaterPlacement, 'placeWater')
+        const placeWaterSpy = vi.spyOn(creativeNetherWaterPlacement, 'setWater')
         const aboveBlock = { setType: vi.fn() };
         const event = {
             player: { name: 'MockPlayer', getGameMode: () => 'Creative', dimension: { id: 'minecraft:nether' } },
@@ -99,7 +99,7 @@ describe('creativeNetherWaterPlacement', () => {
     });
 
     test('should do nothing when the player is not in creative mode', () => {
-        const placeWaterSpy = vi.spyOn(creativeNetherWaterPlacement, 'placeWater')
+        const placeWaterSpy = vi.spyOn(creativeNetherWaterPlacement, 'setWater')
         const event = {
             player: { name: 'MockPlayer', getGameMode: () => 'Survival' },
             itemStack: { typeId: 'minecraft:water_bucket' },
@@ -110,7 +110,7 @@ describe('creativeNetherWaterPlacement', () => {
     });
 
     test('should do nothing if placed by a Simulated Player', () => {
-        const placeWaterSpy = vi.spyOn(creativeNetherWaterPlacement, 'placeWater')
+        const placeWaterSpy = vi.spyOn(creativeNetherWaterPlacement, 'setWater')
         const event = {
             player: void 0
         };
@@ -119,7 +119,7 @@ describe('creativeNetherWaterPlacement', () => {
     });
 
     test('should do nothing when the event is not in the nether', () => {
-        const placeWaterSpy = vi.spyOn(creativeNetherWaterPlacement, 'placeWater')
+        const placeWaterSpy = vi.spyOn(creativeNetherWaterPlacement, 'setWater')
         const event = {
             player: { name: 'MockPlayer', getGameMode: () => 'Creative', dimension: { id: 'minecraft:overworld' } },
         };

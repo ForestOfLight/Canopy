@@ -1,3 +1,5 @@
+import { world } from "@minecraft/server";
+
 class EntityLog {
     constructor(type, { main, secondary, tertiary }) {
         if (this.constructor === EntityLog)
@@ -5,6 +7,7 @@ class EntityLog {
         this.type = type;
         this.colors = { main, secondary, tertiary };
         this.subscribedPlayers = [];
+        world.beforeEvents.playerLeave.subscribe((event) => this.onPlayerLeave(event));
     }
 
     subscribe(player) {
@@ -17,6 +20,10 @@ class EntityLog {
 
     includes(player) {
         return this.subscribedPlayers.some(subscribedPlayer => subscribedPlayer.id === player.id);
+    }
+
+    onPlayerLeave(event) {
+        this.unsubscribe(event.player);
     }
 }
 
