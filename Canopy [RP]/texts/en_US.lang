@@ -15,7 +15,8 @@ generic.total=Total
 commands.generic.unknown=§cInvalid command: '%1'. Use %2help for more information.
 commands.generic.nopermission=§cYou do not have permission to run this command.
 commands.generic.usage=§cUsage: %s
-commands.generic.blocked.survival=§cThis command can only be used in creative mode or spectator mode.
+commands.generic.blocked.survival=§cThis command cannot be used in survival mode.
+commands.generic.invalidsource=§cThis command cannot be run from this source.
 
 commands.help=Displays help pages.
 commands.help.search.noresult=§cNo results found for '%s'.
@@ -26,11 +27,14 @@ commands.help.rules=Togglable global rules.
 commands.help.extension.rules=Togglable rules for §o§a%s§r§8.
 commands.help.extension.commands=Commands for §o§a%s§r§2.
 
-commands.camera=Place a camera, view it, or use a survival-friendly spectator mode.
-commands.camera.place=Places a camera at your current location. (Alias: cp)
-commands.camera.view=Toggles viewing your latest camera placement. (Alias: cv)
-commands.camera.view.load=For when your placed camera is unloaded. Attempts to load the chunk for one second.
-commands.camera.spectate=Toggles a survival-friendly spectator mode. (Alias: cs)
+commands.butcher=Instantly remove selected entities or the one you are looking at.
+commands.butcher.fail.player=§cCannot remove players.
+commands.butcher.fail.noneremoved=§cNo entities removed.
+commands.butcher.success=§7Removed %1.
+commands.butcher.success.many=§7Removed %1 entities: 
+
+commands.camera=Place a camera, toggle viewing your placed camera, or toggle a survival-friendly spectator mode.
+commands.camera.spectate=Toggle a survival-friendly spectator mode.
 commands.camera.place.viewing=§cYou cannot place a camera while viewing one.
 commands.camera.place.success=§7Camera placed at %s.
 commands.camera.view.spectating=§cYou cannot view a camera while spectating.
@@ -42,6 +46,7 @@ commands.camera.spectate.viewing=§cYou cannot spectate while viewing a camera.
 commands.camera.spectate.gamemode=§cYou cannot change your gamemode while spectating.
 commands.camera.spectate.started=§aSpectating
 commands.camera.spectate.ended=§7Spectating ended
+commands.camera.invalidaction=§cInvalid camera action.
 
 commands.canopy=Enable or disable a rule.
 commands.canopy.version=Displays the current version of Canopy and all loaded extensions.
@@ -56,8 +61,8 @@ commands.canopy.single=Enables or disables a single rule.
 commands.canopy.multiple=Enables or disables multiple rules.
 commands.canopy.infodisplayRule=§cThe rule '%1' is part of the InfoDisplay, and must be toggled using %2info. Use %2help for more information.
 
-commands.changedimension=Teleports you to the specified dimension.
-commands.changedimension.notfound=§cInvalid dimension. Please use one of these: %s
+commands.changedimension=Teleports entities to the specified dimension.
+commands.changedimension.notfound=§cInvalid dimension.
 commands.changedimension.success.coords=§7Teleported to %1 in the %2§7.
 commands.changedimension.success=§7Changed to the %s§7.
 commands.changedimension.fail.coords=§cInvalid coordinates. Please provide all x, y, z numeric values or none.
@@ -67,7 +72,7 @@ commands.claimprojectiles.fail.nonefound=§7No projectiles found in range (%s bl
 commands.claimprojectiles.success.self=§7Successfully became the owner of %1 projectiles within %2 blocks of you.
 commands.claimprojectiles.success.other=§7Successfully changed the owner of %1 projectiles within %2 blocks of %3.
 
-commands.cleanup=Removes all items and experience orbs within a radius. (Alias: k)
+commands.cleanup=Removes all items and experience orbs within a radius.
 commands.cleanup.success=§7Cleaned up %1 entities (r%2).
 
 commands.counter=Manages hopper counters. (Alias: ct)
@@ -93,7 +98,7 @@ commands.counter.remove.single.actionbar=[%1] Removed all hoppers in %2
 commands.counter.remove.all=§7Removed all hoppers in all channels.
 commands.counter.remove.all.actionbar=[%s] Removed all hoppers in all channels.
 
-commands.data=Displays information about the block or entity you are looking at.
+commands.data=Displays information about a block or entity you are looking at or one you select.
 commands.data.notarget.id=§cNo entity found with id '%2'.
 commands.data.properties=§aProperties:§r %s
 commands.data.states=§aStates:§r %s
@@ -102,6 +107,12 @@ commands.data.tags=§aTags:§r %s
 commands.data.dynamicProperties=§aDynamicProperties:§r %1 total byte count: %2
 commands.data.effects=§aEffects:§r %s
 commands.data.other=§aOther:§r head location: %1, rotation: [%2, %3], velocity: %4, view direction: %5
+
+commands.debugentity=Displays debug information about entities.
+commands.debugentity.invalidProperty=§cInvalid debug property.
+commands.debugentity.invalidAction=§cInvalid action.
+commands.debugentity.added=§7Added '%1' to the debug display for %2 entities: 
+commands.debugentity.removed=§7Removed '%1' from the debug display for %2 entities: 
 
 commands.distance=Calculates the distance between two locations. (Alias: d)
 commands.distance.target=Calculates distance between you and the block or entity you are looking at.
@@ -116,10 +127,10 @@ commands.distance.cylindrical=§7Cartesian(XZ): §r§l%s§r
 commands.distance.manhattan=§7§7Manhattan: §r§l%s§r
 
 commands.entitydensity=Find entity-dense areas in a dimension.
-commands.entitydensity.fail.noentities=§7No dense areas found in %s. No entities in the dimension?
+commands.entitydensity.fail.noentities=§7No dense areas found in %s§r§7. No entities in the dimension?
 commands.entitydensity.fail.dimension=§cInvalid dimension. Please use one of these: %s
 commands.entitydensity.fail.gridsize=§cInvalid grid size. Please use a value between 1 and 2048. Recommended: 100-1024.
-commands.entitydensity.success.header=§7Entity-dense areas in %1 (grid size %2x%3):
+commands.entitydensity.success.header=§7Entity-dense areas in %1§r§7 (grid size %2x%3):
 commands.entitydensity.success.area=§7- %1 entities at %2, %3
 
 commands.gamemode.s=Set your gamemode to survival.
@@ -145,6 +156,7 @@ commands.generator.remove.all=§7Removed all hopper generators in all channels.
 commands.generator.remove.all.actionbar=[%s] Removed all hopper generators in all channels.
 
 commands.health=Displays the server's current TPS, MSPT, and entity counts.
+commands.health.startprofile=§7Profiling tick time...
 commands.health.fail.mspt=§cCould not compute MSPT. Please report this error.
 
 commands.info=Toggle InfoDisplay rules. (Alias: i)
@@ -162,6 +174,7 @@ commands.log=Log tnt, projectile, and falling block movement.
 commands.log.precision=§7Log precision set to %s.
 commands.log.started=§7Started logging %s.
 commands.log.stopped=§7Stopped logging %s.
+commands.log.invalidtype=§cInvalid log type.
 
 commands.loop=Run a vanilla command multiple times in a single tick.
 
@@ -172,24 +185,15 @@ commands.peek.fail.noitems=§cNo items found in %1 at %2.
 commands.peek.query.cleared=§7Peek query cleared.
 commands.peek.query.set=§7Peek query set to '%s'.
 
-commands.pos=Shows your current position, or the position of another player.
+commands.pos=Shows your current position, or the positions of other players.
 commands.pos.self=§aYour position: §f%s
 commands.pos.other=§a%1's position: §f%2
 commands.pos.dimension=§7Dimension: §7%s
 commands.pos.relative.overworld=§7Relative Overworld position: §a%s
 commands.pos.relative.nether=§7Relative Nether position: §c%s
 
-commands.removeentity=Instantly remove the entity you are looking at or by id.
-commands.removeentity.fail.player=§cCannot remove players.
-commands.removeentity.fail.noid=§cNo entity found with id '%s'.
-commands.removeentity.success=§7Removed %1 with id '%2'.
-
-commands.resetall=Resets all §lCanopy§r§8 rules and data. Use with caution.
-commands.resetall.success=§7All §lCanopy§r§8 player and world dynamic properties have been reset.
-
-commands.resettest=Resets spawn tracking, hopper counters, and hopper generators at the same time.
-commands.resettest.success=§7Reset spawn counters, hopper counters, and hopper generators.
-commands.resettest.success.actionbar=[%s] §7Reset spawn counters, hopper counters, and hopper generators.
+commands.retest=Resets spawn tracking, hopper counters, and hopper generators.
+commands.retest.success=§7Reset spawn counters, hopper counters, and hopper generators.
 
 commands.simmap=Displays a map of the loaded chunks near you or the specified location.
 commands.simmap.help.distance=Displays the map with a radius of chunks equal to the specified distance.
@@ -283,6 +287,7 @@ rules.generic.nochange=§7%1 is already §l
 rules.generic.updated=§7%1 is now §l
 rules.generic.enabled=§aenabled
 rules.generic.disabled=§cdisabled
+rules.generic.ability=§7Ability 
 
 rules.commandCamera=Enables camera command.
 rules.commandClaimProjectiles=Enables claimprojectiles command.
@@ -300,6 +305,7 @@ rules.autoItemPickup=Automatically picks up items when breaking blocks.
 rules.carefulBreak=Automatically picks up items when breaking blocks and sneaking.
 rules.cauldronConcreteConversion=Concrete powder items inside a cauldron filled with water will convert to concrete items.
 rules.creativeInstantTame=Instantly tames animals with their respective food in creative mode.
+rules.creativeNetherWaterPlacement=Allows placing water in the Nether in creative mode.
 rules.creativeNoTileDrops=Prevents items dropping from blocks broken in creative mode.
 rules.creativeOneHitKill=Allows creative players to one hit kill any entity. If sneaking, it will also kill nearby entities.
 rules.dupeTnt=TNT can be duplicated when moved by a piston and powered next to a note block.
@@ -319,7 +325,10 @@ rules.noWelcomeMessage=Disables the §lCanopy§r§8 welcome message.
 rules.pistonBedrockBreaking=Allows pistons to break bedrock when facing away from a bedrock block and expanding.
 rules.playerSit=Allows players to sit down after %s quick sneaks.
 rules.quickFillContainer=Using an item on a container with an arrow in the top left of your inventory will deposit all of that item into the container.
-rules.quickFillContainer.filled=§7Filled %1 with all %2
+rules.quickFillContainer.filled.pt1=§7Filled 
+rules.quickFillContainer.filled.pt2= with all 
+rules.quickFillContainer.taken.pt1=§7Took all 
+rules.quickFillContainer.taken.pt2= from 
 rules.refillHand=Refills your hand with items from your inventory when you run out. Put an arrow in the slot next to the top left of your inventory to use.
 rules.renewableElytra=Phantoms have a 1% chance to drop an elytra when killed by a shulker bullet.
 rules.renewableSponge=Guardians transform into elder guardians when hurt by lightning.
@@ -333,6 +342,7 @@ rules.infoDisplay.facing=Shows your facing direction using yaw and pitch.
 rules.infoDisplay.facing.display=§rPitch: §7%1§r Yaw: §7%2§r
 rules.infoDisplay.cardinalFacing=Shows which direction you are facing using N, S, E, W & the coordinate direction (ex. N (-z)).
 rules.infoDisplay.cardinalFacing.display=§rFacing: §7%s§r
+rules.infoDisplay.speed=Shows your current speed in meters per second.
 rules.infoDisplay.tps=Shows the server's ticks per second.
 rules.infoDisplay.tps.display=§rTPS: %s§r
 rules.infoDisplay.entities=Shows the number of entities in front of you.

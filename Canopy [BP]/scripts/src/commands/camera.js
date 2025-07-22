@@ -1,8 +1,9 @@
-import { Rule, Command } from "../../lib/canopy/Canopy";
-import { GameMode, system, world } from "@minecraft/server";
+import { Rule, VanillaCommand } from "../../lib/canopy/Canopy";
+import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, GameMode, Player, system, world } from "@minecraft/server";
 import { stringifyLocation } from "../../include/utils";
 
 const MAX_EFFECT_DURATION = 20000000;
+const TICKS_TO_COMPLETE_FADE = 10;
 
 new Rule({
     category: 'Rules',
@@ -20,49 +21,29 @@ new Rule({
     }
 });
 
-const cmd = new Command({
-    name: 'camera',
-    description: { translate: 'commands.camera' },
-    usage: 'camera <place/view/spectate> [load]',
-    args: [
-        { type: 'string', name: 'action' },
-        { type: 'string', name: 'option' }
-    ],
-    callback: cameraCommand,
-    contingentRules: ['commandCamera'],
-    helpEntries: [
-        { usage: 'camera place', description: { translate: 'commands.camera.place' } },
-        { usage: 'camera view', description: { translate: 'commands.camera.view' } },
-        { usage: 'camera view load', description: { translate: 'commands.camera.view.load' } },
-        { usage: 'camera spectate', description: { translate: 'commands.camera.spectate' } }
-    ]
+const CAM_ACTION_ENUM = Object.freeze({
+    Place: 'place', 
+    View: 'view', 
+    Spectate: 'spectate'
 });
 
-new Command({
-    name: 'cp',
-    description: { translate: 'commands.camera.place' },
-    usage: 'cp',
-    callback: (sender) => cameraCommand(sender, { action: 'place' }),
+new VanillaCommand({
+    name: 'canopy:cam',
+    description: 'commands.camera',
+    enums: [{ name: 'canopy:camAction', values: Object.values(CAM_ACTION_ENUM) }],
+    mandatoryParameters: [{ name: 'canopy:camAction', type: CustomCommandParamType.Enum }],
+    permissionLevel: CommandPermissionLevel.Any,
     contingentRules: ['commandCamera'],
-    helpHidden: true
+    callback: cameraCommand
 });
 
-new Command({
-    name: 'cv',
-    description: { translate: 'commands.camera.view' },
-    usage: 'cv',
-    callback: (sender) => cameraCommand(sender, { action: 'view' }),
+new VanillaCommand({
+    name: 'canopy:cs',
+    description: 'commands.camera.spectate',
+    usage: 'canopy:cs',
+    permissionLevel: CommandPermissionLevel.Any,
     contingentRules: ['commandCamera'],
-    helpHidden: true
-});
-
-new Command({
-    name: 'cs',
-    description: { translate: 'commands.camera.spectate' },
-    usage: 'cs',
-    callback: (sender) => cameraCommand(sender, { action: 'spectate' }),
-    contingentRules: ['commandCamera'],
-    helpHidden: true
+    callback: (source) => cameraCommand(source, CAM_ACTION_ENUM.Spectate),
 });
 
 class BeforeSpectatorPlayer {
@@ -96,153 +77,140 @@ function onPlayerDimensionChange(event) {
     player.setDynamicProperty('isViewingCamera', false);
 }
 
-function cameraCommand(sender, args) {
-    const { action, option } = args;
-    
+function cameraCommand(source, action) {
+    if (!(source instanceof Player))
+        return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
     switch (action) {
-        case 'place':
-            placeCameraAction(sender);
+        case CAM_ACTION_ENUM.Place:
+            placeCameraAction(source);
             break;
-        case 'view':
-            viewCameraAction(sender, option);
+        case CAM_ACTION_ENUM.View:
+            viewCameraAction(source);
             break;
-        case 'spectate':
-            spectateAction(sender);
+        case CAM_ACTION_ENUM.Spectate:
+            spectateAction(source);
             break;
         default:
-            cmd.sendUsage(sender);
-            break;
+            return { status: CustomCommandStatus.Failure, message: 'commands.camera.invalidaction' };
     }
 }
 
-function placeCameraAction(sender) {
+function placeCameraAction(source) {
     const eyeHeight = 1.62001002;
-
-    if (sender.getDynamicProperty('isViewingCamera'))
-        return sender.sendMessage({ translate: 'commands.camera.place.viewing' });
-
+    if (source.getDynamicProperty('isViewingCamera'))
+        return source.sendMessage({ translate: 'commands.camera.place.viewing' });
     const cameraSettings = {
-        location: { x: sender.location.x, y: sender.location.y + eyeHeight, z: sender.location.z },
-        rotation: sender.getRotation(),
-        dimensionId: sender.dimension.id
+        location: { x: source.location.x, y: source.location.y + eyeHeight, z: source.location.z },
+        rotation: source.getRotation(),
+        dimensionId: source.dimension.id
     };
-    placeCamera(sender, cameraSettings);
+    placeCamera(source, cameraSettings);
 }
 
-function placeCamera(sender, cameraSettings) {
-    sender.setDynamicProperty('placedCamera', JSON.stringify(cameraSettings));
-    sender.sendMessage({ translate: 'commands.camera.place.success', with: [stringifyLocation(cameraSettings.location, 0)] });
+function placeCamera(source, cameraSettings) {
+    source.setDynamicProperty('placedCamera', JSON.stringify(cameraSettings));
+    source.sendMessage({ translate: 'commands.camera.place.success', with: [stringifyLocation(cameraSettings.location, 0)] });
 }
 
-function viewCameraAction(sender, option) {
-    if (sender.getDynamicProperty('isSpectating')) 
-        return sender.sendMessage({ translate: 'commands.camera.view.spectating' });
-    if (!sender.getDynamicProperty('placedCamera'))
-        return sender.sendMessage({ translate: 'commands.camera.view.fail' });
-
-    const placedCameraSettings = JSON.parse(sender.getDynamicProperty('placedCamera'));
-    toggleCameraView(sender, placedCameraSettings, option);
+function viewCameraAction(source) {
+    if (source.getDynamicProperty('isSpectating')) 
+        return source.sendMessage({ translate: 'commands.camera.view.spectating' });
+    if (!source.getDynamicProperty('placedCamera'))
+        return source.sendMessage({ translate: 'commands.camera.view.fail' });
+    const placedCameraSettings = JSON.parse(source.getDynamicProperty('placedCamera'));
+    system.run(() => toggleCameraView(source, placedCameraSettings));
 }
 
-function toggleCameraView(sender, placedCameraSettings, option) {
-    if (sender.getDynamicProperty('isViewingCamera')) {
-        endCameraView(sender);
+function toggleCameraView(source, placedCameraSettings) {
+    if (source.getDynamicProperty('isViewingCamera')) {
+        endCameraView(source);
     } else {
-        if (placedCameraSettings.dimensionId !== sender.dimension.id)
-            return sender.sendMessage({ translate: 'commands.camera.view.dimension', with: [placedCameraSettings.dimensionId] });
-        startCameraView(sender, placedCameraSettings, option);
+        if (placedCameraSettings.dimensionId !== source.dimension.id)
+            return source.sendMessage({ translate: 'commands.camera.view.dimension', with: [placedCameraSettings.dimensionId] });
+        startCameraView(source, placedCameraSettings);
     }
 }
 
-function startCameraView(sender, placedCameraSettings, option) {
-    if (option === 'load')
-        loadChunkForTicks(placedCameraSettings, 20);
-    sender.camera.setCamera('minecraft:free', {
+function startCameraView(source, placedCameraSettings) {
+    source.camera.setCamera('minecraft:free', {
         easeOptions: { easeTime: 1.0, easeType: 'InOutSine' },
         location: placedCameraSettings.location,
         rotation: placedCameraSettings.rotation
     });
-    sender.setDynamicProperty('isViewingCamera', true);
-    sender.onScreenDisplay.setActionBar({ translate: 'commands.camera.view.started' });
+    source.setDynamicProperty('isViewingCamera', true);
+    source.onScreenDisplay.setActionBar({ translate: 'commands.camera.view.started' });
 }
 
-function loadChunkForTicks(placedCameraSettings, ticks) {
-    const dimension = world.getDimension(placedCameraSettings.dimensionId);
-    dimension.runCommand('tickingarea remove Canopy-cameraLoad');
-    dimension.runCommand(`tickingarea add ${placedCameraSettings.location.x} ${placedCameraSettings.location.y} ${placedCameraSettings.location.z} ${placedCameraSettings.location.x} ${placedCameraSettings.location.y} ${placedCameraSettings.location.z} Canopy-cameraLoad`);
+function endCameraView(source) {
+    cameraFadeOut(source);
     system.runTimeout(() => {
-        dimension.runCommand('tickingarea remove Canopy-cameraLoad');
-    }, ticks);
+        source.camera.clear();
+    }, TICKS_TO_COMPLETE_FADE);
+    source.setDynamicProperty('isViewingCamera', false);
+    source.onScreenDisplay.setActionBar({ translate: 'commands.camera.view.ended' });
 }
 
-function endCameraView(sender) {
-    cameraFadeOut(sender);
-    system.runTimeout(() => {
-        sender.camera.clear();
-    }, 8);
-    sender.setDynamicProperty('isViewingCamera', false);
-    sender.onScreenDisplay.setActionBar({ translate: 'commands.camera.view.ended' });
+function spectateAction(source) {
+    if (source.getDynamicProperty('isViewingCamera'))
+        return source.sendMessage({ translate: 'commands.camera.spectate.viewing' });
+    system.run(() => {
+        if (source.getDynamicProperty('isSpectating'))
+            endSpectate(source);
+        else
+            startSpectate(source);
+    });
 }
 
-function spectateAction(sender) {
-    if (sender.getDynamicProperty('isViewingCamera'))
-        return sender.sendMessage({ translate: 'commands.camera.spectate.viewing' });
-    if (sender.getDynamicProperty('isSpectating'))
-        endSpectate(sender);
-    else
-        startSpectate(sender);
-}
-
-function startSpectate(sender) {
-    cameraFadeOut(sender);
-    sender.setDynamicProperty('isSpectating', true);
-    const savedPlayer = new BeforeSpectatorPlayer(sender);
-    sender.setDynamicProperty('beforeSpectatorPlayer', JSON.stringify(savedPlayer));
+function startSpectate(source) {
+    cameraFadeOut(source);
+    source.setDynamicProperty('isSpectating', true);
+    const savedPlayer = new BeforeSpectatorPlayer(source);
+    source.setDynamicProperty('beforeSpectatorPlayer', JSON.stringify(savedPlayer));
     
     system.runTimeout(() => {
-        sender.setGameMode(GameMode.Spectator);
-        for (const effect of sender.getEffects()) {
+        source.setGameMode(GameMode.Spectator);
+        for (const effect of source.getEffects()) {
             try {
-                sender.removeEffect(effect.typeId);
+                source.removeEffect(effect.typeId);
             } catch (error) {
-                console.warn(`[Canopy] Failed to remove ${effect?.typeId} effect from player ${sender.name} while starting spectate. Error: ${error}`);
+                console.warn(`[Canopy] Failed to remove ${effect?.typeId} effect from player ${source.name} while starting spectate. Error: ${error}`);
             }
         }
-        sender.addEffect('night_vision', MAX_EFFECT_DURATION, { amplifier: 0, showParticles: false });
-        sender.addEffect('conduit_power', MAX_EFFECT_DURATION, { amplifier: 0, showParticles: false });
-        sender.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.started' });
-    }, 8);
+        source.addEffect('night_vision', MAX_EFFECT_DURATION, { amplifier: 0, showParticles: false });
+        source.addEffect('conduit_power', MAX_EFFECT_DURATION, { amplifier: 0, showParticles: false });
+        source.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.started' });
+    }, TICKS_TO_COMPLETE_FADE);
 }
 
-function endSpectate(sender) {
-    cameraFadeOut(sender);
-    const beforeSpectatorPlayer = JSON.parse(sender.getDynamicProperty('beforeSpectatorPlayer'));
-    sender.setDynamicProperty('isSpectating', false);
+function endSpectate(source) {
+    cameraFadeOut(source);
+    const beforeSpectatorPlayer = JSON.parse(source.getDynamicProperty('beforeSpectatorPlayer'));
+    source.setDynamicProperty('isSpectating', false);
     system.runTimeout(() => {
-        for (const effect of sender.getEffects()) {
+        for (const effect of source.getEffects()) {
             try {
-                sender.removeEffect(effect.typeId);
+                source.removeEffect(effect.typeId);
             } catch (error) {
-                console.warn(`[Canopy] Failed to remove ${effect?.typeId} effect from player ${sender.name} while ending spectate. Error: ${error}`);
+                console.warn(`[Canopy] Failed to remove ${effect?.typeId} effect from player ${source.name} while ending spectate. Error: ${error}`);
             }
         }
-        sender.teleport(beforeSpectatorPlayer.location, { dimension: world.getDimension(beforeSpectatorPlayer.dimensionId), rotation: beforeSpectatorPlayer.rotation });
+        source.teleport(beforeSpectatorPlayer.location, { dimension: world.getDimension(beforeSpectatorPlayer.dimensionId), rotation: beforeSpectatorPlayer.rotation });
         for (const effect of beforeSpectatorPlayer.effects) {
             try {
                 if (effect.duration === -1)
                     effect.duration = MAX_EFFECT_DURATION;
-                sender.addEffect(effect.typeId, Math.min(MAX_EFFECT_DURATION, effect.duration), { amplifier: effect.amplifier });
+                source.addEffect(effect.typeId, Math.min(MAX_EFFECT_DURATION, effect.duration), { amplifier: effect.amplifier });
             } catch (error) {
-                console.warn(`[Canopy] Failed to add ${effect?.typeId} effect back to player ${sender.name} while ending spectate. Error: ${error}`);
+                console.warn(`[Canopy] Failed to add ${effect?.typeId} effect back to player ${source.name} while ending spectate. Error: ${error}`);
             }
         }
-        sender.setGameMode(beforeSpectatorPlayer.gamemode);
-        sender.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.ended' });
-    }, 8);
+        source.setGameMode(beforeSpectatorPlayer.gamemode);
+        source.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.ended' });
+    }, TICKS_TO_COMPLETE_FADE);
 }
 
-function cameraFadeOut(sender) {
-    sender.camera.fade({
+function cameraFadeOut(source) {
+    source.camera.fade({
         fadeColor: { red: 0, green: 0, blue: 0 },
         fadeTime: { fadeInTime: 0.5, fadeOutTime: 0.5, holdTime: 0.0 }
     });

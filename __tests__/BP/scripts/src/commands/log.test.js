@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { logCommand } from "../../../../../Canopy [BP]/scripts/src/commands/log";
+import { Player } from "@minecraft/server";
 
 vi.mock("@minecraft/server", () => ({
     system: {
@@ -24,6 +25,11 @@ vi.mock("@minecraft/server", () => ({
                 subscribe: vi.fn(),
                 unsubscribe: vi.fn()
             }
+        },
+        beforeEvents: {
+            startup: {
+                subscribe: vi.fn()
+            }
         }
     },
     world: {
@@ -41,8 +47,45 @@ vi.mock("@minecraft/server", () => ({
             },
             chatSend: {
                 subscribe: vi.fn()
+            },
+            playerLeave: {
+                subscribe: vi.fn()
             }
-        }
+        },
+        getDimension: vi.fn(() => ({
+            id: 'overworld',
+            runCommand: vi.fn(),
+            getEntities: vi.fn(() => [
+                { typeId: 'minecraft:falling_block', id: 'entity1', location: { x: 1, y: 2, z: 3 }, dimension: { id: 'overworld' },
+                    getComponent: vi.fn(() => ({ })),
+                    isValid: vi.fn(() => true)
+                },
+                { typeId: 'minecraft:projectile', id: 'entity2', location: { x: 4, y: 5, z: 6 }, dimension: { id: 'overworld' },
+                    getComponent: vi.fn(() => ({ projectile: { isValid: true } })),
+                    isValid: vi.fn(() => true)
+                },
+                { typeId: 'minecraft:item', id: 'entity3', location: { x: 7, y: 8, z: 9 }, dimension: { id: 'overworld' },
+                    getComponent: vi.fn(() => ({ })),
+                    isValid: vi.fn(() => false)
+                }
+            ])
+        }))
+    },
+    CommandPermissionLevel: {
+        Any: 'Any',
+    },
+    CustomCommandParamType: {
+        Enum: 'Enum',
+        Integer: 'Integer',
+    },
+    CustomCommandStatus: {
+        Success: 'Success',
+        Failure: 'Failure',
+    },
+    Player: class {
+        sendMessage = vi.fn();
+        getDynamicProperty = vi.fn();
+        setDynamicProperty = vi.fn();
     }
 }));
 
@@ -52,44 +95,29 @@ vi.mock("@minecraft/server-ui", () => ({
 
 describe('logCommand', () => {
     let mockPlayer;
-    let mockArgs;
 
     beforeEach(() => {
-        mockPlayer = {
-            sendMessage: vi.fn(),
-            getDynamicProperty: vi.fn(),
-            setDynamicProperty: vi.fn()
-        };
+        mockPlayer = new Player();
     });
 
     it('should allow the user to set the precision', () => {
-        mockArgs = { type: null, precision: 5 };
-        logCommand(mockPlayer, mockArgs);
+        logCommand(mockPlayer, 'na', 5);
         expect(mockPlayer.setDynamicProperty).toHaveBeenCalledWith('logPrecision', 5);
         expect(mockPlayer.sendMessage).toHaveBeenCalledWith({ translate: 'commands.log.precision', with: ['5'] });
     });
 
     it('should allow the user to enable logging a valid type', () => {
-        mockArgs = { type: 'projectiles', precision: null };
-        logCommand(mockPlayer, mockArgs);
+        logCommand(mockPlayer, 'projectiles', void 0);
         expect(mockPlayer.sendMessage).toHaveBeenCalledWith({ translate: 'commands.log.started', with: ['projectiles'] });
     });
 
     it('should send usage message for invalid type', () => {
-        mockArgs = { type: 'invalid_type', precision: null };
-        logCommand(mockPlayer, mockArgs);
-        expect(mockPlayer.sendMessage).toHaveBeenCalledWith({ translate: 'commands.generic.usage', with: ['./log <tnt/projectiles/falling_blocks> [precision]'] });
+        const commandResult = logCommand(mockPlayer, 'invalid_type', void 0);
+        expect(commandResult).toEqual({ status: "Failure", message: 'commands.log.invalidtype' });
     });
 
     it('should allow the user to disable logging a valid type', () => {
-        mockArgs = { type: 'projectiles', precision: null };
-        logCommand(mockPlayer, mockArgs);
+        logCommand(mockPlayer, 'projectiles', void 0);
         expect(mockPlayer.sendMessage).toHaveBeenCalledWith({ translate: 'commands.log.stopped', with: ['projectiles'] });
-    });
-
-    it('should send usage if no arguments are provided', () => {
-        mockArgs = { type: null, precision: null };
-        logCommand(mockPlayer, mockArgs);
-        expect(mockPlayer.sendMessage).toHaveBeenCalledWith({ translate: 'commands.generic.usage', with: ['./log <tnt/projectiles/falling_blocks> [precision]'] });
     });
 });

@@ -1,76 +1,64 @@
-import { Command } from "../../lib/canopy/Canopy";
-import { world } from '@minecraft/server';
-import { isString } from "../../include/utils";
+import { VanillaCommand } from "../../lib/canopy/Canopy";
+import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, Player, world } from '@minecraft/server';
+import { getColoredDimensionName } from "../../include/utils";
 
 const NUM_RESULTS = 10;
 
-const cmd = new Command({
-    name: 'entitydensity',
-    description: { translate: 'commands.entitydensity' },
-    usage: 'entitydensity [dimension] <gridSize>',
-    args: [
-        { type: 'string|number', name: 'firstArg' },
-        { type: 'number', name: 'gridSize' }
-    ],
+const validDimensions = {
+    'o': 'overworld',
+    'overworld': 'overworld',
+    'n': 'nether',
+    'nether': 'nether',
+    'e': 'the_end',
+    'end': 'the_end',
+    'the_end': 'the_end'
+};
+
+new VanillaCommand({
+    name: 'canopy:entitydensity',
+    description: 'commands.entitydensity',
+    mandatoryParameters: [{name: 'gridSize', type: CustomCommandParamType.Integer}],
+    optionalParameters: [{name: 'canopy:dimension', type: CustomCommandParamType.Enum}],
+    permissionLevel: CommandPermissionLevel.Any,
     callback: entityDensityCommand
 });
 
-function entityDensityCommand(sender, args) {
-    const firstArg = args.firstArg;
-    let gridSize = args.gridSize;
-    if (firstArg === null) {
-        cmd.sendUsage(sender);
-        return;
-    }
-    const { validDimensionId, parsedGridSize, hasNoErrors } = parseArgs(sender, firstArg, gridSize);
-    if (hasNoErrors === false)
-        return;
-    if (parsedGridSize)
-        gridSize = parsedGridSize;
-    
-    printDimensionEntities(sender);
-    const denseAreas = findDenseAreas(validDimensionId, gridSize, NUM_RESULTS);
+function entityDensityCommand(source, gridSize, dimension) {
+    if (!(source instanceof Player))
+        return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
+    const { validDimensionId, parsedGridSize, hasNoErrors } = parseArgs(source, gridSize, dimension);
+    if (!hasNoErrors)
+        return void 0;
+    printDimensionEntities(source);
+    const denseAreas = findDenseAreas(validDimensionId, parsedGridSize, NUM_RESULTS);
     if (denseAreas.length === 0) {
-        sender.sendMessage({ translate: 'commands.entitydensity.fail.noentities', with: [validDimensionId] });
-        return;
+        source.sendMessage({ translate: 'commands.entitydensity.fail.noentities', with: [getColoredDimensionName(validDimensionId)] });
+        return void 0;
     }
-
-    const message = { rawtext: [{ translate: 'commands.entitydensity.success.header', with: [validDimensionId, String(gridSize), String(gridSize)] }] };
+    const message = { rawtext: [{ translate: 'commands.entitydensity.success.header', with: [getColoredDimensionName(validDimensionId), String(parsedGridSize), String(parsedGridSize)] }] };
     denseAreas.forEach(area => {
         message.rawtext.push({ text: '\n' });
         message.rawtext.push(formatAreaMessage(area));
     });
-    sender.sendMessage(message);
+    source.sendMessage(message);
+    return void 0;
 }
 
-function parseArgs(sender, firstArg, gridSize) {
+function parseArgs(source, gridSize, dimension) {
     let hasNoErrors = true;
     let validDimensionId;
-    let parsedGridSize = gridSize;
-
-    const validDimensions = {
-        'o': 'overworld',
-        'overworld': 'overworld',
-        'n': 'nether',
-        'nether': 'nether',
-        'e': 'the_end',
-        'end': 'the_end',
-        'the_end': 'the_end'
-    };
-
-    if (isString(firstArg)) {
-        validDimensionId = validDimensions[firstArg.toLowerCase()];
-    } else if (Number.isInteger(firstArg)) {
-        parsedGridSize = firstArg;
-        validDimensionId = sender.dimension.id.replace('minecraft:', '');
-    }
+    const parsedGridSize = gridSize;
+    if (dimension)
+        validDimensionId = validDimensions[dimension.toLowerCase()];
+    else
+        validDimensionId = source.dimension.id.replace('minecraft:', '');
 
     if (!validDimensionId) {
-        sender.sendMessage({ translate: 'commands.entitydensity.fail.dimension', with: [Object.keys(validDimensions).join(', ')] });
+        source.sendMessage({ translate: 'commands.entitydensity.fail.dimension', with: [Object.keys(validDimensions).join(', ')] });
         hasNoErrors = false;
     }
     if (parsedGridSize < 1 || parsedGridSize > 2048) {
-        sender.sendMessage({ translate: 'commands.entitydensity.fail.gridsize' });
+        source.sendMessage({ translate: 'commands.entitydensity.fail.gridsize' });
         hasNoErrors = false;
     }
     return { validDimensionId, parsedGridSize, hasNoErrors };

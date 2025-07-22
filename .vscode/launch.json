@@ -1,0 +1,15 @@
+{
+    "version": "0.3.0",
+    "configurations": [
+        {
+            "type": "minecraft-js",
+            "request": "attach",
+            "name": "Debug with Minecraft",
+            "mode": "listen",
+            "targetModuleUuid": "3d753132-e3c9-4305-a995-eae30b486093",
+            "localRoot": "${workspaceFolder}/Canopy [BP]/scripts",
+            "port": 19144,
+            "preLaunchTask": "regolith: watch"
+        }
+    ]
+}

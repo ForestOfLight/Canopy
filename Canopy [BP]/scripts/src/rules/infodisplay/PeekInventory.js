@@ -64,8 +64,10 @@ class PeekInventory extends InfoDisplayElement {
 		const output = { rawtext: [{ text: `§r` }] };
 		if (Object.keys(itemCounts).length > 0) {
 			for (const itemType in itemCounts) {
-				if (itemType.includes(currentQuery[this.player.name]))
+				if (this.includesQuery(itemType, currentQuery[this.player.name]))
 					output.rawtext.push({ text: `§c` });
+				else
+					output.rawtext.push({ text: `§r` });
 				output.rawtext.push({ translate: new ItemStack(itemType).localizationKey });
 				output.rawtext.push({ text: `: ${itemCounts[itemType]}\n` });
 			}
@@ -73,6 +75,10 @@ class PeekInventory extends InfoDisplayElement {
 			output.rawtext.push({ translate: 'rules.infoDisplay.peekInventory.empty' });
 		}
 		return output;
+	}
+
+	includesQuery(itemType, query) {
+		return itemType?.replace('minecraft:', '').toLowerCase().includes(query?.toLowerCase());
 	}
 }
 

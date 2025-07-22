@@ -53,6 +53,14 @@ const mirrored = {
             0: 1,
             1: 0
         }
+    },
+    "minecraft:vertical_half": {
+        'top': 'bottom',
+        'bottom': 'top'
+    },
+    upside_down_bit: {
+        true: false,
+        false: true
     }
 }
 
@@ -101,13 +109,16 @@ class DirectionStateFinder {
             'direction': permutation.getState('direction'),
             'orientation': permutation.getState('orientation'),
             'rail_direction': permutation.getState('rail_direction'),
-            'pillar_axis': permutation.getState('pillar_axis')
+            'pillar_axis': permutation.getState('pillar_axis'),
+            'minecraft:vertical_half': permutation.getState('minecraft:vertical_half'),
+            'upside_down_bit': permutation.getState('upside_down_bit')
         };
         for (const state in potentialStates) {
-            if (potentialStates[state] === void 0) continue;
+            if (potentialStates[state] === void 0)
+                continue;
             return { name: state, value: potentialStates[state] };
         }
-        return undefined;
+        return void 0;
     }
     
     static getMirroredDirection(block) {
@@ -128,7 +139,8 @@ class DirectionStateFinder {
 
     static getRawMirroredDirection(block) {
         const directionState = this.getDirectionState(block.permutation);
-        if (directionState === void 0) return 0;
+        if (directionState === void 0)
+            return 0;
         const mirroredState = mirrored.raw[directionState.name]?.[directionState.value];
         if (mirroredState === void 0)
             throw new Error('Could not mirror direction. Invalid direction state.');

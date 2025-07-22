@@ -8,3 +8,4 @@ export const ButtonState = {};
 export const EntityComponentTypes = {};
 export const ItemComponentTypes = {};
 export const TicksPerSecond = 20.0;
+export const Player = class {};

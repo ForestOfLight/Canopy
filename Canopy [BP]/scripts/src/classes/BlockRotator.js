@@ -53,7 +53,8 @@ class BlockRotator {
             axis = mirroredDirection;
         } else { // block data has to be rebuilt manually 🎉
             const structure = world.structureManager.get(structureId);
-            if (structure === undefined) return console.warn(`[BlockRotator] Could not get structure for ${structureId}.`);
+            if (structure === undefined)
+                return console.warn(`[BlockRotator] Could not get structure for ${structureId}.`);
             const directionState = DirectionStateFinder.getDirectionState(structure.getBlockPermutation({x: 0, y: 0, z: 0}));
             const permutation = BlockPermutation.resolve(block.typeId, { [directionState.name]: mirroredDirection });
             structure.setBlockPermutation({x: 0, y: 0, z: 0}, permutation);

@@ -42,7 +42,7 @@ class Profiler {
         await new Promise(resolve => system.runTimeout(() => {
             system.clearRun(runner);
             resolve();
-        }, SAMPLE_INTERVAL * NUM_SAMPLES));
+        }, this.profileTime));
         const result = {
             result: this.tps,
             min: tpsValues.reduce((a, b) => Math.min(a, b)),
@@ -62,7 +62,7 @@ class Profiler {
         await new Promise(resolve => system.runTimeout(() => {
             system.clearRun(runner);
             resolve();
-        }, SAMPLE_INTERVAL * NUM_SAMPLES));
+        }, this.profileTime));
         const result = {
             result: msptValues.reduce((a, b) => a + b, 0) / msptValues.length,
             min: msptValues.reduce((a, b) => Math.min(a, b)),

@@ -26,6 +26,9 @@ vi.mock('@minecraft/server', () => ({
             }
         },
         runJob: vi.fn()
+    },
+    LiquidType: {
+        Water: 'Water'
     }
 }));
 
@@ -43,7 +46,8 @@ const mockPlayer = {
                     state1: 'value1',
                     state2: 'value2'
                 }))
-            }
+            },
+            canContainLiquid: vi.fn(() => false),
         }
     })),
     getEntitiesFromViewDirection: vi.fn(() => [])
@@ -66,6 +70,22 @@ describe('BlockStates', () => {
     it('should have a method to return formatted block states', () => {
         expect(blockStates.getFormattedDataOwnLine()).toEqual({
             text: `§7state1: §3value1\n§7state2: §3value2`
+        });
+    });
+
+    it('should show isWaterlogged state if applicable', () => {
+        mockPlayer.getBlockFromViewDirection.mockReturnValueOnce({
+            block: {
+                typeId: 'minecraft:water',
+                isWaterlogged: true,
+                permutation: {
+                    getAllStates: vi.fn(() => ({}))
+                },
+                canContainLiquid: vi.fn(() => true)
+            }
+        });
+        expect(blockStates.getFormattedDataOwnLine()).toEqual({
+            text: `§7isWaterlogged: §3true`
         });
     });
 });

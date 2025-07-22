@@ -1,5 +1,5 @@
 import { GlobalRule } from '../../lib/canopy/Canopy';
-import { world, EntityComponentTypes } from '@minecraft/server';
+import { world, EntityComponentTypes, system } from '@minecraft/server';
 import { InventoryUI } from '../classes/InventoryUI';
 
 class AllowPeekInventory extends GlobalRule {
@@ -30,7 +30,9 @@ class AllowPeekInventory extends GlobalRule {
         if (!this.hasInventory(target)) return;
         event.cancel = true;
         const invUI = new InventoryUI(target);
-        invUI.show(event.player);
+        system.run(() => {
+            invUI.show(event.player);
+        });
     }
 
     hasInventory(target) {

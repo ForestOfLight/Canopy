@@ -20,6 +20,11 @@ vi.mock('@minecraft/server', () => ({
         setDynamicProperty: vi.fn()
     },
     system: {
+        beforeEvents: {
+            startup: {
+                subscribe: vi.fn()
+            }
+        },
         afterEvents: {
             scriptEventReceive: {
                 subscribe: vi.fn()
@@ -31,7 +36,16 @@ vi.mock('@minecraft/server', () => ({
         typeId: typeId,
         amount: amount || 1,
         localizationKey: `item.${typeId.replace("minecraft:", '')}.name`
-    }))
+    })),
+    CommandPermissionLevel: {
+        Any: 'Any'
+    },
+    CustomCommandParamType: {
+        String: 'String'
+    },
+    CustomCommandStatus: {
+        Failure: 'Failure'
+    }
 }));
 
 vi.mock("@minecraft/server-ui", () => ({
@@ -74,6 +88,7 @@ describe('BlockStates', () => {
 
     it('should have a method to return formatted chunk coordinates', () => {
         expect(peekInventory.getFormattedDataOwnLine()).toEqual({ rawtext: [
+            { text: "§r" },
             { text: "§r" },
             { translate: "item.grass_block.name" },
             { text: ": 27\n" }

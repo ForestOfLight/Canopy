@@ -29,6 +29,9 @@ vi.mock("@minecraft/server", () => ({
         beforeEvents: {
             entityRemove: {
                 subscribe: vi.fn()
+            },
+            playerLeave: {
+                subscribe: vi.fn()
             }
         },
         getDimension: vi.fn(() => ({

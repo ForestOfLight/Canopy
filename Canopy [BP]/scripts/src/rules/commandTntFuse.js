@@ -3,6 +3,7 @@ import { GlobalRule } from "../../lib/canopy/Canopy";
 import { TNTFuse } from "../classes/TNTFuse";
 
 const ruleID = 'commandTntFuse';
+const VANILLA_FUSE_TICKS = 80;
 
 class CommandTntFuse extends GlobalRule {
     fuseTicksDP = 'tntFuseTicks';
@@ -30,8 +31,8 @@ class CommandTntFuse extends GlobalRule {
 
     getGlobalFuseTicks() {
         if (this.getNativeValue())
-            return world.getDynamicProperty(this.fuseTicksDP) || 80;
-        return 80;
+            return world.getDynamicProperty(this.fuseTicksDP) || VANILLA_FUSE_TICKS;
+        return VANILLA_FUSE_TICKS;
     }
 
     startFuse(entity, fuseTicks) {

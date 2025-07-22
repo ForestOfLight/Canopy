@@ -1,32 +1,37 @@
-import { Command } from 'lib/canopy/Canopy';
-import { CommandError } from '@minecraft/server';
+import { VanillaCommand } from 'lib/canopy/Canopy';
+import { Block, CommandError, CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, world, system } from '@minecraft/server';
 
-const cmd = new Command({
-    name: 'loop',
-    description: { translate: 'commands.loop' },
-    usage: 'loop <times> <"command to run">',
-    args: [
-        { type: 'number', name: 'times' },
-        { type: 'string', name: 'command' }
+new VanillaCommand({
+    name: 'canopy:loop',
+    description: 'commands.loop',
+    mandatoryParameters: [
+        { name: 'times', type: CustomCommandParamType.Integer },
+        { name: 'command', type: CustomCommandParamType.String }
     ],
-    callback: loopCommand,
-    opOnly: true
-})
+    permissionLevel: CommandPermissionLevel.GameDirectors,
+    callback: loopCommand
+});
 
-function loopCommand(sender, args) {
-    const { times, command } = args;
-    if (times === null || command === null)
-        return cmd.sendUsage(sender);
-    loop(times, command, sender);
+function loopCommand(source, times, command) {
+    if (source === "Server")
+        source = world.getDimension('overworld');
+    else if (source instanceof Block)
+        source = source.dimension;
+    else if (!source)
+        return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
+    loop(times, command, source);
 }
 
 function loop(times, command, runLocation) {
-    for (let i = 0; i < times; i++) {
-        try {
-            runLocation.runCommand(command);
-        } catch (error) {
-            if (error instanceof CommandError)
-                return runLocation.sendMessage(`§cLoop error (Iteration ${i+1}): ${error.message}`);
+    system.run(() => {
+        for (let i = 0; i < times; i++) {
+            try {
+                runLocation.runCommand(command);
+            } catch (error) {
+                if (error instanceof CommandError)
+                    return runLocation.sendMessage(`§cLoop error (Iteration ${i+1}): ${error.message}`);
+                throw error;
+            }
         }
-    }
+    });
 }

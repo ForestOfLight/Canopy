@@ -33,7 +33,8 @@ export class TNTFuse {
             this.stopFuse();
             return;
         }
-        if (this.tntIsUnloaded()) return;
+        if (this.tntIsUnloaded())
+            return;
         const currentFuseTicks = this.tntEntity.getDynamicProperty('fuseTicks');
         if (currentFuseTicks <= 1) {
             this.triggerExplosion();
@@ -47,10 +48,23 @@ export class TNTFuse {
     }
 
     triggerExplosion() {
-        this.tntEntity.triggerEvent('canopy:explode');
+        const eventIdentifier = 'canopy:explode';
+        try {
+            this.tntEntity.triggerEvent(eventIdentifier);
+        } catch(error) {
+            if (error.includes(`${eventIdentifier} does not exist on minecraft:tnt`))
+                throw new Error(`[Canopy] ${eventIdentifier} could not be triggered on minecraft:tnt. Are you using another pack that overrides tnt?`);
+            throw error;
+        }
     }
 
     tntIsUnloaded() {
-        return !this.tntEntity.dimension.getBlock(this.tntEntity.location);
+        try {
+            return !this.tntEntity.dimension.getBlock(this.tntEntity.location);
+        } catch (e) {
+            if (e.name === 'PositionInUnloadedChunkError' || e.name === 'PositionOutOfWorldBoundariesError')
+                return true;
+            throw e;
+        }
     }
 }

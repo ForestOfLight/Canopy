@@ -1,4 +1,4 @@
-import { EntityComponentTypes, ItemComponentTypes, system } from "@minecraft/server";
+import { EntityComponentTypes, ItemComponentTypes } from "@minecraft/server";
 import { forceShow, titleCase } from "../../include/utils";
 import { ChestFormData } from "../../lib/chestui/forms";
 
@@ -10,9 +10,7 @@ class InventoryUI {
     }
 
     show(player) {
-        system.run(() => {
-            forceShow(player, this.buildInventoryUI());
-        });
+        forceShow(player, this.buildInventoryUI());
     }
 
     buildInventoryUI() {

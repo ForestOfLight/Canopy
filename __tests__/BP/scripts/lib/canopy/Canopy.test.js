@@ -37,6 +37,10 @@ describe('Canopy module', () => {
         expect(Canopy.Command).toBeDefined();
     });
 
+    it('should export VanillaCommand', () => {
+        expect(Canopy.VanillaCommand).toBeDefined();
+    });
+
     it('should export Rules', () => {
         expect(Canopy.Rules).toBeDefined();
     });
@@ -51,6 +55,10 @@ describe('Canopy module', () => {
 
     it('should export InfoDisplayRule', () => {
         expect(Canopy.InfoDisplayRule).toBeDefined();
+    });
+
+    it('should export AbilityRule', () => {
+        expect(Canopy.AbilityRule).toBeDefined();
     });
 
     it('should export RuleHelpEntry', () => {

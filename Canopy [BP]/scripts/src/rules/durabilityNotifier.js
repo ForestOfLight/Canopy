@@ -22,7 +22,6 @@ function durabilityNotifier(player, beforeItemStack, itemStack) {
     const durability = getRemainingDurability(itemStack);
     if (ADDITIONAL_DURABILITIES.includes(durability))
         showNotification(player, durability);
-    
     if (durability <= ACTIVE_DURABILITY) {
         const pitch = 1 - (durability/5);
         showNotification(player, durability, pitch);

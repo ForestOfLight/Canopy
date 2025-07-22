@@ -246,3 +246,29 @@ export async function forceShow(player, form, { timeout = Infinity, showBusyMess
     }
 	throw new Error({ translate: 'commands.canopy.menu.timeout', with: [String(timeout)] });
 };
+
+export function getTranslatedEntityList(entities) {
+	const message = { rawtext: [] };
+	for (let i = 0; i < entities.length; i++) {
+		const entity = entities[i];
+		if (entity.nameTag)
+			message.rawtext.push({ translate: entity.nameTag });
+		else
+			message.rawtext.push({ translate: entities[i].localizationKey });
+        if (i !== entities.length - 1)
+			message.rawtext.push({ rawtext: [{ text: ', ' }] });
+    }
+	return message;
+}
+
+export function getNameFromEntityId(id) {
+	let entityName = id;
+	try {
+		const entity = world.getEntity(id);
+		entityName = entity?.name || entity?.nameTag || entityName;
+	} catch (error) {
+		if (!error.message.includes("is invalid") && error.name !== 'InvalidArgumentError')
+			throw error;
+	}
+	return entityName;
+}
