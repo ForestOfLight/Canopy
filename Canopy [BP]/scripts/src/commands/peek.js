@@ -20,8 +20,10 @@ function peekCommand(source, itemQuery) {
         return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
     updateQueryMap(source, itemQuery);
     const target = getTarget(source);
-    if (!target) return;
+    if (!target)
+        return void 0;
     showInventoryUI(source, target);
+    return void 0;
 }
 
 function updateQueryMap(source, itemQuery) {

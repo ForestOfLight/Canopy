@@ -28,12 +28,12 @@ function entityDensityCommand(source, gridSize, dimension) {
         return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
     const { validDimensionId, parsedGridSize, hasNoErrors } = parseArgs(source, gridSize, dimension);
     if (!hasNoErrors)
-        return;
+        return void 0;
     printDimensionEntities(source);
     const denseAreas = findDenseAreas(validDimensionId, parsedGridSize, NUM_RESULTS);
     if (denseAreas.length === 0) {
         source.sendMessage({ translate: 'commands.entitydensity.fail.noentities', with: [getColoredDimensionName(validDimensionId)] });
-        return;
+        return void 0;
     }
     const message = { rawtext: [{ translate: 'commands.entitydensity.success.header', with: [getColoredDimensionName(validDimensionId), String(parsedGridSize), String(parsedGridSize)] }] };
     denseAreas.forEach(area => {
@@ -41,6 +41,7 @@ function entityDensityCommand(source, gridSize, dimension) {
         message.rawtext.push(formatAreaMessage(area));
     });
     source.sendMessage(message);
+    return void 0;
 }
 
 function parseArgs(source, gridSize, dimension) {
