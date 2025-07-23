@@ -23,7 +23,7 @@ Whether you're optimizing farm rates, digging into game mechanics, or building u
 - **Modular & Expandable** – Add functionality with extensions and community add-ons.
 - **Built for Power and Performance** – Designed to run effectively and efficiently.
 
-**Explore all features in the [Canopy Wiki](https://github.com/ForestOfLight/Canopy/wiki)!**
+**Explore all the features in the [Canopy Wiki](https://github.com/ForestOfLight/Canopy/wiki)!**
 
 ## Looking for Simulated Players?
 
@@ -47,7 +47,7 @@ Need help, want to discuss technical Minecraft, or follow future updates? [**Joi
 
 ## Contributing
 
-We welcome community contributions! If you’re passionate about improving the **Technical Bedrock Edition experience**, here’s how you can help:
+We welcome community contributions! If you’re passionate about improving the technical Bedrock Edition experience, here’s how you can help:
 
 ### Reporting Bugs
 
