@@ -83,7 +83,7 @@ class SRCItemDatabase {
             const newId = this.table + key, existingStructure = world.structureManager.get(newId), location = SRCItemDatabase.location;
             if (existingStructure) {
                 world.structureManager.delete(newId);
-                itemMemory.delete(newId)
+                itemMemory.delete(newId);
                 const structureIds = Array.from(Databases.structureIds.get(this.table) ?? []);
                 Databases.structureIds.set(this.table, structureIds.filter(id => id !== newId));
             };
