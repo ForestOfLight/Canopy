@@ -1,4 +1,4 @@
-import { system, world, InputButton, ButtonState } from "@minecraft/server";
+import { world, InputButton, ButtonState } from "@minecraft/server";
 import { Event } from './Event';
 
 class PlayerStartSneakEvent extends Event {
@@ -9,10 +9,6 @@ class PlayerStartSneakEvent extends Event {
         super();
         this.playersSneakingThisTick = [];
         this.playersSneakingLastTick = [];
-    }
-
-    startTrackingEvent() {
-        this.runner = system.runInterval(this.onTick.bind(this));
     }
 
     provideEvents() {
@@ -38,10 +34,6 @@ class PlayerStartSneakEvent extends Event {
 
     isPlayerSneaking(player) {
         return player && player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed;
-    }
-
-    stopTrackingEvent() {
-        system.clearRun(this.runner);
     }
 }
 

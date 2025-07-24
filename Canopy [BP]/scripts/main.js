@@ -68,6 +68,7 @@ import './src/rules/durabilitySwap'
 import './src/rules/allowPeekInventory'
 import './src/rules/commandTntFuse'
 import './src/rules/creativeNetherWaterPlacement'
+import './src/rules/spawnEggSpawnWithMinecart'
 
 // Load Time Processes
 import './src/onStart'
