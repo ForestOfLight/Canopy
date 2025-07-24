@@ -289,7 +289,7 @@ rules.generic.enabled=§aenabled
 rules.generic.disabled=§cdisabled
 rules.generic.ability=§7Ability 
 
-rules.commandCamera=Enables camera command.
+rules.commandCamera=Enables cam command.
 rules.commandClaimProjectiles=Enables claimprojectiles command.
 rules.hopperCounters=Enables counter command & hopper counter functionality.
 rules.hopperGenerators=Enables generator command & hopper generator functionality.
@@ -313,7 +313,7 @@ rules.durabilitySwap=Swaps 0 durability items out of your hand.
 rules.durabilityNotifier=Enables a clink sound and tip when your tool has %s durability left.
 rules.durabilityNotifier.alert=§cDurability remaining: %s
 rules.entityInstantDeath=Removes the 20gt death animation. Entities will also not drop xp.
-rules.explosionChainReactionOnly=Makes explosion only affect TNT blocks.
+rules.explosionChainReactionOnly=Makes explosions only affect TNT blocks.
 rules.explosionNoBlockDamage=Makes explosions not affect blocks.
 rules.explosionOff=Disables explosions entirely.
 rules.flippinArrows=Using an arrow on blocks will flip, rotate, or open them. Putting it in your offhand will flip blocks when placed.
