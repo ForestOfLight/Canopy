@@ -50,7 +50,7 @@ function populateNativeRulePages(helpBook, player) {
         helpBook.addEntry(infoDisplayRule.getCategory(), infoDisplayRule, player);
 
     const rulesPage = new RuleHelpPage({ title: 'Rules', description: { translate: 'commands.help.rules' }, usage: Commands.getPrefix() + 'canopy <rule> <true/false>' });
-    const globalRules = Rules.getByCategory('Rules').sort((a, b) => a.getID().localeCompare(b.getID()));
+    const globalRules = Rules.getByCategory('Rules').sort((a, b) => a.getID().localeCompare(b.getID())).filter(rule => !rule.getExtension());
     helpBook.newPage(rulesPage);
     for (const rule of globalRules)
         helpBook.addEntry(rule.getCategory(), rule);
