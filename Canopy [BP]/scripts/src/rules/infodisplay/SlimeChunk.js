@@ -1,5 +1,4 @@
 import { InfoDisplayElement } from './InfoDisplayElement.js';
-import MT from 'lib/mt.js';
 
 class SlimeChunk extends InfoDisplayElement {
     player;
@@ -22,32 +21,20 @@ class SlimeChunk extends InfoDisplayElement {
     isSlime() {
         if (this.player.dimension.id !== "minecraft:overworld") 
             return false;
-
         const chunkX = Math.floor(this.player.location.x / 16) >>> 0;
         const chunkZ = Math.floor(this.player.location.z / 16) >>> 0;
-        const seed = ((a, b) => {
-            const a00 = a & 0xffff;
-            const a16 = a >>> 16;
-            const b00 = b & 0xffff;
-            const b16 = b >>> 16;
-            const c00 = a00 * b00;
-            let c16 = c00 >>> 16; 
-            
-            c16 += a16 * b00;
-            c16 &= 0xffff;
-            c16 += a00 * b16; 
-            
-            const lo = c00 & 0xffff;
-            const hi = c16 & 0xffff; 
-            
-            return((hi << 16) | lo) >>> 0;
-        })(chunkX, 0x1f1f1f1f) ^ chunkZ;
-    
-        const mt = new MT(seed);
-        const n = mt.nextInt();
-        const isSlime = (n % 10 === 0);
-        
-        return(isSlime);
+        // optimized by https://github.com/McbeEringi/mcbeeringi.github.io/blob/master/apps/mc/slime.html
+        let seed = Math.imul(chunkX, 0x1f1f1f1f) ^ chunkZ;
+        const nextSeed = (s, n) => Math.imul(s ^ s >>> 30, 0x6c078965) + n;
+        const initial = seed & 0x80000000 | (seed = nextSeed(seed, 1)) & 0x7fffffff;
+        for (let i = 2; i < 398; i++)
+            seed = nextSeed(seed, i);
+        seed ^= initial >>> 1 ^ [0, 0x9908b0df][initial & 1];
+        seed ^= seed >>> 11;
+        seed ^= seed << 7 & 0x9d2c5680;
+        seed ^= seed << 15 & 0xefc60000;
+        seed ^= seed >>> 18;
+        return !((seed >>> 0) % 10);
     }
 }
 
