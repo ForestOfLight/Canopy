@@ -4,7 +4,9 @@ import Coords from './Coords';
 import CardinalFacing from './CardinalFacing';
 import Facing from './Facing';
 import { ChunkCoords } from './ChunkCoords';
-import SlimeChunk from './SlimeChunk';
+import { SlimeChunk } from './SlimeChunk';
+import { Velocity } from './Velocity';
+import { Speed } from './Speed';
 import TPS from './TPS';
 import Entities from './Entities';
 import Light from './Light';
@@ -20,7 +22,6 @@ import LookingAt from './LookingAt';
 import SignalStrength from './SignalStrength';
 import { PeekInventory } from './PeekInventory';
 import { BlockStates } from './BlockStates';
-import { Speed } from './Speed';
 
 const playerToInfoDisplayMap = {};
 let currentTickWorldwideElementData = {};
@@ -36,24 +37,25 @@ class InfoDisplay {
 			new Coords(player, 1),
 			new CardinalFacing(player, 1),
 			new Facing(player, 2),
-			new Speed(player, 3),
-			new ChunkCoords(player, 4),
-			new SlimeChunk(player, 4),
-			new TPS(5),
-			new Entities(player, 6),
-			new Light(player, 7),
-			new Biome(player, 7),
-			new WorldDay(8),
-			new TimeOfDay(8),
-			new SessionTime(player, 9),
-			new MoonPhase(10),
-			new EventTrackers(11),
-			new HopperCounterCounts(12),
-			new SimulationMap(player, 13),
-			new LookingAt(player, 14),
-			new SignalStrength(player, 14),
-			new BlockStates(player, 15),
-			new PeekInventory(player, 16)
+			new ChunkCoords(player, 3),
+			new SlimeChunk(player, 3),
+			new Velocity(player, 4),
+			new Speed(player, 5),
+			new TPS(6),
+			new Entities(player, 7),
+			new Light(player, 8),
+			new Biome(player, 8),
+			new WorldDay(9),
+			new TimeOfDay(9),
+			new SessionTime(player, 10),
+			new MoonPhase(11),
+			new EventTrackers(12),
+			new HopperCounterCounts(13),
+			new SimulationMap(player, 14),
+			new LookingAt(player, 15),
+			new SignalStrength(player, 16),
+			new BlockStates(player, 17),
+			new PeekInventory(player, 18)
 		];
 		playerToInfoDisplayMap[player.id] = this;
 	}

@@ -1,6 +1,6 @@
 import { InfoDisplayElement } from './InfoDisplayElement.js';
 
-class SlimeChunk extends InfoDisplayElement {
+export class SlimeChunk extends InfoDisplayElement {
     player;
 
     constructor(player, displayLine) {
@@ -37,5 +37,3 @@ class SlimeChunk extends InfoDisplayElement {
         return !((seed >>> 0) % 10);
     }
 }
-
-export default SlimeChunk;
