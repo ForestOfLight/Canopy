@@ -159,6 +159,9 @@ commands.health=Displays the server's current TPS, MSPT, and entity counts.
 commands.health.startprofile=§7Profiling tick time...
 commands.health.fail.mspt=§cCould not compute MSPT. Please report this error.
 
+commands.hss=Finds and displays hardcoded spawn spots in the world.
+commands.hss.invalidaction=§cInvalid HSS action.
+
 commands.info=Toggle InfoDisplay rules. (Alias: i)
 commands.info.menu=Displays a menu to toggle InfoDisplay rules.
 commands.info.single=Toggle a single InfoDisplay rule.

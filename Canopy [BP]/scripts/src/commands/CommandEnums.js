@@ -10,7 +10,12 @@ export const Dimension = Object.freeze({
     End: 'end'
 });
 
-const enums = { Dimension };
+export const StartStop = Object.freeze({
+    Start: 'start',
+    Stop: 'stop'
+});
+
+const enums = { Dimension, StartStop };
 
 system.beforeEvents.startup.subscribe((event) => {
     const commandRegistry = event.customCommandRegistry;

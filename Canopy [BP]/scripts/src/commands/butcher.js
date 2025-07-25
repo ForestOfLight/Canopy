@@ -32,7 +32,7 @@ function butcherCommand(sender, entity) {
 function getTargetEntity(sender, entity) {
     if (!entity && entity instanceof Entity)
         return sender.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: false, maxDistance: 16 })[0]?.entity;
-    return entity;
+    return void 0;
 }
 
 function removeManyEntities(sender, entities) {
