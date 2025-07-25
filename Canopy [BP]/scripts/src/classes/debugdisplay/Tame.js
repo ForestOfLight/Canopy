@@ -1,5 +1,5 @@
 import { DebugDisplayElement } from './DebugDisplayElement.js';
-import { playerTameEntity } from '../../events/PlayerTameEntity.js';
+import { playerTameEntityEvent } from '../../events/PlayerTameEntityEvent.js';
 import { EntityComponentTypes } from '@minecraft/server';
 import { getNameFromEntityId } from '../../../include/utils.js';
 
@@ -75,4 +75,4 @@ export class Tame extends DebugDisplayElement {
     }
 }
 
-playerTameEntity.subscribe(Tame.onPlayerTameEntity);
+playerTameEntityEvent.subscribe(Tame.onPlayerTameEntity);
