@@ -1,5 +1,5 @@
 import { EntityInitializationCause, system, TicksPerSecond, world } from "@minecraft/server";
-import { HSSTypes, mobTypeToHSSMap } from "../../include/data";
+import { mobTypeToHSSMap } from "../../include/data";
 import { Vector } from "../../lib/Vector";
 
 export class HSSFinder {
@@ -35,24 +35,9 @@ export class HSSFinder {
     }
 
     addHSSLocation(entity, hssType) {
-        if (!this.isStructureSpawn(entity?.location) || !this.passesHSSTests(entity, hssType))
+        if (!this.isStructureSpawn(entity?.location))
             return;
         this.hssLocations.push({ dimension: entity.dimension, location: entity.location, hssType });
-    }
-
-    passesHSSTests(entity, hssType) {
-        switch (hssType) {
-            case HSSTypes.Fortress:
-                return this.isValidFortressSpawn(entity);
-            case HSSTypes.OceanMonument:
-                return this.isValidOceanMonumentSpawn(entity);
-            case HSSTypes.Outpost:
-                return this.isValidOutpostSpawn(entity);
-            case HSSTypes.WitchHut:
-                return this.isValidWitchHutSpawn(entity);
-            default:
-                throw new Error(`[Canopy] Unknown HSS type: ${hssType}`);
-        }
     }
 
     displayHSSLocations() {
@@ -70,27 +55,5 @@ export class HSSFinder {
             return false;
         const flooredLocation = Vector.from(location).floor();
         return flooredLocation.x === location.x && flooredLocation.z === location.z;
-    }
-
-    isValidFortressSpawn(entity) {
-        return entity?.isValid &&
-            entity.dimension.id === "minecraft:nether";
-    }
-
-    isValidOceanMonumentSpawn(entity) {
-        return entity?.isValid &&
-            entity.dimension.id === "minecraft:overworld"
-            && entity.location.y >= 39 && entity.location.y <= 61
-            && entity.isInWater;
-    }
-
-    isValidOutpostSpawn(entity) {
-        return entity?.isValid &&
-            entity.dimension.id === "minecraft:overworld";
-    }
-
-    isValidWitchHutSpawn(entity) {
-        return entity?.isValid &&
-            entity.dimension.id === "minecraft:overworld";
     }
 }
