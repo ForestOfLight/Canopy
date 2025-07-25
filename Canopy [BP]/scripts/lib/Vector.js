@@ -21,6 +21,10 @@ Vector.multiply = function multiply(vec, num) {
     if (typeof num == "number") return { x: vec.x * num, y: vec.y * num, z: vec.z * num, __proto__: Vector.prototype };
     return { x: vec.x * num.x, y: vec.y * num.y, z: vec.z * num.z, __proto__: Vector.prototype };
 }
+Vector.divide = function divide(vec, num) {
+    if (typeof num == "number") return { x: vec.x / num, y: vec.y / num, z: vec.z / num, __proto__: Vector.prototype };
+    return { x: vec.x / num.x, y: vec.y / num.y, z: vec.z / num.z, __proto__: Vector.prototype };
+}
 Vector.isVec3 = function isVec3(vec) { return vec[isVec3Symbol] === true; }
 Vector.floor = function floor(vec) { return { x: Math.floor(vec.x), y: Math.floor(vec.y), z: Math.floor(vec.z), __proto__: Vector.prototype }; }
 Vector.projection = function projection(a, b) { return Vector.multiply(b, Vector.dot(a, b) / ((b.x * b.x + b.y * b.y + b.z * b.z) ** 2)); }
@@ -59,6 +63,7 @@ Vector.prototype = {
     add(vec) { return Vector.add(this, vec); },
     subtract(vec) { return Vector.subtract(this, vec); },
     multiply(num) { return Vector.multiply(this, num); },
+    divide(num) { return Vector.divide(this, num); },
     get length() { return Vector.magnitude(this); },
     get normalized() { return Vector.normalize(this); },
     x: 0,

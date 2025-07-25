@@ -69,11 +69,11 @@ class Rule {
         if (this.#extension) {
             this.#extension.setRuleValue(this.#identifier, value);
         } else {
+            world.setDynamicProperty(this.#identifier, value);
             if (value === true)
                 this.onEnable();
             else if (value === false)
                 this.onDisable();
-            world.setDynamicProperty(this.#identifier, value);
         }
     }
 

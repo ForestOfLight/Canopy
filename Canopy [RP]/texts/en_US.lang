@@ -304,6 +304,7 @@ rules.armorStandRespawning=Armor stands respawn when hit by a projectile, droppi
 rules.autoItemPickup=Automatically picks up items when breaking blocks.
 rules.carefulBreak=Automatically picks up items when breaking blocks and sneaking.
 rules.cauldronConcreteConversion=Concrete powder items inside a cauldron filled with water will convert to concrete items.
+rules.chunkBorders=Enables chunk border visualization when an arrow is in the inventory slot below your offhand slot.
 rules.creativeInstantTame=Instantly tames animals with their respective food in creative mode.
 rules.creativeNetherWaterPlacement=Allows placing water in the Nether in creative mode.
 rules.creativeNoTileDrops=Prevents items dropping from blocks broken in creative mode.
