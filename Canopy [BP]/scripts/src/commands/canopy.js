@@ -103,7 +103,7 @@ function sendUpdatedMessage(sender, ruleID, enable) {
 }
 
 async function openMenu(sender) {
-    const form = new ModalFormData().title("§l§aCanopy§r §aRules");
+    const form = new ModalFormData().title("§l§2Canopy§r §2Rules");
     const rules = getRulesInAlphabeticalOrder();
     for (const rule of rules) {
         try {

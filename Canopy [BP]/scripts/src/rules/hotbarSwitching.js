@@ -1,6 +1,6 @@
 import { AbilityRule } from "../../lib/canopy/Canopy";
 import { system, world, InputButton, ButtonState, GameMode } from '@minecraft/server';
-import HotbarManager from 'src/classes/HotbarManager';
+import { HotbarManager } from '../classes/HotbarManager';
 
 class HotbarSwitching extends AbilityRule {
     lastSelectedSlots = {};
@@ -41,7 +41,7 @@ class HotbarSwitching extends AbilityRule {
     }
 
     processHotbarSwitching(player) {
-        if (this.hasScrolled(player) && player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed) 
+        if (this.hasScrolled(player) && this.isSneaking(player))
             this.switchToHotbar(player, player.selectedSlotIndex);
         this.lastSelectedSlots[player.id] = player.selectedSlotIndex;
     }
@@ -59,6 +59,10 @@ class HotbarSwitching extends AbilityRule {
 
     hasScrolled(player) {
         return player.selectedSlotIndex !== this.lastSelectedSlots[player.id];
+    }
+
+    isSneaking(player) {
+        return player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed;
     }
 }
 
