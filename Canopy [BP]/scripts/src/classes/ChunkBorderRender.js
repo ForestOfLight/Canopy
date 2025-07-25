@@ -43,7 +43,7 @@ export class ChunkBorderRender {
     }
 
     renderHorizontalLinesLayer(subChunkCoords, y) {
-        if ((y < subChunkCoords.y || y > subChunkCoords.y + this.CHUNK_SIZE) && (y % this.CHUNK_SIZE !== 0))
+        if ((y < subChunkCoords.y - this.CHUNK_SIZE || y > subChunkCoords.y + this.CHUNK_SIZE*2) && (y % this.CHUNK_SIZE !== 0))
             return;
         let color = void 0;
         if (y % this.CHUNK_SIZE === 0)
@@ -64,8 +64,8 @@ export class ChunkBorderRender {
     renderVerticalLinesAlongFace(subChunkCoords, iterableCoord, isX) {
         for (let coord = iterableCoord; coord <= iterableCoord + this.CHUNK_SIZE; coord += 2) {
             let color = void 0;
-            let bottomY = subChunkCoords.y;
-            let topY = subChunkCoords.y + this.CHUNK_SIZE;
+            let bottomY = subChunkCoords.y - this.CHUNK_SIZE;
+            let topY = subChunkCoords.y + this.CHUNK_SIZE*2;
             if (coord % this.CHUNK_SIZE === 0) {
                 color = { red: 0, green: 0, blue: 255 };
                 bottomY = this.getLowerBound(subChunkCoords);
