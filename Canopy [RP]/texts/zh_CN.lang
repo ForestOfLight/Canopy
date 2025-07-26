@@ -1,6 +1,6 @@
 ## vanilla
 entity.canopy:probe.name=Canopy探测器
-entity.canopy:rideable.name=Canopy骑行器       ## The translation here may be wrong and needs to be tested. 此处翻译可能有误，需要检测。
+entity.canopy:rideable.name=Canopy Rideable     ## 无需翻译
 action.hint.exit.canopy:rideable=潜行以站立
 
 ## generic
@@ -287,7 +287,7 @@ rules.generic.nochange=§7%1 现在的状态已经是 %2§r§7.
 rules.generic.updated=§7%1 现在的状态更新为 %2§r§7.
 rules.generic.enabled=§a已启用
 rules.generic.disabled=§c已禁用
-rules.generic.ability=§7能力      ## The translation here may be wrong and needs to be tested. 此处翻译可能有误，需要检测。
+rules.generic.ability=§7能力
 
 rules.commandCamera=开启camera指令.
 rules.commandClaimProjectiles=开启claimprojectiles指令.
@@ -325,10 +325,10 @@ rules.noWelcomeMessage=禁用 §lCanopy§r§8 欢迎消息.
 rules.pistonBedrockBreaking=允许活塞在背对基岩时, 伸出时破坏基岩.
 rules.playerSit=允许玩家坐下, 在快速 %s 次蹲下.
 rules.quickFillContainer=对容器使用一个物品时, 放一个箭在物品栏的左上角, 可以将背包里所有的这个物品放进容器里.
-rules.quickFillContainer.filled.pt1=§7已用
-rules.quickFillContainer.filled.pt2=装满
-rules.quickFillContainer.taken.pt1=§7已从
-rules.quickFillContainer.taken.pt2=取走所有     ## The translation here may be wrong and needs to be tested. 此处翻译可能有误，需要检测。
+rules.quickFillContainer.filled.pt1=§7已填充
+rules.quickFillContainer.filled.pt2=通过
+rules.quickFillContainer.taken.pt1=§7已取走所有
+rules.quickFillContainer.taken.pt2=从
 rules.refillHand=当你手上的物品用完时，将用背包里的自动填充. 在清单左上角旁边的插槽中放置一个箭头以供使用.
 rules.renewableElytra=幻翼被潜影贝子弹杀死时有 1% 几率掉落鞘翅.
 rules.renewableSponge=守卫者被闪电击中会变成远古守卫者.
