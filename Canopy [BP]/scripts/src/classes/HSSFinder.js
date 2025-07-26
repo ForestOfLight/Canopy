@@ -6,8 +6,7 @@ export class HSSFinder {
     refreshRateSeconds = 5;
     runner;
     
-    constructor(source) {
-        this.source = source;
+    constructor() {
         this.hssLocations = [];
         world.afterEvents.entitySpawn.subscribe(this.onEntitySpawn.bind(this));
         this.runner = system.runInterval(this.displayHSSLocations.bind(this), this.refreshRateSeconds * TicksPerSecond);
@@ -21,7 +20,7 @@ export class HSSFinder {
     }
 
     onEntitySpawn(event) {
-        if (!this.source || !event.entity || event.cause !== EntityInitializationCause.Spawned)
+        if (!event.entity || event.cause !== EntityInitializationCause.Spawned)
             return;
         const entity = event.entity;
         const hssType = mobTypeToHSSMap[entity.typeId];
