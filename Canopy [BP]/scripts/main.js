@@ -29,6 +29,7 @@ import './src/commands/retest'
 import './src/commands/simmap'
 import './src/commands/loop'
 import './src/commands/debugentity'
+import './src/commands/hss'
 
 // Script Events
 import './src/commands/scriptevents/counter'

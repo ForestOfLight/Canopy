@@ -43,6 +43,8 @@ class SpawnEggSpawnEntityEvent extends Event {
 
     getNearbyEntities(location) {
         return this.spawnedEntitiesThisTick.filter(entity => {
+            if (!entity?.isValid)
+                return false;
             const distance = Vector.from(entity.location).distance(Vector.from(location));
             return distance <= this.nearbyToleranceDistance;
         });
