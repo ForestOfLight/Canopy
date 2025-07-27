@@ -59,8 +59,11 @@ export class BiomeEdgeRenderer {
 
     getColorByBiome(biome) {
         const biomeName = intToBiomeMap[biome];
-        const biomeRGB = hexToRGB(biomeToHexColorMap[biomeName]);
-        return biomeRGB || { red: 0, green: 0, blue: 0 };
+        const hexColor = biomeToHexColorMap[biomeName];
+        if (!hexColor)
+            return { red: 0, green: 0, blue: 0 };
+        const biomeRGB = hexToRGB(hexColor);
+        return biomeRGB;
     }
 
     renderAnalysisLocationOneTick(location) {
