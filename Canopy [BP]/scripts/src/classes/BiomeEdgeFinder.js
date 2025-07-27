@@ -46,12 +46,7 @@ export class BiomeEdgeFinder {
     populateBiomeEdges() {
         const blockLocationIterator = this.blockVolume.getBlockLocationIterator();
         this.populationRunner = system.runJob(this.populateBiomeLocations(blockLocationIterator));
-        this.waitForJobCompletion(() => this.populationRunner, () => this.startAnalysis());
-    }
-
-    startAnalysis() {
-        this.analysisRunner = system.runJob(this.analyzeBiomeEdges());
-        this.waitForJobCompletion(() => this.analysisRunner, () => this.renderer.drawBiomeEdges());
+        this.waitForJobCompletion(() => this.populationRunner, () => this.renderer.drawBiomeEdges(this.biomeLocations));
     }
 
     *populateBiomeLocations(blockLocationIterator) {
@@ -86,7 +81,7 @@ export class BiomeEdgeFinder {
             const adjacentLocation = Vector.from(location).add(offset);
             const adjacentBiome = this.biomeLocations[adjacentLocation];
             if (adjacentBiome?.biome !== void 0 && adjacentBiome.biome !== biome)
-                return true;
+                return offset;
         }
         return false;
     }

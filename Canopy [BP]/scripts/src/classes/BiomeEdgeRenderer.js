@@ -2,10 +2,10 @@ import { DebugBox, debugDrawer } from "@minecraft/debug-utilities";
 import { biomeToHexColorMap, intToBiomeMap } from "../../include/data";
 import { hexToRGB } from "../../include/utils";
 import { system } from "@minecraft/server";
+import { Vector } from "../../lib/Vector";
 
 export class BiomeEdgeRenderer {
-    biomeEdgeLocations = [];
-    centerpointLocation;
+    biomeLocations = {};
     shapes = [];
     shouldStop = false;
     drawRunner = null;
@@ -19,13 +19,7 @@ export class BiomeEdgeRenderer {
         this.shouldStop = true;
         this.shapes.forEach(shape => debugDrawer.removeShape(shape));
         this.shapes = [];
-        this.biomeEdgeLocations = [];
-        this.centerpointLocation = null;
         this.renderer = null;
-    }
-
-    addBiomeEdgeLocation(location) {
-        this.biomeEdgeLocations.push(location);
     }
 
     drawBoundingBox() {
@@ -35,21 +29,124 @@ export class BiomeEdgeRenderer {
         this.drawShape(boundingBox);
     }
 
-    drawBiomeEdges() {
-        this.drawRunner = system.runJob(this.drawBiomeEdgeLocations());
+    drawBiomeEdges(biomeLocations) {
+        this.biomeLocations = biomeLocations;
+        this.drawRunner = system.runJob(this.greedyMeshBiomeEdgeLocations());
     }
 
-    *drawBiomeEdgeLocations() {
-        for (const biomeEdgeLocation of this.biomeEdgeLocations) {
-            const edgeBox = new DebugBox(biomeEdgeLocation.location);
-            edgeBox.color = this.getColorByBiome(biomeEdgeLocation.biome);
-            this.drawShape(edgeBox);
+    *greedyMeshBiomeEdgeLocations() {
+        for (let axis = 0; axis < 3; axis++)
+            yield* this.drawAxisEdges(axis);
+    }
+    
+    *drawAxisEdges(axis) {
+        const span = [this.blockVolume.getSpan().x, this.blockVolume.getSpan().y, this.blockVolume.getSpan().z];
+        const middleAxis = (axis + 1) % 3;
+        const finalAxis = (axis + 2) % 3;
+        const localLocation = [0, 0, 0];
+        const searchDirection = [0, 0, 0];
+        searchDirection[axis] = 1;
+
+        localLocation[axis] = -1;
+        while (localLocation[axis] < span[axis]) {
+            const mask = this.buildMask(localLocation, middleAxis, finalAxis, span, searchDirection);
             yield void 0;
-            if (this.shouldStop) {
-                system.clearJob(this.drawRunner);
-                return;
+            localLocation[axis]++;
+            yield* this.generateMeshFromMask(mask, axis, middleAxis, finalAxis, span, localLocation);
+        }
+    }
+
+    buildMask(localLocation, middleAxis, finalAxis, span, searchDirection) {
+        const mask = [];
+        let maskIndex = 0;
+        const volumeLocation = this.blockVolume.getMin();
+        for (localLocation[finalAxis] = 0; localLocation[finalAxis] < span[finalAxis]; ++localLocation[finalAxis]) {
+            for (localLocation[middleAxis] = 0; localLocation[middleAxis] < span[middleAxis]; ++localLocation[middleAxis]) {
+                const currentBiome = this.getBiomeAt(
+                    localLocation[0] + volumeLocation.x,
+                    localLocation[1] + volumeLocation.y,
+                    localLocation[2] + volumeLocation.z
+                );
+                const nextBlockBiome = this.getBiomeAt(
+                    localLocation[0] + searchDirection[0] + volumeLocation.x,
+                    localLocation[1] + searchDirection[1] + volumeLocation.y,
+                    localLocation[2] + searchDirection[2] + volumeLocation.z
+                );
+                if (currentBiome === void 0 || nextBlockBiome === void 0) {
+                    mask[maskIndex++] = false;
+                    continue;
+                }
+                mask[maskIndex++] = currentBiome !== nextBlockBiome;
             }
         }
+        return mask;
+    }
+
+    *generateMeshFromMask(mask, axis, middleAxis, finalAxis, span, localLocation) {
+        let maskIndex = 0;
+        for (let finalAxisIndex = 0; finalAxisIndex < span[finalAxis]; ++finalAxisIndex) {
+            for (let middleAxisIndex = 0; middleAxisIndex < span[middleAxis];) {
+                if (mask[maskIndex]) {
+                    const { quadWidth, quadHeight } = this.findQuad(mask, maskIndex, middleAxisIndex, finalAxisIndex, span, middleAxis, finalAxis);
+                    localLocation[middleAxis] = middleAxisIndex;
+                    localLocation[finalAxis] = finalAxisIndex;
+
+                    const changeInMiddleAxis = [0, 0, 0];
+                    changeInMiddleAxis[middleAxis] = quadWidth;
+                    const changeInFinalAxis = [0, 0, 0];
+                    changeInFinalAxis[finalAxis] = quadHeight;
+
+                    const worldLocation = Vector.from(this.blockVolume.getMin()).add(new Vector(...localLocation));
+                    const box = new DebugBox(worldLocation);
+                    box.bound = new Vector(...changeInMiddleAxis).add(new Vector(...changeInFinalAxis));
+                    box.color = { red: 1, green: 1, blue: 1 };
+                    this.drawShape(box);
+
+                    this.clearMask(mask, maskIndex, quadWidth, quadHeight, span[middleAxis]);
+                    middleAxisIndex += quadWidth;
+                    maskIndex += quadWidth;
+                } else {
+                    middleAxisIndex++;
+                    maskIndex++;
+                }
+                yield void 0;
+            }
+        }
+    }
+
+    findQuad(mask, maskIndex, middleAxisIndex, finalAxisIndex, span, middleAxis, finalAxis) {
+        let quadWidth = 1;
+        while (middleAxisIndex + quadWidth < span[middleAxis] && mask[maskIndex + quadWidth])
+            quadWidth++;
+
+        let quadHeight = 1;
+        let done = false;
+        while (finalAxisIndex + quadHeight < span[finalAxis]) {
+            for (let k = 0; k < quadWidth; k++) {
+                if (!mask[maskIndex + k + quadHeight * span[middleAxis]]) {
+                    done = true;
+                    break;
+                }
+            }
+            if (done)
+                break;
+            quadHeight++;
+        }
+        return { quadWidth, quadHeight };
+    }
+
+    clearMask(mask, maskIndex, quadWidth, quadHeight, stride) {
+        for (let i = 0; i < quadHeight; i++) {
+            for (let j = 0; j < quadWidth; j++)
+                mask[maskIndex + j + i * stride] = false;
+        }
+    }
+
+    getBiomeAt(x, y, z) {
+        const biomeLocation = this.biomeLocations[new Vector(x, y, z)];
+        if (biomeLocation)
+            return biomeLocation.biome;
+        return void 0;
     }
 
     drawShape(shape) {
@@ -61,7 +158,7 @@ export class BiomeEdgeRenderer {
         const biomeName = intToBiomeMap[biome];
         const hexColor = biomeToHexColorMap[biomeName];
         if (!hexColor)
-            return { red: 0, green: 0, blue: 0 };
+            return { red: 1, green: 1, blue: 1 };
         const biomeRGB = hexToRGB(hexColor);
         return biomeRGB;
     }
