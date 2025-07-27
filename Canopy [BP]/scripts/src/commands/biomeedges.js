@@ -9,7 +9,7 @@ const BIOMEEDGE_ACTIONS = Object.freeze({
 });
 
 export class BiomeEdges extends VanillaCommand {
-    maxCapacity = 32767;
+    maxCapacity = 32767*4;
     biomeEdgeFinders;
 
     constructor() {
