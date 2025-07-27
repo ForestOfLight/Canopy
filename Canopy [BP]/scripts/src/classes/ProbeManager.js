@@ -15,6 +15,7 @@ class ProbeManager {
         let probe;
         try {
             const entity = player.dimension.spawnEntity('canopy:probe', player.location, { initialPersistence : false });
+            entity.addTag('canopy:infodisplay');
             probe = new Probe(entity, player);
             this.probeMap[player.id] = probe;
             probe.attachToPlayer();
@@ -125,7 +126,7 @@ class ProbeManager {
             const probeEntities = getEntitiesByType('canopy:probe');
             let count = 0;
             for (const probeEntity of probeEntities) {
-                if (probeEntity.isValid) {
+                if (probeEntity.isValid && probeEntity.hasTag('canopy:infodisplay')) {
                     try {
                         probeEntity.remove();
                         count++;
@@ -134,7 +135,8 @@ class ProbeManager {
                     }
                 }
             }
-            if (count > 100) console.warn(`[Probe Manager] Large number of unused probes found! Removed ${count} unused probes.`);
+            if (count > 100)
+                console.warn(`[Probe Manager] Large number of unused probes found! Removed ${count} unused probes.`);
         }, CLEANUP_INTERVAL);
     }
 }
