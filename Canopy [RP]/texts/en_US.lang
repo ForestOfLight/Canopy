@@ -28,11 +28,11 @@ commands.help.rules=Togglable global rules.
 commands.help.extension.rules=Togglable rules for §o§a%s§r§8.
 commands.help.extension.commands=Commands for §o§a%s§r§2.
 
-commands.biomeedges=Finds and displays nearby biome edges.
+commands.biomeedges=Finds and displays biome edges in a region.
 commands.biomeedges.finderadded=§7Analyzing biome edges...
-commands.biomeedges.finderremoved=§7Removed the most recent biome edge finder.
-commands.biomeedges.findingstopped=§7Removed all biome edge finders.
-commands.biomeedges.notfinding=§cYou are not currently finding biome edges.
+commands.biomeedges.finderremoved=§7Removed the most recent biome edge region.
+commands.biomeedges.findingstopped=§7Removed all biome edge regions.
+commands.biomeedges.notfinding=§cThere are no biome edge regions.
 commands.biomeedges.missinglocations=§cPlease provide both from and to locations.
 commands.biomeedges.overcapacity=§cToo many blocks in the specified area. (%1 > %2)
 
