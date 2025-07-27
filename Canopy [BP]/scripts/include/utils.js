@@ -272,3 +272,13 @@ export function getNameFromEntityId(id) {
 	}
 	return entityName;
 }
+
+export function hexToRGB(hex) {
+    hex = hex.replace(/^#/, '');
+    const num = parseInt(hex, 16);
+    return {
+        red: ((num >> 16) & 0xFF) / 255,
+        green: ((num >> 8) & 0xFF) / 255,
+        blue: (num & 0xFF) / 255
+    };
+}

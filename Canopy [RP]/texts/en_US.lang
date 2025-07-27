@@ -17,6 +17,7 @@ commands.generic.nopermission=§cYou do not have permission to run this command.
 commands.generic.usage=§cUsage: %s
 commands.generic.blocked.survival=§cThis command cannot be used in survival mode.
 commands.generic.invalidsource=§cThis command cannot be run from this source.
+commands.generic.invalidaction=§cInvalid action. Use /help <command> for more information.
 
 commands.help=Displays help pages.
 commands.help.search.noresult=§cNo results found for '%s'.
@@ -26,6 +27,14 @@ commands.help.infodisplay=Togglable rules for your InfoDisplay.
 commands.help.rules=Togglable global rules.
 commands.help.extension.rules=Togglable rules for §o§a%s§r§8.
 commands.help.extension.commands=Commands for §o§a%s§r§2.
+
+commands.biomeedges=Finds and displays nearby biome edges.
+commands.biomeedges.finderadded=§7Analyzing biome edges...
+commands.biomeedges.finderremoved=§7Removed the most recent biome edge finder.
+commands.biomeedges.findingstopped=§7Removed all biome edge finders.
+commands.biomeedges.notfinding=§cYou are not currently finding biome edges.
+commands.biomeedges.missinglocations=§cPlease provide both from and to locations.
+commands.biomeedges.overcapacity=§cToo many blocks in the specified area. (%1 > %2)
 
 commands.butcher=Instantly remove selected entities or the one you are looking at.
 commands.butcher.fail.player=§cCannot remove players.

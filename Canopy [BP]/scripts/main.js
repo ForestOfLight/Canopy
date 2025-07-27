@@ -30,6 +30,7 @@ import './src/commands/simmap'
 import './src/commands/loop'
 import './src/commands/debugentity'
 import './src/commands/hss'
+import './src/commands/biomeedges'
 
 // Script Events
 import './src/commands/scriptevents/counter'
