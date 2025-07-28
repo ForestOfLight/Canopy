@@ -9,23 +9,28 @@ export class BiomeEdgeRenderer {
     shapes = [];
     shouldStop = false;
     drawRunner = null;
+    boundingBoxShape;
+    analysisColor = { red: 0, green: 0, blue: 1 };
+    finishedColor = { red: 0, green: 1, blue: 0 };
 
     constructor(blockVolume) {
         this.blockVolume = blockVolume;
-        this.drawBoundingBox();
+        this.drawBoundingBox(this.analysisColor);
     }
 
     destroy() {
         this.shouldStop = true;
         this.shapes.forEach(shape => debugDrawer.removeShape(shape));
         this.shapes = [];
-        this.renderer = null;
     }
 
-    drawBoundingBox() {
+    drawBoundingBox(color) {
+        if (this.boundingBoxShape)
+            this.boundingBoxShape.remove();
         const boundingBox = new DebugBox(this.blockVolume.getMin());
         boundingBox.bound = this.blockVolume.getSpan();
-        boundingBox.color = { red: 1, green: 0, blue: 0 };
+        boundingBox.color = color;
+        this.boundingBoxShape = boundingBox;
         this.drawShape(boundingBox);
     }
 
@@ -37,6 +42,8 @@ export class BiomeEdgeRenderer {
     *greedyMeshBiomeEdgeLocations() {
         for (let axis = 0; axis < 3; axis++)
             yield* this.drawAxisEdges(axis);
+        if (!this.shouldStop)
+            this.drawBoundingBox(this.finishedColor);
     }
     
     *drawAxisEdges(axis) {
@@ -85,7 +92,10 @@ export class BiomeEdgeRenderer {
     *generateMeshFromMask(mask, axis, middleAxis, finalAxis, span, localLocation) {
         let maskIndex = 0;
         for (let finalAxisIndex = 0; finalAxisIndex < span[finalAxis]; ++finalAxisIndex) {
-            for (let middleAxisIndex = 0; middleAxisIndex < span[middleAxis];) {
+            let middleAxisIndex = 0;
+            while (middleAxisIndex < span[middleAxis]) {
+                if (this.shouldStop)
+                    return;
                 if (mask[maskIndex]) {
                     const { quadWidth, quadHeight } = this.findQuad(mask, maskIndex, middleAxisIndex, finalAxisIndex, span, middleAxis, finalAxis);
                     localLocation[middleAxis] = middleAxisIndex;
@@ -102,7 +112,7 @@ export class BiomeEdgeRenderer {
                     box.color = { red: 1, green: 1, blue: 1 };
                     this.drawShape(box);
 
-                    this.clearMask(mask, maskIndex, quadWidth, quadHeight, span[middleAxis]);
+                    this.clearMaskOfQuad(mask, maskIndex, quadWidth, quadHeight, span[middleAxis]);
                     middleAxisIndex += quadWidth;
                     maskIndex += quadWidth;
                 } else {
@@ -135,7 +145,7 @@ export class BiomeEdgeRenderer {
         return { quadWidth, quadHeight };
     }
 
-    clearMask(mask, maskIndex, quadWidth, quadHeight, stride) {
+    clearMaskOfQuad(mask, maskIndex, quadWidth, quadHeight, stride) {
         for (let i = 0; i < quadHeight; i++) {
             for (let j = 0; j < quadWidth; j++)
                 mask[maskIndex + j + i * stride] = false;
@@ -163,7 +173,7 @@ export class BiomeEdgeRenderer {
         return biomeRGB;
     }
 
-    renderAnalysisLocationOneTick(location) {
+    renderAnalysisLocation(location) {
         const tempBox = new DebugBox(location);
         tempBox.color = { red: 1, green: 1, blue: 1 };
         debugDrawer.addShape(tempBox);

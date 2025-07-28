@@ -29,7 +29,8 @@ export class BiomeEdgeFinder {
 
     renderBiomeEdges() {
         this.startRenderer();
-        this.populateBiomeEdges();
+        this.populationRunner = system.runJob(this.populateBiomeLocations());
+        this.waitForJobCompletion(() => this.populationRunner, () => this.renderer.drawBiomeEdges(this.biomeLocations));
     }
 
     startRenderer() {
@@ -43,16 +44,11 @@ export class BiomeEdgeFinder {
         }
     }
 
-    populateBiomeEdges() {
+    *populateBiomeLocations() {
         const blockLocationIterator = this.blockVolume.getBlockLocationIterator();
-        this.populationRunner = system.runJob(this.populateBiomeLocations(blockLocationIterator));
-        this.waitForJobCompletion(() => this.populationRunner, () => this.renderer.drawBiomeEdges(this.biomeLocations));
-    }
-
-    *populateBiomeLocations(blockLocationIterator) {
         let result = blockLocationIterator.next();
         while (!result.done && !this.shouldStop && this.renderer) {
-            this.renderer.renderAnalysisLocationOneTick(result.value);
+            this.renderer.renderAnalysisLocation(result.value);
             this.addBiomeAtLocation(result.value);
             yield void 0;
             if (this.shouldStop)
@@ -60,30 +56,6 @@ export class BiomeEdgeFinder {
             result = blockLocationIterator.next();
         }
         this.populationRunner = null;
-    }
-    
-    *analyzeBiomeEdges() {
-        const biomeLocations = Object.values(this.biomeLocations);
-        for (const biomeLocation of biomeLocations) {
-            this.renderer.renderAnalysisLocationOneTick(biomeLocation.location);
-            if (biomeLocation.biome && this.isBiomeEdge(biomeLocation.location, biomeLocation.biome))
-                this.renderer.addBiomeEdgeLocation(biomeLocation);
-            yield void 0;
-            if (this.shouldStop)
-                break;
-        }
-        this.analysisRunner = null;
-    }
-
-    isBiomeEdge(location, biome) {
-        const adjacentOffsets = [Vector.up, Vector.down, Vector.left, Vector.right, Vector.forward, Vector.backward];
-        for (const offset of adjacentOffsets) {
-            const adjacentLocation = Vector.from(location).add(offset);
-            const adjacentBiome = this.biomeLocations[adjacentLocation];
-            if (adjacentBiome?.biome !== void 0 && adjacentBiome.biome !== biome)
-                return offset;
-        }
-        return false;
     }
 
     addBiomeAtLocation(location) {
