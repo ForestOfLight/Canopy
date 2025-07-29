@@ -1,10 +1,11 @@
 import { GlobalRule } from "./GlobalRule";
-import { EntityComponentTypes, world } from "@minecraft/server";
+import { EntityComponentTypes, system, world } from "@minecraft/server";
 
 const DEFAULT_ACTION_ITEM = "minecraft:arrow";
 
 export class AbilityRule extends GlobalRule {
     activePlayerIds = new Set();
+    playerJoinTick = {};
 
     constructor(ruleOptions, { slotNumber, actionItem = DEFAULT_ACTION_ITEM, onPlayerEnableCallback = () => {}, onPlayerDisableCallback = () => {} } = {}) {
         super({ ...ruleOptions });
@@ -20,29 +21,37 @@ export class AbilityRule extends GlobalRule {
     onActionSlotItemChange(event) {
         if (!event.player)
             return;
+        const player = event.player;
+        const options = { isSilent: false };
+        if (this.playerJoinTick[player.id] === system.currentTick)
+            options.isSilent = true;
         if (event.itemStack?.typeId === this.actionItemId)
-            this.enableForPlayer(event.player);
+            this.enableForPlayer(player, options);
         else if (event.beforeItemStack?.typeId === this.actionItemId)
-            this.disableForPlayer(event.player);
+            this.disableForPlayer(player, options);
     }
 
-    enableForPlayer(player) {
+    enableForPlayer(player, { isSilent = true } = {}) {
         this.activePlayerIds.add(player?.id);
-        player.onScreenDisplay.setActionBar({ rawtext: [
-            { translate: 'rules.generic.ability' },
-            { translate: 'rules.generic.enabled' },
-            { text: `§7: ${this.getID()}` }
-        ]});
+        if (!isSilent) {
+            player.onScreenDisplay.setActionBar({ rawtext: [
+                { translate: 'rules.generic.ability' },
+                { translate: 'rules.generic.enabled' },
+                { text: `§7: ${this.getID()}` }
+            ]});
+        }
         this.onPlayerEnable(player);
     }
 
-    disableForPlayer(player) {
+    disableForPlayer(player, { isSilent = true } = {}) {
         this.activePlayerIds.delete(player?.id);
-        player.onScreenDisplay.setActionBar({ rawtext: [
-            { translate: 'rules.generic.ability' },
-            { translate: 'rules.generic.disabled' },
-            { text: `§7: ${this.getID()}` }
-        ]});
+        if (!isSilent) {
+            player.onScreenDisplay.setActionBar({ rawtext: [
+                { translate: 'rules.generic.ability' },
+                { translate: 'rules.generic.disabled' },
+                { text: `§7: ${this.getID()}` }
+            ]});
+        }
         this.onPlayerDisable(player);
     }
 
@@ -64,7 +73,7 @@ export class AbilityRule extends GlobalRule {
         world.getAllPlayers().forEach((player) => {
             if (!player)
                 return;
-            if (this.isActionItemInActionSlot(player))
+            if (this.isActionItemInActionSlot(player) && this.getNativeValue() === true)
                 this.enableForPlayer(player);
             else
                 this.disableForPlayer(player);
@@ -73,11 +82,11 @@ export class AbilityRule extends GlobalRule {
     
     onEnableWithAdditions(ruleOptions) {
         return () => {
-                this.refreshOnlinePlayers();
-            world.afterEvents.playerInventoryItemChange.subscribe(
-                this.onActionSlotItemChangeBound,
-                { allowedSlots: [this.slotNumber], ignoreQuantityChange: true }
-            );
+            this.refreshOnlinePlayers();
+            const itemChangeOptions = { allowedSlots: [this.slotNumber], ignoreQuantityChange: true };
+            world.afterEvents.playerInventoryItemChange.subscribe(this.onActionSlotItemChangeBound, itemChangeOptions);
+            world.afterEvents.playerJoin.subscribe(this.onPlayerJoin.bind(this));
+            world.beforeEvents.playerLeave.subscribe(this.onPlayerLeave.bind(this));
             ruleOptions.onEnableCallback();
         }
     }
@@ -86,7 +95,21 @@ export class AbilityRule extends GlobalRule {
         return () => {
             this.refreshOnlinePlayers();
             world.afterEvents.playerInventoryItemChange.unsubscribe(this.onActionSlotItemChangeBound);
+            world.afterEvents.playerJoin.unsubscribe(this.onPlayerJoin.bind(this));
+            world.beforeEvents.playerLeave.unsubscribe(this.onPlayerLeave.bind(this));
             ruleOptions.onDisableCallback();
         }
+    }
+
+    onPlayerJoin(event) {
+        this.playerJoinTick[event.playerId] = system.currentTick;
+    }
+
+    onPlayerLeave(event) {
+        if (!event.player)
+            return;
+        system.run(() => {
+            this.disableForPlayer(event.player);
+        });
     }
 }

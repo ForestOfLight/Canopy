@@ -21,7 +21,7 @@ new Rule({
     }
 });
 
-const CAM_ACTION_ENUM = Object.freeze({
+const CAM_ACTIONS = Object.freeze({
     Place: 'place', 
     View: 'view', 
     Spectate: 'spectate'
@@ -30,7 +30,7 @@ const CAM_ACTION_ENUM = Object.freeze({
 new VanillaCommand({
     name: 'canopy:cam',
     description: 'commands.camera',
-    enums: [{ name: 'canopy:camAction', values: Object.values(CAM_ACTION_ENUM) }],
+    enums: [{ name: 'canopy:camAction', values: Object.values(CAM_ACTIONS) }],
     mandatoryParameters: [{ name: 'canopy:camAction', type: CustomCommandParamType.Enum }],
     permissionLevel: CommandPermissionLevel.Any,
     contingentRules: ['commandCamera'],
@@ -43,7 +43,7 @@ new VanillaCommand({
     usage: 'canopy:cs',
     permissionLevel: CommandPermissionLevel.Any,
     contingentRules: ['commandCamera'],
-    callback: (source) => cameraCommand(source, CAM_ACTION_ENUM.Spectate),
+    callback: (source) => cameraCommand(source, CAM_ACTIONS.Spectate),
 });
 
 class BeforeSpectatorPlayer {
@@ -81,13 +81,13 @@ function cameraCommand(source, action) {
     if (!(source instanceof Player))
         return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
     switch (action) {
-        case CAM_ACTION_ENUM.Place:
+        case CAM_ACTIONS.Place:
             placeCameraAction(source);
             break;
-        case CAM_ACTION_ENUM.View:
+        case CAM_ACTIONS.View:
             viewCameraAction(source);
             break;
-        case CAM_ACTION_ENUM.Spectate:
+        case CAM_ACTIONS.Spectate:
             spectateAction(source);
             break;
         default:
