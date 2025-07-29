@@ -3,12 +3,14 @@ import { BiomeEdgeRenderer } from "./BiomeEdgeRenderer";
 import { Vector } from "../../lib/Vector";
 
 export class BiomeEdgeFinder {
+    probeEntityId = 'canopy:probe';
     dimension;
     blockVolume;
-    probeEntityId = 'canopy:probe';
-    biomeLocations = {};
+    biomeLocations = {}; 
     renderer;
     shouldStop = false;
+    availableProbeEntities = [];
+    inUseProbeEntities = [];
     populationRunner = null;
     analysisRunner = null;
 
@@ -20,6 +22,7 @@ export class BiomeEdgeFinder {
 
     destroy() {
         this.shouldStop = true;
+        this.removeProbeEntities();
         this.stopRenderer();
         this.biomeLocations = {};
         this.blockVolume = null;
@@ -55,28 +58,53 @@ export class BiomeEdgeFinder {
                 break;
             result = blockLocationIterator.next();
         }
-        this.populationRunner = null;
+        system.runTimeout(() => {
+            this.populationRunner = null;
+            this.removeProbeEntities();
+        }, 2);
     }
 
     addBiomeAtLocation(location) {
-        const probeEntity = this.createProbeEntity(location);
+        const probeEntity = this.getAvailableProbeEntity(location);
         system.runTimeout(() => {
             if (probeEntity?.isValid) {
                 const vectorLocation = Vector.from(location);
-                this.biomeLocations[vectorLocation] = { location: vectorLocation, biome: probeEntity.getProperty('canopy:biome') };
-                probeEntity.remove();
+                const biome = probeEntity.getProperty('canopy:biome');
+                if (!biome)
+                    console.warn(`Biome not found for location ${vectorLocation.toString()}`);
+                this.biomeLocations[vectorLocation] = { location: vectorLocation, biome };
+                this.inUseProbeEntities.splice(this.inUseProbeEntities.indexOf(probeEntity), 1);
+                this.availableProbeEntities.push(probeEntity);
             }
         }, 2);
     }
     
-    createProbeEntity(location) {
-        try {
-            return this.dimension.spawnEntity(this.probeEntityId, location);
-        } catch (error) {
-            if (['LocationOutOfWorldBoundariesError', 'LocationInUnloadedChunkError'].includes(error.name))
-                return void 0;
-            throw error;
+    getAvailableProbeEntity(location) {
+        let entity = this.availableProbeEntities.pop();
+        if (entity?.isValid) {
+            entity.teleport(location, { dimension: this.dimension });
+        } else {
+            try {
+                entity = this.dimension.spawnEntity(this.probeEntityId, location);
+            } catch (error) {
+                if (['LocationOutOfWorldBoundariesError', 'LocationInUnloadedChunkError'].includes(error.name))
+                    return void 0;
+                throw error;
+            }
         }
+        this.inUseProbeEntities.push(entity);
+        return entity;
+    }
+
+    removeProbeEntities() {
+        this.availableProbeEntities.forEach(entity => {
+            if (entity?.isValid)
+                entity.remove();
+        });
+        this.inUseProbeEntities.forEach(entity => {
+            if (entity?.isValid)
+                entity.remove();
+        });
     }
 
     waitForJobCompletion(jobStatusCallback, completionCallback) {
