@@ -1,22 +1,30 @@
-import { InfoDisplayElement } from './InfoDisplayElement.js';
+import { InfoDisplayElement } from './InfoDisplayElement.js'
+import { playerChangeSubChunkEvent } from '../../events/PlayerChangeSubChunkEvent.js'
 
 export class SlimeChunk extends InfoDisplayElement {
     player;
+    infoMessage = { text: '' };
 
     constructor(player, displayLine) {
         const ruleData = { identifier: 'slimeChunk', description: { translate: 'rules.infoDisplay.slimeChunk' } };
         super(ruleData, displayLine);
         this.player = player;
+        playerChangeSubChunkEvent.subscribe(this.onPlayerChangeSubChunk.bind(this));
     }
 
     getFormattedDataOwnLine() {
-        return this.isSlime() ? { translate: 'rules.infoDisplay.slimeChunk.display' } : { text: '' };
+        return this.infoMessage;
     }
 
     getFormattedDataSharedLine() {
         return this.getFormattedDataOwnLine();
     }
 
+    onPlayerChangeSubChunk(event) {
+        if (event.player?.id !== this.player?.id)
+            return;
+        this.infoMessage = this.isSlime() ? { translate: 'rules.infoDisplay.slimeChunk.display' } : { text: '' };
+    }
      
     isSlime() {
         if (this.player.dimension.id !== "minecraft:overworld") 
