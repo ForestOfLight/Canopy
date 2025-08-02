@@ -4,7 +4,7 @@ import { hexToRGB } from "../../include/utils";
 import { system } from "@minecraft/server";
 import { Vector } from "../../lib/Vector";
 
-export class BiomeEdgeRenderer {
+export class BiomeEdgeRendererTest {
     biomeLocations = {};
     shapes = [];
     shouldStop = false;
@@ -79,29 +79,46 @@ export class BiomeEdgeRenderer {
 
     *generateMeshFromMask(mask, middleAxis, finalAxis, span, localLocation) {
         let maskIndex = 0;
+        let prevLocalLocation = localLocation
         for (let finalAxisIndex = 0; finalAxisIndex < span[finalAxis]; ++finalAxisIndex) {
             let middleAxisIndex = 0;
+            let middle = false
+            let start = true
             while (middleAxisIndex < span[middleAxis]) {
                 if (this.shouldStop)
                     return;
-                if (mask[maskIndex]) {
-                    const { quadWidth, quadHeight } = this.findQuad(mask, maskIndex, middleAxisIndex, finalAxisIndex, span, middleAxis, finalAxis);
-                    // const  quadWidth = 1;
-                    // const quadHeight = 1; 
+                if ((mask[maskIndex] && !middle))  {
+                    const quadWidth = 1
+                    const quadHeight = 1
                     localLocation[middleAxis] = middleAxisIndex;
                     localLocation[finalAxis] = finalAxisIndex;
-                    this.drawQuad(localLocation, middleAxis, finalAxis, quadWidth, quadHeight);
+
+                    // this.drawLine(localLocation, middleAxis, finalAxis, 0, quadHeight, start);
+                    if (start) {
+                        this.drawQuad(prevLocalLocation, middleAxis, finalAxis, 1, quadHeight, 1)
+                        start=false
+                    } else {
+                        this.drawQuad(localLocation, middleAxis, finalAxis, 0, quadHeight, 0) }
                     this.clearMaskOfQuad(mask, maskIndex, quadWidth, quadHeight, span[middleAxis]);
                     middleAxisIndex += quadWidth;
                     maskIndex += quadWidth;
-                } else {
+                    middle = true
+                    prevLocalLocation[middleAxis] = localLocation[middleAxis]
+                    prevLocalLocation[finalAxis] = localLocation[finalAxis]
+
+                } else if (middle && !mask[maskIndex]){
+                    middle = false
+                    start = true
+                } else if (middle || !mask[maskIndex]){
                     middleAxisIndex++;
                     maskIndex++;
-                }
+                } 
                 yield void 0;
             }
         }
     }
+
+
 
     findQuad(mask, maskIndex, middleAxisIndex, finalAxisIndex, span, middleAxis, finalAxis) {
         let quadWidth = 1;
@@ -134,7 +151,16 @@ export class BiomeEdgeRenderer {
         }
     }
 
-    drawQuad(localLocation, middleAxis, finalAxis, quadWidth, quadHeight) {
+    drawLines(localLocation, middleAxis, finalAxis, length, start) {
+        
+        const worldLocation1 = Vector.from(this.blockVolume.getMin()).add(new Vector(...localLocation));
+        
+        const sidedBox = new DebugLine(worldLocation1, );
+        sidedBox.color = { red: 1, green: 0, blue: 0 };
+        this.drawShape(sidedBox);
+    }
+
+    drawQuad(localLocation, middleAxis, finalAxis, quadWidth, quadHeight, debug) {
         const changeInMiddleAxis = [0, 0, 0];
         changeInMiddleAxis[middleAxis] = quadWidth;
         const changeInFinalAxis = [0, 0, 0];
@@ -144,7 +170,7 @@ export class BiomeEdgeRenderer {
         const worldLocation = Vector.from(this.blockVolume.getMin()).add(new Vector(...localLocation));
         const sidedBox = new DebugBox(worldLocation);
         sidedBox.bound = bound;
-        sidedBox.color = { red: 1, green: 1, blue: 1 };
+        sidedBox.color = { red: debug, green: 1, blue: 0 };
         this.drawShape(sidedBox);
     }
 

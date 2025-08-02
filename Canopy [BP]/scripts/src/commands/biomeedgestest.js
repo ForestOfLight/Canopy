@@ -1,0 +1,82 @@
+import { BlockVolume, CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, system } from "@minecraft/server";
+import { VanillaCommand } from "../../lib/canopy/VanillaCommand.js";
+import { BiomeEdgeFinderTest } from "../classes/BiomeEdgeFinderTest.js";
+
+const BIOMEEDGE_ACTIONS = Object.freeze({
+    ADD: 'add',
+    REMOVELAST: 'removelast',
+    CLEAR: 'clear'
+});
+
+export class BiomeEdgesTest extends VanillaCommand {
+    maxCapacity = 32767*4;
+    biomeEdgeFinders;
+
+    constructor() {
+        super({
+            name: 'canopy:biomeedgestest',
+            description: 'commands.biomeedges',
+            // enums: [{ name: 'canopy:biomeEdgeAction', values: Object.values(BIOMEEDGE_ACTIONS) }],
+            mandatoryParameters: [ { name: 'canopy:biomeEdgeAction', type: CustomCommandParamType.Enum } ],
+            optionalParameters: [
+
+                { name: 'from', type: CustomCommandParamType.Location },
+                { name: 'to', type: CustomCommandParamType.Location }
+            ],
+            permissionLevel: CommandPermissionLevel.GameDirectors,
+            callback: (source, ...args) => this.biomeEdgesCommand(source, ...args),
+        });
+        this.biomeEdgeFinders = [];
+    }
+
+    biomeEdgesCommand(source, action, from, to) {
+        if (source === "Server")
+            return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
+        if (from && !to)
+            return { status: CustomCommandStatus.Failure, message: 'commands.biomeedges.missinglocations' };
+        switch (action) {
+            case BIOMEEDGE_ACTIONS.ADD:
+                return this.pushNewBiomeEdgeFinder(source, from, to);
+            case BIOMEEDGE_ACTIONS.REMOVELAST:
+                return this.popLastBiomeEdgeFinder();
+            case BIOMEEDGE_ACTIONS.CLEAR:
+                return this.clearBiomeEdgeFinders();
+            default:
+                return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidaction' };
+        }
+    }
+
+    pushNewBiomeEdgeFinder(source, fromLocation, toLocation) {
+        const currentCapacity = new BlockVolume(fromLocation, toLocation).getCapacity();
+        if (currentCapacity > this.maxCapacity) {
+            source.sendMessage({ translate: 'commands.biomeedges.overcapacity', with: [ String(currentCapacity), String(this.maxCapacity) ] });
+            return;
+        }
+        system.run(() => {
+            this.biomeEdgeFinders.push(new BiomeEdgeFinderTest(source.dimension, fromLocation, toLocation));
+        });
+        return { status: CustomCommandStatus.Success, message: 'commands.biomeedges.finderadded' };
+    }
+
+    popLastBiomeEdgeFinder() {
+        if (this.biomeEdgeFinders.length === 0)
+            return { status: CustomCommandStatus.Failure, message: 'commands.biomeedges.notfinding' };
+        const finder = this.biomeEdgeFinders.pop();
+        system.run(() => {
+            finder.destroy();
+        });
+        return { status: CustomCommandStatus.Success, message: 'commands.biomeedges.finderremoved' };
+    }
+
+    clearBiomeEdgeFinders() {
+        if (this.biomeEdgeFinders.length === 0)
+            return { status: CustomCommandStatus.Failure, message: 'commands.biomeedges.notfinding' };
+        system.run(() => {
+            this.biomeEdgeFinders.forEach(finder => finder.destroy());
+            this.biomeEdgeFinders = [];
+        });
+        return { status: CustomCommandStatus.Success, message: 'commands.biomeEdges.findingstopped' };
+    }
+}
+
+export const biomeEdgesCommand = new BiomeEdgesTest();
