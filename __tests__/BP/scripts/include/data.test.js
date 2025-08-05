@@ -1,11 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import axios from 'axios';
 import { MC_VERSION } from '../../../../Canopy [BP]/scripts/constants.js';
-import { categoryToMobMap, intToBiomeMap } from 'Canopy [BP]/scripts/include/data.js';
+import { categoryToMobMap } from 'Canopy [BP]/scripts/include/data.js';
 import stripJsonComments from 'strip-json-comments';
-import fs from 'fs';
-import path from 'path';
-import { titleCase } from '../../../../Canopy [BP]/scripts/include/utils.js';
 
 vi.mock('@minecraft/server', {
     world: {},
