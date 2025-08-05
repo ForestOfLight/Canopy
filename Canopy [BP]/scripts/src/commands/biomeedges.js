@@ -1,4 +1,4 @@
-import { BlockVolume, CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, system, world } from "@minecraft/server";
+import { BlockVolume, CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, system } from "@minecraft/server";
 import { VanillaCommand } from "../../lib/canopy/VanillaCommand.js";
 import { BiomeEdgeFinder } from "../classes/BiomeEdgeFinder.js";
 
@@ -25,7 +25,6 @@ export class BiomeEdges extends VanillaCommand {
             permissionLevel: CommandPermissionLevel.GameDirectors,
             callback: (source, ...args) => this.biomeEdgesCommand(source, ...args),
         });
-        world.beforeEvents.playerLeave.subscribe(this.onPlayerLeave.bind(this))
         this.biomeEdgeFinders = [];
     }
 
@@ -76,17 +75,6 @@ export class BiomeEdges extends VanillaCommand {
             this.biomeEdgeFinders = [];
         });
         return { status: CustomCommandStatus.Success, message: 'commands.biomeEdges.findingstopped' };
-    }
-
-    onPlayerLeave(event) {
-        const onlinePlayers = world.getAllPlayers();
-        let numRealPlayersOnline = 0;
-        onlinePlayers.forEach((player) => {
-            if (player?.isValid)
-                numRealPlayersOnline++;
-        });
-        if (event.player && numRealPlayersOnline === 1)
-            this.clearBiomeEdgeFinders();
     }
 }
 
