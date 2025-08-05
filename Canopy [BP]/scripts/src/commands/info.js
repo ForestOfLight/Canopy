@@ -121,7 +121,7 @@ async function getBlockingGlobalContingents(rule) {
 }
 
 function openMenu(sender) {
-    const form = new ModalFormData().title("§aInfoDisplay Rules");
+    const form = new ModalFormData().title("§2InfoDisplay Rules");
     const rules = Rules.getByCategory("InfoDisplay").sort((a, b) => a.getID().localeCompare(b.getID()));
     for (const rule of rules) {
         try {

@@ -1,7 +1,7 @@
 import { EntityComponentTypes, system, world } from "@minecraft/server";
 import { Event } from './Event';
 
-class PlayerTameEntity extends Event {
+class PlayerTameEntityEvent extends Event {
     successfulTameAttempts = [];
     untamedMountsLastTick = [];
     untamedMountsThisTick = [];
@@ -94,6 +94,6 @@ class PlayerTameEntity extends Event {
     }
 }
 
-const playerTameEntity = new PlayerTameEntity();
+const playerTameEntityEvent = new PlayerTameEntityEvent();
 
-export { PlayerTameEntity, playerTameEntity };
+export { PlayerTameEntityEvent, playerTameEntityEvent };

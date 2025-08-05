@@ -29,7 +29,7 @@ vi.mock("@minecraft/server", () => ({
     }
 }));
 
-describe('SneakTracker', () => {
+describe('PlayerStartSneakEvent', () => {
     test('should initialize properties correctly', () => {
         const tracker = new PlayerStartSneakEvent();
         expect(tracker.playersSneakingLastTick).toEqual([]);
