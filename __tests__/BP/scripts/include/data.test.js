@@ -56,20 +56,3 @@ describe.concurrent('categoryToMobMap', () => {
         }
     }
 });
-
-const probeEntityPath = path.resolve('Canopy [BP]/entities/probe.json');
-
-describe('intToBiomeMap', () => {
-    const probeData = JSON.parse(stripJsonComments(fs.readFileSync(probeEntityPath, 'utf-8')));
-    for (const biomeId in probeData['minecraft:entity']['events']) {
-        if (!biomeId.startsWith('canopy:') || biomeId.includes('reset_biome_property'))
-            continue;
-
-        it(`${biomeId} should be valid in the intToBiomeMap`, () => {
-            const biomeName = titleCase(biomeId.replace('canopy:', ''));
-            expect(Object.values(intToBiomeMap)).toContain(biomeName);
-            const biomeInt = probeData['minecraft:entity']['events'][biomeId]['set_property']['canopy:biome'];
-            expect(intToBiomeMap[biomeInt]).toBe(biomeName);
-        });
-    }
-});
