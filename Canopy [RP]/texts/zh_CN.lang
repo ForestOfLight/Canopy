@@ -1,7 +1,7 @@
 ## vanilla
-entity.canopy:probe.name=Canopy Probe
-entity.canopy:rideable.name=Canopy Rideable
-action.hint.exit.canopy:rideable=Sneak to stand
+entity.canopy:probe.name=Canopy探测器
+entity.canopy:rideable.name=Canopy Rideable     ## 无需翻译
+action.hint.exit.canopy:rideable=潜行以站立
 
 ## generic
 generic.welcome.start=§7当前服务器已加载 §l§aCanopy§r§7. 输入"./help"开始熟悉指令.§r
@@ -16,20 +16,24 @@ commands.generic.unknown=§c无效的指令: '%1'. 输入"%2help" 获取更多�
 commands.generic.nopermission=§c你没有足够的权限使用这个指令.
 commands.generic.usage=§c使用方法: %s
 commands.generic.blocked.survival=§c此指令只能在创造模式或者旁观模式下使用.
+commands.generic.invalidsource=§c这个命令不能从这个来源执行.
 
 commands.help=显示指令帮助信息.
 commands.help.search.noresult=§c没有与此相关的结果: '%s'
 commands.help.search.results=§l§aCanopy§r §2指令帮助页面找到此结果 '§r%1§2':%2
 commands.help.page.header=§l§aCanopy§r§2 指令帮助 页数: §f%1
-commands.help.infodisplay=开关游戏中的信息显示(InfoDisplay).
+commands.help.infodisplay=开关游戏中的信息显示.
 commands.help.rules=开关全局规则.
 commands.help.extension.rules=开关扩展 §a%s§2 的规则.
 commands.help.extension.commands=扩展 §a%s§2 的指令.
 
+commands.butcher=立即从世界中移除选定的或你注视着的实体. (译注: 被移除的实体不会在移除时播放死亡动画或掉落物品。)
+commands.butcher.fail.player=§c不得移除玩家.
+commands.butcher.fail.noneremoved=§c没有实体被移除.
+commands.butcher.success=§7移除了 %1.
+commands.butcher.success.many=§7移除了 %1 个实体: 
+
 commands.camera=放置一个相机进行监视, 或者使用对生存友好的旁观模式.
-commands.camera.place=放置一个相机在你的位置. (快捷指令: cp)
-commands.camera.view=启用/禁用最后放置的相机. (快捷指令: cv)
-commands.camera.view.load=当你放置的相机未加载时, 尝试加载区块一秒钟.
 commands.camera.spectate=进入和退出生存友好的旁观模式. (快捷指令: cs)
 commands.camera.place.viewing=§c不能在监视过程中放置相机.
 commands.camera.place.success=§7相机放置在 %s.
@@ -42,6 +46,7 @@ commands.camera.spectate.viewing=§c不能在监视中进入旁观模式.
 commands.camera.spectate.gamemode=§c不能在特殊的旁观模式下变更游戏模式.
 commands.camera.spectate.started=§a旁观模式
 commands.camera.spectate.ended=§7退出旁观模式
+commands.camera.invalidaction=§c无效相机行为.
 
 commands.canopy=启用或者关闭规则.
 commands.canopy.version=显示Canopy的当前版本和所有载入的扩展.
@@ -54,7 +59,7 @@ commands.canopy.menu.canceled=§8更改已放弃(规则不会更新).
 commands.canopy.menu.submit=§a确认(提交)
 commands.canopy.single=启用/禁用单个规则.
 commands.canopy.multiple=启用/禁用多个规则.
-commands.canopy.infodisplayRule=§c规则 '%1' 是 信息显示(InfoDisplay) 的一部分, 并且必须使用%2信息进行切换. 有关详细信息, 请使用%2帮助.
+commands.canopy.infodisplayRule=§c规则 '%1' 是 信息显示 的一部分, 并且必须使用%2信息进行切换. 有关详细信息, 请使用%2帮助.
 
 commands.changedimension=传送你到指定的维度.
 commands.changedimension.notfound=§c无效的维度参数. 请使用其中之一: %s
@@ -103,6 +108,12 @@ commands.data.dynamicProperties=§a动态属性:§r %1 的总字节数: %2
 commands.data.effects=§a效果:§r %s
 commands.data.other=§a其他:§r 头部位置: %1 旋转: [%2, %3], 速度: %4, 视角方向: %5
 
+commands.debugentity=显示有关实体的调试信息.
+commands.debugentity.invalidProperty=§c调试属性无效.
+commands.debugentity.invalidAction=§c调试行为无效.
+commands.debugentity.added=§7为 %2 个实体添加了 '%1' 调试信息显示: 
+commands.debugentity.removed=§7为 %2 个实体删除了 '%1' 调试信息显示: 
+
 commands.distance=计算两点的距离. (快捷指令: d)
 commands.distance.target=计算你所指的方块或者实体与你的距离.
 commands.distance.fromto=计算两点的距离.
@@ -145,14 +156,15 @@ commands.generator.remove.all=§7已删除所有频道中的所有漏斗生成�
 commands.generator.remove.all.actionbar=[%s] 已删除所有频道中的所有漏斗生成器.
 
 commands.health=显示服务器的TPS、MSPT和实体数量.
+commands.health.startprofile=§7为游戏刻时间进行性能分析中...
 commands.health.fail.mspt=§c不能计算出MSPT. 请反馈问题.
 
-commands.info=启用/禁用信息显示(InfoDisplay)规则. (快捷指令: i)
-commands.info.menu=显示用于切换信息显示(InfoDisplay)规则的菜单.
-commands.info.single=切换单个信息显示(InfoDisplay)规则.
-commands.info.multiple=切换多个信息显示(InfoDisplay)规则.
-commands.info.all=切换所有信息显示(InfoDisplay)规则.
-commands.info.allupdated=%s§r§7 所有信息显示(InfoDisplay)规则.
+commands.info=启用/禁用信息显示规则. (快捷指令: i)
+commands.info.menu=显示用于切换信息显示规则的菜单.
+commands.info.single=切换单个信息显示规则.
+commands.info.multiple=切换多个信息显示规则.
+commands.info.all=切换所有信息显示规则.
+commands.info.allupdated=%s§r§7 所有信息显示规则.
 commands.info.canopyRule=§c规则 '%1' 是全局规则, 并且必须使用%2信息进行切换. 有关详细信息, 请使用%2帮助.
 
 commands.jump=传送到所指方块上. (快捷指令: j)
@@ -162,6 +174,7 @@ commands.log=追踪TNT、弹射物和下落的方块运动.
 commands.log.precision=§7追踪精度设置为 %s.
 commands.log.started=§7开始追踪 %s.
 commands.log.stopped=§7停止追踪 %s.
+commands.log.invalidtype=§c日志类型无效.
 
 commands.loop=在一个tick中多次运行原版命令.
 
@@ -179,28 +192,19 @@ commands.pos.dimension=§7维度: §7%s
 commands.pos.relative.overworld=§7地狱映射到主世界的位置: §a%s
 commands.pos.relative.nether=§7主世界映射到地狱的位置: §c%s
 
-commands.removeentity=立刻移除你所指的实体或者是指定的id.
-commands.removeentity.fail.player=§c不可以移除玩家.
-commands.removeentity.fail.noid=§c未找到实体id带有 '%s'.
-commands.removeentity.success=§7移除了 %1 带有id '%2'.
-
-commands.resetall=重置所有 §lCanopy§r§8 规则和数据. 请小心使用.
-commands.resetall.success=§7所有 §lCanopy§r§8 玩家和世界动态属性已被重置.
-
-commands.resettest=同时重置生成跟踪器、漏斗计数器和漏斗生成器.
-commands.resettest.success=§7已同时重置生成跟踪器、漏斗计数器和漏斗生成器.
-commands.resettest.success.actionbar=[%s] §7已同时重置生成跟踪器、漏斗计数器和漏斗生成器.
+commands.retest=重置刷怪追踪、漏斗计数器及漏斗发生器
+commands.retest.success=§7已重置刷怪计数器、漏斗计数器及漏斗发生器
 
 commands.simmap=显示您附近或指定位置的已加载区块的地回.
 commands.simmap.help.distance=显示block半径等于指定距离的地图.
 commands.simmap.help.location=显示指定位置周围的地图.
-commands.simmap.help.display.set=在信息显示(InfoDisplay)中设置模拟地图的距离或位置.
-commands.simmap.help.display.reset=在信息显示(InfoDisplay)中设置模拟地图的位置，使其跟随当前位置.
+commands.simmap.help.display.set=在信息显示中设置模拟地图的距离或位置.
+commands.simmap.help.display.reset=在信息显示中设置模拟地图的位置，使其跟随当前位置.
 commands.simmap.header=§7加载区块 %1§7 在 §2%2§7 附近
 commands.simmap.invalidDistance=§c距离 '%1' 无效. 请使用从 1 到 %2 的距离.
-commands.simmap.config.distance=§7信息显示(InfoDisplay)模拟地图距离更新为 %s.
-commands.simmap.config.location=§7信息显示(InfoDisplay)模拟地图位置更新为 %1 在 %2§7.
-commands.simmap.config.reset=§7信息显示(InfoDisplay)模拟地图位置更新为跟随您的当前位置.
+commands.simmap.config.distance=§7信息显示模拟地图距离更新为 %s.
+commands.simmap.config.location=§7信息显示模拟地图位置更新为 %1 在 %2§7.
+commands.simmap.config.reset=§7信息显示模拟地图位置更新为跟随您的当前位置.
 
 commands.sit=使您操作的玩家坐下.
 commands.sit.busy=§c您过忙以至于无法坐下.
@@ -208,29 +212,29 @@ commands.sit.busy=§c您过忙以至于无法坐下.
 commands.spawn=模拟生成和检测生成指令.
 commands.spawn.entities=展示当前世界所有实体及其位置的列表.
 commands.spawn.recent=显示最近30s所有怪物的生成数据. 请指定一种怪物到筛选器中.
-commands.spawn.tracking.start=开始监测怪物生成. 请指定坐标划定区域用于监测.
-commands.spawn.tracking.start.success=§7开始检测生物生成.
-commands.spawn.tracking.start.mob=§7正在检测该生物的生成: %s.
-commands.spawn.tracking.start.mob.actionbar=[%1] §a已加入 %2 到生物监测并重置.
+commands.spawn.tracking.start=开始跟踪怪物生成. 请指定坐标划定区域用于跟踪.
+commands.spawn.tracking.start.success=§7开始检测怪物生成.
+commands.spawn.tracking.start.mob=§7正在检测该怪物的生成: %s.
+commands.spawn.tracking.start.mob.actionbar=[%1] §a已加入 %2 到怪物跟踪并重置.
 commands.spawn.tracking.start.area= 区域: %1 到 %2.
-commands.spawn.tracking.start.mocking= 由于生物模拟生成已开启, 生物不再会生成但会被监测.
-commands.spawn.tracking.start.actionbar=[%s] §7开始监测生物生成.
-commands.spawn.tracking.mob=开始检测指定的生物生成. 请指定坐标划定区域. 重新运行命令来添加更多生物种类.
-commands.spawn.tracking.mob.invalid=§c无效的生物名称: %s
+commands.spawn.tracking.start.mocking= 由于怪物模拟生成已开启, 怪物不再会生成但会被跟踪.
+commands.spawn.tracking.start.actionbar=[%s] §7开始跟踪怪物生成.
+commands.spawn.tracking.mob=开始检测指定的怪物生成. 请指定坐标划定区域. 重新运行命令来添加更多怪物种类.
+commands.spawn.tracking.mob.invalid=§c无效的怪物名称: %s
 commands.spawn.tracking.query=总结自测试开始的所有的生成.
 commands.spawn.tracking.query.dimension=§7维度 %s§r:
-commands.spawn.tracking.no=§c生物生成没有被在被监测.
-commands.spawn.tracking.already=§c生物生成正在被监测.
-commands.spawn.tracking.test=重置所有生物生成计数器和漏斗计数器.
-commands.spawn.tracking.test.success=§7生物生成计数器和漏斗计数器已被重置.
-commands.spawn.tracking.test.success.actionbar=[%s] §7已重置生物生成和漏斗计数器.
-commands.spawn.tracking.stop=停止监测生物生成.
-commands.spawn.tracking.stop.success=§7生物生成不再被监测.
-commands.spawn.tracking.stop.actionbar=[%s] §7已停止生物生成监测.
+commands.spawn.tracking.no=§c怪物生成没有被在被跟踪.
+commands.spawn.tracking.already=§c怪物生成正在被跟踪.
+commands.spawn.tracking.test=重置所有怪物生成计数器和漏斗计数器.
+commands.spawn.tracking.test.success=§7怪物生成计数器和漏斗计数器已被重置.
+commands.spawn.tracking.test.success.actionbar=[%s] §7已重置怪物生成和漏斗计数器.
+commands.spawn.tracking.stop=停止跟踪怪物生成.
+commands.spawn.tracking.stop.success=§7怪物生成不再被跟踪.
+commands.spawn.tracking.stop.actionbar=[%s] §7已停止怪物生成跟踪.
 commands.spawn.reset=Resets all spawn counters.
-commands.spawn.mocking=开启/关闭生物生成但生物生成进程仍在进行.
-commands.spawn.mocking.enable=§a模拟生成已开启. 生物不再实际生成, 但生成进程仍在继续.
-commands.spawn.mocking.disable=§c模拟生成已关闭. 生物生成现在回归正常.
+commands.spawn.mocking=开启/关闭怪物生成但怪物生成进程仍在进行.
+commands.spawn.mocking.enable=§a模拟生成已开启. 怪物不再实际生成, 但生成进程仍在继续.
+commands.spawn.mocking.disable=§c模拟生成已关闭. 怪物生成现在回归正常.
 commands.spawn.mocking.enable.actionbar=[%s] §a模拟生成已开启.
 commands.spawn.mocking.disable.actionbar=[%s] §c模拟生成已关闭.
 
@@ -258,8 +262,8 @@ commands.tntfuse.set.fail=§c无效的引信时间: %1 ticks. 必须时 0 到 %2
 commands.tntfuse.set.success=§7TNT的引信时间设置为 §a%s§7 ticks.
 
 commands.trackevent=计算游戏事件发生数量. 显示数量在信息栏里.
-commands.trackevent.stop=§7停止监测游戏事件 %s.
-commands.trackevent.start=§7开始监测游戏事件 %s.
+commands.trackevent.stop=§7停止跟踪游戏事件 %s.
+commands.trackevent.start=§7开始跟踪游戏事件 %s.
 commands.trackevent.invalid=§c游戏事件 %1 未在 %2 中找到.
 
 commands.warp=传送和管理路径点. (快捷指令: w)
@@ -277,12 +281,13 @@ commands.warp.list.header=§7可用的路径点:
 
 ## rules
 rules.generic.unknown=§c无效的规则: %s. 使用 %2help 来获取更多信息.
-rules.generic.blocked=§c%s 规则已关闭.
+rules.generic.blocked=§c%s 规则仍关闭.
 rules.generic.status=§7%1 现在的状态是 %2§r§7.
 rules.generic.nochange=§7%1 现在的状态已经是 %2§r§7.
 rules.generic.updated=§7%1 现在的状态更新为 %2§r§7.
 rules.generic.enabled=§a已启用
 rules.generic.disabled=§c已禁用
+rules.generic.ability=§7能力
 
 rules.commandCamera=开启camera指令.
 rules.commandClaimProjectiles=开启claimprojectiles指令.
@@ -294,13 +299,14 @@ rules.commandTntFuse=开启tntfuse指令和自定义TNT引信时间功能.
 rules.commandWarp=开启warp & warps指令.
 rules.commandWarpSurvival=开启warp & warps指令(在生存模式下).
 rules.allowBubbleColumnPlacement=关闭放置气泡柱限制.
-rules.allowPeekInventory=启用peek命令和PeekInventory信息显示(InfoDisplay)规则，并可以使用小望远镜进行窥视.
+rules.allowPeekInventory=启用peek命令和PeekInventory信息显示规则，并可以使用小望远镜进行窥视.
 rules.armorStandRespawning=盔甲架被弹射物击中会掉落所持物品.
 rules.autoItemPickup=破坏方块自动拾取物品.
 rules.carefulBreak=破坏方块和潜行时自动拾取物品.
 rules.cauldronConcreteConversion=混凝土粉末物品丢入装水的炼药锅变成固化的混凝土.
-rules.creativeInstantTame=用对应的食物立即驯服动物(在创造模式下).
-rules.creativeNoTileDrops=防止方块从被破坏的方块中掉落(在创造模式下).
+rules.creativeInstantTame=允许在在创造模式下用对应的食物立即驯服动物.
+rules.creativeNetherWaterPlacement=允许在创造模式下于下界放置水
+rules.creativeNoTileDrops=允许在创造模式下防止方块从被破坏的方块中掉落.
 rules.creativeOneHitKill=一击必杀. 蹲着时, 玩家周围的实体也会被杀(在创造模式下).
 rules.dupeTnt=TNT被活塞推动并且被音符盒充能时复制.
 rules.durabilitySwap=从您的手中带走0耐久物品.
@@ -312,14 +318,17 @@ rules.explosionNoBlockDamage=关闭爆炸破坏.
 rules.explosionOff=完全关闭爆炸.
 rules.flippinArrows=对方块使用箭可以翻转、旋转和打开. 放在副手可以使方块放置时翻转.
 rules.hotbarSwitching=开启快速切换多种状态栏. 放一个箭在你物品栏的右上角, 然后蹲下再滚动滚轮就可以切换.
-rules.hotbarSwitchingSurvival=开启状态栏切换（生存模式）.
+rules.hotbarSwitchingSurvival=开启状态栏切换(在生存模式下).
 rules.instaminableDeepslate=急迫2下使用效率5的下届合金镐时, 可以秒破深板岩.
 rules.instaminableEndstone=急迫2下使用效率5的下届合金镐时, 可以秒破末地石.
 rules.noWelcomeMessage=禁用 §lCanopy§r§8 欢迎消息.
 rules.pistonBedrockBreaking=允许活塞在背对基岩时, 伸出时破坏基岩.
 rules.playerSit=允许玩家坐下, 在快速 %s 次蹲下.
 rules.quickFillContainer=对容器使用一个物品时, 放一个箭在物品栏的左上角, 可以将背包里所有的这个物品放进容器里.
-rules.quickFillContainer.filled=§7填满 %1 了所有 %2
+rules.quickFillContainer.filled.pt1=§7已填充
+rules.quickFillContainer.filled.pt2=通过
+rules.quickFillContainer.taken.pt1=§7已取走所有
+rules.quickFillContainer.taken.pt2=从
 rules.refillHand=当你手上的物品用完时，将用背包里的自动填充. 在清单左上角旁边的插槽中放置一个箭头以供使用.
 rules.renewableElytra=幻翼被潜影贝子弹杀死时有 1% 几率掉落鞘翅.
 rules.renewableSponge=守卫者被闪电击中会变成远古守卫者.
@@ -327,12 +336,13 @@ rules.tntPrimeMaxMomentum=TNT被点燃时会接受到最大的动量但是方向
 rules.tntPrimeNoMomentum=TNT被点燃时的动量设置为0.
 rules.universalChunkLoading=矿车生成时加载5x5的区块10s.
 
-rules.infoDisplay.showDisplay=在信息显示(InfoDisplay)上开关天气显示.
+rules.infoDisplay.showDisplay=在信息显示上开关天气显示.
 rules.infoDisplay.coords=坐标显示精确到两位小数.
 rules.infoDisplay.facing=显示你的仰角和俯角.
 rules.infoDisplay.facing.display=§r俯角: §7%1§r 仰角: §7%2§r
 rules.infoDisplay.cardinalFacing=使用N, S, E, W 和坐标系方向 (ex. N (-z))显示你的朝向.
 rules.infoDisplay.cardinalFacing.display=§r朝向: §7%s§r
+rules.infoDisplay.speed=以米每秒为单位显示当前速度.
 rules.infoDisplay.tps=显示TPS.
 rules.infoDisplay.tps.display=§rTPS: %s§r
 rules.infoDisplay.entities=显示你面前的实体个数.
@@ -356,7 +366,7 @@ rules.infoDisplay.slimeChunk=显示当前区块是否是史莱姆区块(只在�
 rules.infoDisplay.slimeChunk.display=§7(§a史莱姆区块§7)§r
 rules.infoDisplay.moonPhase=显示月相.
 rules.infoDisplay.moonPhase.display=§r月相: §7%s§r
-rules.infoDisplay.eventTrackers=显示监测游戏事件发生次数.
+rules.infoDisplay.eventTrackers=显示跟踪的游戏事件发生次数.
 rules.infoDisplay.hopperCounterCounts=显示所有漏斗计数器和对应颜色. 漏斗计数器模式控制这个信息.
 rules.infoDisplay.simulationMap=显示您周围已加载的方块的地图. simmap命令可用于对此进行配置. 警告: 这是一个非常滞后的规则.
 rules.infoDisplay.lookingAt=显示你所看的方块和实体id.
