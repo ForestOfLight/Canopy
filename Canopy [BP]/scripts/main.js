@@ -28,9 +28,9 @@ import './src/commands/generator'
 import './src/commands/retest'
 import './src/commands/simmap'
 import './src/commands/loop'
-import './src/commands/debugentity'
+// import './src/commands/debugentity'
 import './src/commands/hss'
-import './src/commands/biomeedges'
+// import './src/commands/biomeedges'
 
 // Script Events
 import './src/commands/scriptevents/counter'
@@ -71,7 +71,7 @@ import './src/rules/allowPeekInventory'
 import './src/rules/commandTntFuse'
 import './src/rules/creativeNetherWaterPlacement'
 import './src/rules/spawnEggSpawnWithMinecart'
-import './src/rules/chunkBorders'
+// import './src/rules/chunkBorders'
 
 // Load Time Processes
 import './src/onStart'

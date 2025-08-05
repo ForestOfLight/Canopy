@@ -33,10 +33,6 @@
 			"version": "2.1.0-beta"
 		},
 		{
-			"module_name": "@minecraft/debug-utilities",
-			"version": "1.0.0-beta"
-		},
-		{
 			"uuid": "bcf34368-ed0c-4cf7-938e-582cccf9950d",
 			"version": [1, 4, 1]
 		}
