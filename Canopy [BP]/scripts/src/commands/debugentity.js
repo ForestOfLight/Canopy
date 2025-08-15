@@ -24,28 +24,28 @@ new VanillaCommand({
     callback: debugEntityCommand
 });
 
-function debugEntityCommand(source, entities, addOrRemove, property) {
+function debugEntityCommand(origin, entities, addOrRemove, property) {
     if (!DebugDisplay.getDebugableProperties().includes(property))
         return { status: CustomCommandStatus.Failure, message: `commands.debugentity.invalidProperty` };
     if (addOrRemove === DEBUG_ACTION.Add)
-        addPropertyToDebugDisplay(source, entities, property);
+        addPropertyToDebugDisplay(origin, entities, property);
     else if (addOrRemove === DEBUG_ACTION.Remove)
-        removePropertyFromDebugDisplay(source, entities, property);
+        removePropertyFromDebugDisplay(origin, entities, property);
     else
         return { status: CustomCommandStatus.Failure, message: `commands.debugentity.invalidAction` };
 }
 
-function addPropertyToDebugDisplay(source, entities, property) {
+function addPropertyToDebugDisplay(origin, entities, property) {
     for (const entity of entities) {
         let debugDisplay = DebugDisplay.getDebugDisplay(entity);
         if (!debugDisplay)
             debugDisplay = new DebugDisplay(entity);
         debugDisplay.addElement(property);
     }
-    source.sendMessage(getSuccessMessage(`commands.debugentity.added`, property, entities));
+    origin.sendMessage(getSuccessMessage(`commands.debugentity.added`, property, entities));
 }
 
-function removePropertyFromDebugDisplay(source, entities, property) {
+function removePropertyFromDebugDisplay(origin, entities, property) {
     for (const entity of entities) {
         const debugDisplay = DebugDisplay.getDebugDisplay(entity);
         if (!debugDisplay)
@@ -54,7 +54,7 @@ function removePropertyFromDebugDisplay(source, entities, property) {
         if (debugDisplay.getEnabledElements().length === 0)
             debugDisplay.destroy();
     }
-    source.sendMessage(getSuccessMessage(`commands.debugentity.removed`, property, entities));
+    origin.sendMessage(getSuccessMessage(`commands.debugentity.removed`, property, entities));
 }
 
 function getSuccessMessage(translationStr, property, entities) {

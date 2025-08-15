@@ -77,6 +77,7 @@ commands.changedimension.success=§7Changed to the %s§7.
 commands.changedimension.fail.coords=§cInvalid coordinates. Please provide all x, y, z numeric values or none.
 
 commands.claimprojectiles=Changes the owner of all projectiles within a radius.
+commands.claimprojectiles.fail.sourcenotplayer=§cSpecify a player to use this command.
 commands.claimprojectiles.fail.nonefound=§7No projectiles found in range (%s blocks).
 commands.claimprojectiles.success.self=§7Successfully became the owner of %1 projectiles within %2 blocks of you.
 commands.claimprojectiles.success.other=§7Successfully changed the owner of %1 projectiles within %2 blocks of %3.

@@ -1,19 +1,22 @@
-import { Block, CustomCommandSource, Entity, Player, system } from "@minecraft/server";
+import { CustomCommandSource, CustomCommandStatus, Player, system } from "@minecraft/server";
 import { Rules } from "./Rules";
+import { BlockCommandOrigin } from "./BlockCommandOrigin";
+import { EntityCommandOrigin } from "./EntityCommandOrigin";
+import { ServerCommandOrigin } from "./ServerCommandOrigin";
+import { PlayerCommandOrigin } from "./PlayerCommandOrigin";
 
 export class VanillaCommand {
     customCommand;
 
     constructor(customCommand) {
         this.customCommand = customCommand;
-        this.setupForRegistry();
+        this.setDefaultArgs();
+        system.beforeEvents.startup.subscribe(this.setupForRegistry.bind(this));
     }
 
-    setupForRegistry() {
-        system.beforeEvents.startup.subscribe((event) => {
-            this.registerCommand(event.customCommandRegistry);
-            system.beforeEvents.startup.unsubscribe(this.setupForRegistry.bind(this));
-        });
+    setupForRegistry(startupEvent) {
+        this.registerCommand(startupEvent.customCommandRegistry);
+        system.beforeEvents.startup.unsubscribe(this.setupForRegistry.bind(this));
     }
 
     registerCommand(customCommandRegistry) {
@@ -23,14 +26,20 @@ export class VanillaCommand {
         this.registerAliasCommands(customCommandRegistry);
     }
 
+    setDefaultArgs() {
+        if (this.customCommand.cheatsRequired === void 0)
+            this.customCommand.cheatsRequired = false;
+    }
+
     addPreCallback() {
         this.callback = (origin, ...args) => {
-            const source = VanillaCommand.resolveCommandSource(origin);
-            VanillaCommand.addSendMessageMethod(source);
+            const source = VanillaCommand.resolveCommandOrigin(origin);
             const disabledContingentRules = this.#getDisabledContingentRules();
             this.#printDisabledContingentRules(disabledContingentRules, source);
             if (disabledContingentRules.length > 0)
                 return;
+            if (this.commandSourceIsNotAllowed(source))
+                return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
             return this.customCommand.callback(source, ...args);
         }
     }
@@ -60,26 +69,23 @@ export class VanillaCommand {
         }
     }
 
-    static resolveCommandSource(origin) {
+    isCheatsRequired() {
+        return this.customCommand.cheatsRequired;
+    }
+
+    static resolveCommandOrigin(origin) {
         switch (origin.sourceType) {
             case CustomCommandSource.Block:
-                return origin.sourceBlock;
+                return new BlockCommandOrigin(origin);
             case CustomCommandSource.Entity:
-                return origin.sourceEntity;
+                if (origin.sourceEntity instanceof Player)
+                    return new PlayerCommandOrigin(origin);
+                return new EntityCommandOrigin(origin);
             case CustomCommandSource.Server:
-                return "Server";
+                return new ServerCommandOrigin(origin);
             default:
-                return void 0;
+                throw new Error("Unknown command source: " + origin?.sourceType);
         }
-    }
-    
-    static addSendMessageMethod(source) {
-        if (source === "Server") 
-            source.sendMessage = (message) => console.log(message);
-        else if (source instanceof Block || (source instanceof Entity && !(source instanceof Player)))
-            source.sendMessage = () => {};
-        else if (!source)
-            source.sendMessage = (message) => console.warn(`Unknown source type: ${source}`, message);
     }
 
     #getDisabledContingentRules() {
@@ -93,9 +99,13 @@ export class VanillaCommand {
     }
 
     #printDisabledContingentRules(disabledContingentRules, source) {
-        if (source instanceof Block)
-            return;
         for (const ruleID of disabledContingentRules)
             source.sendMessage({ translate: 'rules.generic.blocked', with: [ruleID] });
+    }
+
+    commandSourceIsNotAllowed(source) {
+        if (!this.customCommand.allowedSources)
+            return false;
+        return !this.customCommand.allowedSources.includes(source.constructor);
     }
 }

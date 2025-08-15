@@ -8,14 +8,15 @@ export class HSSFinder {
     
     constructor() {
         this.hssLocations = [];
-        world.afterEvents.entitySpawn.subscribe(this.onEntitySpawn.bind(this));
+        this.onEntitySpawnBound = this.onEntitySpawn.bind(this);
+        world.afterEvents.entitySpawn.subscribe(this.onEntitySpawnBound);
         this.runner = system.runInterval(this.displayHSSLocations.bind(this), this.refreshRateSeconds * TicksPerSecond);
     }
 
     destroy() {
         this.hssLocations = [];
         this.source = null;
-        world.afterEvents.entitySpawn.unsubscribe(this.onEntitySpawn.bind(this));
+        world.afterEvents.entitySpawn.unsubscribe(this.onEntitySpawnBound);
         system.clearRun(this.runner);
     }
 
@@ -34,7 +35,7 @@ export class HSSFinder {
     }
 
     addHSSLocation(entity, hssType) {
-        if (!this.isStructureSpawn(entity?.location))
+        if (!entity.isValid || !this.isStructureSpawn(entity?.location))
             return;
         this.hssLocations.push({ dimension: entity.dimension, location: entity.location, hssType });
     }

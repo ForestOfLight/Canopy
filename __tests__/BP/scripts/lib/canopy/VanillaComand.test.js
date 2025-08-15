@@ -1,8 +1,13 @@
-/* eslint-disable max-classes-per-file */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { VanillaCommand } from "../../../../../Canopy [BP]/scripts/lib/canopy/VanillaCommand";
 import { Rule } from "../../../../../Canopy [BP]/scripts/lib/canopy/Rule";
 import { Rules } from "../../../../../Canopy [BP]/scripts/lib/canopy/Rules";
+import { FeedbackMessageType } from "../../../../../Canopy [BP]/scripts/lib/canopy/FeedbackMessageType";
+import { BlockCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/BlockCommandOrigin";
+import { EntityCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/EntityCommandOrigin";
+import { ServerCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/ServerCommandOrigin";
+import { PlayerCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/PlayerCommandOrigin";
+import { Player } from "@minecraft/server";
 
 const mockCustomCommandRegistry = {
     registerCommand: vi.fn(),
@@ -29,7 +34,8 @@ vi.mock("@minecraft/server", () => ({
     system: {
         beforeEvents: {
             startup: {
-                subscribe: () => ({ customCommandRegistry: mockCustomCommandRegistry })
+                subscribe: () => ({ customCommandRegistry: mockCustomCommandRegistry }),
+                unsubscribe: vi.fn()
             }
         },
         afterEvents: {
@@ -69,8 +75,7 @@ describe("VanillaCommand", () => {
     });
 
     it("should register the command using the vanilla command system", () => {
-        const command = new VanillaCommand(mockCommand);
-        command.registerCommand(mockCustomCommandRegistry);
+        const command = createVanillaCommand(mockCommand);
         expect(mockCustomCommandRegistry.registerCommand).toHaveBeenCalledWith({
             name: mockCommand.name,
             description: mockCommand.description,
@@ -82,8 +87,7 @@ describe("VanillaCommand", () => {
 
     it("should set up an alias if provided", () => {
         mockCommand.aliases = ["canopy:alias"];
-        const command = new VanillaCommand(mockCommand);
-        command.registerCommand(mockCustomCommandRegistry);
+        const command = createVanillaCommand(mockCommand);
         expect(mockCustomCommandRegistry.registerCommand).toHaveBeenCalledWith({
             name: mockCommand.aliases[0],
             description: mockCommand.description,
@@ -99,22 +103,25 @@ describe("VanillaCommand", () => {
             values: ["value1", "value2"]
         };
         mockCommand.enums = [mockEnum];
-        const command = new VanillaCommand(mockCommand);
-        command.registerCommand(mockCustomCommandRegistry);
+        createVanillaCommand(mockCommand);
         expect(mockCustomCommandRegistry.registerEnum).toHaveBeenCalledWith(mockEnum.name, mockEnum.values);
     });
 
-    it("should make called commands end early if their contingent rules are disabled", () => {
+    it("should should not require cheats if not provided", () => {
+        mockCommand.cheatsRequired = void 0;
+        const command = new VanillaCommand(mockCommand);
+        expect(command.isCheatsRequired()).toEqual(false)
+    });
+
+    it("should make called commands abort if their contingent rules are disabled", () => {
         new Rule({
             category: "test",
             identifier: "test_rule",
         });
         mockCommand.contingentRules = ["test_rule"];
-        const command = new VanillaCommand(mockCommand);
-        command.registerCommand(mockCustomCommandRegistry);
+        const command = createVanillaCommand(mockCommand);
         const mockOrigin = { sourceType: "Entity", sourceEntity: { sendMessage: vi.fn() } };
-        const result = command.callback(mockOrigin);
-        expect(result).toBeUndefined();
+        runCommand(command, mockOrigin);
         expect(mockOrigin.sourceEntity.sendMessage).toHaveBeenCalledWith({ translate: "rules.generic.blocked", with: ["test_rule"] });
     });
 
@@ -124,30 +131,80 @@ describe("VanillaCommand", () => {
             identifier: "test_rule",
         });
         mockCommand.contingentRules = ["test_rule"];
-        const command = new VanillaCommand(mockCommand);
-        command.registerCommand(mockCustomCommandRegistry);
+        const command = createVanillaCommand(mockCommand);
         const mockOrigin = { sourceType: "Entity", sourceEntity: { sendMessage: vi.fn() } };
         command.callback(mockOrigin);
         expect(mockOrigin.sourceEntity.sendMessage).toHaveBeenCalledWith({ translate: "rules.generic.blocked", with: ["test_rule"] });
     });
 
+    it("should print a message if the command source is not allowed", () => {
+        mockCommand.allowedSources = [PlayerCommandOrigin];
+        const command = createVanillaCommand(mockCommand);
+        const mockOrigin = { sourceType: "Entity", sourceEntity: { sendMessage: vi.fn() } };
+        command.callback(mockOrigin);
+        expect(mockOrigin.sourceEntity.sendMessage).toHaveBeenCalledWith({ translate: "commands.generic.invalidsource" });
+    });
+
+    it("should run the callback if all contingent rules are enabled and the source is allowed", () => {
+        const mockCallback = vi.fn();
+        mockCommand.callback = mockCallback;
+        mockCommand.allowedSources = [EntityCommandOrigin];
+        const command = createVanillaCommand(mockCommand);
+        const mockOrigin = { sourceType: "Entity", sourceEntity: { sendMessage: vi.fn() } };
+        command.callback(mockOrigin);
+        expect(mockCallback).toHaveBeenCalled();
+    });
+
     it("should resolve the command source when it is a block", () => {
         const mockOrigin = { sourceType: "Block", sourceBlock: true };
-        expect(VanillaCommand.resolveCommandSource(mockOrigin)).toBe(mockOrigin.sourceBlock);
+        expect(VanillaCommand.resolveCommandOrigin(mockOrigin)).toBeInstanceOf(BlockCommandOrigin);
     });
 
     it("should resolve the command source when it is an entity", () => {
         const mockOrigin = { sourceType: "Entity", sourceEntity: true };
-        expect(VanillaCommand.resolveCommandSource(mockOrigin)).toBe(mockOrigin.sourceEntity);
+        expect(VanillaCommand.resolveCommandOrigin(mockOrigin)).toBeInstanceOf(EntityCommandOrigin);
     });
 
     it("should resolve the command source when it is the server", () => {
         const mockOrigin = { sourceType: "Server" };
-        expect(VanillaCommand.resolveCommandSource(mockOrigin)).toBe("Server");
+        expect(VanillaCommand.resolveCommandOrigin(mockOrigin)).toBeInstanceOf(ServerCommandOrigin);
     });
 
-    it("should return undefined if the command source is neither a block nor an entity", () => {
+    it("should resolve the command source when it is a player", () => {
+        const mockOrigin = { sourceType: "Entity", sourceEntity: new Player() };
+        expect(VanillaCommand.resolveCommandOrigin(mockOrigin)).toBeInstanceOf(PlayerCommandOrigin);
+    });
+
+    it("should return throw an error if the command source is unknown", () => {
         const mockOrigin = {};
-        expect(VanillaCommand.resolveCommandSource(mockOrigin)).toBeUndefined();
+        expect(() => VanillaCommand.resolveCommandOrigin(mockOrigin)).toThrow();
+    });
+
+    it("should make sendMessage do nothing for a Block source", () => {
+        mockCommand.callback = (origin) => origin.sendMessage();
+        const command = createVanillaCommand(mockCommand);
+        const mockOrigin = { sourceType: "Block", sourceBlock: true };
+        const result = runCommand(command, mockOrigin);
+        expect(result).toBe(FeedbackMessageType.None);
+    });
+
+    it("should make sendMessage log to console for a Server source", () => {
+        mockCommand.callback = (origin) => origin.sendMessage();
+        const command = createVanillaCommand(mockCommand);
+        const mockOrigin = { sourceType: "Server" };
+        const result = runCommand(command, mockOrigin);
+        expect(result).toBe(FeedbackMessageType.ConsoleInfo);
     });
 });
+
+function createVanillaCommand(commandData) {
+    const command = new VanillaCommand(commandData);
+    command.setupForRegistry({ customCommandRegistry: mockCustomCommandRegistry });
+    return command;
+}
+
+function runCommand(command, origin) {
+    if (!origin)
+        origin = { sourceType: "Entity", sourceEntity: { sendMessage: vi.fn() } }
+    return command.callback(origin);
+}

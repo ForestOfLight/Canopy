@@ -26,10 +26,11 @@ new VanillaCommand({
     callback: changeDimensionCommand
 });
 
-function changeDimensionCommand(source, dimension, destination, victim) {
+function changeDimensionCommand(origin, dimension, destination, victim) {
     const toDimensionId = validDimensions[dimension.toLowerCase()];
     if (!toDimensionId)
         return { status: CustomCommandStatus.Failure, message: 'commands.changedimension.notfound' };
+    const source = origin.getSource();
     victim = resolveVictim(source, victim);
     if (victim.status === CustomCommandStatus.Failure)
         return victim;
@@ -37,10 +38,10 @@ function changeDimensionCommand(source, dimension, destination, victim) {
     const toDimension = world.getDimension(toDimensionId);
     if (destination) {
         teleport(victim, toDimension, destination);
-        source.sendMessage({ translate: 'commands.changedimension.success.coords', with: [stringifyLocation(destination, 2), getColoredDimensionName(toDimensionId)] });
+        origin.sendMessage({ translate: 'commands.changedimension.success.coords', with: [stringifyLocation(destination, 2), getColoredDimensionName(toDimensionId)] });
     } else {
         system.run(() => teleport(victim, toDimension, convertCoords(fromDimensionId, toDimensionId, source.location)));
-        source.sendMessage({ translate: 'commands.changedimension.success', with: [getColoredDimensionName(toDimensionId)] });
+        origin.sendMessage({ translate: 'commands.changedimension.success', with: [getColoredDimensionName(toDimensionId)] });
     }
 }
 

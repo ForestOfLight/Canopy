@@ -1,5 +1,5 @@
 import { Rule, Rules, VanillaCommand } from "../../lib/canopy/Canopy";
-import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, Player } from "@minecraft/server";
+import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus } from "@minecraft/server";
 import { stringifyLocation, getColoredDimensionName } from "../../include/utils";
 
 const NETHER_SCALE_FACTOR = 8;
@@ -18,35 +18,35 @@ new VanillaCommand({
     callback: posCommand
 });
 
-function posCommand(source, player) {
+function posCommand(origin, player) {
     if (!Rules.getNativeValue('commandPosOthers') && player)
-        return source.sendMessage({ translate: 'rules.generic.blocked', with: ['commandPosOthers'] });
+        return origin.sendMessage({ translate: 'rules.generic.blocked', with: ['commandPosOthers'] });
     if (player?.length > 0) {
         for (const currPlayer of player) {
             if (!currPlayer)
                 continue;
-            sendPosMessage(source, currPlayer);
+            sendPosMessage(origin, currPlayer);
         }
-    } else if (source instanceof Player) {
-        sendPosMessage(source);
+    } else if (origin.getType() === "Player") {
+        sendPosMessage(origin);
     } else {
         return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
     }
 }
 
-function sendPosMessage(source, target = void 0) {
-    target = target === void 0 ? source : target;
-    source.sendMessage({
+function sendPosMessage(origin, target = void 0) {
+    target = target === void 0 ? origin.getSource() : target;
+    origin.sendMessage({
         rawtext: [
-            getPositionText(source, target), { text: '\n' },
+            getPositionText(origin, target), { text: '\n' },
             getDimensionText(target), { text: '\n' },
             getRelativeDimensionPositionText(target)
         ]
     });
 }
 
-function getPositionText(player, target) {
-    if (player === target)
+function getPositionText(origin, target) {
+    if (origin.getSource() === target)
         return { translate: 'commands.pos.self', with: [stringifyLocation(target.location, 2)] };
     return { translate: 'commands.pos.other', with: [target.name, stringifyLocation(target.location, 2)] };
 }
