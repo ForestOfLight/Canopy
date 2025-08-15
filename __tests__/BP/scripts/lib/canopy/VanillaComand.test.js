@@ -64,6 +64,10 @@ describe("VanillaCommand", () => {
     beforeEach(() => {
         vi.clearAllMocks();
         Rules.clear();
+        new Rule({
+            category: "test",
+            identifier: "test_rule",
+        });
         mockCommand = {
             name: "canopy:test",
             description: "Test command",
@@ -114,10 +118,6 @@ describe("VanillaCommand", () => {
     });
 
     it("should make called commands abort if their contingent rules are disabled", () => {
-        new Rule({
-            category: "test",
-            identifier: "test_rule",
-        });
         mockCommand.contingentRules = ["test_rule"];
         const command = createVanillaCommand(mockCommand);
         const mockOrigin = { sourceType: "Entity", sourceEntity: { sendMessage: vi.fn() } };
@@ -125,23 +125,10 @@ describe("VanillaCommand", () => {
         expect(mockOrigin.sourceEntity.sendMessage).toHaveBeenCalledWith({ translate: "rules.generic.blocked", with: ["test_rule"] });
     });
 
-    it("should print a message if contingent rules are disabled", () => {
-        new Rule({
-            category: "test",
-            identifier: "test_rule",
-        });
-        mockCommand.contingentRules = ["test_rule"];
-        const command = createVanillaCommand(mockCommand);
-        const mockOrigin = { sourceType: "Entity", sourceEntity: { sendMessage: vi.fn() } };
-        command.callback(mockOrigin);
-        expect(mockOrigin.sourceEntity.sendMessage).toHaveBeenCalledWith({ translate: "rules.generic.blocked", with: ["test_rule"] });
-    });
-
     it("should print a message if the command source is not allowed", () => {
         mockCommand.allowedSources = [PlayerCommandOrigin];
         const command = createVanillaCommand(mockCommand);
-        const mockOrigin = { sourceType: "Entity", sourceEntity: { sendMessage: vi.fn() } };
-        const result = command.callback(mockOrigin);
+        const result = runCommand(command);
         expect(result).toEqual({ status: "Failure", message: 'commands.generic.invalidsource' });
     });
 
@@ -150,8 +137,7 @@ describe("VanillaCommand", () => {
         mockCommand.callback = mockCallback;
         mockCommand.allowedSources = [EntityCommandOrigin];
         const command = createVanillaCommand(mockCommand);
-        const mockOrigin = { sourceType: "Entity", sourceEntity: { sendMessage: vi.fn() } };
-        command.callback(mockOrigin);
+        runCommand(command);
         expect(mockCallback).toHaveBeenCalled();
     });
 
