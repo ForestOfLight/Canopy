@@ -141,8 +141,8 @@ describe("VanillaCommand", () => {
         mockCommand.allowedSources = [PlayerCommandOrigin];
         const command = createVanillaCommand(mockCommand);
         const mockOrigin = { sourceType: "Entity", sourceEntity: { sendMessage: vi.fn() } };
-        command.callback(mockOrigin);
-        expect(mockOrigin.sourceEntity.sendMessage).toHaveBeenCalledWith({ translate: "commands.generic.invalidsource" });
+        const result = command.callback(mockOrigin);
+        expect(result).toEqual({ status: "Failure", message: 'commands.generic.invalidsource' });
     });
 
     it("should run the callback if all contingent rules are enabled and the source is allowed", () => {
