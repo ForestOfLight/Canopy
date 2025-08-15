@@ -1,6 +1,7 @@
 import { Rule, VanillaCommand } from "../../lib/canopy/Canopy";
-import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, GameMode, Player, system, world } from "@minecraft/server";
+import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, GameMode, system, world } from "@minecraft/server";
 import { stringifyLocation } from "../../include/utils";
+import { PlayerCommandOrigin } from "../../lib/canopy/PlayerCommandOrigin";
 
 const MAX_EFFECT_DURATION = 20000000;
 const TICKS_TO_COMPLETE_FADE = 10;
@@ -34,6 +35,7 @@ new VanillaCommand({
     mandatoryParameters: [{ name: 'canopy:camAction', type: CustomCommandParamType.Enum }],
     permissionLevel: CommandPermissionLevel.Any,
     contingentRules: ['commandCamera'],
+    allowedSources: [PlayerCommandOrigin],
     callback: cameraCommand
 });
 
@@ -43,7 +45,8 @@ new VanillaCommand({
     usage: 'canopy:cs',
     permissionLevel: CommandPermissionLevel.Any,
     contingentRules: ['commandCamera'],
-    callback: (source) => cameraCommand(source, CAM_ACTIONS.Spectate),
+    allowedSources: [PlayerCommandOrigin],
+    callback: (origin) => cameraCommand(origin, CAM_ACTIONS.Spectate),
 });
 
 class BeforeSpectatorPlayer {
@@ -77,140 +80,139 @@ function onPlayerDimensionChange(event) {
     player.setDynamicProperty('isViewingCamera', false);
 }
 
-function cameraCommand(source, action) {
-    if (!(source instanceof Player))
-        return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
+function cameraCommand(origin, action) {
+    const player = origin.getSource();
     switch (action) {
         case CAM_ACTIONS.Place:
-            placeCameraAction(source);
+            placeCameraAction(player);
             break;
         case CAM_ACTIONS.View:
-            viewCameraAction(source);
+            viewCameraAction(player);
             break;
         case CAM_ACTIONS.Spectate:
-            spectateAction(source);
+            spectateAction(player);
             break;
         default:
             return { status: CustomCommandStatus.Failure, message: 'commands.camera.invalidaction' };
     }
 }
 
-function placeCameraAction(source) {
+function placeCameraAction(player) {
     const eyeHeight = 1.62001002;
-    if (source.getDynamicProperty('isViewingCamera'))
-        return source.sendMessage({ translate: 'commands.camera.place.viewing' });
+    if (player.getDynamicProperty('isViewingCamera'))
+        return player.sendMessage({ translate: 'commands.camera.place.viewing' });
     const cameraSettings = {
-        location: { x: source.location.x, y: source.location.y + eyeHeight, z: source.location.z },
-        rotation: source.getRotation(),
-        dimensionId: source.dimension.id
+        location: { x: player.location.x, y: player.location.y + eyeHeight, z: player.location.z },
+        rotation: player.getRotation(),
+        dimensionId: player.dimension.id
     };
-    placeCamera(source, cameraSettings);
+    placeCamera(player, cameraSettings);
 }
 
-function placeCamera(source, cameraSettings) {
-    source.setDynamicProperty('placedCamera', JSON.stringify(cameraSettings));
-    source.sendMessage({ translate: 'commands.camera.place.success', with: [stringifyLocation(cameraSettings.location, 0)] });
+function placeCamera(player, cameraSettings) {
+    player.setDynamicProperty('placedCamera', JSON.stringify(cameraSettings));
+    player.sendMessage({ translate: 'commands.camera.place.success', with: [stringifyLocation(cameraSettings.location, 0)] });
 }
 
-function viewCameraAction(source) {
-    if (source.getDynamicProperty('isSpectating')) 
-        return source.sendMessage({ translate: 'commands.camera.view.spectating' });
-    if (!source.getDynamicProperty('placedCamera'))
-        return source.sendMessage({ translate: 'commands.camera.view.fail' });
-    const placedCameraSettings = JSON.parse(source.getDynamicProperty('placedCamera'));
-    system.run(() => toggleCameraView(source, placedCameraSettings));
+function viewCameraAction(player) {
+    if (player.getDynamicProperty('isSpectating')) 
+        return player.sendMessage({ translate: 'commands.camera.view.spectating' });
+    if (!player.getDynamicProperty('placedCamera'))
+        return player.sendMessage({ translate: 'commands.camera.view.fail' });
+    const placedCameraSettings = JSON.parse(player.getDynamicProperty('placedCamera'));
+    system.run(() => toggleCameraView(player, placedCameraSettings));
 }
 
-function toggleCameraView(source, placedCameraSettings) {
-    if (source.getDynamicProperty('isViewingCamera')) {
-        endCameraView(source);
+function toggleCameraView(player, placedCameraSettings) {
+    if (player.getDynamicProperty('isViewingCamera')) {
+        endCameraView(player);
     } else {
-        if (placedCameraSettings.dimensionId !== source.dimension.id)
-            return source.sendMessage({ translate: 'commands.camera.view.dimension', with: [placedCameraSettings.dimensionId] });
-        startCameraView(source, placedCameraSettings);
+        if (placedCameraSettings.dimensionId !== player.dimension.id)
+            return player.sendMessage({ translate: 'commands.camera.view.dimension', with: [placedCameraSettings.dimensionId] });
+        startCameraView(player, placedCameraSettings);
     }
 }
 
-function startCameraView(source, placedCameraSettings) {
-    source.camera.setCamera('minecraft:free', {
+function startCameraView(player, placedCameraSettings) {
+    player.camera.setCamera('minecraft:free', {
         easeOptions: { easeTime: 1.0, easeType: 'InOutSine' },
         location: placedCameraSettings.location,
         rotation: placedCameraSettings.rotation
     });
-    source.setDynamicProperty('isViewingCamera', true);
-    source.onScreenDisplay.setActionBar({ translate: 'commands.camera.view.started' });
+    player.setDynamicProperty('isViewingCamera', true);
+    player.onScreenDisplay.setActionBar({ translate: 'commands.camera.view.started' });
 }
 
-function endCameraView(source) {
-    cameraFadeOut(source);
+function endCameraView(player) {
+    cameraFadeOut(player);
     system.runTimeout(() => {
-        source.camera.clear();
+        player.camera.clear();
     }, TICKS_TO_COMPLETE_FADE);
-    source.setDynamicProperty('isViewingCamera', false);
-    source.onScreenDisplay.setActionBar({ translate: 'commands.camera.view.ended' });
+    player.setDynamicProperty('isViewingCamera', false);
+    player.onScreenDisplay.setActionBar({ translate: 'commands.camera.view.ended' });
 }
 
-function spectateAction(source) {
-    if (source.getDynamicProperty('isViewingCamera'))
-        return source.sendMessage({ translate: 'commands.camera.spectate.viewing' });
+function spectateAction(player) {
+    if (player.getDynamicProperty('isViewingCamera'))
+        return player.sendMessage({ translate: 'commands.camera.spectate.viewing' });
     system.run(() => {
-        if (source.getDynamicProperty('isSpectating'))
-            endSpectate(source);
+        if (player.getDynamicProperty('isSpectating'))
+            endSpectate(player);
         else
-            startSpectate(source);
+            startSpectate(player);
     });
 }
 
-function startSpectate(source) {
-    cameraFadeOut(source);
-    source.setDynamicProperty('isSpectating', true);
-    const savedPlayer = new BeforeSpectatorPlayer(source);
-    source.setDynamicProperty('beforeSpectatorPlayer', JSON.stringify(savedPlayer));
+function startSpectate(player) {
+    cameraFadeOut(player);
+    player.setDynamicProperty('isSpectating', true);
+    const savedPlayer = new BeforeSpectatorPlayer(player);
+    player.setDynamicProperty('beforeSpectatorPlayer', JSON.stringify(savedPlayer));
     
     system.runTimeout(() => {
-        source.setGameMode(GameMode.Spectator);
-        for (const effect of source.getEffects()) {
+        player.setGameMode(GameMode.Spectator);
+        for (const effect of player.getEffects()) {
             try {
-                source.removeEffect(effect.typeId);
+                player.removeEffect(effect.typeId);
             } catch (error) {
-                console.warn(`[Canopy] Failed to remove ${effect?.typeId} effect from player ${source.name} while starting spectate. Error: ${error}`);
+                console.warn(`[Canopy] Failed to remove ${effect?.typeId} effect from player ${player.name} while starting spectate. Error: ${error}`);
             }
         }
-        source.addEffect('night_vision', MAX_EFFECT_DURATION, { amplifier: 0, showParticles: false });
-        source.addEffect('conduit_power', MAX_EFFECT_DURATION, { amplifier: 0, showParticles: false });
-        source.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.started' });
+        player.addEffect('night_vision', MAX_EFFECT_DURATION, { amplifier: 0, showParticles: false });
+        player.addEffect('conduit_power', MAX_EFFECT_DURATION, { amplifier: 0, showParticles: false });
+        player.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.started' });
     }, TICKS_TO_COMPLETE_FADE);
 }
 
-function endSpectate(source) {
-    cameraFadeOut(source);
-    const beforeSpectatorPlayer = JSON.parse(source.getDynamicProperty('beforeSpectatorPlayer'));
-    source.setDynamicProperty('isSpectating', false);
+function endSpectate(player) {
+    cameraFadeOut(player);
+    const beforeSpectatorPlayer = JSON.parse(player.getDynamicProperty('beforeSpectatorPlayer'));
+    player.setDynamicProperty('isSpectating', false);
     system.runTimeout(() => {
-        for (const effect of source.getEffects()) {
+        for (const effect of player.getEffects()) {
             try {
-                source.removeEffect(effect.typeId);
+                player.removeEffect(effect.typeId);
             } catch (error) {
-                console.warn(`[Canopy] Failed to remove ${effect?.typeId} effect from player ${source.name} while ending spectate. Error: ${error}`);
+                console.warn(`[Canopy] Failed to remove ${effect?.typeId} effect from player ${player.name} while ending spectate. Error: ${error}`);
             }
         }
-        source.teleport(beforeSpectatorPlayer.location, { dimension: world.getDimension(beforeSpectatorPlayer.dimensionId), rotation: beforeSpectatorPlayer.rotation });
+        player.teleport(beforeSpectatorPlayer.location, { dimension: world.getDimension(beforeSpectatorPlayer.dimensionId), rotation: beforeSpectatorPlayer.rotation });
         for (const effect of beforeSpectatorPlayer.effects) {
             try {
                 if (effect.duration === -1)
                     effect.duration = MAX_EFFECT_DURATION;
-                source.addEffect(effect.typeId, Math.min(MAX_EFFECT_DURATION, effect.duration), { amplifier: effect.amplifier });
+                player.addEffect(effect.typeId, Math.min(MAX_EFFECT_DURATION, effect.duration), { amplifier: effect.amplifier });
             } catch (error) {
-                console.warn(`[Canopy] Failed to add ${effect?.typeId} effect back to player ${source.name} while ending spectate. Error: ${error}`);
+                console.warn(`[Canopy] Failed to add ${effect?.typeId} effect back to player ${player.name} while ending spectate. Error: ${error}`);
             }
         }
-        source.setGameMode(beforeSpectatorPlayer.gamemode);
-        source.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.ended' });
+        player.setGameMode(beforeSpectatorPlayer.gamemode);
+        player.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.ended' });
     }, TICKS_TO_COMPLETE_FADE);
 }
 
-function cameraFadeOut(source) {
-    source.camera.fade({
+function cameraFadeOut(player) {
+    player.camera.fade({
         fadeColor: { red: 0, green: 0, blue: 0 },
         fadeTime: { fadeInTime: 0.5, fadeOutTime: 0.5, holdTime: 0.0 }
     });
