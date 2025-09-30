@@ -64,7 +64,7 @@ export class BiomeEdgeFinder {
         const vectorLocation = Vector.from(location);
         let biome = '?';
         try {
-            biome = this.dimension.getBiome(location);
+            biome = this.dimension.getBiome(location)?.id;
         } catch {
             console.warn(`Biome not found for location ${vectorLocation.toString()}`);
         }
