@@ -1,4 +1,4 @@
-const PACK_VERSION = '1.5.1';
+const PACK_VERSION = '1.5.1 - REALMS';
 const MC_VERSION = '1.21.120.4';
 
 export { PACK_VERSION, MC_VERSION };
