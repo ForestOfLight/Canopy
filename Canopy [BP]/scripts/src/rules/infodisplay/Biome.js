@@ -17,9 +17,10 @@ class Biome extends InfoDisplayElement {
         try {
             biomeId = this.player.dimension.getBiome(this.player.location)?.id;
         } catch (error) {
-            if (!["LocationOutOfWorldBoundaries", "LocationInUnloadedChunk"].includes(error.name))
+            if (!["LocationOutOfWorldBoundariesError", "LocationInUnloadedChunkError"].includes(error.name))
                 throw error;
         }
+        biomeId = biomeId.replace('minecraft:', '');
         return { translate: 'rules.infoDisplay.biome.display', with: [biomeId] };
     }
 

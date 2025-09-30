@@ -14,13 +14,15 @@ class Light extends InfoDisplayElement {
 
     getFormattedDataOwnLine() {
         let lightLevel = '?';
+        let skyLightLevel = '?';
         try {
             lightLevel = this.player.dimension.getLightLevel(this.player.location);
+            skyLightLevel = this.player.dimension.getSkyLightLevel(this.player.location);
         } catch (error) {
-            if (error.name !== "LocationInUnloadedChunk")
+            if (error.name !== "LocationInUnloadedChunkError")
                 throw error;
         }
-        return { translate: 'rules.infoDisplay.biome.display', with: [String(lightLevel)] };
+        return { translate: 'rules.infoDisplay.light.display', with: [String(lightLevel), String(skyLightLevel)] };
     }
 
     getFormattedDataSharedLine() {
