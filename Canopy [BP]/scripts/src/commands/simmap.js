@@ -165,24 +165,11 @@ function getNearbyLoadedChunks(dimensionChunkLocation, distance) {
     const loadedChunks = [];
     for (let x = dimensionChunkLocation.x - distance; x <= dimensionChunkLocation.x + distance; x++) {
         for (let z = dimensionChunkLocation.z - distance; z <= dimensionChunkLocation.z + distance; z++) {
-            if (isChunkLoaded(dimensionChunkLocation.dimension, x, z))
+            if (dimensionChunkLocation.dimension.isChunkLoaded({ x, y: 100, z }))
                 loadedChunks.push({ x, z });
         }
     }
     return loadedChunks;
-}
-
-function isChunkLoaded(dimension, x, z) {
-    try {
-        const block = dimension.getBlock({ x: x * 16, y: 0, z: z * 16 });
-        if (block.typeId === undefined)
-            return false;
-        return true;
-    } catch (error) {
-        if (error.message === 'cannot read property \'typeId\' of undefined')
-            return false;
-        throw error;
-    }
 }
 
 function formatVisualChunkMap(loadedChunks, dimensionChunkLocation, distance) {

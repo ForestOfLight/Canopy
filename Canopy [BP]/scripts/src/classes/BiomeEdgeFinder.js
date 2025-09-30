@@ -9,8 +9,6 @@ export class BiomeEdgeFinder {
     biomeLocations = {}; 
     renderer;
     shouldStop = false;
-    availableProbeEntities = [];
-    inUseProbeEntities = [];
     populationRunner = null;
     analysisRunner = null;
 
@@ -22,7 +20,6 @@ export class BiomeEdgeFinder {
 
     destroy() {
         this.shouldStop = true;
-        this.removeProbeEntities();
         this.stopRenderer();
         this.biomeLocations = {};
         this.blockVolume = null;
@@ -60,51 +57,18 @@ export class BiomeEdgeFinder {
         }
         system.runTimeout(() => {
             this.populationRunner = null;
-            this.removeProbeEntities();
         }, 2);
     }
 
     addBiomeAtLocation(location) {
-        const probeEntity = this.getAvailableProbeEntity(location);
-        system.runTimeout(() => {
-            if (probeEntity?.isValid) {
-                const vectorLocation = Vector.from(location);
-                const biome = probeEntity.getProperty('canopy:biome');
-                if (!biome)
-                    console.warn(`Biome not found for location ${vectorLocation.toString()}`);
-                this.biomeLocations[vectorLocation] = { location: vectorLocation, biome };
-                this.inUseProbeEntities.splice(this.inUseProbeEntities.indexOf(probeEntity), 1);
-                this.availableProbeEntities.push(probeEntity);
-            }
-        }, 2);
-    }
-    
-    getAvailableProbeEntity(location) {
-        let entity = this.availableProbeEntities.pop();
-        if (entity?.isValid) {
-            entity.teleport(location, { dimension: this.dimension });
-        } else {
-            try {
-                entity = this.dimension.spawnEntity(this.probeEntityId, location);
-            } catch (error) {
-                if (['LocationOutOfWorldBoundariesError', 'LocationInUnloadedChunkError'].includes(error.name))
-                    return void 0;
-                throw error;
-            }
+        const vectorLocation = Vector.from(location);
+        let biome = '?';
+        try {
+            biome = this.dimension.getBiome(location);
+        } catch {
+            console.warn(`Biome not found for location ${vectorLocation.toString()}`);
         }
-        this.inUseProbeEntities.push(entity);
-        return entity;
-    }
-
-    removeProbeEntities() {
-        this.availableProbeEntities.forEach(entity => {
-            if (entity?.isValid)
-                entity.remove();
-        });
-        this.inUseProbeEntities.forEach(entity => {
-            if (entity?.isValid)
-                entity.remove();
-        });
+        this.biomeLocations[vectorLocation] = { location: vectorLocation, biome };
     }
 
     waitForJobCompletion(jobStatusCallback, completionCallback) {

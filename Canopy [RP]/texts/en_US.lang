@@ -1,5 +1,4 @@
 ## vanilla
-entity.canopy:probe.name=Canopy Probe
 entity.canopy:rideable.name=Canopy Rideable
 action.hint.exit.canopy:rideable=Sneak to stand
 

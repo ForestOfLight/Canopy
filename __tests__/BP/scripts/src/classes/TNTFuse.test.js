@@ -48,7 +48,7 @@ const tnt = {
     isValid: true,
     triggerEvent: vi.fn(),
     dimension: {
-        getBlock: vi.fn(() => true)
+        isChunkLoaded: vi.fn(() => true)
     }
 };
 
@@ -116,7 +116,7 @@ describe('TNTFuse', () => {
             isValid: true,
             triggerEvent: vi.fn(),
             dimension: {
-                getBlock: vi.fn(() => false)
+                isChunkLoaded: vi.fn(() => false)
             }
         };
         new TNTFuse(invalidTnt);
