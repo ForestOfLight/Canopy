@@ -1,5 +1,4 @@
 ## vanilla
-entity.canopy:probe.name=Canopy Probe
 entity.canopy:rideable.name=Canopy Rideable
 action.hint.exit.canopy:rideable=Sneak to stand
 
@@ -375,7 +374,7 @@ rules.infoDisplay.entities=Shows the number of entities in front of you.
 rules.infoDisplay.entities.display=§rEntities: §7%s§r
 rules.infoDisplay.tpsAndEntities.display=§rTPS: %1§r Entities: §7%2§r
 rules.infoDisplay.light=Shows the light level of the block where your foot is.
-rules.infoDisplay.light.display=§rLight: §e%s§r
+rules.infoDisplay.light.display=§rLight: §e%1 §b%2§r
 rules.infoDisplay.biome=Shows the biome you are in.
 rules.infoDisplay.biome.display=§rBiome: §a%s§r
 rules.infoDisplay.lightAndBiome.display=§rLight: §e%1 §rBiome: §a%2§r

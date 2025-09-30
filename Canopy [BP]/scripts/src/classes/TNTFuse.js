@@ -59,12 +59,6 @@ export class TNTFuse {
     }
 
     tntIsUnloaded() {
-        try {
-            return !this.tntEntity.dimension.getBlock(this.tntEntity.location);
-        } catch (e) {
-            if (e.name === 'PositionInUnloadedChunkError' || e.name === 'PositionOutOfWorldBoundariesError')
-                return true;
-            throw e;
-        }
+        return !this.tntEntity.dimension.isChunkLoaded(this.tntEntity.location);
     }
 }
