@@ -5,7 +5,7 @@
 		"description": "Technical informatics & features addon by §aForestOfLight§r.",
 		"uuid": "7f6b23df-a583-476b-b0e4-87457e65f7c0",
 		"version": [1, 4, 2],
-		"min_engine_version": [1, 21, 110]
+		"min_engine_version": [1, 21, 111]
 	},
 	"modules": [
 		{
