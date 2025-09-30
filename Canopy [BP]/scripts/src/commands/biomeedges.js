@@ -1,6 +1,9 @@
 import { BlockVolume, CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, system } from "@minecraft/server";
 import { VanillaCommand } from "../../lib/canopy/VanillaCommand.js";
 import { BiomeEdgeFinder } from "../classes/BiomeEdgeFinder.js";
+import { PlayerCommandOrigin } from "../../lib/canopy/PlayerCommandOrigin.js";
+import { BlockCommandOrigin } from "../../lib/canopy/BlockCommandOrigin.js";
+import { EntityCommandOrigin } from "../../lib/canopy/EntityCommandOrigin.js";
 
 const BIOMEEDGE_ACTIONS = Object.freeze({
     ADD: 'add',
@@ -23,19 +26,18 @@ export class BiomeEdges extends VanillaCommand {
                 { name: 'to', type: CustomCommandParamType.Location }
             ],
             permissionLevel: CommandPermissionLevel.GameDirectors,
-            callback: (source, ...args) => this.biomeEdgesCommand(source, ...args),
+            allowedSources: [PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin],
+            callback: (origin, ...args) => this.biomeEdgesCommand(origin, ...args),
         });
         this.biomeEdgeFinders = [];
     }
 
-    biomeEdgesCommand(source, action, from, to) {
-        if (source === "Server")
-            return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
+    biomeEdgesCommand(origin, action, from, to) {
         if (from && !to)
             return { status: CustomCommandStatus.Failure, message: 'commands.biomeedges.missinglocations' };
         switch (action) {
             case BIOMEEDGE_ACTIONS.ADD:
-                return this.pushNewBiomeEdgeFinder(source, from, to);
+                return this.pushNewBiomeEdgeFinder(origin, from, to);
             case BIOMEEDGE_ACTIONS.REMOVELAST:
                 return this.popLastBiomeEdgeFinder();
             case BIOMEEDGE_ACTIONS.CLEAR:
@@ -45,12 +47,13 @@ export class BiomeEdges extends VanillaCommand {
         }
     }
 
-    pushNewBiomeEdgeFinder(source, fromLocation, toLocation) {
+    pushNewBiomeEdgeFinder(origin, fromLocation, toLocation) {
         const currentCapacity = new BlockVolume(fromLocation, toLocation).getCapacity();
         if (currentCapacity > this.maxCapacity) {
-            source.sendMessage({ translate: 'commands.biomeedges.overcapacity', with: [ String(currentCapacity), String(this.maxCapacity) ] });
+            origin.sendMessage({ translate: 'commands.biomeedges.overcapacity', with: [ String(currentCapacity), String(this.maxCapacity) ] });
             return;
         }
+        const source = origin.getSource();
         system.run(() => {
             this.biomeEdgeFinders.push(new BiomeEdgeFinder(source.dimension, fromLocation, toLocation));
         });

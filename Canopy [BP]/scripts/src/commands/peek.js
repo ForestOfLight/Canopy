@@ -1,7 +1,8 @@
 import { VanillaCommand } from "../../lib/canopy/Canopy";
 import { getRaycastResults, getClosestTarget, stringifyLocation } from "../../include/utils";
 import { InventoryUI } from "../classes/InventoryUI";
-import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, Player, system } from "@minecraft/server";
+import { CommandPermissionLevel, CustomCommandParamType, system } from "@minecraft/server";
+import { PlayerCommandOrigin } from "../../lib/canopy/PlayerCommandOrigin";
 
 const MAX_DISTANCE = 6*16;
 const currentQuery = {};
@@ -11,18 +12,18 @@ new VanillaCommand({
     description: 'commands.peek',
     optionalParameters: [{ name: 'itemQuery', type: CustomCommandParamType.String }],
     permissionLevel: CommandPermissionLevel.Any,
+    allowedSources: [PlayerCommandOrigin],
     contingentRules: ['allowPeekInventory'],
     callback: peekCommand
 });
 
-function peekCommand(source, itemQuery) {
-    if (!(source instanceof Player))
-        return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
-    updateQueryMap(source, itemQuery);
-    const target = getTarget(source);
+function peekCommand(origin, itemQuery) {
+    const player = origin.getSource();
+    updateQueryMap(player, itemQuery);
+    const target = getTarget(player);
     if (!target)
         return void 0;
-    showInventoryUI(source, target);
+    showInventoryUI(player, target);
     return void 0;
 }
 

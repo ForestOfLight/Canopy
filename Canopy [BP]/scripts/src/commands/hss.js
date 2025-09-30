@@ -22,7 +22,7 @@ export class HSS extends VanillaCommand {
         this.hssFinder = void 0;
     }
 
-    hssCommand(source, action) {
+    hssCommand(_, action) {
         switch (action) {
             case HSS_ACTIONS.FIND:
                 return this.startFindingHSS();

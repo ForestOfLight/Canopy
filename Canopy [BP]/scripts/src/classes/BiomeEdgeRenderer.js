@@ -1,5 +1,5 @@
 import { DebugBox, debugDrawer, DebugLine } from "@minecraft/debug-utilities";
-import { biomeToHexColorMap, intToBiomeMap } from "../../include/data";
+import { biomeToHexColorMap } from "../../include/data";
 import { hexToRGB } from "../../include/utils";
 import { system } from "@minecraft/server";
 import { Vector } from "../../lib/Vector";
@@ -157,8 +157,8 @@ export class BiomeEdgeRenderer {
     }
 
     getColorByBiome(biome) {
-        const biomeName = intToBiomeMap[biome];
-        const hexColor = biomeToHexColorMap[biomeName];
+        const biomeId = biome?.replace('minecraft:', '');
+        const hexColor = biomeToHexColorMap[biomeId];
         if (!hexColor)
             return { red: 1, green: 1, blue: 1 };
         const biomeRGB = hexToRGB(hexColor);

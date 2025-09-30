@@ -1,6 +1,7 @@
 import { VanillaCommand } from "../../lib/canopy/Canopy";
-import { BlockComponentTypes, CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, Player } from "@minecraft/server";
+import { BlockComponentTypes, CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus } from "@minecraft/server";
 import { getColoredDimensionName, stringifyLocation } from "../../include/utils";
+import { PlayerCommandOrigin } from "../../lib/canopy/PlayerCommandOrigin";
 
 const TARGET_DISTANCE = 100;
 
@@ -9,28 +10,27 @@ new VanillaCommand({
     description: 'commands.data',
     optionalParameters: [{ name: 'entity', type: CustomCommandParamType.EntitySelector }],
     permissionLevel: CommandPermissionLevel.Any,
+    allowedSources: [PlayerCommandOrigin],
     callback: dataCommand
 });
 
-function dataCommand(source, entity) {
-    if (!(source instanceof Player))
-        return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
+function dataCommand(origin, entity) {
     let message = [];
     if (!entity) {
-        message = getTargetedMessage(source);
-    } else if (entity.length > 0) {
+        message = getTargetedMessage(origin.getSource());
+    } else if (entity?.length > 0) {
         entity.forEach((currEntity) => {
             message.push(formatEntityOutput(currEntity));
         });
     } else {
-        message = { translate: 'generic.target.notfound' };
+        return { status: CustomCommandStatus.Failure, message: 'generic.target.notfound' };
     }
-    source.sendMessage(message);
+    origin.sendMessage(message);
 }
 
-function getTargetedMessage(sender) {
-    const blockRayResult = sender.getBlockFromViewDirection({ includeLiquidBlocks: true, includePassableBlocks: true, maxDistance: TARGET_DISTANCE });
-    const entityRayResult = sender.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: TARGET_DISTANCE });
+function getTargetedMessage(source) {
+    const blockRayResult = source.getBlockFromViewDirection({ includeLiquidBlocks: true, includePassableBlocks: true, maxDistance: TARGET_DISTANCE });
+    const entityRayResult = source.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: TARGET_DISTANCE });
     const block = blockRayResult?.block;
     const entity = entityRayResult[0]?.entity;
     if (!block && !entity)

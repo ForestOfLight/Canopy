@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { logCommand } from "../../../../../Canopy [BP]/scripts/src/commands/log";
 import { Player } from "@minecraft/server";
+import { PlayerCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/PlayerCommandOrigin";
 
 vi.mock("@minecraft/server", () => ({
     system: {
@@ -95,29 +96,31 @@ vi.mock("@minecraft/server-ui", () => ({
 
 describe('logCommand', () => {
     let mockPlayer;
+    let mockPlayerOrigin;
 
     beforeEach(() => {
         mockPlayer = new Player();
+        mockPlayerOrigin = new PlayerCommandOrigin({ sourceType: "Entity", sourceEntity: mockPlayer });
     });
 
     it('should allow the user to set the precision', () => {
-        logCommand(mockPlayer, 'na', 5);
+        logCommand(mockPlayerOrigin, 'na', 5);
         expect(mockPlayer.setDynamicProperty).toHaveBeenCalledWith('logPrecision', 5);
         expect(mockPlayer.sendMessage).toHaveBeenCalledWith({ translate: 'commands.log.precision', with: ['5'] });
     });
 
     it('should allow the user to enable logging a valid type', () => {
-        logCommand(mockPlayer, 'projectiles', void 0);
+        logCommand(mockPlayerOrigin, 'projectiles', void 0);
         expect(mockPlayer.sendMessage).toHaveBeenCalledWith({ translate: 'commands.log.started', with: ['projectiles'] });
     });
 
     it('should send usage message for invalid type', () => {
-        const commandResult = logCommand(mockPlayer, 'invalid_type', void 0);
+        const commandResult = logCommand(mockPlayerOrigin, 'invalid_type', void 0);
         expect(commandResult).toEqual({ status: "Failure", message: 'commands.log.invalidtype' });
     });
 
     it('should allow the user to disable logging a valid type', () => {
-        logCommand(mockPlayer, 'projectiles', void 0);
+        logCommand(mockPlayerOrigin, 'projectiles', void 0);
         expect(mockPlayer.sendMessage).toHaveBeenCalledWith({ translate: 'commands.log.stopped', with: ['projectiles'] });
     });
 });

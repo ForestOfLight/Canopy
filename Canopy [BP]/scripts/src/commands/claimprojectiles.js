@@ -21,20 +21,20 @@ new VanillaCommand( {
     callback: claimProjectilesCommand
 });
 
-function claimProjectilesCommand(source, radius = CLAIM_RADIUS, player) {
+function claimProjectilesCommand(origin, radius = CLAIM_RADIUS, player) {
     if (player)
         player = player[0];
     else
-        player = source;
+        player = origin.getSource();
     if (!(player instanceof Player))
-        return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
+        return { status: CustomCommandStatus.Failure, message: 'commands.claimprojectiles.fail.sourcenotplayer' };
     const projectiles = getProjectilesInRange(player, radius);
     if (projectiles.length === 0)
-        return source.sendMessage({ translate: 'commands.claimprojectiles.fail.nonefound', with: [String(radius)] });
+        return origin.sendMessage({ translate: 'commands.claimprojectiles.fail.nonefound', with: [String(radius)] });
     const numChanged = changeOwner(projectiles, player);
     player.sendMessage({ translate: 'commands.claimprojectiles.success.self', with: [String(numChanged), String(radius)] });
-    if (source !== player)
-        source.sendMessage({ translate: 'commands.claimprojectiles.success.other', with: [String(numChanged), String(radius), player.name] });
+    if (origin !== player)
+        origin.sendMessage({ translate: 'commands.claimprojectiles.success.other', with: [String(numChanged), String(radius), player.name] });
 }
 
 function getProjectilesInRange(source, radius) {
