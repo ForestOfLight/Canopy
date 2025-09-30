@@ -1,5 +1,4 @@
 import { world, system } from "@minecraft/server";
-import ProbeManager from "./classes/ProbeManager";
 import { displayWelcome } from "./rules/noWelcomeMessage";
 
 let worldIsValid = false;
@@ -25,5 +24,5 @@ function onValidPlayer(player) {
 }
 
 function onValidWorld() {
-    ProbeManager.startCleanupCycle();
+    
 }

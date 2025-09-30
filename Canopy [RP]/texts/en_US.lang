@@ -1,5 +1,4 @@
 ## vanilla
-entity.canopy:probe.name=Canopy Probe
 entity.canopy:rideable.name=Canopy Rideable
 action.hint.exit.canopy:rideable=Sneak to stand
 
@@ -77,6 +76,7 @@ commands.changedimension.success=§7Changed to the %s§7.
 commands.changedimension.fail.coords=§cInvalid coordinates. Please provide all x, y, z numeric values or none.
 
 commands.claimprojectiles=Changes the owner of all projectiles within a radius.
+commands.claimprojectiles.fail.sourcenotplayer=§cSpecify a player to use this command.
 commands.claimprojectiles.fail.nonefound=§7No projectiles found in range (%s blocks).
 commands.claimprojectiles.success.self=§7Successfully became the owner of %1 projectiles within %2 blocks of you.
 commands.claimprojectiles.success.other=§7Successfully changed the owner of %1 projectiles within %2 blocks of %3.
@@ -327,9 +327,10 @@ rules.creativeNetherWaterPlacement=Allows placing water in the Nether in creativ
 rules.creativeNoTileDrops=Prevents items dropping from blocks broken in creative mode.
 rules.creativeOneHitKill=Allows creative players to one hit kill any entity. If sneaking, it will also kill nearby entities.
 rules.dupeTnt=TNT can be duplicated when moved by a piston and powered next to a note block.
-rules.durabilitySwap=Swaps 0 durability items out of your hand.
 rules.durabilityNotifier=Enables a clink sound and tip when your tool has %s durability left.
 rules.durabilityNotifier.alert=§cDurability remaining: %s
+rules.durabilitySwap=Swaps 0 durability items out of your hand.
+rules.echoShardsEnableShriekers=Using an echo shard on a sculk shrieker allows it to summon wardens.
 rules.entityInstantDeath=Removes the 20gt death animation. Entities will also not drop xp.
 rules.explosionChainReactionOnly=Makes explosions only affect TNT blocks.
 rules.explosionNoBlockDamage=Makes explosions not affect blocks.
@@ -373,7 +374,7 @@ rules.infoDisplay.entities=Shows the number of entities in front of you.
 rules.infoDisplay.entities.display=§rEntities: §7%s§r
 rules.infoDisplay.tpsAndEntities.display=§rTPS: %1§r Entities: §7%2§r
 rules.infoDisplay.light=Shows the light level of the block where your foot is.
-rules.infoDisplay.light.display=§rLight: §e%s§r
+rules.infoDisplay.light.display=§rLight: §e%1 §b%2§r
 rules.infoDisplay.biome=Shows the biome you are in.
 rules.infoDisplay.biome.display=§rBiome: §a%s§r
 rules.infoDisplay.lightAndBiome.display=§rLight: §e%1 §rBiome: §a%2§r

@@ -11,31 +11,32 @@ new VanillaCommand({
     callback: butcherCommand
 });
 
-function butcherCommand(sender, entity) {
-    const target = getTargetEntity(sender, entity);
+function butcherCommand(origin, entity) {
+    const target = getTargetEntity(origin, entity);
     if (target instanceof Player) {
         return { status: CustomCommandStatus.Failure, message: 'commands.butcher.fail.player' };
     } else if (entity?.length > 0) {
-        const removedEntities = removeManyEntities(sender, entity);
+        const removedEntities = removeManyEntities(entity);
         if (removedEntities.length > 0) 
-            sender.sendMessage(getManyRemovedMessage(removedEntities));
+            origin.sendMessage(getManyRemovedMessage(removedEntities));
         else 
             return { status: CustomCommandStatus.Failure, message: 'commands.butcher.fail.noneremoved' };
     } else if (target) {
         system.run(() => target.remove());
-        sender.sendMessage({ translate: 'commands.butcher.success', with: [target.typeId.replace('minecraft:', '')] });
+        origin.sendMessage({ translate: 'commands.butcher.success', with: [target.typeId.replace('minecraft:', '')] });
     } else {
         return { status: CustomCommandStatus.Failure, message: 'generic.entity.notfound' };
     }
 }
 
-function getTargetEntity(sender, entity) {
-    if (!entity && entity instanceof Entity)
-        return sender.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: false, maxDistance: 16 })[0]?.entity;
+function getTargetEntity(origin, entity) {
+    const source = origin.getSource();
+    if (!entity && source instanceof Entity)
+        return source.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: false, maxDistance: 16 })[0]?.entity;
     return void 0;
 }
 
-function removeManyEntities(sender, entities) {
+function removeManyEntities(entities) {
     const removedEntities = [];
     entities.forEach(currEntity => {
         if (currEntity instanceof Player)

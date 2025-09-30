@@ -1,5 +1,6 @@
 import { CommandPermissionLevel, system } from '@minecraft/server';
 import { VanillaCommand } from '../../lib/canopy/Canopy';
+import { PlayerCommandOrigin } from '../../lib/canopy/PlayerCommandOrigin';
 
 const gamemodeMap = {
     's': 'survival',
@@ -13,6 +14,7 @@ for (const key in gamemodeMap) {
         name: 'canopy:' + key,
         description: `commands.gamemode.${key}`,
         permissionLevel: CommandPermissionLevel.GameDirectors,
-        callback: (source) => { system.run(() => source.runCommand(`gamemode ${gamemodeMap[key]}`)); }
+        allowedSources: [PlayerCommandOrigin],
+        callback: (origin) => { system.run(() => origin.getSource().runCommand(`gamemode ${gamemodeMap[key]}`)); }
     });
 }

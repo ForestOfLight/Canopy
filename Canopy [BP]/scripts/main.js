@@ -72,6 +72,7 @@ import './src/rules/commandTntFuse'
 import './src/rules/creativeNetherWaterPlacement'
 import './src/rules/spawnEggSpawnWithMinecart'
 // import './src/rules/chunkBorders'
+import './src/rules/echoShardsEnableShriekers'
 
 // Load Time Processes
 import './src/onStart'

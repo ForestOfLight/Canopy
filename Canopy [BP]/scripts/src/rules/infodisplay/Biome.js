@@ -1,5 +1,4 @@
 import { InfoDisplayElement } from './InfoDisplayElement.js';
-import ProbeManager from '../../classes/ProbeManager';
 
 class Biome extends InfoDisplayElement {
     player;
@@ -7,15 +6,22 @@ class Biome extends InfoDisplayElement {
     constructor(player, displayLine) {
         const ruleData = { 
             identifier: 'biome', 
-            description: { translate: 'rules.infoDisplay.biome' }, 
-            onDisableCallback: () => ProbeManager.removeProbe(player)
+            description: { translate: 'rules.infoDisplay.biome' }
         };
         super(ruleData, displayLine);
         this.player = player;
     }
 
     getFormattedDataOwnLine() {
-        return { translate: 'rules.infoDisplay.biome.display', with: [ProbeManager.getBiome(this.player)] };
+        let biomeId = '?';
+        try {
+            biomeId = this.player.dimension.getBiome(this.player.location)?.id;
+        } catch (error) {
+            if (!["LocationOutOfWorldBoundariesError", "LocationInUnloadedChunkError"].includes(error.name))
+                throw error;
+        }
+        biomeId = biomeId.replace('minecraft:', '');
+        return { translate: 'rules.infoDisplay.biome.display', with: [biomeId] };
     }
 
     getFormattedDataSharedLine() {

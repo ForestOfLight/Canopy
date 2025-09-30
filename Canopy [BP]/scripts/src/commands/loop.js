@@ -1,5 +1,5 @@
 import { VanillaCommand } from 'lib/canopy/Canopy';
-import { Block, CommandError, CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, world, system } from '@minecraft/server';
+import { CommandError, CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, world, system } from '@minecraft/server';
 
 new VanillaCommand({
     name: 'canopy:loop',
@@ -12,14 +12,18 @@ new VanillaCommand({
     callback: loopCommand
 });
 
-function loopCommand(source, times, command) {
-    if (source === "Server")
-        source = world.getDimension('overworld');
-    else if (source instanceof Block)
-        source = source.dimension;
-    else if (!source)
+function loopCommand(origin, times, command) {
+    const source = origin.getSource();
+    let runLocation;
+    if (origin.getType() === "Server")
+        runLocation = world.getDimension('overworld');
+    else if (origin.getType() === "Block")
+        runLocation = source.dimension;
+    else if (origin)
+        runLocation = source;
+    else
         return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
-    loop(times, command, source);
+    loop(times, command, runLocation);
 }
 
 function loop(times, command, runLocation) {

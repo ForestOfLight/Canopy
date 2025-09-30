@@ -46,7 +46,7 @@ world.afterEvents.worldLoad.subscribe(() => {
     }
 });
 
-function trackCommand(source, eventName, eventType) {
+function trackCommand(origin, eventName, eventType) {
     let isAfterEvent;
     if (eventType === EVENT_TYPES.Before)
         isAfterEvent = false;
@@ -56,9 +56,9 @@ function trackCommand(source, eventName, eventType) {
         return { status: CustomCommandStatus.Failure, message: 'commands.trackevent.invalid' };
     system.run(() => {
         if (alreadyTracking(eventName, isAfterEvent))
-            stopTracking(source, eventName, isAfterEvent);
+            stopTracking(origin, eventName, isAfterEvent);
         else
-            startTracking(source, eventName, isAfterEvent);
+            startTracking(origin, eventName, isAfterEvent);
     });
 }
 
@@ -66,40 +66,46 @@ function alreadyTracking(eventName, isAfterEvent) {
     return (isAfterEvent && trackers.after[eventName]) || (!isAfterEvent && trackers.before[eventName]);
 }
 
-function stopTracking(source, eventName, isAfterEvent) {
-    if (!isValidEvent(source, eventName, isAfterEvent))
+function stopTracking(origin, eventName, isAfterEvent) {
+    if (!isValidEvent(origin, eventName, isAfterEvent))
         return;
     const tracker = trackers[isAfterEvent ? 'after' : 'before'][eventName];
     tracker.stop();
     delete trackers[isAfterEvent ? 'after' : 'before'][eventName];
     const eventFullName = eventName + (isAfterEvent ? 'After' : 'Before') + 'Event';
-    source.sendMessage({ translate: 'commands.trackevent.stop', with: [eventFullName] });
+    origin.sendMessage({ translate: 'commands.trackevent.stop', with: [eventFullName] });
 }
 
-function startTracking(source, eventName, isAfterEvent) {
-    if (!isValidEvent(source, eventName, isAfterEvent))
+function startTracking(origin, eventName, isAfterEvent) {
+    if (!isValidEvent(origin, eventName, isAfterEvent))
         return;
     const tracker = new EventTracker(eventName, isAfterEvent);
     tracker.start();
     trackers[isAfterEvent ? 'after' : 'before'][eventName] = tracker;
     const eventFullName = eventName + (isAfterEvent ? 'After' : 'Before') + 'Event';
-    source.sendMessage({ translate: 'commands.trackevent.start', with: [eventFullName] });
+    origin.sendMessage({ translate: 'commands.trackevent.start', with: [eventFullName] });
 }
 
-function isValidEvent(source, eventName, isAfterEvent) {
+function isValidEvent(origin, eventName, isAfterEvent) {
     if ((isAfterEvent && !world.afterEvents[eventName]) || (!isAfterEvent && !world.beforeEvents[eventName])) {
-        source.sendMessage({ translate: 'commands.trackevent.invalid', with: [eventName,isAfterEvent ? 'afterEvents' : 'beforeEvents'] });
+        origin.sendMessage({ translate: 'commands.trackevent.invalid', with: [eventName,isAfterEvent ? 'afterEvents' : 'beforeEvents'] });
         return false;
     }
     return true;
 }
 
 function getAllTrackerInfo() {
-    return Object.values(trackers.before).map(tracker => tracker.getInfo()).concat(Object.values(trackers.after).map(tracker => tracker.getInfo()));
+    return Object.values(trackers.before)
+        .map(tracker => tracker.getInfo())
+        .concat(Object.values(trackers.after)
+        .map(tracker => tracker.getInfo()));
 }
 
 function getAllTrackerInfoString() {
-    return Object.values(trackers.before).map(tracker => tracker.getInfoString()).concat(Object.values(trackers.after).map(tracker => tracker.getInfoString()));
+    return Object.values(trackers.before)
+        .map(tracker => tracker.getInfoString())
+        .concat(Object.values(trackers.after)
+        .map(tracker => tracker.getInfoString()));
 }
 
 export { getAllTrackerInfo, getAllTrackerInfoString };

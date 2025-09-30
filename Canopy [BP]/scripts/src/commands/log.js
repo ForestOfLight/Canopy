@@ -1,7 +1,8 @@
 import { VanillaCommand } from "../../lib/canopy/Canopy";
+import { PlayerCommandOrigin } from "../../lib/canopy/PlayerCommandOrigin";
 import { EntityMovementLog } from "../classes/EntityMovementLog";
 import { EntityTntLog } from "../classes/EntityTntLog";
-import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, Player } from "@minecraft/server";
+import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus } from "@minecraft/server";
 
 const MAIN_COLOR = '§7';
 const SECONDARY_COLOR = '§c';
@@ -20,38 +21,36 @@ new VanillaCommand({
     mandatoryParameters: [{ name: 'canopy:logtype', type: CustomCommandParamType.Enum }],
     optionalParameters: [{ name: 'precision', type: CustomCommandParamType.Integer }],
     permissionLevel: CommandPermissionLevel.Any,
+    allowedSources: [PlayerCommandOrigin],
     callback: logCommand,
 });
 
-export function logCommand(source, type, precision) {
-    if (!(source instanceof Player) && source !== "Server")
-        return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
-    if (source instanceof Player) {
-        if (source.getDynamicProperty('logPrecision') === void 0)
-            source.setDynamicProperty('logPrecision', 3);
-        if (precision)
-            setLogPrecision(source, precision);
-    }
+export function logCommand(origin, type, precision) {
+    const player = origin.getSource();
+    if (player.getDynamicProperty('logPrecision') === void 0)
+        player.setDynamicProperty('logPrecision', 3);
+    if (precision)
+        setLogPrecision(player, precision);
     if (Object.keys(entityLogs).includes(type))
-        toggleLogging(source, type);
+        toggleLogging(player, type);
     else
         return { status: CustomCommandStatus.Failure, message: 'commands.log.invalidtype' };
 }
 
-function setLogPrecision(source, value) {
+function setLogPrecision(player, value) {
     const precision = Math.max(0, Math.min(parseInt(value, 10), 15));
-    source.setDynamicProperty('logPrecision', precision);
-    source.sendMessage({ translate: 'commands.log.precision', with: [String(precision)] });
+    player.setDynamicProperty('logPrecision', precision);
+    player.sendMessage({ translate: 'commands.log.precision', with: [String(precision)] });
 }
 
-function toggleLogging(source, type) {
+function toggleLogging(player, type) {
     let message;
-    if (entityLogs[type].includes(source)) {
-        entityLogs[type].unsubscribe(source);
+    if (entityLogs[type].includes(player)) {
+        entityLogs[type].unsubscribe(player);
         message = { translate: 'commands.log.stopped', with: [type] };
     } else {
-        entityLogs[type].subscribe(source);
+        entityLogs[type].subscribe(player);
         message = { translate: 'commands.log.started', with: [type] };
     }
-    source.sendMessage(message);
+    player.sendMessage(message);
 }
