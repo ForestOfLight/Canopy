@@ -165,7 +165,7 @@ function getNearbyLoadedChunks(dimensionChunkLocation, distance) {
     const loadedChunks = [];
     for (let x = dimensionChunkLocation.x - distance; x <= dimensionChunkLocation.x + distance; x++) {
         for (let z = dimensionChunkLocation.z - distance; z <= dimensionChunkLocation.z + distance; z++) {
-            if (dimensionChunkLocation.dimension.isChunkLoaded({ x, y: 100, z }))
+            if (isChunkLoaded(dimensionChunkLocation.dimension, x, z))
                 loadedChunks.push({ x, z });
         }
     }
@@ -174,10 +174,11 @@ function getNearbyLoadedChunks(dimensionChunkLocation, distance) {
 
 function formatVisualChunkMap(loadedChunks, dimensionChunkLocation, distance) {
     const message = { rawtext: [] };
+    const loadedSet = new Set(loadedChunks.map(chunk => `${chunk.x},${chunk.z}`));
     for (let x = dimensionChunkLocation.x - distance; x <= dimensionChunkLocation.x + distance; x++) {
         message.rawtext.push({ text: '§7[' });
         for (let z = dimensionChunkLocation.z - distance; z <= dimensionChunkLocation.z + distance; z++) {
-            if (loadedChunks.some(chunk => chunk.x === x && chunk.z === z))
+            if (loadedSet.has(`${x},${z}`))
                 message.rawtext.push({ text: '§a▒' });
             else
                 message.rawtext.push({ text: '§c▒' });
@@ -187,6 +188,10 @@ function formatVisualChunkMap(loadedChunks, dimensionChunkLocation, distance) {
             message.rawtext.push({ text: '\n' });
     }
     return message;
+}
+
+function isChunkLoaded(dimension, x, z) {
+    return dimension.isChunkLoaded({ x: x*16, y: 100, z: z*16 })
 }
 
 export { getConfig, getLoadedChunksMessage };
