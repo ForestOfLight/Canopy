@@ -1,9 +1,9 @@
 {
 	"format_version": 2,
 	"header": {
-		"name": "Canopy [BP] v1.4.2",
+		"name": "Canopy [BP] v1.4.2 - REALMS",
 		"description": "Technical informatics & features addon by §aForestOfLight§r.",
-		"uuid": "7f6b23df-a583-476b-b0e4-87457e65f7c0",
+		"uuid": "78f0c8c7-d592-4e8e-95bc-e4937eab899d",
 		"version": [1, 4, 2],
 		"min_engine_version": [1, 21, 110]
 	},
@@ -11,7 +11,7 @@
 		{
 			"description": "Behavior Pack Module",
 			"type": "data",
-			"uuid": "47787f93-ec3c-4b0c-95fb-55a70e029041",
+			"uuid": "2d82808d-5dfb-43eb-bb7e-e0cc1b8fd5fd",
 			"version": [1, 0, 0]
 		},
 		{
@@ -19,7 +19,7 @@
 			"type": "script",
 			"language": "javascript",
 			"entry": "scripts/main.js",
-			"uuid": "3d753132-e3c9-4305-a995-eae30b486093",
+			"uuid": "8dc3bcdc-ca02-4840-b368-77b3f43d7741",
 			"version": [1, 0, 0]
 		}
 	],
@@ -33,7 +33,7 @@
 			"version": "2.1.0-beta"
 		},
 		{
-			"uuid": "bcf34368-ed0c-4cf7-938e-582cccf9950d",
+			"uuid": "c7e41c30-11f7-4ab1-9007-a16f2f059436",
 			"version": [1, 4, 2]
 		}
 	],
