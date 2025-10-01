@@ -1,5 +1,4 @@
 ## vanilla
-entity.canopy:probe.name=Canopy探测器
 entity.canopy:rideable.name=Canopy Rideable     ## 无需翻译
 action.hint.exit.canopy:rideable=潜行以站立
 
@@ -77,6 +76,7 @@ commands.changedimension.success=§7传送到维度 %s.
 commands.changedimension.fail.coords=§c无效的坐标. 请提供所有 x、y、z 数值或不提供任何数值.
 
 commands.claimprojectiles=改变半径内所有弹射物的拥有者.
+commands.claimprojectiles.fail.sourcenotplayer=§c指定一个玩家去执行命令.
 commands.claimprojectiles.fail.nonefound=§7半径(%s blocks)内, 没有弹射物.
 commands.claimprojectiles.success.self=§7成功将 %1 个弹射物(半径 %2 )的拥有者改为了你.
 commands.claimprojectiles.success.other=§7成功将 %1 个弹射物(半径 %2 )的拥有者改为了 %3.
@@ -327,9 +327,10 @@ rules.creativeNetherWaterPlacement=允许在创造模式下于下界放置水
 rules.creativeNoTileDrops=允许在创造模式下防止方块从被破坏的方块中掉落.
 rules.creativeOneHitKill=一击必杀. 蹲着时, 玩家周围的实体也会被杀(在创造模式下).
 rules.dupeTnt=TNT被活塞推动并且被音符盒充能时复制.
-rules.durabilitySwap=从您的手中带走0耐久物品.
 rules.durabilityNotifier=当你的工具还剩%s耐久度时, 发出叮的响声和提示.
 rules.durabilityNotifier.alert=§c耐久度还剩: %s
+rules.durabilitySwap=从您的手中带走0耐久物品.
+rules.echoShardsEnableShriekers=在幽匿尖啸体上允许通过使用回响碎片来生成监守者.
 rules.entityInstantDeath=消除20gt死亡动画. 同时实体不再会掉落经验.
 rules.explosionChainReactionOnly=使爆炸只影响TNT方块.
 rules.explosionNoBlockDamage=关闭爆炸破坏.
