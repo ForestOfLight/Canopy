@@ -3,7 +3,7 @@
 	"header": {
 		"name": "Canopy [BP] v1.4.3 - REALMS",
 		"description": "Technical informatics & features addon by §aForestOfLight§r.",
-		"uuid": "7f6b23df-a583-476b-b0e4-87457e65f7c0",
+		"uuid": "78f0c8c7-d592-4e8e-95bc-e4937eab899d",
 		"version": [1, 4, 3],
 		"min_engine_version": [1, 21, 120]
 	},
@@ -42,3 +42,4 @@
 		"license": "MIT"
 	}
 }
+
