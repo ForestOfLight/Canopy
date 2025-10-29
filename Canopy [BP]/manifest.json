@@ -1,11 +1,11 @@
 {
 	"format_version": 2,
 	"header": {
-		"name": "Canopy [BP] v1.4.2 - REALMS",
+		"name": "Canopy [BP] v1.4.3 - REALMS",
 		"description": "Technical informatics & features addon by §aForestOfLight§r.",
-		"uuid": "78f0c8c7-d592-4e8e-95bc-e4937eab899d",
-		"version": [1, 4, 2],
-		"min_engine_version": [1, 21, 110]
+		"uuid": "7f6b23df-a583-476b-b0e4-87457e65f7c0",
+		"version": [1, 4, 3],
+		"min_engine_version": [1, 21, 120]
 	},
 	"modules": [
 		{
@@ -26,7 +26,7 @@
 	"dependencies": [
 		{
 			"module_name": "@minecraft/server",
-			"version": "2.3.0-beta"
+			"version": "2.4.0-beta"
 		},
 		{
 			"module_name": "@minecraft/server-ui",
@@ -34,7 +34,7 @@
 		},
 		{
 			"uuid": "c7e41c30-11f7-4ab1-9007-a16f2f059436",
-			"version": [1, 4, 2]
+			"version": [1, 4, 3]
 		}
 	],
 	"metadata": {

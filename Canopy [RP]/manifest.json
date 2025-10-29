@@ -1,10 +1,10 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Canopy [RP] v1.4.2 - REALMS",
+    "name": "Canopy [RP] v1.4.3 - REALMS",
     "description": "Technical informatics & features addon by §aForestOfLight§r.",
     "uuid": "c7e41c30-11f7-4ab1-9007-a16f2f059436",
-    "version": [1, 4, 2],
+    "version": [1, 4, 3],
     "min_engine_version": [1, 17, 0]
   },
   "modules": [
@@ -17,7 +17,7 @@
   "dependencies": [
     {
       "uuid": "78f0c8c7-d592-4e8e-95bc-e4937eab899d",
-      "version": [1, 4, 2]
+      "version": [1, 4, 3]
     }
   ],
   "metadata": {
