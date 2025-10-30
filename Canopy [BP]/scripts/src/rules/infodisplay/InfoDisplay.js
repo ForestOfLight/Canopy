@@ -44,18 +44,18 @@ class InfoDisplay {
 			new TPS(6),
 			new Entities(player, 7),
 			new Light(player, 8),
-			new Biome(player, 8),
-			new WorldDay(9),
-			new TimeOfDay(9),
-			new SessionTime(player, 10),
-			new MoonPhase(11),
-			new EventTrackers(12),
-			new HopperCounterCounts(13),
-			new SimulationMap(player, 14),
-			new LookingAt(player, 15),
-			new SignalStrength(player, 16),
-			new BlockStates(player, 17),
-			new PeekInventory(player, 18)
+			new Biome(player, 9),
+			new WorldDay(10),
+			new TimeOfDay(10),
+			new SessionTime(player, 11),
+			new MoonPhase(12),
+			new EventTrackers(13),
+			new HopperCounterCounts(14),
+			new SimulationMap(player, 15),
+			new LookingAt(player, 16),
+			new SignalStrength(player, 17),
+			new BlockStates(player, 18),
+			new PeekInventory(player, 19)
 		];
 		playerToInfoDisplayMap[player.id] = this;
 	}
