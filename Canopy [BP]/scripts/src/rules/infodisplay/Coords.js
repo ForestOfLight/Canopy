@@ -12,7 +12,7 @@ class Coords extends InfoDisplayElement {
     getFormattedDataOwnLine() {
         const coords = this.player.location;
         [coords.x, coords.y, coords.z] = [coords.x.toFixed(2), coords.y.toFixed(2), coords.z.toFixed(2)];
-        return { text: `§r${coords.x} ${coords.y} ${coords.z}§r` };
+        return { text: `§l${coords.x} ${coords.y} ${coords.z}§r` };
     }
 
     getFormattedDataSharedLine() {

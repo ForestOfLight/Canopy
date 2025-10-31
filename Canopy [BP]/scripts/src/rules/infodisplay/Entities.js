@@ -11,7 +11,7 @@ class Entities extends InfoDisplayElement {
     }
 
     getFormattedDataOwnLine() {
-        return { translate: 'rules.infoDisplay.entities.display', with: [this.getEntitiesOnScreenCount()] };
+        return { translate: 'rules.infoDisplay.entities.display', with: ['§a' + this.getEntitiesOnScreenCount()] };
     }
 
     getFormattedDataSharedLine() {

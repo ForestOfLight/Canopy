@@ -22,11 +22,11 @@ class Light extends InfoDisplayElement {
             if (error.name !== "LocationInUnloadedChunkError")
                 throw error;
         }
-        return { translate: 'rules.infoDisplay.light.display', with: [String(lightLevel), String(skyLightLevel)] };
+        return { translate: 'rules.infoDisplay.light.display', with: ['§e' + lightLevel, '§b' + skyLightLevel] };
     }
 
     getFormattedDataSharedLine() {
-        return this.getFormattedDataOwnLine();
+        return this.getFormattedDataOwnLine(); 
     }
 }
 

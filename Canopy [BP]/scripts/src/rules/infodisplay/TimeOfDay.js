@@ -8,14 +8,14 @@ class TimeOfDay extends InfoDisplayElement {
     }
 
     getFormattedDataOwnLine() {
-        return { translate: 'rules.infoDisplay.timeOfDay.display', with: [this.ticksToTime(world.getTimeOfDay())] };
+        return { text: `§a${this.ticksToTime(world.getTimeOfDay(), 1)}§r` };
     }
 
     getFormattedDataSharedLine() {
-        return { text: `§7${this.ticksToTime(world.getTimeOfDay())}§r` };
+        return { text: `§a${this.ticksToTime(world.getTimeOfDay(), 2)}§r` };
     }
 
-    ticksToTime(ticks) {
+    ticksToTime(ticks, hourPadding) {
 		const ticksPerDay = 24000;
 		const hoursPerDay = 24;
 		const ticksPerHour = ticksPerDay / hoursPerDay;
@@ -36,9 +36,8 @@ class TimeOfDay extends InfoDisplayElement {
 		else if (hours === 0)
 			hours = noon;
 	
-		const padding = 2;
-		const formattedHours = hours.toString().padStart(padding, '0');
-		const formattedMinutes = minutes.toString().padStart(padding, '0');
+		const formattedHours = hours.toString().padStart(hourPadding, '0');
+		const formattedMinutes = minutes.toString().padStart(2, '0');
 	
 		return `${formattedHours}:${formattedMinutes} ${period}`;
 	}

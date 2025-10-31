@@ -8,7 +8,7 @@ class MoonPhase extends InfoDisplayElement {
     }
 
     getFormattedDataOwnLine() {
-        return { translate: 'rules.infoDisplay.moonPhase.display', with: [this.getParsedMoonPhase()] };
+        return this.getParsedMoonPhase();
     }
 
     getFormattedDataSharedLine() {
@@ -18,23 +18,23 @@ class MoonPhase extends InfoDisplayElement {
     getParsedMoonPhase() {
         switch (world.getMoonPhase()) {
             case 0:
-                return 'Full Moon';
+                return { rawtext: [{ text: '§f' }, { translate: 'rules.infoDisplay.moonPhase.full' }] };
             case 1:
-                return 'Waning Gibbous';
+                return { rawtext: [{ text: '§h' }, { translate: 'rules.infoDisplay.moonPhase.waningGibbous' }] };
             case 2:
-                return 'First Quarter';
+                return { rawtext: [{ text: '§7' }, { translate: 'rules.infoDisplay.moonPhase.firstQuarter' }] };
             case 3:
-                return 'Waning Crescent';
+                return { rawtext: [{ text: '§i' }, { translate: 'rules.infoDisplay.moonPhase.waningCrescent' }] };
             case 4:
-                return 'New Moon';
+                return { rawtext: [{ text: '§8' }, { translate: 'rules.infoDisplay.moonPhase.new' }] };
             case 5:
-                return 'Waxing Crescent';
+                return { rawtext: [{ text: '§i' }, { translate: 'rules.infoDisplay.moonPhase.waxingCrescent' }] };
             case 6:
-                return 'Last Quarter';
+                return { rawtext: [{ text: '§7' }, { translate: 'rules.infoDisplay.moonPhase.lastQuarter' }] };
             case 7:
-                return 'Waxing Gibbous';
+                return { rawtext: [{ text: '§h' }, { translate: 'rules.infoDisplay.moonPhase.waxingGibbous' }] };
             default:
-                return 'Unknown';
+                return '§4Unknown';
         }
     }
 }

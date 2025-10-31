@@ -50,7 +50,7 @@ class LookingAt extends InfoDisplayElement {
             } catch (error) {
                 if (error.message.includes('loaded')) 
                     entityName = `§c${stringifyLocation(entity.location, 0)} Unloaded`;
-                    else if (error.message.includes('undefined')) 
+                else if (error.message.includes('undefined')) 
                     entityName = '§7Undefined';
             }
         }

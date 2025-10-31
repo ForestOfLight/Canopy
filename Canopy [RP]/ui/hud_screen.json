@@ -1,12 +1,11 @@
 {
 	"hud_title_text": {
 		"type": "image",
-		"size": [ "100%c + 10px", "100%c + 8px"],
-		"alpha": 0.8,
+		"size": [ "100%c + 5px", "100%c + 4px"],
+		"alpha": 0.7,
 		"anchor_from": "top_right",
 		"anchor_to": "top_right",
 		"offset": [ 0, 0 ],
-		"texture": "textures/ui/Gray",
 		"layer": 30,
 		"controls": [
 			{
@@ -15,8 +14,10 @@
 					"text": "#text",
 					"layer": 31,
 					"localize": false,
-					"font_size": "small",
-					"font_scale_factor": 1.6,
+					"font_size": "normal",
+					"font_scale_factor": 0.85,
+					"text_alignment": "right",
+					"shadow": true,
 					"bindings": [
 						{
 							"binding_name": "#hud_title_text_string",
