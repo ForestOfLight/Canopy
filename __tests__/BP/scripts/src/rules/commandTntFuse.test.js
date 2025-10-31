@@ -8,7 +8,7 @@ const tntEntity = {
     triggerEvent: vi.fn(),
     isValid: true,
     dimension: {
-        getBlock: vi.fn(() => true)
+        isChunkLoaded: vi.fn(() => true)
     }
 };
 let fuseTicks = 80;

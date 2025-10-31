@@ -1,5 +1,4 @@
 ## vanilla
-entity.canopy:probe.name=Canopy Probe
 entity.canopy:rideable.name=Canopy bisa dinaiki
 action.hint.exit.canopy:rideable=Menyelinap untuk berdiri
 

@@ -11,7 +11,7 @@ class SessionTime extends InfoDisplayElement {
     }
 
     getFormattedDataOwnLine() {
-        return { translate: 'rules.infoDisplay.sessionTime.display', with: [this.getSessionTime()] };
+        return { translate: 'rules.infoDisplay.sessionTime.display', with: ['§d' + this.getSessionTime()] };
     }
 
     getFormattedDataSharedLine() {

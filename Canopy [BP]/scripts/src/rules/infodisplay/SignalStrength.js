@@ -12,7 +12,7 @@ class SignalStrength extends InfoDisplayElement {
 
     getFormattedDataOwnLine() {
         const signalStrength = this.getSignalStrength();
-        return signalStrength ? { text: `§7(§c${signalStrength}§7)§r` } : { text: '' };
+        return signalStrength ? { text: `§r(§c${signalStrength}§r)` } : { text: '' };
     }
 
     getFormattedDataSharedLine() {

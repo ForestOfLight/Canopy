@@ -15,17 +15,17 @@ export class Speed extends InfoDisplayElement {
     }
 
     getFormattedDataOwnLine() {
-        return { text: this.getFormattedPlayerSpeed() };
+        return { text: `§d${this.getPlayerSpeed().toFixed(3)}§r m/s` };
     }
 
     getFormattedDataSharedLine() {
         return this.getFormattedDataOwnLine();
     }
 
-    getFormattedPlayerSpeed() {
+    getPlayerSpeed() {
         const speed = Vector.from(this.player.getVelocity());
         const blocksPerTick = speed.length;
         const blocksPerSecond = blocksPerTick * TicksPerSecond;
-        return `§7${blocksPerSecond.toFixed(3)} m/s`;
+        return blocksPerSecond;
     }
 }

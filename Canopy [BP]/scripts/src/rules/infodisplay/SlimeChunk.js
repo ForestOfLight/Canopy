@@ -23,7 +23,7 @@ export class SlimeChunk extends InfoDisplayElement {
     onPlayerChangeSubChunk(event) {
         if (event.player?.id !== this.player?.id)
             return;
-        this.infoMessage = this.isSlime() ? { translate: 'rules.infoDisplay.slimeChunk.display' } : { text: '' };
+        this.infoMessage = { translate: 'rules.infoDisplay.slimeChunk.display', with: [this.isSlime() ? '§atrue' : '§cfalse'] };
     }
      
     isSlime() {

@@ -8,7 +8,7 @@ class WorldDay extends InfoDisplayElement {
     }
 
     getFormattedDataOwnLine() {
-        return { translate: 'rules.infoDisplay.worldDay.display', with: [String(world.getDay())] };
+        return { translate: 'rules.infoDisplay.worldDay.display', with: ['§b' + world.getDay()] };
     }
 
     getFormattedDataSharedLine() {

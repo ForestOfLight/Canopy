@@ -10,21 +10,24 @@ class CardinalFacing extends InfoDisplayElement {
     }
 
     getFormattedDataOwnLine() {
-        return { translate: 'rules.infoDisplay.cardinalFacing.display', with: [this.getPlayerDirection()] };
+        return { translate: 'rules.infoDisplay.cardinalFacing.display', with: [`${this.getPlayerDirection()}§r`] };
     }
 
     getFormattedDataSharedLine() {
-        return { text: `§7${this.getPlayerDirection()}§r` };
+        return { text: `${this.getPlayerDirection()}§r` };
     }
 
     getPlayerDirection() {
 		const { x, z } = this.player.getViewDirection();
 		const angle = Math.atan2(z, x) * (180 / Math.PI);
 	
-		if (angle >= -45 && angle < 45) return 'E (+x)'
-		else if (angle >= 45 && angle < 135) return 'S (+z)';
-		else if (angle >= 135 || angle < -135) return 'W (-x)';
-		return 'N (-z)';
+		if (angle >= -45 && angle < 45)
+            return '§l§cE §r§c(+x)'
+		else if (angle >= 45 && angle < 135)
+            return '§l§bS §r§b(+z)';
+		else if (angle >= 135 || angle < -135)
+            return '§l§cW §r§c(-x)';
+		return '§l§bN §r§b(-z)';
 	}
 }
 

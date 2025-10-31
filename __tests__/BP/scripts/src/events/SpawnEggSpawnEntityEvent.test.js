@@ -83,7 +83,7 @@ describe('SpawnEggSpawnEntityEvent', () => {
     test('should send events to all subscribed callbacks when an entity spawns from a spawn egg', () => {
         tracker.subscribe(mockCallback);
         tracker.onEntitySpawn({ 
-            entity: { location: { x: 0, y: 0, z: 0 } }, 
+            entity: { isValid: true, location: { x: 0, y: 0, z: 0 } }, 
             cause: 'Spawned' 
         });
         tracker.onPlayerInteractWithBlock({ 
@@ -92,7 +92,7 @@ describe('SpawnEggSpawnEntityEvent', () => {
             player: { name: 'TestPlayer' } 
         });
         tracker.onTick();
-        expect(mockCallback).toHaveBeenCalledWith({ player: { name: 'TestPlayer' }, entity: { location: { x: 0, y: 0, z: 0 } }, block: { location: { x: 0, y: 0, z: 0 } } });
+        expect(mockCallback).toHaveBeenCalledWith({ player: { name: 'TestPlayer' }, entity: { isValid: true, location: { x: 0, y: 0, z: 0 } }, block: { location: { x: 0, y: 0, z: 0 } } });
     });
 
     test('should not send events if the item used is not a spawn egg', () => {

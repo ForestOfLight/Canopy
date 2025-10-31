@@ -1,5 +1,7 @@
 import { Rule, Rules, VanillaCommand } from "../../lib/canopy/Canopy";
-import { CommandPermissionLevel, CustomCommandStatus, Entity, GameMode, system } from "@minecraft/server";
+import { CommandPermissionLevel, GameMode, system } from "@minecraft/server";
+import { PlayerCommandOrigin } from "../../lib/canopy/PlayerCommandOrigin";
+import { EntityCommandOrigin } from "../../lib/canopy/EntityCommandOrigin";
 
 new Rule({
     category: 'Rules',
@@ -11,17 +13,17 @@ new VanillaCommand({
     name: 'canopy:jump',
     description: 'commands.jump',
     permissionLevel: CommandPermissionLevel.GameDirectors,
+    allowedSources: [PlayerCommandOrigin, EntityCommandOrigin],
     cheatsRequired: true,
     callback: jumpCommand,
     aliases: ['canopy:j']
 });
 
-function jumpCommand(source) {
-    if (!(source instanceof Entity))
-        return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
-    if (!Rules.getNativeValue('commandJumpSurvival') && source.getGameMode() === GameMode.Survival)
-        return source.sendMessage({ translate: 'rules.generic.blocked', with: ['commandJumpSurvival'] });
-    jumpToViewDirectionBlock(source);
+function jumpCommand(origin) {
+    const entity = origin.getSource();
+    if (!Rules.getNativeValue('commandJumpSurvival') && entity.getGameMode() === GameMode.Survival)
+        return origin.sendMessage({ translate: 'rules.generic.blocked', with: ['commandJumpSurvival'] });
+    jumpToViewDirectionBlock(entity);
 }
 
 function getBlockLocationFromFace(block, face) {
