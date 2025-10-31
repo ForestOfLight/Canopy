@@ -59,8 +59,8 @@ describe('BlockStates', () => {
         expect(chunkCoords.getFormattedDataOwnLine()).toEqual({
             translate: 'rules.infoDisplay.chunkCoords.display', 
             with: [
-                `3 2 15`,
-                `2 4 -2`
+                "§d03 02 15",
+                "§l§d2 4 -2",
             ]
         });
     });

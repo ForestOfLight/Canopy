@@ -22,6 +22,7 @@ import LookingAt from './LookingAt';
 import SignalStrength from './SignalStrength';
 import { PeekInventory } from './PeekInventory';
 import { BlockStates } from './BlockStates';
+import { Structures } from './Structures';
 
 const playerToInfoDisplayMap = {};
 let currentTickWorldwideElementData = {};
@@ -41,21 +42,22 @@ class InfoDisplay {
 			new SlimeChunk(player, 4),
 			new Light(player, 5),
 			new Biome(player, 6),
-			new Velocity(player, 7),
-			new Speed(player, 8),
-			new Facing(player, 9),
-			new Entities(player, 10),
-			new MoonPhase(11),
-			new WorldDay(12),
-			new TimeOfDay(12),
-			new SessionTime(player, 13),
-			new EventTrackers(14),
-			new HopperCounterCounts(15),
-			new SimulationMap(player, 16),
-			new LookingAt(player, 17),
-			new SignalStrength(player, 17),
-			new BlockStates(player, 18),
-			new PeekInventory(player, 19)
+			new Structures(player, 7),
+			new Velocity(player, 8),
+			new Speed(player, 9),
+			new Facing(player, 10),
+			new Entities(player, 11),
+			new MoonPhase(12),
+			new WorldDay(13),
+			new TimeOfDay(13),
+			new SessionTime(player, 14),
+			new EventTrackers(15),
+			new HopperCounterCounts(16),
+			new SimulationMap(player, 17),
+			new LookingAt(player, 18),
+			new SignalStrength(player, 18),
+			new BlockStates(player, 19),
+			new PeekInventory(player, 20)
 		];
 		playerToInfoDisplayMap[player.id] = this;
 	}
@@ -89,7 +91,7 @@ class InfoDisplay {
 		
 
 		if (currIndex !== 0 && this.isOnNewLine(elements, currIndex) && !this.dataIsWhitespace(data)) 
-			this.infoMessage.rawtext.push({ text: '\n' });
+			this.infoMessage.rawtext.push({ text: '\n§r' });
 		
 		if (!this.isOnNewLine(elements, currIndex) && !this.dataIsWhitespace(data)) 
 			this.infoMessage.rawtext.push({ text: ' ' });

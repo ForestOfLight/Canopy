@@ -1,4 +1,4 @@
-import { Speed } from '../../../../../../Canopy [BP]/scripts/src/rules/infodisplay/Speed';
+import { Structures } from '../../../../../../Canopy [BP]/scripts/src/rules/infodisplay/Structures';
 import { describe, it, expect, beforeAll, vi } from 'vitest';
 import { InfoDisplayElement } from '../../../../../../Canopy [BP]/scripts/src/rules/infodisplay/InfoDisplayElement';
 import { Rules } from '../../../../../../Canopy [BP]/scripts/lib/canopy/Rules';
@@ -26,8 +26,7 @@ vi.mock('@minecraft/server', () => ({
             }
         },
         runJob: vi.fn()
-    },
-    TicksPerSecond: 20
+    }
 }));
 
 vi.mock("@minecraft/server-ui", () => ({
@@ -35,33 +34,36 @@ vi.mock("@minecraft/server-ui", () => ({
 }));
 
 const mockPlayer = {
-    getVelocity: vi.fn(() => ({ x: 0, y: 0, z: 0 })),
+    dimension: {
+        getGeneratedStructures: vi.fn(() => ["minecraft:ocean_monument", "minecraft:outpost"])
+    }
 };
 
-describe('Speed', () => {
-    let speed;
+describe('Structures', () => {
+    let structures;
     beforeAll(() => {
-        speed = new Speed(mockPlayer, 0);
+        structures = new Structures(mockPlayer, 0);
     });
 
     it('should inherit from InfoDisplayElement', () => {
-        expect(speed).toBeInstanceOf(InfoDisplayElement);
+        expect(structures).toBeInstanceOf(InfoDisplayElement);
     });
 
     it('should create a new InfoDisplay rule', () => {
-        expect(Rules.get(speed.identifier)).toBeDefined();
+        expect(Rules.get(structures.identifier)).toBeDefined();
     });
 
-    it('should have a method to return the player\'s formatted speed', () => {
-        expect(speed.getFormattedDataOwnLine()).toEqual({
-            text: "§d0.000§r m/s"
+    it('should have a method to return any generated structures at the player\'s location', () => {
+        expect(structures.getFormattedDataOwnLine()).toEqual({
+            "translate": "rules.infodisplay.structures.display",
+            "with": [ "§bminecraft:ocean_monument, minecraft:outpost" ]
         });
     });
 
-    it('should correctly calculate speed from player velocity', () => {
-        mockPlayer.getVelocity.mockReturnValue({ x: 3, y: 4, z: 0 });
-        expect(speed.getFormattedDataOwnLine()).toEqual({
-            text: "§d100.000§r m/s",
+    it('should return an empty string when there are no structures found', () => {
+        mockPlayer.dimension.getGeneratedStructures.mockReturnValue([]);
+        expect(structures.getFormattedDataOwnLine()).toEqual({
+            text: ''
         });
     });
 });
