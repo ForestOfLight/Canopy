@@ -4,6 +4,7 @@ import { HSSFinder } from "../classes/HSSFinder";
 import { PlayerCommandOrigin } from "../../lib/canopy/PlayerCommandOrigin";
 import { EntityCommandOrigin } from "../../lib/canopy/EntityCommandOrigin";
 import { BlockCommandOrigin } from "../../lib/canopy/BlockCommandOrigin";
+import { GeneratedStructureError } from "../classes/errors/GeneratedStructureError";
 
 export const HSS_ACTIONS = Object.freeze({
     CALCULATE: 'calculate',
@@ -12,7 +13,8 @@ export const HSS_ACTIONS = Object.freeze({
 });
 
 export class HSS extends VanillaCommand {
-    hssFinder;
+    hssFinders = [];
+    isFindingFortress = false;
 
     constructor() {
         super({
@@ -24,7 +26,6 @@ export class HSS extends VanillaCommand {
             allowedSources: [PlayerCommandOrigin, EntityCommandOrigin, BlockCommandOrigin],
             callback: (origin, ...args) => this.hssCommand(origin, ...args),
         });
-        this.hssFinder = void 0;
     }
 
     hssCommand(origin, action) {
@@ -42,34 +43,39 @@ export class HSS extends VanillaCommand {
     }
 
     calculateHSS(source) {
-        if (this.hssFinder)
-            return { status: CustomCommandStatus.Failure, message: 'commands.hss.alreadyrunning' };
         const dimension = source.dimension;
         const location = source.location;
         system.run(() => {
-            this.hssFinder = new HSSFinder({ dimension, location, mode: HSS_ACTIONS.CALCULATE });
+            try {
+                this.hssFinders.push(new HSSFinder({ dimension, location, mode: HSS_ACTIONS.CALCULATE }));
+            } catch (error) {
+                if (error instanceof GeneratedStructureError)
+                    source.sendMessage({ rawtext: [ { text: '§c' }, { translate: error.message } ] });
+                else
+                    throw error;
+            }
         });
         return { status: CustomCommandStatus.Success, message: 'commands.hss.started' };
     }
 
     startFindingFortressHSS() {
-        if (this.hssFinder)
+        if (this.isFindingFortress)
             return { status: CustomCommandStatus.Failure, message: 'commands.hss.alreadyrunning' };
         system.run(() => {
-            this.hssFinder = new HSSFinder({ mode: HSS_ACTIONS.FORTRESS });
+            this.hssFinders.push(new HSSFinder({ mode: HSS_ACTIONS.FORTRESS }));
+            this.isFindingFortress = true;
         });
         return { status: CustomCommandStatus.Success, message: 'commands.hss.started.fortress' };
     }
 
     stopFindingHSS() {
-        if (!this.hssFinder)
+        if (this.hssFinders.length === 0)
             return { status: CustomCommandStatus.Failure, message: 'commands.hss.notrunning' };
         system.run(() => {
-            this.hssFinder.destroy();
-            this.hssFinder = void 0;
+            this.hssFinders.forEach((hssFinder) => hssFinder.destroy());
+            this.hssFinders.length = 0;
+            this.isFindingFortress = false;
         });
-        if (this.hssFinder.isFortress)
-            return { status: CustomCommandStatus.Success, message: 'commands.hss.stopped.fortress' };
         return { status: CustomCommandStatus.Success, message: 'commands.hss.stopped' };
     }
 }

@@ -5,6 +5,7 @@ import { StructureBoundsFinder } from "./StructureBoundsFinder";
 import { HSSRenderer } from "./HSSRenderer";
 import { DebugBox, debugDrawer } from "@minecraft/debug-utilities";
 import { HSS_ACTIONS } from "../commands/hss";
+import { GeneratedStructureError } from "./errors/GeneratedStructureError";
 
 export class HSSFinder {
     isFortress = false;
@@ -16,8 +17,10 @@ export class HSSFinder {
             this.onEntitySpawnBound = this.onEntitySpawn.bind(this);
             world.afterEvents.entitySpawn.subscribe(this.onEntitySpawnBound);
             this.isFortress = true;
-        } else {
+        } else if (this.structureHasHSS(dimensionLocation)) {
             this.processStructureAt(dimensionLocation);
+        } else {
+            throw new GeneratedStructureError('commands.hss.started.nostructure');
         }
     }
 
@@ -117,5 +120,9 @@ export class HSSFinder {
             top.y++;
         top.y--;
         return top;
+    }
+
+    structureHasHSS(dimensionLocation) {
+        return Object.values(HSSTypes).includes(dimensionLocation.dimension.getGeneratedStructures(dimensionLocation.location).at(0)?.replace('minecraft:', ''));
     }
 }

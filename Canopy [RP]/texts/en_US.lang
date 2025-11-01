@@ -170,12 +170,14 @@ commands.health.fail.mspt=§cCould not compute MSPT. Please report this error.
 
 commands.hss=Finds and displays hardcoded spawn spots in the world.
 commands.hss.invalidaction=§cInvalid HSS action.
-commands.hss.started=§7Calculated hardcoded spawn spots for the structure at your location.
+commands.hss.started=§7Calculating hardcoded spawn spots for the structure at your location.
 commands.hss.started.fortress=§7Started finding fortress hardcoded spawn spots. Spawns will be mocked to speed up the process.
+commands.hss.started.nostructure=No naturally generated structure with hardcoded spawn spots found at your location.
+commands.hss.started.unloaded=Could not detect structure boundaries. Make sure all chunks containing the structure are loaded.
+commands.hss.started.worldbounds=Could not detect structure boundaries. Structure boundary search went out of world boundaries.
 commands.hss.stopped=§7Stopped displaying hardcoded spawn spots.
-commands.hss.stopped.fortress=§7Stopped finding and displaying hardcoded spawn spots. Spawns have returned to normal.
-commands.hss.alreadyrunning=§cYou are already finding or displaying hardcoded spawn spots.
-commands.hss.notrunning=§cYou are not currently finding or displaying hardcoded spawn spots.
+commands.hss.alreadyrunning=§cYou are already finding fortress hardcoded spawn spots.
+commands.hss.notrunning=§cYou are not currently finding fortress hardcoded spawn spots.
 
 commands.info=Toggle InfoDisplay rules. (Alias: i)
 commands.info.menu=Displays a menu to toggle InfoDisplay rules.
