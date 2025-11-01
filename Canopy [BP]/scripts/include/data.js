@@ -191,16 +191,16 @@ export const biomeToHexColorMap = {
 
 export const HSSTypes = Object.freeze({
     Fortress: 'fortress',
-    OceanMonument: 'ocean_monument',
-    Outpost: 'outpost',
-    WitchHut: 'witch_hut'
+    OceanMonument: 'monument',
+    PillagerOutpost: 'pillager_outpost',
+    WitchHut: 'swamp_hut'
 });
 
 export const mobTypeToHSSMap = {
     'minecraft:blaze': HSSTypes.Fortress,
     'minecraft:guardian': HSSTypes.OceanMonument,
     'minecraft:magma_cube': HSSTypes.Fortress,
-    'minecraft:pillager': HSSTypes.Outpost,
+    'minecraft:pillager': HSSTypes.PillagerOutpost,
     'minecraft:skeleton': HSSTypes.Fortress,
     'minecraft:witch': HSSTypes.WitchHut,
     'minecraft:wither_skeleton': HSSTypes.Fortress,
