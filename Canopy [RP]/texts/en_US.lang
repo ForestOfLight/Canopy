@@ -170,11 +170,12 @@ commands.health.fail.mspt=§cCould not compute MSPT. Please report this error.
 
 commands.hss=Finds and displays hardcoded spawn spots in the world.
 commands.hss.invalidaction=§cInvalid HSS action.
-commands.hss.findingstarted=§7Started finding hardcoded spawn spots. Spawns will be mocked to speed up the process.
-commands.hss.findingstopped=§7Stopped finding hardcoded spawn spots. Spawns have returned to normal.
-commands.hss.finding=§7Finding hardcoded spawn spots...
-commands.hss.alreadyfinding=§cYou are already finding hardcoded spawn spots.
-commands.hss.notfinding=§cYou are not currently finding hardcoded spawn spots.
+commands.hss.started=§7Calculated hardcoded spawn spots for the structure at your location.
+commands.hss.started.fortress=§7Started finding fortress hardcoded spawn spots. Spawns will be mocked to speed up the process.
+commands.hss.stopped=§7Stopped displaying hardcoded spawn spots.
+commands.hss.stopped.fortress=§7Stopped finding and displaying hardcoded spawn spots. Spawns have returned to normal.
+commands.hss.alreadyrunning=§cYou are already finding or displaying hardcoded spawn spots.
+commands.hss.notrunning=§cYou are not currently finding or displaying hardcoded spawn spots.
 
 commands.info=Toggle InfoDisplay rules. (Alias: i)
 commands.info.menu=Displays a menu to toggle InfoDisplay rules.
@@ -376,7 +377,7 @@ rules.infoDisplay.tpsAndEntities.display=TPS: %1§r Entities: %2
 rules.infoDisplay.light=Shows the light level of the block where your foot is.
 rules.infoDisplay.light.display=Light: %1 §r(%2 sky§r)
 rules.infoDisplay.biome=Shows the biome you are in.
-rules.infodisplay.structures=Shows generated structures at your location.
+rules.infodisplay.structures=Shows naturally generated structures at your location.
 rules.infodisplay.structures.display=Structures: 
 rules.infodisplay.structures.display.none=None
 rules.infoDisplay.worldDay=Shows the count of Minecraft days since the world began.

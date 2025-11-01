@@ -2,7 +2,7 @@
 	"format_version": "1.10.0",
 	"particle_effect": {
 		"description": {
-			"identifier": "canopy:outpost_hss_marker",
+			"identifier": "canopy:pillager_outpost_hss_marker",
 			"basic_render_parameters": {
 				"material": "particles_blend",
 				"texture": "textures/particle/outpost_hss_marker"

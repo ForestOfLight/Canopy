@@ -35,7 +35,7 @@ vi.mock("@minecraft/server-ui", () => ({
 
 const mockPlayer = {
     dimension: {
-        getGeneratedStructures: vi.fn(() => ["minecraft:ocean_monument", "minecraft:outpost"])
+        getGeneratedStructures: vi.fn(() => ["minecraft:monument", "minecraft:pillager_outpost"])
     }
 };
 
@@ -56,7 +56,7 @@ describe('Structures', () => {
     it('should have a method to return any generated structures at the player\'s location', () => {
         expect(structures.getFormattedDataOwnLine()).toEqual({
             "translate": "rules.infodisplay.structures.display",
-            "with": [ "§bminecraft:ocean_monument, minecraft:outpost" ]
+            "with": [ "§bminecraft:monument, minecraft:pillager_outpost" ]
         });
     });
 
