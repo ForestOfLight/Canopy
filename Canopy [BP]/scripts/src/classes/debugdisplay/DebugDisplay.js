@@ -51,6 +51,8 @@ import { Families } from './Families';
 import { TNT } from './TNT';
 import { CollisionBox } from './CollisionBox';
 import { HitBox } from './HitBox';
+import { EyeLevel } from './EyeLevel';
+import { ViewDirectionVector } from './ViewDirectionVector';
 
 const entityToDebugDisplayMap = {};
 const debugableProperties = Object.freeze({
@@ -102,7 +104,9 @@ const debugableProperties = Object.freeze({
     viewdirection: ViewDirection,
 
     collisionbox: CollisionBox,
-    hitbox: HitBox
+    hitbox: HitBox,
+    eyelevel: EyeLevel,
+    viewdirectionvector: ViewDirectionVector
 });
 
 export class DebugDisplay {

@@ -8,7 +8,7 @@ export class HitBox extends DebugDisplayShapeElement {
         const hitboxData = this.getHitBox();
         this.hitbox = new DebugBox(hitboxData.location);
         this.hitbox.bound = hitboxData.size
-        this.hitbox.color = { red: 1, green: 0, blue: 0 };
+        this.hitbox.color = { red: 0, green: 1, blue: 0 };
         this.shapes.push(this.hitbox);
     }
 
@@ -19,13 +19,21 @@ export class HitBox extends DebugDisplayShapeElement {
     }
 
     getHitBox() {
-        const isProjectile = this.entity.getComponent(EntityComponentTypes.Projectile) !== void 0;
         const AABB = this.entity.getAABB();
-        const differenceFromCollisionBox = isProjectile ? this.getProjectileMargin() : new Vector(0.1, 0.1, 0.1);
+        const marginFromCollisionBox = this.getSpecialMargin();
         return {
-            location: Vector.from(AABB.center).subtract(AABB.extent).subtract(differenceFromCollisionBox),
-            size: Vector.from(AABB.extent).add(differenceFromCollisionBox).multiply(2)
+            location: Vector.from(AABB.center).subtract(AABB.extent).subtract(marginFromCollisionBox),
+            size: Vector.from(AABB.extent).add(marginFromCollisionBox).multiply(2)
         };
+    }
+
+    getSpecialMargin() {
+        const isProjectile = this.entity.getComponent(EntityComponentTypes.Projectile) !== void 0;
+        if (isProjectile)
+            return this.getProjectileMargin();
+        if (this.entity.typeId === "minecraft:shulker")
+            return new Vector(0, 0, 0);
+        return new Vector(0.1, 0.1, 0.1);
     }
 
     getProjectileMargin() {
