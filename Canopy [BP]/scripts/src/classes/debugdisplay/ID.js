@@ -1,6 +1,6 @@
-import { DebugDisplayElement } from './DebugDisplayElement.js';
+import { DebugDisplayTextElement } from './DebugDisplayTextElement.js';
 
-export class ID extends DebugDisplayElement {
+export class ID extends DebugDisplayTextElement {
     getFormattedData() {
         return '§2' + this.entity.id;
     }

@@ -1,7 +1,7 @@
 import { debugDrawer, DebugText } from '@minecraft/debug-utilities';
 import { Vector } from "../../../lib/Vector";
 
-export class DebugDisplayDrawer {
+export class DebugDisplayTextDrawer {
     textShape;
     debugDisplay;
 

@@ -1,5 +1,7 @@
 import { system, world } from '@minecraft/server';
-import { DebugDisplayDrawer } from './DebugDisplayDrawer';
+import { DebugDisplayTextDrawer } from './DebugDisplayTextDrawer';
+import { DebugDisplayTextElement } from './DebugDisplayTextElement';
+import { DebugDisplayShapeElement } from './DebugDisplayShapeElement';
 
 import { Location } from './Location';
 import { HeadLocation } from './HeadLocation';
@@ -47,6 +49,7 @@ import { SkinId } from './SkinId';
 import { Tame } from './Tame';
 import { Families } from './Families';
 import { TNT } from './TNT';
+import { CollisionBox } from './CollisionBox';
 
 const entityToDebugDisplayMap = {};
 const debugableProperties = Object.freeze({
@@ -96,13 +99,15 @@ const debugableProperties = Object.freeze({
     variant: Variant,
     velocity: Velocity,
     viewdirection: ViewDirection,
+
+    collisionbox: CollisionBox
 });
 
 export class DebugDisplay {
 	entity;
 	enabledElements = [];
 	debugMessage = '';
-    drawer;
+    textDrawer;
 
 	constructor(entity) {
 		this.entity = entity;
@@ -111,8 +116,8 @@ export class DebugDisplay {
 	}
 
     destroy() {
-        this.drawer.destroy();
-        this.drawer = void 0;
+        this.textDrawer.destroy();
+        this.textDrawer = void 0;
         delete entityToDebugDisplayMap[this.entity.id];
     }
 
@@ -123,8 +128,11 @@ export class DebugDisplay {
 
     removeElement(property) {
         const index = this.enabledElements.findIndex(e => e instanceof debugableProperties[property]);
+        let splicedElement;
         if (index !== -1)
-            this.enabledElements.splice(index, 1);
+            splicedElement = this.enabledElements.splice(index, 1)[0];
+        if (splicedElement instanceof DebugDisplayShapeElement)
+            splicedElement.destroy();
     }
 
     hasElement(property) {
@@ -134,14 +142,18 @@ export class DebugDisplay {
 	update() {
 		this.debugMessage = '';
 		const enabledElements = this.getEnabledElements();
-		for (let i = 0; i < enabledElements.length; i++)
-			this.updateElementData(enabledElements, i);
+		for (let i = 0; i < enabledElements.length; i++) {
+            const element = enabledElements[i];
+            if (element instanceof DebugDisplayTextElement)
+                this.updateTextElementData(element, i);
+            else
+                element.update();
+        }
 		this.debugMessage.trim();
-        this.drawer.update();
+        this.textDrawer.update();
 	}
 	
-	updateElementData(elements, currIndex) {
-		const element = elements[currIndex];
+	updateTextElementData(element, currIndex) {
 		let elementText = element.getFormattedData();
         if (elementText === void 0 ||this.isWhitespace(elementText))
             elementText = element.type + ': §7n/a';
@@ -161,8 +173,8 @@ export class DebugDisplay {
 	}
 
 	startDebugDisplay() {
-        if (!this.drawer)
-            this.drawer = new DebugDisplayDrawer(this);
+        if (!this.textDrawer)
+            this.textDrawer = new DebugDisplayTextDrawer(this);
 	}
 
     static getDebugDisplay(entity) {
