@@ -50,6 +50,7 @@ import { Tame } from './Tame';
 import { Families } from './Families';
 import { TNT } from './TNT';
 import { CollisionBox } from './CollisionBox';
+import { HitBox } from './HitBox';
 
 const entityToDebugDisplayMap = {};
 const debugableProperties = Object.freeze({
@@ -100,7 +101,8 @@ const debugableProperties = Object.freeze({
     velocity: Velocity,
     viewdirection: ViewDirection,
 
-    collisionbox: CollisionBox
+    collisionbox: CollisionBox,
+    hitbox: HitBox
 });
 
 export class DebugDisplay {
@@ -118,6 +120,10 @@ export class DebugDisplay {
     destroy() {
         this.textDrawer.destroy();
         this.textDrawer = void 0;
+        this.enabledElements.forEach(element => {
+            if (element instanceof DebugDisplayShapeElement)
+                element.destroy();
+        });
         delete entityToDebugDisplayMap[this.entity.id];
     }
 
