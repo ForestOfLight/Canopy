@@ -16,14 +16,6 @@ export class ViewDirectionVector extends DebugDisplayShapeElement {
         this.eyeLevel.endLocation = viewDirectionData.endLocation;
     }
 
-    getCollisionBox() {
-        const AABB = this.entity.getAABB();
-        return {
-            location: Vector.from(AABB.center).subtract(AABB.extent),
-            size: Vector.from(AABB.extent).multiply(2)
-        };
-    }
-
     getViewDirectionBounds() {
         const location = new Vector(this.entity.location.x, this.entity.getHeadLocation().y, this.entity.location.z);
         return {
