@@ -1,7 +1,6 @@
 import { DebugDisplayShapeElement } from "./DebugDisplayShapeElement";
 import { Vector } from "../../../lib/Vector";
 import { DebugBox } from "@minecraft/debug-utilities";
-import { EntityComponentTypes, system } from "@minecraft/server";
 
 export class HitBox extends DebugDisplayShapeElement {
     createShapes() {
@@ -20,27 +19,16 @@ export class HitBox extends DebugDisplayShapeElement {
 
     getHitBox() {
         const AABB = this.entity.getAABB();
-        const marginFromCollisionBox = this.getSpecialMargin();
+        const marginFromCollisionBox = this.getMargin();
         return {
             location: Vector.from(AABB.center).subtract(AABB.extent).subtract(marginFromCollisionBox),
             size: Vector.from(AABB.extent).add(marginFromCollisionBox).multiply(2)
         };
     }
 
-    getSpecialMargin() {
-        const isProjectile = this.entity.getComponent(EntityComponentTypes.Projectile) !== void 0;
-        if (isProjectile)
-            return this.getProjectileMargin();
+    getMargin() {
         if (this.entity.typeId === "minecraft:shulker")
             return new Vector(0, 0, 0);
         return new Vector(0.1, 0.1, 0.1);
-    }
-
-    getProjectileMargin() {
-        const spawnTick = this.entity.getDynamicProperty('spawnTick') || 0;
-        const ageTicks = system.currentTick - spawnTick;
-        const waitTicksCount = 2;
-        const margin = Math.min(Math.max(0, ageTicks - waitTicksCount + 1) * 0.05, 0.3);
-        return new Vector(margin, margin, margin);
     }
 }
