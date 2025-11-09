@@ -36,7 +36,7 @@ export class AttackBox extends DebugDisplayShapeElement {
         const isProjectile = this.entity.getComponent(EntityComponentTypes.Projectile) !== void 0;
         if (isProjectile)
             return this.getProjectileMargin();
-        return new Vector(1, 0, 1);
+        return new Vector(0.8, 0, 0.8);
     }
 
     getProjectileMargin() {
