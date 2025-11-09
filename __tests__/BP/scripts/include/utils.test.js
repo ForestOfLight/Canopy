@@ -420,7 +420,7 @@ describe('getColoredDimensionName()', () => {
 	});
 
 	it('returns correct color code for unknown dimension', () => {
-		expect(getColoredDimensionName('unknown_dimension')).toBe('§7Unknown');
+		expect(getColoredDimensionName('unknown_dimension')).toBe('§funknown_dimension');
 	});
 });
 

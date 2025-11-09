@@ -133,7 +133,23 @@ export function getColoredDimensionName(dimensionId) {
 		case 'the_end':
 			return '§dEnd';
 		default:
-			return '§7Unknown';
+			return '§f' + dimensionId;
+	}
+}
+
+export function getColorByDimension(dimensionId) {
+	switch (dimensionId) {
+		case 'minecraft:overworld':
+		case 'overworld':
+			return '§a';
+		case 'minecraft:nether':
+		case 'nether':
+			return '§c';
+		case 'minecraft:the_end':
+		case 'the_end':
+			return '§d';
+		default:
+			return '§f';
 	}
 }
 

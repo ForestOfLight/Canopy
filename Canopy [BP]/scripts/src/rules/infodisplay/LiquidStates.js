@@ -1,14 +1,13 @@
 import { InfoDisplayElement } from './InfoDisplayElement.js';
-import { getRaycastResults } from '../../../include/utils.js';
 import { LiquidType } from '@minecraft/server';
 
-export class BlockStates extends InfoDisplayElement {
+export class LiquidStates extends InfoDisplayElement {
     player;
 
     constructor(player, displayLine) {
         const ruleData = {
-            identifier: 'blockStates',
-            description: { translate: 'rules.infoDisplay.blockStates' }
+            identifier: 'liquidStates',
+            description: { translate: 'rules.infoDisplay.liquidStates' }
         }
         super(ruleData, displayLine);
         this.player = player;
@@ -23,11 +22,10 @@ export class BlockStates extends InfoDisplayElement {
     }
 
     tryFormatBlockStates() {
-        const { blockRayResult, entityRayResult } = getRaycastResults(this.player, 7);
-        const entity = entityRayResult[0]?.entity;
-        if (entity || blockRayResult?.block.isLiquid)
-            return '';
-        return this.formatBlockStates(blockRayResult);
+        const blockRayResult = this.player.getBlockFromViewDirection({ includeLiquidBlocks: true, includePassableBlocks: true, maxDistance: 7 })
+        if (blockRayResult?.block.isLiquid)
+            return this.formatBlockStates(blockRayResult);
+        return '';
     }
 
     formatBlockStates(lookingAtBlock) {
@@ -38,7 +36,7 @@ export class BlockStates extends InfoDisplayElement {
             if (block.canContainLiquid(LiquidType.Water))
                 states.isWaterlogged = block.isWaterlogged;
             for (const [key, value] of Object.entries(states))
-                blockStates += `§7${key}: §3${value}\n`;
+                blockStates += `§8${key}: §t${value}\n`;
             blockStates = blockStates.slice(0, -1);
         }
         return blockStates;
