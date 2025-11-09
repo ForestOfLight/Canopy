@@ -53,6 +53,7 @@ import { CollisionBox } from './CollisionBox';
 import { HitBox } from './HitBox';
 import { EyeLevel } from './EyeLevel';
 import { ViewDirectionVector } from './ViewDirectionVector';
+import { AttackBox } from './AttackBox';
 
 const entityToDebugDisplayMap = {};
 const debugableProperties = Object.freeze({
@@ -103,6 +104,7 @@ const debugableProperties = Object.freeze({
     velocity: Velocity,
     viewdirection: ViewDirection,
 
+    attackbox: AttackBox,
     collisionbox: CollisionBox,
     hitbox: HitBox,
     eyelevel: EyeLevel,
