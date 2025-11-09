@@ -1,6 +1,6 @@
-import { DebugDisplayElement } from './DebugDisplayElement.js';
+import { DebugDisplayTextElement } from './DebugDisplayTextElement.js';
 
-export class NameTag extends DebugDisplayElement {
+export class NameTag extends DebugDisplayTextElement {
     getFormattedData() {
         const nameTag = this.entity.nameTag;
         if (!nameTag)

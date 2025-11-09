@@ -1,7 +1,7 @@
-import { DebugDisplayElement } from './DebugDisplayElement.js';
+import { DebugDisplayTextElement } from './DebugDisplayTextElement.js';
 import { commandTntFuse } from '../../rules/commandTntFuse.js';
 
-export class TNT extends DebugDisplayElement {
+export class TNT extends DebugDisplayTextElement {
     totalFuseTicks;
 
     getFormattedData() {

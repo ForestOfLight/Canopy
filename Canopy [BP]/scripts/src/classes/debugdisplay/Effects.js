@@ -1,6 +1,6 @@
-import { DebugDisplayElement } from './DebugDisplayElement.js';
+import { DebugDisplayTextElement } from './DebugDisplayTextElement.js';
 
-export class Effects extends DebugDisplayElement {
+export class Effects extends DebugDisplayTextElement {
     getFormattedData() {
         const effects = this.entity.getEffects();
         let message = '';

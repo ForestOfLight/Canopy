@@ -1,9 +1,9 @@
-import { DebugDisplayElement } from './DebugDisplayElement.js';
+import { DebugDisplayTextElement } from './DebugDisplayTextElement.js';
 import { playerTameEntityEvent } from '../../events/PlayerTameEntityEvent.js';
 import { EntityComponentTypes } from '@minecraft/server';
 import { getNameFromEntityId } from '../../../include/utils.js';
 
-export class Tame extends DebugDisplayElement {
+export class Tame extends DebugDisplayTextElement {
     tameable;
     tameMount;
     tameItems;
