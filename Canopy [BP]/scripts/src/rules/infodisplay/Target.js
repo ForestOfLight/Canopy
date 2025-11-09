@@ -1,9 +1,9 @@
 import { InfoDisplayElement } from "./InfoDisplayElement";
 import { getRaycastResults, parseName, stringifyLocation } from "../../../include/utils";
 
-class LookingAt extends InfoDisplayElement {
+export class Target extends InfoDisplayElement {
     constructor(player, displayLine) {
-        const ruleData = { identifier: 'lookingAt', description: { translate: 'rules.infoDisplay.lookingAt' } };
+        const ruleData = { identifier: 'target', description: { translate: 'rules.infoDisplay.target' } };
         super(ruleData, displayLine);
         this.player = player;
     }
@@ -25,7 +25,7 @@ class LookingAt extends InfoDisplayElement {
         let blockName = '';
         let raycastHitFace;
         const block = lookingAtBlock?.block ?? undefined;
-        if (block) {
+        if (block && !block.isLiquid) {
             raycastHitFace = lookingAtBlock.face;
             try {
                 blockName = `§a${parseName(block)}`;
@@ -57,5 +57,3 @@ class LookingAt extends InfoDisplayElement {
         return { LookingAtName: entityName, LookingAtEntity: entity }
     }
 }
-
-export default LookingAt;
