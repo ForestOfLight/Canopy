@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { RuleHelpPage } from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/RuleHelpPage";
 import { RuleHelpEntry } from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/RuleHelpEntry";
-import { Rule } from "../../../../../../Canopy [BP]/scripts/lib/canopy/Rule";
-import { Rules } from "../../../../../../Canopy [BP]/scripts/lib/canopy/Rules";
+import { BooleanRule } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule";
+import { Rules } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules";
 
 vi.mock("@minecraft/server", () => ({
     world: { 
@@ -88,7 +88,7 @@ describe('RuleHelpPage', () => {
             const description = 'Test Description';
             const usage = 'Test Usage';
             const ruleHelpPage = new RuleHelpPage({ title, description, usage });
-            const rule = new Rule({ identifier: 'testRule', description: 'Test Rule', usage: 'testRule' });
+            const rule = new BooleanRule({ identifier: 'testRule', description: 'Test Rule', usage: 'testRule' });
             const ruleHelpEntry = new RuleHelpEntry(rule);
 
             ruleHelpPage.addEntry(rule);
@@ -101,7 +101,7 @@ describe('RuleHelpPage', () => {
             const description = 'Test Description';
             const usage = 'Test Usage';
             const ruleHelpPage = new RuleHelpPage({ title, description, usage });
-            const rule = new Rule({ identifier: 'testRule', description: 'Test Rule', usage: 'testRule' });
+            const rule = new BooleanRule({ identifier: 'testRule', description: 'Test Rule', usage: 'testRule' });
 
             ruleHelpPage.addEntry(rule);
             ruleHelpPage.addEntry(rule);
@@ -120,7 +120,7 @@ describe('RuleHelpPage', () => {
             const description = 'Test Description';
             const usage = 'Test Usage';
             const ruleHelpPage = new RuleHelpPage({ title, description, usage });
-            const rule = new Rule({ identifier: 'testRule', description: 'Test Rule', usage: 'testRule' });
+            const rule = new BooleanRule({ identifier: 'testRule', description: 'Test Rule', usage: 'testRule' });
 
             ruleHelpPage.addEntry(rule);
 
@@ -132,7 +132,7 @@ describe('RuleHelpPage', () => {
             const description = 'Test Description';
             const usage = 'Test Usage';
             const ruleHelpPage = new RuleHelpPage({ title, description, usage });
-            const rule = new Rule({ identifier: 'testRule', description: 'Test Rule', usage: 'testRule' });
+            const rule = new BooleanRule({ identifier: 'testRule', description: 'Test Rule', usage: 'testRule' });
 
             expect(ruleHelpPage.hasEntry(rule)).toBe(false);
         });
@@ -148,7 +148,7 @@ describe('RuleHelpPage', () => {
             const description = 'Test Description';
             const usage = 'Test Usage';
             const ruleHelpPage = new RuleHelpPage({ title, description, usage });
-            const rule = new Rule({ identifier: 'testRule', description: 'Test Rule', usage: 'testRule' });
+            const rule = new BooleanRule({ identifier: 'testRule', description: 'Test Rule', usage: 'testRule' });
             ruleHelpPage.addEntry(rule);
 
             const rawMessage = await ruleHelpPage.toRawMessage();

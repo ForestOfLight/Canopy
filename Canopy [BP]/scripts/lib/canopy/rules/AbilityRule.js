@@ -1,13 +1,15 @@
-import { GlobalRule } from "./GlobalRule";
+import { BooleanRule } from "./BooleanRule";
 import { EntityComponentTypes, system, world } from "@minecraft/server";
+import { GlobalRule } from "./GlobalRule";
 
 const DEFAULT_ACTION_ITEM = "minecraft:arrow";
 
-export class AbilityRule extends GlobalRule {
+export class AbilityRule extends BooleanRule {
     activePlayerIds = new Set();
     playerJoinTick = {};
 
     constructor(ruleOptions, { slotNumber, actionItem = DEFAULT_ACTION_ITEM, onPlayerEnableCallback = () => {}, onPlayerDisableCallback = () => {} } = {}) {
+        ruleOptions = GlobalRule.morphOptions(ruleOptions);
         super({ ...ruleOptions });
         this.slotNumber = slotNumber;
         this.actionItemId = actionItem;

@@ -1,16 +1,16 @@
 import { BlockPermutation, EntityComponentTypes, EquipmentSlot, GameMode, system, world } from "@minecraft/server";
-import { GlobalRule } from "../../lib/canopy/GlobalRule";
+import { BooleanRule, GlobalRule } from "../../lib/canopy/Canopy";
 
-export class EchoShardsEnableShriekers extends GlobalRule {
+export class EchoShardsEnableShriekers extends BooleanRule {
     shriekerBlockType = 'minecraft:sculk_shrieker';
     activationItemType = 'minecraft:echo_shard';
 
     constructor() {
-        super({
+        super(GlobalRule.morphOptions({
             identifier: 'echoShardsEnableShriekers',
             onEnableCallback: () => this.subscribeToEvent(),
             onDisableCallback: () => this.unsubscribeFromEvent()
-        });
+        }));
         this.onPlayerInteractWithBlockBound = this.onPlayerInteractWithBlock.bind(this);
     }
 

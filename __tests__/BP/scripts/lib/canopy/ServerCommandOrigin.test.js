@@ -1,4 +1,4 @@
-import { ServerCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/ServerCommandOrigin";
+import { ServerCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/commands/ServerCommandOrigin";
 import { beforeEach, describe, expect, it } from "vitest";
 
 describe("ServerCommandOrigin", () => {

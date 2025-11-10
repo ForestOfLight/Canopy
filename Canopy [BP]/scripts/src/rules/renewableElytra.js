@@ -1,19 +1,28 @@
-import { Rule, Rules } from "lib/canopy/Canopy";
+import { GlobalRule, FloatRule } from "../../lib/canopy/Canopy";
 import { ItemStack, world } from "@minecraft/server";
 
-const DROP_CHANCE = 0.01;
-
-new Rule({
-    category: 'Rules',
-    identifier: 'renewableElytra',
-    description: { translate: 'rules.renewableElytra' }
-});
-
-world.afterEvents.entityDie.subscribe((event) => {
-    if (!Rules.getNativeValue('renewableElytra')) return;
-    const entity = event.deadEntity;
-    if (entity?.typeId === 'minecraft:phantom' && event.damageSource.damagingProjectile?.typeId === 'minecraft:shulker_bullet') {
-        if (Math.random() > DROP_CHANCE) return;
-        entity.dimension.spawnItem(new ItemStack('minecraft:elytra', 1), entity.location);
+class RenewableElytraDropChance extends FloatRule {
+    constructor() {
+        super(GlobalRule.morphOptions({
+            identifier: 'renewableElytraDropChance',
+            defaultValue: 0,
+            valueRange: { min: 0, max: 1 }
+        }));
+        this.subscribeToEvents();
     }
-});
+
+    subscribeToEvents() {
+        world.afterEvents.entityDie.subscribe(this.onEntityDie.bind(this));
+    }
+
+    onEntityDie(event) {
+        const entity = event.deadEntity;
+        if (entity?.typeId === 'minecraft:phantom' && event.damageSource.damagingProjectile?.typeId === 'minecraft:shulker_bullet') {
+            if (Math.random() > this.getNativeValue())
+                return;
+            entity.dimension.spawnItem(new ItemStack('minecraft:elytra', 1), entity.location);
+        }
+    }
+}
+
+export const renewableElytraDropChance = new RenewableElytraDropChance();

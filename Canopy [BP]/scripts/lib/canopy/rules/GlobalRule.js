@@ -1,12 +1,8 @@
-import { Rule } from "./Rule";
-
-class GlobalRule extends Rule {
-    constructor(options) {
+export class GlobalRule {
+    static morphOptions(options) {
         options.category = "Rules";
         if (!options.description)
             options.description = { translate: `rules.${options.identifier}` };
-        super({ ...options });
+        return { ...options };
     }
 }
-
-export { GlobalRule };

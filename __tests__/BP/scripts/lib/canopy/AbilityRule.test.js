@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { AbilityRule } from "../../../../../Canopy [BP]/scripts/lib/canopy/AbilityRule";
-import { Rules } from "../../../../../Canopy [BP]/scripts/lib/canopy/Rules";
+import { AbilityRule } from "../../../../../Canopy [BP]/scripts/lib/canopy/rules/AbilityRule";
+import { Rules } from "../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules";
 
 vi.mock('@minecraft/server', () => ({
     world: { 

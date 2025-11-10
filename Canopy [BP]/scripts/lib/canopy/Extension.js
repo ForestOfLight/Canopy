@@ -1,7 +1,7 @@
-import { Command } from "./Command";
-import { Rule } from "./Rule";
+import { Command } from "./commands/Command";
 import IPC from "../MCBE-IPC/ipc";
 import { RegisterCommand, RegisterRule, RuleValueRequest, RuleValueSet, CommandCallbackRequest, Ready, RuleValueResponse } from "./extension.ipc";
+import { BooleanRule } from "./rules/BooleanRule";
 
 class Extension {
     id = null;
@@ -107,7 +107,7 @@ class Extension {
 
     #setupRuleRegistration() {
         IPC.on(`canopyExtension:${this.id}:registerRule`, RegisterRule, (ruleData) => {
-            this.rules.push(new Rule({ category: "Rules", ...ruleData }));
+            this.rules.push(new BooleanRule({ category: "Rules", ...ruleData }));
         });
     }
 

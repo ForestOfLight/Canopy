@@ -1,4 +1,4 @@
-import { Rule } from "lib/canopy/Canopy";
+import { BooleanRule } from "lib/canopy/Canopy";
 import { system, world, DimensionTypes, ItemStack, FluidType, BlockComponentTypes } from "@minecraft/server";
 
 const CONVERSION_TIME = 20*7;
@@ -7,7 +7,7 @@ const CURRENT_CONVERSIONS = {};
 let runner;
 const onEntitySpawnBound = onEntitySpawn.bind(this);
 const onEntityRemoveBound = onEntityRemove.bind(this);
-new Rule({
+new BooleanRule({
     category: 'Rules',
     identifier: 'cauldronConcreteConversion',
     description: { translate: 'rules.cauldronConcreteConversion' },

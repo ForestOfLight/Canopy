@@ -1,5 +1,5 @@
 import { Commands } from "./Commands";
-import { Extensions } from "./Extensions";
+import { Extensions } from "../Extensions";
 
 class Command {
     #name;

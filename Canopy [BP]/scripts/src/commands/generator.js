@@ -1,8 +1,8 @@
-import { Rule, Command } from "../../lib/canopy/Canopy";
+import { BooleanRule, Command } from "../../lib/canopy/Canopy";
 import { generatorChannels } from "../classes/GeneratorChannels";
 import { formatColorStr, broadcastActionBar } from "../../include/utils";
 
-new Rule({
+new BooleanRule({
     category: 'Rules',
     identifier: 'hopperGenerators',
     description: { translate: 'rules.hopperGenerators' },

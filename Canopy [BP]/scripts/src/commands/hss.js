@@ -1,9 +1,6 @@
+import { VanillaCommand, PlayerCommandOrigin, EntityCommandOrigin, BlockCommandOrigin } from "../../lib/canopy/Canopy";
 import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, system } from "@minecraft/server";
-import { VanillaCommand } from "../../lib/canopy/VanillaCommand";
 import { HSSFinder } from "../classes/HSSFinder";
-import { PlayerCommandOrigin } from "../../lib/canopy/PlayerCommandOrigin";
-import { EntityCommandOrigin } from "../../lib/canopy/EntityCommandOrigin";
-import { BlockCommandOrigin } from "../../lib/canopy/BlockCommandOrigin";
 import { GeneratedStructureError } from "../classes/errors/GeneratedStructureError";
 
 export const HSS_ACTIONS = Object.freeze({

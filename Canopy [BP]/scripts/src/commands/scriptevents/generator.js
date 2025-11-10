@@ -1,4 +1,4 @@
-import { Rule } from "../../../lib/canopy/Canopy";
+import { BooleanRule } from "../../../lib/canopy/Canopy";
 import { system, world } from "@minecraft/server";
 import { generatorChannels } from "../../classes/GeneratorChannels";
 import { broadcastActionBar, getScriptEventSourceName, formatColorStr } from "../../../include/utils";

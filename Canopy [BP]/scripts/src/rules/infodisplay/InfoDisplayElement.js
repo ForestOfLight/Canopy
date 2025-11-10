@@ -1,5 +1,4 @@
-import { InfoDisplayRule } from '../../../lib/canopy/Canopy';
-import { Rules } from '../../../lib/canopy/Rules';
+import { InfoDisplayRule, Rules } from '../../../lib/canopy/Canopy';
 
 class InfoDisplayElement {
     identifier;

@@ -1,10 +1,10 @@
-import { Rule, Rules, VanillaCommand } from "../../lib/canopy/Canopy";
+import { BooleanRule, Rules, VanillaCommand } from "../../lib/canopy/Canopy";
 import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus } from "@minecraft/server";
 import { stringifyLocation, getColoredDimensionName } from "../../include/utils";
 
 const NETHER_SCALE_FACTOR = 8;
 
-new Rule({
+new BooleanRule({
     category: 'Rules',
     identifier: 'commandPosOthers',
     description: { translate: 'rules.commandPosOthers' }

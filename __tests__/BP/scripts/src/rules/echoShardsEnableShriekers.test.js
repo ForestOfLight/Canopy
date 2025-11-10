@@ -50,6 +50,10 @@ vi.mock("@minecraft/server", () => ({
     }
 }));
 
+vi.mock("@minecraft/server-ui", () => ({
+    ModalFormData: vi.fn()
+}));
+
 describe('echoShardsEnableShriekers', () => {
     it('should subscribe to player block placements when enabled', () => {
         const subscribeSpy = vi.spyOn(echoShardsEnableShriekers, 'subscribeToEvent');

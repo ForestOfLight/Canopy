@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Rule } from '../../../../../Canopy [BP]/scripts/lib/canopy/Rule.js';
-import { Rules } from '../../../../../Canopy [BP]/scripts/lib/canopy/Rules.js';
+import { BooleanRule } from '../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule.js';
+import { Rules } from '../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules.js';
 import IPC from '../../../../../Canopy [BP]/scripts/lib/MCBE-IPC/ipc.js';
 import { Extensions } from '../../../../../Canopy [BP]/scripts/lib/canopy/Extensions.js';
 import { Extension } from '../../../../../Canopy [BP]/scripts/lib/canopy/Extension.js';
@@ -20,7 +20,8 @@ vi.mock('@minecraft/server', () => ({
                 }
             }
         },
-        setDynamicProperty: vi.fn()
+        setDynamicProperty: vi.fn(),
+        getDynamicProperty: vi.fn(() => false)
     },
     system: {
         afterEvents: {
@@ -36,7 +37,7 @@ vi.mock("@minecraft/server-ui", () => ({
     ModalFormData: vi.fn()
 }));
 
-describe('Rule', () => {
+describe('BooleanRule', () => {
     beforeEach(() => {
         Rules.clear();
         Extensions.extensions['Test Extension'] = new Extension({
@@ -45,7 +46,7 @@ describe('Rule', () => {
             author: 'Author Name',
             description: 'This is a test extension'
         });
-        new Rule({ 
+        new BooleanRule({ 
             category: 'test', 
             identifier: 'test_rule',
             description: 'This is a test rule',
@@ -65,7 +66,7 @@ describe('Rule', () => {
                 independentRules: ['rule3', 'rule4'],
                 extensionName: 'test_extension'
             };
-            const rule = new Rule(ruleData);
+            const rule = new BooleanRule(ruleData);
 
             expect(rule.getCategory()).toBe(ruleData.category);
             expect(rule.getID()).toBe(ruleData.identifier);
@@ -76,7 +77,7 @@ describe('Rule', () => {
         });
 
         it('should set description to a rawtext object if it is a string', () => {
-            const rule = new Rule({
+            const rule = new BooleanRule({
                 category: 'test_category',
                 identifier: 'test_identifier',
                 description: 'test_description'
@@ -86,7 +87,7 @@ describe('Rule', () => {
         });
 
         it('should set default values for optional properties', () => {
-            const rule = new Rule({
+            const rule = new BooleanRule({
                 category: 'test_category',
                 identifier: 'test_identifier'
             });
@@ -130,7 +131,7 @@ describe('Rule', () => {
 
     describe('getDependentRuleIDs', () => {
         it('should return the dependent rule IDs', () => {
-            new Rule({
+            new BooleanRule({
                 category: 'test_category',
                 identifier: 'test_rule_2',
                 description: 'test_description',
@@ -141,7 +142,7 @@ describe('Rule', () => {
         });
 
         it('should return an empty array if there are no dependent rules', () => {
-            const rule = new Rule({
+            const rule = new BooleanRule({
                 category: 'test_category',
                 identifier: 'test_identifier',
                 description: 'test_description',
@@ -188,7 +189,7 @@ describe('Rule', () => {
 
         it('should call onEnable if the value is true', () => {
             const onEnableCallback = vi.fn();
-            const rule = new Rule({
+            const rule = new BooleanRule({
                 category: 'test_category',
                 identifier: 'test_rule_2',
                 description: 'test_description',
@@ -202,7 +203,7 @@ describe('Rule', () => {
 
         it('should call onDisable if the value is false', () => {
             const onDisableCallback = vi.fn();
-            const rule = new Rule({
+            const rule = new BooleanRule({
                 category: 'test_category',
                 identifier: 'test_rule_2',
                 description: 'test_description',
@@ -232,7 +233,7 @@ describe('Rule', () => {
     describe('onEnable', () => {
         it('should call the onEnable callback of the rule', () => {
             const onEnableCallback = vi.fn();
-            const rule = new Rule({
+            const rule = new BooleanRule({
                 category: 'test_category',
                 identifier: 'test_rule_2',
                 description: 'test_description',
@@ -245,10 +246,10 @@ describe('Rule', () => {
         });
     });
 
-    describe ('onDisable', () => {
+    describe('onDisable', () => {
         it('should call the onDisable function of the rule', () => {
             const onDisableCallback = vi.fn();
-            const rule = new Rule({
+            const rule = new BooleanRule({
                 category: 'test_category',
                 identifier: 'test_rule_2',
                 description: 'test_description',
@@ -258,6 +259,34 @@ describe('Rule', () => {
             });
             rule.onDisable();
             expect(onDisableCallback).toHaveBeenCalled();
+        });
+    });
+
+    describe('onModifyBool', () => {
+        it('should throw an error if the value is invalid', () => {
+            const rule = new BooleanRule({
+                category: 'test_category',
+                identifier: 'test_rule_2',
+                description: 'test_description',
+                contingentRules: [],
+                independentRules: []
+            });
+            expect(() => rule.onModifyBool()).toThrow();
+        });
+    });
+
+    describe('resetToDefaultValue', () => {
+        it('should reset the value to the default', async () => {
+            const rule = new BooleanRule({
+                category: 'test_category',
+                identifier: 'test_rule_2',
+                description: 'test_description',
+                contingentRules: [],
+                independentRules: []
+            });
+            rule.setValue(true);
+            rule.resetToDefaultValue();
+            expect(await rule.getValue()).toEqual(false);
         });
     });
 });

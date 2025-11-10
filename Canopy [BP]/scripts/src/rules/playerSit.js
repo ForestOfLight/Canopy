@@ -1,23 +1,23 @@
 import { DimensionTypes, EntityComponentTypes, system, world } from "@minecraft/server";
-import { GlobalRule } from "../../lib/canopy/Canopy";
+import { BooleanRule, GlobalRule } from "../../lib/canopy/Canopy";
 import { playerStartSneakEvent } from "../events/PlayerStartSneakEvent";
 
 const ruleID = 'playerSit';
 const SNEAK_COUNT = 3;
 
-class PlayerSit extends GlobalRule {
+class PlayerSit extends BooleanRule {
     sneakCount = SNEAK_COUNT;
     sneakSpeedMs = 4*50;
     playerSneaks = {};
     onPlayerStartSneakBound;
 
     constructor() {
-        super({
+        super(GlobalRule.morphOptions({
             identifier: ruleID,
             description: { translate: `rules.${ruleID}`, with: [SNEAK_COUNT.toString()] },
             onEnableCallback: () => playerStartSneakEvent.subscribe(this.onPlayerStartSneakBound),
             onDisableCallback: () => playerStartSneakEvent.unsubscribe(this.onPlayerStartSneakBound)
-        });
+        }));
         this.onPlayerStartSneakBound = this.onPlayerStartSneak.bind(this);
         this.startEntityCleanup();
     }

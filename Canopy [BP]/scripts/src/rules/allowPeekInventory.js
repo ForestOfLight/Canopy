@@ -1,16 +1,16 @@
-import { GlobalRule } from '../../lib/canopy/Canopy';
+import { BooleanRule, GlobalRule } from '../../lib/canopy/Canopy';
 import { world, EntityComponentTypes, system } from '@minecraft/server';
 import { InventoryUI } from '../classes/InventoryUI';
 
-class AllowPeekInventory extends GlobalRule {
+class AllowPeekInventory extends BooleanRule {
     peekItemId = 'minecraft:spyglass';
 
     constructor() {
-        super({
+        super(GlobalRule.morphOptions({
             identifier: 'allowPeekInventory',
             onEnableCallback: () => this.subscribeToEvents(),
             onDisableCallback: () => this.unsubscribeFromEvents()
-        });
+        }));
         this.onPlayerInteractionBound = this.onPlayerInteraction.bind(this);
     }
 

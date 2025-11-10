@@ -1,5 +1,5 @@
 import { system, world } from "@minecraft/server";
-import { AbilityRule } from "../../lib/canopy/AbilityRule";
+import { AbilityRule } from "../../lib/canopy/Canopy";
 import { ChunkBorderRender } from "../classes/ChunkBorderRender";
 import { playerChangeSubChunkEvent } from "../events/PlayerChangeSubChunkEvent";
 

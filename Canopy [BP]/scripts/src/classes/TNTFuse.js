@@ -1,13 +1,12 @@
 import { system } from "@minecraft/server";
 
-const VANILLA_FUSE_TICKS = 80;
-
 export class TNTFuse {
+    static VANILLA_FUSE_TICKS = 80;
     tntEntity;
     totalFuseTicks;
     runner;
 
-    constructor(tntEntity, fuseTicks = VANILLA_FUSE_TICKS) {
+    constructor(tntEntity, fuseTicks = TNTFuse.VANILLA_FUSE_TICKS) {
         if (tntEntity?.typeId !== 'minecraft:tnt')
             throw new Error('[TNTFuse] Fuse length changes only apply to TNT entities.')
         this.tntEntity = tntEntity;

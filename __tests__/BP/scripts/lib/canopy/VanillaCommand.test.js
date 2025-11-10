@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { VanillaCommand } from "../../../../../Canopy [BP]/scripts/lib/canopy/VanillaCommand";
-import { Rule } from "../../../../../Canopy [BP]/scripts/lib/canopy/Rule";
-import { Rules } from "../../../../../Canopy [BP]/scripts/lib/canopy/Rules";
-import { FeedbackMessageType } from "../../../../../Canopy [BP]/scripts/lib/canopy/FeedbackMessageType";
-import { BlockCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/BlockCommandOrigin";
-import { EntityCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/EntityCommandOrigin";
-import { ServerCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/ServerCommandOrigin";
-import { PlayerCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/PlayerCommandOrigin";
+import { VanillaCommand } from "../../../../../Canopy [BP]/scripts/lib/canopy/commands/VanillaCommand";
+import { BooleanRule } from "../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule";
+import { Rules } from "../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules";
+import { FeedbackMessageType } from "../../../../../Canopy [BP]/scripts/lib/canopy/commands/FeedbackMessageType";
+import { BlockCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/commands/BlockCommandOrigin";
+import { EntityCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/commands/EntityCommandOrigin";
+import { ServerCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/commands/ServerCommandOrigin";
+import { PlayerCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/commands/PlayerCommandOrigin";
 import { Player } from "@minecraft/server";
 
 const mockCustomCommandRegistry = {
@@ -64,7 +64,7 @@ describe("VanillaCommand", () => {
     beforeEach(() => {
         vi.clearAllMocks();
         Rules.clear();
-        new Rule({
+        new BooleanRule({
             category: "test",
             identifier: "test_rule",
         });

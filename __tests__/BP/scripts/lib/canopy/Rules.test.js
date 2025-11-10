@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { Rules } from "../../../../../Canopy [BP]/scripts/lib/canopy/Rules.js";
-import { Rule } from "../../../../../Canopy [BP]/scripts/lib/canopy/Rule.js";
+import { Rules } from "../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules.js";
+import { BooleanRule } from "../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule.js";
+import { Rule } from "../../../../../Canopy [BP]/scripts/lib/canopy/Canopy.js";
 
 vi.mock('@minecraft/server', () => ({
     world: { 
@@ -31,7 +32,7 @@ describe('Rules', () => {
     let testRule;
     beforeEach(() => {
         Rules.clear();
-        testRule = new Rule({ 
+        testRule = new BooleanRule({ 
             category: 'test', 
             identifier: 'test_rule',
             description: 'This is a test rule',
@@ -77,7 +78,7 @@ describe('Rules', () => {
 
     describe('getAll', () => {
         it('should return all rules', () => {
-            const rule2 = new Rule({
+            const rule2 = new BooleanRule({
                 category: 'test',
                 identifier: 'test_rule_2',
                 description: 'This is a test rule 2',
@@ -100,7 +101,7 @@ describe('Rules', () => {
 
     describe('getIDs', () => {
         it('should return all rule IDs', () => {
-            new Rule({
+            new BooleanRule({
                 category: 'test',
                 identifier: 'test_rule_2',
                 description: 'This is a test rule 2',
@@ -142,7 +143,7 @@ describe('Rules', () => {
 
     describe('clear', () => {
         it('should remove all rules', () => {
-            new Rule({
+            new BooleanRule({
                 category: 'test',
                 identifier: 'test_rule_1',
                 description: 'This is a test rule 1',
@@ -204,7 +205,7 @@ describe('Rules', () => {
     
     describe('getDependentRuleIDs', () => {
         it('should return an array of dependent rule IDs if they exist', () => {
-            new Rule({
+            new BooleanRule({
                 category: 'test',
                 identifier: 'test_rule_1',
                 description: 'This is a test rule 1',
@@ -212,7 +213,7 @@ describe('Rules', () => {
                 contingentRules: ['test_rule_2'],
                 independentRules: ['test_rule_3']
             });
-            new Rule({
+            new BooleanRule({
                 category: 'test',
                 identifier: 'test_rule_2',
                 description: 'This is a test rule 2',
@@ -226,7 +227,7 @@ describe('Rules', () => {
         });
 
         it('should return an empty array if no dependent rules exist', () => {
-            new Rule({
+            new BooleanRule({
                 category: 'test',
                 identifier: 'test_rule_1',
                 description: 'This is a test rule 1',
@@ -246,7 +247,7 @@ describe('Rules', () => {
 
     describe('getByCategory', () => {
         it('should return all rules of a specific category', () => {
-            new Rule({
+            new BooleanRule({
                 category: 'test',
                 identifier: 'test_rule_1',
                 description: 'This is a test rule 1',
@@ -254,7 +255,7 @@ describe('Rules', () => {
                 contingentRules: ['test_rule_2'],
                 independentRules: ['test_rule_3']
             });
-            new Rule({
+            new BooleanRule({
                 category: 'test',
                 identifier: 'test_rule_2',
                 description: 'This is a test rule 2',
@@ -271,7 +272,7 @@ describe('Rules', () => {
         });
 
         it('should return an empty array if no rules of that category exist', () => {
-            new Rule({
+            new BooleanRule({
                 category: 'other',
                 identifier: 'other_rule_1',
                 description: 'This is a test rule 1',

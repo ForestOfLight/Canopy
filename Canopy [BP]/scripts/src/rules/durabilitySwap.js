@@ -1,8 +1,8 @@
-import { Rule, Rules} from "../../lib/canopy/Canopy";
+import { BooleanRule, Rules} from "../../lib/canopy/Canopy";
 import { world, GameMode, ItemComponentTypes, EntityComponentTypes } from '@minecraft/server';
 import { usedDurability, getRemainingDurability } from 'src/rules/durabilityNotifier';
 
-const rule = new Rule({
+const rule = new BooleanRule({
     category: 'Rules',
     identifier: 'durabilitySwap',
     description: { translate: 'rules.durabilitySwap' }

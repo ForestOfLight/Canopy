@@ -1,7 +1,7 @@
+import { BooleanRule, Rules } from "../../lib/canopy/Canopy";
 import { world } from "@minecraft/server";
-import { Rule, Rules } from "../../lib/canopy/Canopy";
 
-new Rule({
+new BooleanRule({
     category: 'Rules',
     identifier: 'renewableSponge',
     description: { translate: 'rules.renewableSponge' }

@@ -1,7 +1,7 @@
-import { Rule } from './Rule';
+import { BooleanRule } from './BooleanRule';
 import { Rules } from './Rules';
 
-class InfoDisplayRule extends Rule {
+class InfoDisplayRule extends BooleanRule {
     globalContingentRules;
 
     constructor(options) {
@@ -20,10 +20,7 @@ class InfoDisplayRule extends Rule {
 
     setValue(player, value) {
         player.setDynamicProperty(super.getID(), value);
-        if (value === true)
-            this.onEnable(player);
-        else if (value === false)
-            this.onDisable(player);
+        this.onModifyBool(value);
     }
 
     static get(identifier) {

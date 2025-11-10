@@ -1,9 +1,6 @@
 import { BlockVolume, CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, system } from "@minecraft/server";
-import { VanillaCommand } from "../../lib/canopy/VanillaCommand.js";
+import { VanillaCommand, PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin } from "../../lib/canopy/Canopy";
 import { BiomeEdgeFinder } from "../classes/BiomeEdgeFinder.js";
-import { PlayerCommandOrigin } from "../../lib/canopy/PlayerCommandOrigin.js";
-import { BlockCommandOrigin } from "../../lib/canopy/BlockCommandOrigin.js";
-import { EntityCommandOrigin } from "../../lib/canopy/EntityCommandOrigin.js";
 
 const BIOMEEDGE_ACTIONS = Object.freeze({
     ADD: 'add',

@@ -1,8 +1,8 @@
-import { Rule, Rules } from "../../lib/canopy/Canopy";
+import { BooleanRule, Rules } from "../../lib/canopy/Canopy";
 import { BlockPermutation, ItemStack, world } from '@minecraft/server';
 import DirectionStateFinder from "../classes/DirectionState";
 
-new Rule({
+new BooleanRule({
     category: 'Rules',
     identifier: 'pistonBedrockBreaking',
     description: { translate: 'rules.pistonBedrockBreaking' }

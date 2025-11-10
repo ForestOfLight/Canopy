@@ -1,7 +1,7 @@
-import { Rule } from 'lib/canopy/Canopy';
+import { BooleanRule } from 'lib/canopy/Canopy';
 import Instaminable from 'src/classes/Instaminable';
 
-const instamineableEndstoneRule = new Rule({
+const instamineableEndstoneRule = new BooleanRule({
     category: 'Rules',
     identifier: 'instaminableEndstone',
     description: { translate: 'rules.instaminableEndstone' }

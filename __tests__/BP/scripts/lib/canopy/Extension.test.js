@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 import { Extension } from '../../../../../Canopy [BP]/scripts/lib/canopy/Extension.js';
-import { Command } from '../../../../../Canopy [BP]/scripts/lib/canopy/Command.js';
-import { Rule } from '../../../../../Canopy [BP]/scripts/lib/canopy/Rule.js';
+import { Command } from '../../../../../Canopy [BP]/scripts/lib/canopy/commands/Command.js';
+import { BooleanRule } from '../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule.js';
 
 vi.mock('@minecraft/server', () => ({
     world: { 
@@ -137,7 +137,7 @@ describe('Extension', () => {
 
     describe('getRule', () => {
         it('should return the rule by name', () => {
-            const rule = new Rule({ 
+            const rule = new BooleanRule({ 
                 category: 'test', 
                 identifier: 'test_rule',
                 description: 'Test Rule'

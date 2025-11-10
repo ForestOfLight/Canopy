@@ -1,5 +1,5 @@
-import { FeedbackMessageType } from "../../../../../Canopy [BP]/scripts/lib/canopy/FeedbackMessageType";
-import { PlayerCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/PlayerCommandOrigin";
+import { FeedbackMessageType } from "../../../../../Canopy [BP]/scripts/lib/canopy/commands/FeedbackMessageType";
+import { PlayerCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/commands/PlayerCommandOrigin";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 describe("PlayerCommandOrigin", () => {

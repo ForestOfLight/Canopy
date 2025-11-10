@@ -1,5 +1,5 @@
 import { RuleHelpEntry } from "./RuleHelpEntry";
-import { InfoDisplayRule } from "../InfoDisplayRule";
+import { InfoDisplayRule } from "../rules/InfoDisplayRule";
 
 class InfoDisplayRuleHelpEntry extends RuleHelpEntry {
     constructor(infoDisplayRule, player) {

@@ -301,6 +301,8 @@ commands.warp.list.header=§7Available warps:
 
 ## rules
 rules.generic.unknown=§cInvalid rule: '%1'. Use %2help for more information.
+rules.generic.invalidtype=§cInvalid type: The value for '%1' must be a %2.
+rules.generic.outofrange=§cOut of Range: The value for '%1' must be between %2 and %3.
 rules.generic.blocked=§cThe %s rule is disabled.
 rules.generic.status=§7%1 is currently §l
 rules.generic.nochange=§7%1 is already §l
@@ -308,6 +310,7 @@ rules.generic.updated=§7%1 is now §l
 rules.generic.enabled=§aenabled
 rules.generic.disabled=§cdisabled
 rules.generic.ability=§7Ability 
+rules.generic.defaultvalue=(Default: %s)
 
 rules.commandCamera=Enables cam command.
 rules.commandClaimProjectiles=Enables claimprojectiles command.
@@ -315,7 +318,7 @@ rules.hopperCounters=Enables counter command & hopper counter functionality.
 rules.hopperGenerators=Enables generator command & hopper generator functionality.
 rules.commandJumpSurvival=Enables jump command in survival mode.
 rules.commandPosOthers=Enables using the pos command on other players.
-rules.commandTntFuse=Enables tntfuse command & custom TNT fuse time functionality.
+rules.tntFuse=The TNT fuse time in ticks.
 rules.commandWarp=Enables warp & warps commands.
 rules.commandWarpSurvival=Enables warp & warps commands in survival mode.
 rules.allowBubbleColumnPlacement=Removes the restriction on placing bubble columns.
@@ -352,7 +355,7 @@ rules.quickFillContainer.filled.pt2= with all
 rules.quickFillContainer.taken.pt1=§7Took all 
 rules.quickFillContainer.taken.pt2= from 
 rules.refillHand=Refills your hand with items from your inventory when you run out. Put an arrow in the slot next to the top left of your inventory to use.
-rules.renewableElytra=Phantoms have a 1% chance to drop an elytra when killed by a shulker bullet.
+rules.renewableElytraDropChance=Gives phantoms a chance to drop an elytra when killed by a shulker bullet.
 rules.renewableSponge=Guardians transform into elder guardians when hurt by lightning.
 rules.spawnEggSpawnWithMinecart=When using a spawn egg on a rail, the spawned entity will be placed in a minecart on the rail.
 rules.tntPrimeMaxMomentum=TNT always recieves its maximum momentum in a random direction when primed.

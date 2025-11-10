@@ -1,10 +1,10 @@
-import { Rule, Rules} from "../../lib/canopy/Canopy";
+import { BooleanRule, Rules} from "../../lib/canopy/Canopy";
 import { world, GameMode, ItemComponentTypes } from '@minecraft/server';
 
 const ACTIVE_DURABILITY = 2;
 const ADDITIONAL_DURABILITIES = [20];
 
-const rule = new Rule({
+const rule = new BooleanRule({
     category: 'Rules',
     identifier: 'durabilityNotifier',
     description: { translate: 'rules.durabilityNotifier', with: [ACTIVE_DURABILITY.toString()] }

@@ -7,7 +7,7 @@ new Command({
     description: { translate: 'commands.help' },
     usage: 'help [page/searchTerm]',
     args: [
-        { type: 'string|number', name: 'pageName' }
+        { type: 'string|integer', name: 'pageName' }
     ],
     callback: helpCommand
 });

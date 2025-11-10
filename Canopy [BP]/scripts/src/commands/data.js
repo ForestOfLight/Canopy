@@ -1,7 +1,6 @@
-import { VanillaCommand } from "../../lib/canopy/Canopy";
+import { VanillaCommand, PlayerCommandOrigin } from "../../lib/canopy/Canopy";
 import { BlockComponentTypes, CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus } from "@minecraft/server";
 import { getColoredDimensionName, stringifyLocation } from "../../include/utils";
-import { PlayerCommandOrigin } from "../../lib/canopy/PlayerCommandOrigin";
 
 const TARGET_DISTANCE = 100;
 

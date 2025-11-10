@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { Commands } from "../../../../../Canopy [BP]/scripts/lib/canopy/Commands";
-import { Rule } from "../../../../../Canopy [BP]/scripts/lib/canopy/Rule";
-import { Rules } from "../../../../../Canopy [BP]/scripts/lib/canopy/Rules";
+import { Commands } from "../../../../../Canopy [BP]/scripts/lib/canopy/commands/Commands";
+import { BooleanRule } from "../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule";
+import { Rules } from "../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules";
 
 vi.mock("@minecraft/server", () => ({
     world: { 
@@ -148,14 +148,15 @@ describe('Commands', () => {
                 getArgs: () => [
                     { type: 'string', name: 'strArg' },
                     { type: 'boolean', name: 'boolArg' },
-                    { type: 'number', name: 'numArg' },
+                    { type: 'integer', name: 'intArg' },
+                    { type: 'float', name: 'floatArg' },
                     { type: 'identifier', name: 'entityArg' },
                     { type: 'array', name: 'arrayArg' },
                     { type: 'player', name: 'playerArg' }
                 ],
                 runCallback: vi.fn() };
             sender = { sendMessage: vi.fn() };
-            rule1 = new Rule({ category: 'test', identifier: 'rule1'});
+            rule1 = new BooleanRule({ category: 'test', identifier: 'rule1'});
             rule1.getValue = vi.fn(() => true);
             Commands.register(command);
         });
@@ -174,7 +175,7 @@ describe('Commands', () => {
 
         it('should send a blocked message for each disabled contingent rule', async () => {
             command.getContingentRules = () => ['rule1', 'rule2'];
-            const rule2 = new Rule({ category: 'test', identifier: 'rule2'});
+            const rule2 = new BooleanRule({ category: 'test', identifier: 'rule2'});
             rule1.getValue = vi.fn(() => false);
             rule2.getValue = vi.fn(() => false);
             await Commands.executeCommand(sender, 'test', []);
@@ -196,18 +197,18 @@ describe('Commands', () => {
         });
 
         it('should interpret the arguments', async () => {
-            await Commands.executeCommand(sender, 'test', ['str', true, 1, '@e', [1,2,3], '@player']);
-            expect(command.runCallback).toHaveBeenCalledWith(sender, { strArg: 'str', boolArg: true, numArg: 1, entityArg: '@e', arrayArg: [1, 2, 3], playerArg: '@player' });
+            await Commands.executeCommand(sender, 'test', ['str', true, 1, 1.4, '@e', [1,2,3], '@player']);
+            expect(command.runCallback).toHaveBeenCalledWith(sender, { strArg: 'str', boolArg: true, intArg: 1, floatArg: 1.4, entityArg: '@e', arrayArg: [1, 2, 3], playerArg: '@player' });
         });
 
         it('should interpret the arguments as null if they are invalid', async () => {
             await Commands.executeCommand(sender, 'test', [undefined, undefined, undefined, undefined, undefined, undefined]);
-            expect(command.runCallback).toHaveBeenCalledWith(sender, { strArg: null, boolArg: null, numArg: null, entityArg: null, arrayArg: null, playerArg: null });
+            expect(command.runCallback).toHaveBeenCalledWith(sender, { strArg: null, boolArg: null, intArg: null, floatArg: null, entityArg: null, arrayArg: null, playerArg: null });
         });
 
         it('should interpret the arguments as null if they are missing', async () => {
             await Commands.executeCommand(sender, 'test', []);
-            expect(command.runCallback).toHaveBeenCalledWith(sender, { strArg: null, boolArg: null, numArg: null, entityArg: null, arrayArg: null, playerArg: null });
+            expect(command.runCallback).toHaveBeenCalledWith(sender, { strArg: null, boolArg: null, intArg: null, floatArg: null, entityArg: null, arrayArg: null, playerArg: null });
         });
 
         it('should interpret any multiarguments', async () => {
@@ -216,19 +217,20 @@ describe('Commands', () => {
                 isOpOnly: () => false, 
                 getContingentRules: () => ['rule1'],
                 getArgs: () => [
-                    { type: 'string|boolean|number|identifier|array|player', name: 'multiArg' }
+                    { type: 'string|boolean|integer|float|identifier|array|player', name: 'multiArg' }
                 ],
                 runCallback: vi.fn() };
             Commands.register(command2);
             await Commands.executeCommand(sender, 'test2', ['str']);
             await Commands.executeCommand(sender, 'test2', [true]);
             await Commands.executeCommand(sender, 'test2', [1]);
+            await Commands.executeCommand(sender, 'test2', [1.4]);
             await Commands.executeCommand(sender, 'test2', ['@e']);
             await Commands.executeCommand(sender, 'test2', ['@e[type=creeper]']);
             await Commands.executeCommand(sender, 'test2', [[1,2,3]]);
             await Commands.executeCommand(sender, 'test2', ['@player']);
             await Commands.executeCommand(sender, 'test2', ['"@player name"']);
-            expect(command2.runCallback).toHaveBeenCalledTimes(8);
+            expect(command2.runCallback).toHaveBeenCalledTimes(9);
         });
 
         it('should interpret the identifier argument with brackets', async () => {
@@ -237,7 +239,7 @@ describe('Commands', () => {
                 isOpOnly: () => false, 
                 getContingentRules: () => ['rule1'],
                 getArgs: () => [
-                    { type: 'string|boolean|number|identifier', name: 'multiArg' }
+                    { type: 'string|boolean|integer|identifier', name: 'multiArg' }
                 ],
                 runCallback: vi.fn() };
             Commands.register(command2);
@@ -251,7 +253,7 @@ describe('Commands', () => {
                 isOpOnly: () => false, 
                 getContingentRules: () => ['rule1'],
                 getArgs: () => [
-                    { type: 'string|boolean|number|identifier', name: 'multiArg' }
+                    { type: 'string|boolean|integer|identifier', name: 'multiArg' }
                 ],
                 runCallback: vi.fn() };
             Commands.register(command2);
@@ -265,7 +267,7 @@ describe('Commands', () => {
                 isOpOnly: () => false, 
                 getContingentRules: () => ['rule1'],
                 getArgs: () => [
-                    { type: 'string|boolean|number|identifier', name: 'multiArg' }
+                    { type: 'string|boolean|integer|identifier', name: 'multiArg' }
                 ],
                 runCallback: vi.fn() };
             Commands.register(command2);
@@ -279,7 +281,7 @@ describe('Commands', () => {
                 isOpOnly: () => false, 
                 getContingentRules: () => ['rule1'],
                 getArgs: () => [
-                    { type: 'string|boolean|number|identifier', name: 'multiArg' }
+                    { type: 'string|boolean|integer|identifier', name: 'multiArg' }
                 ],
                 runCallback: vi.fn() };
             Commands.register(command2);

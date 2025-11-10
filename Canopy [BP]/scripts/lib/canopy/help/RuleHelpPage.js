@@ -1,8 +1,8 @@
 import { HelpPage } from './HelpPage';
 import { RuleHelpEntry } from './RuleHelpEntry';
-import { Rule } from '../Rule';
+import { Rule } from '../rules/Rule';
 
-class RuleHelpPage extends HelpPage {
+export class RuleHelpPage extends HelpPage {
     constructor({ title, description, usage }, extensionId = false) {
         super(title, description, extensionId);
         this.usage = usage;
@@ -26,9 +26,6 @@ class RuleHelpPage extends HelpPage {
         message.rawtext.push({ rawtext: [ { text: `\n§2${this.usage}§8 - ` }, this.description ] });
         for (const entry of this.entries) 
             message.rawtext.push({ rawtext: [ { text: '\n  ' }, await entry.toRawMessage() ] });
-        
         return message;
     }
 }
-
-export { RuleHelpPage };

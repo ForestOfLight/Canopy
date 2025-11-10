@@ -1,14 +1,14 @@
-import { Rule, Command, Rules } from "../../lib/canopy/Canopy";
+import { BooleanRule, Command, Rules } from "../../lib/canopy/Canopy";
 import { GameMode } from "@minecraft/server";
 import Warps from '../classes/Warps';
 
-new Rule({
+new BooleanRule({
     category: 'Rules',
     identifier: 'commandWarp',
     description: { translate: 'rules.commandWarp' }
 });
 
-new Rule({
+new BooleanRule({
     category: 'Rules',
     identifier: 'commandWarpSurvival',
     description: { translate: 'rules.commandWarpSurvival' },
@@ -20,8 +20,8 @@ const cmd = new Command({
     description: { translate: 'commands.warp' },
     usage: 'warp <add/remove/name> [name]',
     args: [
-        { type: 'string|number', name: 'action' },
-        { type: 'string|number', name: 'name' }
+        { type: 'string|float', name: 'action' },
+        { type: 'string|float', name: 'name' }
     ],
     callback: warpActionCommand,
     contingentRules: ['commandWarp'],
@@ -36,8 +36,8 @@ new Command({
     description: { translate: 'commands.warp' },
     usage: 'w',
     args: [
-        { type: 'string|number', name: 'action' },
-        { type: 'string|number', name: 'name' }
+        { type: 'string|float', name: 'action' },
+        { type: 'string|float', name: 'name' }
     ],
     callback: warpActionCommand,
     contingentRules: ['commandWarp'],

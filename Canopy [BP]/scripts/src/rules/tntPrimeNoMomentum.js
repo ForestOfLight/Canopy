@@ -1,8 +1,8 @@
-import { Rule, Rules } from "../../lib/canopy/Canopy";
+import { BooleanRule, Rules } from "../../lib/canopy/Canopy";
 import { world, system } from '@minecraft/server';
 import { negateXZVelocity, haltHorizontalVelocity } from './tntPrimeMaxMomentum.js';
 
-new Rule({
+new BooleanRule({
     category: 'Rules',
     identifier: 'tntPrimeNoMomentum',
     description: { translate: 'rules.tntPrimeNoMomentum' },

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { commandTntFuse } from "../../../../../Canopy [BP]/scripts/src/rules/commandTntFuse";
+import { tntFuseRule } from "../../../../../Canopy [BP]/scripts/src/rules/tntFuse";
 
 const tntEntity = {
     typeId: 'minecraft:tnt',
@@ -11,8 +11,7 @@ const tntEntity = {
         isChunkLoaded: vi.fn(() => true)
     }
 };
-let fuseTicks = 80;
-let commandTntFuseDP = false;
+let tntFuseDP = false;
 
 vi.mock("@minecraft/server", () => ({
     system: {
@@ -47,16 +46,8 @@ vi.mock("@minecraft/server", () => ({
                 subscribe: vi.fn()
             }
         },
-        setDynamicProperty: (identifier, ticks) => {
-            if (identifier === 'commandTntFuse')
-                commandTntFuseDP = ticks;
-            fuseTicks = ticks; 
-        },
-        getDynamicProperty: (identifier) => { 
-            if (identifier === 'commandTntFuse')
-                return commandTntFuseDP;
-            return fuseTicks;
-        }
+        setDynamicProperty: (identifier, ticks) => { tntFuseDP = ticks },
+        getDynamicProperty: () => tntFuseDP
     }
 }));
 
@@ -64,42 +55,31 @@ vi.mock("@minecraft/server-ui", () => ({
     ModalFormData: vi.fn()
 }));
 
-describe('commandTntFuse', () => {
+describe('tntFuseRule', () => {
     afterEach(() => {
         vi.clearAllMocks();
     });
 
     it('should create a new rule', () => {
-        expect(commandTntFuse.getID()).toBe('commandTntFuse');
+        expect(tntFuseRule.getID()).toBe('tntFuse');
     });
 
-    it('should use the default fuse when the rule is not enabled', () => {
-        const startFuseMock = vi.spyOn(commandTntFuse, 'startFuse');
-        commandTntFuse.setValue(false);
-        commandTntFuse.setGlobalFuseTicks(10);
-        commandTntFuse.onEntitySpawn({ entity: tntEntity, cause: 'Spawned' });
-        expect(startFuseMock).toHaveBeenCalledWith(tntEntity, 80);
-    });
-
-    it('should use the set fuse when the rule is enabled', () => {
-        const startFuseMock = vi.spyOn(commandTntFuse, 'startFuse');
-        commandTntFuse.setValue(true);
-        commandTntFuse.setGlobalFuseTicks(10);
-        commandTntFuse.onEntitySpawn({ entity: tntEntity, cause: 'Spawned' });
+    it('should use the set ticks', () => {
+        const startFuseMock = vi.spyOn(tntFuseRule, 'startFuse');
+        tntFuseRule.setValue(10);
+        tntFuseRule.onEntitySpawn({ entity: tntEntity, cause: 'Spawned' });
         expect(startFuseMock).toHaveBeenCalledWith(tntEntity, 10);
     });
 
     it('should not affect the fuse of TNT entities spawned by chain reactions', () => {
-        const startFuseMock = vi.spyOn(commandTntFuse, 'startFuse');
-        commandTntFuse.setValue(true);
-        commandTntFuse.setGlobalFuseTicks(10);
-        commandTntFuse.onEntitySpawn({ entity: tntEntity, cause: 'Event' });
+        const startFuseMock = vi.spyOn(tntFuseRule, 'startFuse');
+        tntFuseRule.setValue(10);
+        tntFuseRule.onEntitySpawn({ entity: tntEntity, cause: 'Event' });
         expect(startFuseMock).not.toHaveBeenCalled();
     });
 
     it('should properly initialize the fuse ticks DP', () => {
-        commandTntFuse.setValue(true);
-        commandTntFuse.setGlobalFuseTicks(undefined);
-        expect(commandTntFuse.getGlobalFuseTicks()).toBe(80);
+        tntFuseDP = void 0;
+        expect(tntFuseRule.getGlobalFuseTicks()).toBe(80);
     });
 });

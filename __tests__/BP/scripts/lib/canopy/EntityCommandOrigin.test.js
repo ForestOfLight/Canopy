@@ -1,4 +1,4 @@
-import { EntityCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/EntityCommandOrigin";
+import { EntityCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/commands/EntityCommandOrigin";
 import { beforeEach, describe, expect, it } from "vitest";
 
 describe("EntityCommandOrigin", () => {

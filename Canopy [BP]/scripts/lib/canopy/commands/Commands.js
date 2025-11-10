@@ -1,8 +1,8 @@
 import { world, system, CommandPermissionLevel } from "@minecraft/server";
-import IPC from "../MCBE-IPC/ipc";
+import IPC from "../../MCBE-IPC/ipc";
 import { ArgumentParser } from "./ArgumentParser";
-import { Rules } from "./Rules";
-import { CommandPrefixRequest, CommandPrefixResponse } from "./extension.ipc";
+import { Rules } from "../rules/Rules";
+import { CommandPrefixRequest, CommandPrefixResponse } from "../extension.ipc";
 
 const COMMAND_PREFIX = './';
 
@@ -108,6 +108,10 @@ class Commands {
                 return /@[aepsr]\[/g.test(value) || (/@[aepsr]/g.test(value) && value.length === 2);
             case 'player':
                 return typeof value === 'string' && value.startsWith('@') && (value.endsWith('"') || !value.includes(' '));
+            case 'integer':
+                return typeof value === 'number' && Math.floor(value) === value;
+            case 'float':
+                return typeof value === 'number';
             default:
                 return typeof value === type;
         }

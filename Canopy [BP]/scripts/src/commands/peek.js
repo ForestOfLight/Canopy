@@ -1,8 +1,7 @@
-import { VanillaCommand } from "../../lib/canopy/Canopy";
+import { VanillaCommand, PlayerCommandOrigin } from "../../lib/canopy/Canopy";
 import { getRaycastResults, getClosestTarget, stringifyLocation } from "../../include/utils";
 import { InventoryUI } from "../classes/InventoryUI";
 import { CommandPermissionLevel, CustomCommandParamType, system } from "@minecraft/server";
-import { PlayerCommandOrigin } from "../../lib/canopy/PlayerCommandOrigin";
 
 const MAX_DISTANCE = 6*16;
 const currentQuery = {};

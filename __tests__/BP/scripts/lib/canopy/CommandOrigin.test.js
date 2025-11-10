@@ -1,6 +1,6 @@
-import { CommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/CommandOrigin";
+import { CommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/commands/CommandOrigin";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { FeedbackMessageType } from "../../../../../Canopy [BP]/scripts/lib/canopy/FeedbackMessageType";
+import { FeedbackMessageType } from "../../../../../Canopy [BP]/scripts/lib/canopy/commands/FeedbackMessageType";
 
 describe("CommandOrigin", () => {
     let mockOrigin;

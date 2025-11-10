@@ -1,10 +1,10 @@
-import { Rule, Rules } from "../../lib/canopy/Canopy";
+import { BooleanRule, Rules } from "../../lib/canopy/Canopy";
 import { system, world, GameMode } from "@minecraft/server";
 import { calcDistance } from "../../include/utils";
 
 const REMOVAL_DISTANCE = 2.5;
 
-new Rule({
+new BooleanRule({
     category: 'Rules',
     identifier: 'creativeNoTileDrops',
     description: { translate: 'rules.creativeNoTileDrops' }

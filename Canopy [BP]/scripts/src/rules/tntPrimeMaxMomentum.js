@@ -1,7 +1,7 @@
-import { Rule, Rules } from "../../lib/canopy/Canopy";
+import { BooleanRule, Rules } from "../../lib/canopy/Canopy";
 import { world, system } from '@minecraft/server';
 
-new Rule({
+new BooleanRule({
     category: 'Rules',
     identifier: 'tntPrimeMaxMomentum',
     description: { translate: 'rules.tntPrimeMaxMomentum' },

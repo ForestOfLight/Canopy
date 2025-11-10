@@ -1,14 +1,14 @@
-import { Rule, Rules } from "../../lib/canopy/Canopy";
+import { BooleanRule, Rules } from "../../lib/canopy/Canopy";
 import { ItemStack, system, world, GameMode } from "@minecraft/server";
 import { calcDistance } from "../../include/utils";
 
-new Rule({
+new BooleanRule({
     category: 'Rules',
     identifier: 'autoItemPickup',
     description: { translate: 'rules.autoItemPickup' }
 });
 
-new Rule({
+new BooleanRule({
     category: 'Rules',
     identifier: 'carefulBreak',
     description: { translate: 'rules.carefulBreak' }

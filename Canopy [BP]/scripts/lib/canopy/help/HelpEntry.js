@@ -1,4 +1,4 @@
-class HelpEntry {
+export class HelpEntry {
     constructor(title, description) {
         if (this.constructor === HelpEntry) 
             throw new TypeError('HelpEntry is an abstract class and cannot be instantiated.');
@@ -13,5 +13,3 @@ class HelpEntry {
         throw new TypeError('Method "toRawMessage" must be implemented.');
     }
 }
-
-export { HelpEntry };

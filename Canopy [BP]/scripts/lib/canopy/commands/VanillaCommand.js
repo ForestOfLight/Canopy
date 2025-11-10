@@ -1,5 +1,5 @@
 import { CustomCommandSource, CustomCommandStatus, Player, system } from "@minecraft/server";
-import { Rules } from "./Rules";
+import { Rules } from "../rules/Rules";
 import { BlockCommandOrigin } from "./BlockCommandOrigin";
 import { EntityCommandOrigin } from "./EntityCommandOrigin";
 import { ServerCommandOrigin } from "./ServerCommandOrigin";

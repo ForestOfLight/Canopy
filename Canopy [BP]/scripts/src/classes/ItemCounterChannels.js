@@ -1,5 +1,5 @@
 import { system, world } from "@minecraft/server";
-import { Rules } from "../../lib/canopy/Rules";
+import { Rules } from "../../lib/canopy/Canopy";
 
 class ItemCounterChannels {
     onTickRunner;

@@ -1,5 +1,4 @@
-import { VanillaCommand } from "../../lib/canopy/Canopy";
-import { PlayerCommandOrigin } from "../../lib/canopy/PlayerCommandOrigin";
+import { VanillaCommand, PlayerCommandOrigin } from "../../lib/canopy/Canopy";
 import { EntityMovementLog } from "../classes/EntityMovementLog";
 import { EntityTntLog } from "../classes/EntityTntLog";
 import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus } from "@minecraft/server";

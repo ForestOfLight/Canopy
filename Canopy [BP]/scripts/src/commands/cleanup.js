@@ -1,8 +1,5 @@
-import { VanillaCommand } from '../../lib/canopy/Canopy';
+import { VanillaCommand, PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin } from '../../lib/canopy/Canopy';
 import { Block, CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, system } from '@minecraft/server';
-import { PlayerCommandOrigin } from '../../lib/canopy/PlayerCommandOrigin';
-import { BlockCommandOrigin } from '../../lib/canopy/BlockCommandOrigin';
-import { EntityCommandOrigin } from '../../lib/canopy/EntityCommandOrigin';
 
 new VanillaCommand({
     name: 'canopy:cleanup',

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Rules } from '../../../../../Canopy [BP]/scripts/lib/canopy/Rules.js';
-import { InfoDisplayRule } from '../../../../../Canopy [BP]/scripts/lib/canopy/InfoDisplayRule.js';
-import { Rule } from '../../../../../Canopy [BP]/scripts/lib/canopy/Rule.js';
+import { Rules } from '../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules.js';
+import { InfoDisplayRule } from '../../../../../Canopy [BP]/scripts/lib/canopy/rules/InfoDisplayRule.js';
+import { BooleanRule } from '../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule.js';
 
 vi.mock('@minecraft/server', () => ({
     world: { 
@@ -75,8 +75,8 @@ describe('InfoDisplayRule', () => {
     describe('setValue', () => {
         it('should set the dynamic property on the player', () => {
             const player = { setDynamicProperty: vi.fn() };
-            rule.setValue(player, 'test_value');
-            expect(player.setDynamicProperty).toHaveBeenCalledWith('test_rule', 'test_value');
+            rule.setValue(player, true);
+            expect(player.setDynamicProperty).toHaveBeenCalledWith('test_rule', true);
         });
     });
 
@@ -92,7 +92,7 @@ describe('InfoDisplayRule', () => {
         });
 
         it('should return undefined if the rule exists but is not an InfoDisplay rule', () => {
-            new Rule({ 
+            new BooleanRule({ 
                 category: 'test', 
                 identifier: 'non_info_display_rule',
                 description: 'This is a test rule',
@@ -113,8 +113,8 @@ describe('InfoDisplayRule', () => {
     describe('setValue', () => {
         it('should set the value on the InfoDisplayRule', () => {
             const player = { setDynamicProperty: vi.fn() };
-            InfoDisplayRule.setValue(player, 'test_rule', 'test_value');
-            expect(player.setDynamicProperty).toHaveBeenCalledWith('test_rule', 'test_value');
+            InfoDisplayRule.setValue(player, 'test_rule', true);
+            expect(player.setDynamicProperty).toHaveBeenCalledWith('test_rule', true);
         });
     });
 
@@ -128,7 +128,7 @@ describe('InfoDisplayRule', () => {
         });
 
         it('should return false if the rule exists but is not an InfoDisplay rule', () => {
-            new Rule({ 
+            new BooleanRule({ 
                 category: 'test', 
                 identifier: 'non_info_display_rule',
                 description: 'This is a test rule',
