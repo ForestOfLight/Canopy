@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { Rules } from "../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules.js";
-import { BooleanRule } from "../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule.js";
-import { Rule } from "../../../../../Canopy [BP]/scripts/lib/canopy/Canopy.js";
+import { Rules } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules.js";
+import { BooleanRule } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule.js";
+import { Rule } from "../../../../../../Canopy [BP]/scripts/lib/canopy/Canopy.js";
 
 vi.mock('@minecraft/server', () => ({
     world: { 
@@ -26,6 +26,10 @@ vi.mock('@minecraft/server', () => ({
         },
         runJob: vi.fn()
     }
+}));
+
+vi.mock("@minecraft/server-ui", () => ({
+    ModalFormData: vi.fn()
 }));
 
 describe('Rules', () => {

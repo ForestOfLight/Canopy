@@ -1,4 +1,4 @@
-import { BlockCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/commands/BlockCommandOrigin";
+import { BlockCommandOrigin } from "../../../../../../Canopy [BP]/scripts/lib/canopy/commands/BlockCommandOrigin";
 import { beforeEach, describe, expect, it } from "vitest";
 
 describe("BlockCommandOrigin", () => {

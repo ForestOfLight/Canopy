@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Rules } from '../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules.js';
-import { InfoDisplayRule } from '../../../../../Canopy [BP]/scripts/lib/canopy/rules/InfoDisplayRule.js';
-import { BooleanRule } from '../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule.js';
+import { Rules } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules.js';
+import { InfoDisplayRule } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/InfoDisplayRule.js';
+import { BooleanRule } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule.js';
 
 vi.mock('@minecraft/server', () => ({
     world: { 

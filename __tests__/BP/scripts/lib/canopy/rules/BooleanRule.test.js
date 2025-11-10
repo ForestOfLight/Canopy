@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { BooleanRule } from '../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule.js';
-import { Rules } from '../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules.js';
-import IPC from '../../../../../Canopy [BP]/scripts/lib/MCBE-IPC/ipc.js';
-import { Extensions } from '../../../../../Canopy [BP]/scripts/lib/canopy/Extensions.js';
-import { Extension } from '../../../../../Canopy [BP]/scripts/lib/canopy/Extension.js';
-import { RuleValueSet } from '../../../../../Canopy [BP]/scripts/lib/canopy/extension.ipc.js';
+import { BooleanRule } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule.js';
+import { Rules } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules.js';
+import IPC from '../../../../../../Canopy [BP]/scripts/lib/MCBE-IPC/ipc.js';
+import { Extensions } from '../../../../../../Canopy [BP]/scripts/lib/canopy/Extensions.js';
+import { Extension } from '../../../../../../Canopy [BP]/scripts/lib/canopy/Extension.js';
+import { RuleValueSet } from '../../../../../../Canopy [BP]/scripts/lib/canopy/extension.ipc.js';
 
 vi.mock('@minecraft/server', () => ({
     world: { 

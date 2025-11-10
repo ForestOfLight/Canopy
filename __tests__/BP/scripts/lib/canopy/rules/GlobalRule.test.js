@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { GlobalRule } from "../../../../../Canopy [BP]/scripts/lib/canopy/rules/GlobalRule";
-import { Rules } from "../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules";
+import { GlobalRule } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/GlobalRule";
+import { Rules } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules";
 
 vi.mock('@minecraft/server', () => ({
     world: { 

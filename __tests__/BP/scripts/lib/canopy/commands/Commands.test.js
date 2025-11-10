@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { Commands } from "../../../../../Canopy [BP]/scripts/lib/canopy/commands/Commands";
-import { BooleanRule } from "../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule";
-import { Rules } from "../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules";
+import { Commands } from "../../../../../../Canopy [BP]/scripts/lib/canopy/commands/Commands";
+import { BooleanRule } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule";
+import { Rules } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules";
 
 vi.mock("@minecraft/server", () => ({
     world: { 
