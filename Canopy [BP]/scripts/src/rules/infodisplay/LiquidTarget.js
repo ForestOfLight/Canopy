@@ -25,7 +25,7 @@ export class LiquidTarget extends InfoDisplayElement {
         let blockName = '';
         let raycastHitFace;
         const block = lookingAtBlock?.block ?? undefined;
-        if (block && block.isLiquid) {
+        if (block?.isLiquid) {
             raycastHitFace = lookingAtBlock.face;
             try {
                 blockName = `§2${parseName(block)}`;
