@@ -67,11 +67,10 @@ async function handleRuleChange(sender, ruleID, newValue) {
     if (rule instanceof InfoDisplayRule)
         return sender.sendMessage({ translate: 'commands.canopy.infodisplayRule', with: [ruleID, Commands.getPrefix()] });
     const ruleValue = await rule.getValue();
-    const valueRawText = getValueRawText(newValue, Rules.get(ruleID).getType());
     if (newValue === null)
-        return sender.sendMessage({ rawtext: [{ translate: 'rules.generic.status', with: [rule.getID()] }, valueRawText, { text: '§r§7.' }] });
+        return sender.sendMessage({ rawtext: [{ translate: 'rules.generic.status', with: [rule.getID()] }, getValueRawText(ruleValue, rule.getType()), { text: '§r§7.' }] });
     if (ruleValue === newValue)
-        return sender.sendMessage({ rawtext: [{ translate: 'rules.generic.nochange', with: [rule.getID()] }, valueRawText, { text: '§r§7.' }] });
+        return sender.sendMessage({ rawtext: [{ translate: 'rules.generic.nochange', with: [rule.getID()] }, getValueRawText(newValue, rule.getType()), { text: '§r§7.' }] });
 
     if (newValue)
         await updateRules(sender, rule.getContigentRuleIDs(), newValue);
@@ -111,8 +110,11 @@ function sendIncorrectValueTypeMessage(sender, ruleID) {
 }
 
 function sendValueOutOfRangeMessage(sender, ruleID) {
-    const valueRange = Rules.get(ruleID).getValueRange();
-    sender.sendMessage({ translate: 'rules.generic.outofrange', with: [ruleID, String(valueRange.min), String(valueRange.max)] });
+    const valueRange = Rules.get(ruleID).getAllowedValues();
+    const message = { rawtext: [{ translate: 'rules.generic.outofrange', with: [ruleID, String(valueRange.range.min), String(valueRange.range.max)] }] };
+    if (valueRange.other?.length > 0)
+        message.rawtext.push({ translate: 'rules.generic.outofrange.withother', with: [valueRange.other.join(', ')] });
+    sender.sendMessage(message);
 }
 
 function sendUpdatedMessage(sender, ruleID, newValue) {

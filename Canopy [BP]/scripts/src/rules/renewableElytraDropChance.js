@@ -6,7 +6,7 @@ class RenewableElytraDropChance extends FloatRule {
         super(GlobalRule.morphOptions({
             identifier: 'renewableElytraDropChance',
             defaultValue: 0,
-            valueRange: { min: 0, max: 1 }
+            valueRange: { range: { min: 0, max: 1 } }
         }));
         this.subscribeToEvents();
     }

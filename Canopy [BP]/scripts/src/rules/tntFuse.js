@@ -7,7 +7,7 @@ class TNTFuseRule extends IntegerRule {
         super(GlobalRule.morphOptions({
             identifier: 'tntFuse',
             defaultValue: TNTFuse.VANILLA_FUSE_TICKS,
-            valueRange: { min: 1, max: 72000 }
+            valueRange: { range: { min: 1, max: 72000 } }
         }));
         this.subscribeToEvents();
     }

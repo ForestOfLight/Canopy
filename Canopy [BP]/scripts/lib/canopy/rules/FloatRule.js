@@ -14,18 +14,18 @@ export class FloatRule extends Rule {
     }
 
     getType() {
-        return 'integer';
+        return 'float';
     }
     
     isInDomain(value) {
-        return Number(value);
+        return Number(value) === value;
     }
 
-    getValueRange() {
+    getAllowedValues() {
         return this.valueRange;
     }
 
     isInRange(value) {
-        return value >= this.valueRange.min && value <= this.valueRange.max;
+        return this.valueRange.other?.includes(value) || (value >= this.valueRange.range?.min && value <= this.valueRange.range?.max);
     }
 }

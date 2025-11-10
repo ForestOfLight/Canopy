@@ -21,11 +21,11 @@ export class IntegerRule extends Rule {
         return Math.floor(value) === value;
     }
 
-    getValueRange() {
+    getAllowedValues() {
         return this.valueRange;
     }
 
     isInRange(value) {
-        return value >= this.valueRange.min && value <= this.valueRange.max;
+        return this.valueRange.other?.includes(value) || (value >= this.valueRange?.range.min && value <= this.valueRange.range.max);
     }
 }
