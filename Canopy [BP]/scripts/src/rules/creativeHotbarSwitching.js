@@ -9,7 +9,7 @@ class CreativeHotbarSwitching extends AbilityRule {
     
     constructor() {
         super({
-            identifier: 'hotbarSwitching',
+            identifier: 'creativeHotbarSwitching',
             onEnableCallback: () => { this.runner = system.runInterval(this.onTick.bind(this)); },
             onDisableCallback: () => { system.clearRun(this.runner); }
         }, {
@@ -66,4 +66,4 @@ class CreativeHotbarSwitching extends AbilityRule {
     }
 }
 
-export const hotbarSwitching = new CreativeHotbarSwitching();
+export const creativeHotbarSwitching = new CreativeHotbarSwitching();
