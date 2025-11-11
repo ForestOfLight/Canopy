@@ -19,7 +19,7 @@ new VanillaCommand({
 });
 
 function posCommand(origin, player) {
-    if (!Rules.getNativeValue('commandPosOthers') && player)
+    if (player && !isOp(origin) && !Rules.getNativeValue('commandPosOthers'))
         return origin.sendMessage({ translate: 'rules.generic.blocked', with: ['commandPosOthers'] });
     if (player?.length > 0) {
         for (const currPlayer of player) {
@@ -68,4 +68,15 @@ function netherPosToOverworld(pos) {
 
 function overworldPosToNether(pos) {
     return { x: pos.x / NETHER_SCALE_FACTOR, y: pos.y, z: pos.z / NETHER_SCALE_FACTOR };
+}
+
+function isOp(origin) {
+    switch(origin.getType()) {
+        case 'Server':
+            return true;
+        case 'Player':
+            return origin.getSource().commandPermissionLevel > CommandPermissionLevel.GameDirectors;
+        default:
+            return false;
+    }
 }
