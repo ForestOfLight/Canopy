@@ -11,7 +11,10 @@ class CreativeHotbarSwitching extends AbilityRule {
         super({
             identifier: 'creativeHotbarSwitching',
             onEnableCallback: () => { this.runner = system.runInterval(this.onTick.bind(this)); },
-            onDisableCallback: () => { system.clearRun(this.runner); }
+            onDisableCallback: () => { 
+                if (this.runner !== void 0) 
+                    system.clearRun(this.runner);
+            }
         }, {
             slotNumber: 17,
             onPlayerEnableCallback: (player) => { this.onPlayerEnableBound(player) },
