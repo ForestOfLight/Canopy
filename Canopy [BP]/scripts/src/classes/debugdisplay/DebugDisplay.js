@@ -49,6 +49,7 @@ import { SkinId } from './SkinId';
 import { Tame } from './Tame';
 import { Families } from './Families';
 import { TNT } from './TNT';
+import { WantsJockey } from './WantsJockey';
 import { CollisionBox } from './CollisionBox';
 import { HitBox } from './HitBox';
 import { EyeLevel } from './EyeLevel';
@@ -103,6 +104,7 @@ const debugableProperties = Object.freeze({
     variant: Variant,
     velocity: Velocity,
     viewdirection: ViewDirection,
+    wantsjockey: WantsJockey,
 
     attackbox: AttackBox,
     collisionbox: CollisionBox,
