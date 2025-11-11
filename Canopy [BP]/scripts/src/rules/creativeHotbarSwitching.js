@@ -2,7 +2,7 @@ import { AbilityRule } from "../../lib/canopy/Canopy";
 import { system, world, InputButton, ButtonState, GameMode } from '@minecraft/server';
 import { HotbarManager } from '../classes/HotbarManager';
 
-class HotbarSwitching extends AbilityRule {
+class CreativeHotbarSwitching extends AbilityRule {
     lastSelectedSlots = {};
     hotbarManagers = {};
     runner = void 0;
@@ -66,4 +66,4 @@ class HotbarSwitching extends AbilityRule {
     }
 }
 
-export const hotbarSwitching = new HotbarSwitching();
+export const hotbarSwitching = new CreativeHotbarSwitching();
