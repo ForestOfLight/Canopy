@@ -14,10 +14,6 @@ export class WorldLifetimeTracker {
     constructor() {
         this.createDimensionRecords();
         this.startCollecting();
-        this.onEntitySpawnBound = this.onEntitySpawn.bind(this);
-        this.onEntityLoadBound = this.onEntityload.bind(this);
-        this.onEntityDieBound = this.onEntityDie.bind(this);
-        this.onEntityRemoveBound = this.onEntityRemove.bind(this);
     }
 
     destroy() {
@@ -42,38 +38,40 @@ export class WorldLifetimeTracker {
 
     getQueryAllMessage(useRealtime) {
         const message = { rawtext: [] };
-        message.rawtext.push(this.getHeaderMessage(useRealtime));
         message.rawtext.push({ text: '\n' });
-        for (const dimensionId in Object.keys(this.dimensionToEntityLifetimeRecordMap)) {
+        message.rawtext.push(this.getHeaderMessage(useRealtime));
+        for (const dimensionId of Object.keys(this.dimensionToEntityLifetimeRecordMap)) {
+            message.rawtext.push({ text: '\n' });
             message.rawtext.push(this.getDimensionHeaderMessage(dimensionId, useRealtime));
-            for (const entityLifetimeRecord in this.dimensionToEntityLifetimeRecordMap[dimensionId]) {
-                message.rawtext.push({ text: '\n' });
-                message.rawtext.push(entityLifetimeRecord.getShortMessage(useRealtime));
-            }
+            message.rawtext.push(this.dimensionToEntityLifetimeRecordMap[dimensionId].getQueryAllMessage(useRealtime));
         }
+        return message;
     }
 
-    getQueryEntityMessage(entityType, useRealtime) {
+    getQueryEntityMessage(entityType, queryType, useRealtime) {
         const message = { rawtext: [] };
         message.rawtext.push(this.getHeaderMessage(useRealtime));
         message.rawtext.push({ text: '\n' });
         message.rawtext.push({ translate: 'commands.lifetime.query.entity', with: { rawtext: [{ translate: this.getLocalizationKey(entityType)}] } });
-        for (const dimensionId in Object.keys(this.dimensionToEntityLifetimeRecordMap)) {
+        for (const dimensionId of Object.keys(this.dimensionToEntityLifetimeRecordMap)) {
+            message.rawtext.push({ text: '\n' });
             message.rawtext.push(this.getDimensionHeaderMessage(dimensionId, useRealtime));
-            message.rawtext.push(this.dimensionToEntityLifetimeRecordMap[dimensionId].getQueryMessage(entityType, useRealtime));
+            message.rawtext.push({ text: '\n' });
+            message.rawtext.push(this.dimensionToEntityLifetimeRecordMap[dimensionId].getQueryMessage(entityType, queryType, useRealtime));
         }
+        return message;
     }
 
     getHeaderMessage(useRealtime) {
-        const message = { rawtext: [{ translate: 'commands.lifetime.query.header', with: [this.getElapsedMin(useRealtime)] }] };
+        const message = { rawtext: [{ translate: 'commands.lifetime.query.header', with: [this.getElapsedMin(useRealtime).toFixed(2)] }] };
         message.rawtext.push({ translate: `commands.lifetime.query.${useRealtime ? 'realtime' : 'ticktime'}` });
         return message;
     }
 
     getDimensionHeaderMessage(dimensionId, useRealtime) {
         const dimensionLifetimeRecords = this.dimensionToEntityLifetimeRecordMap[dimensionId];
-        if (!dimensionLifetimeRecords)
-            throw new Error(`[Canopy] No entity lifetime information available for dimension '${dimensionId}'`);
+        if (!dimensionLifetimeRecords?.hasRecords())
+            return { text: '' };
         const totalSpawns = dimensionLifetimeRecords.getTotalSpawns();
         const totalRemovals = dimensionLifetimeRecords.getTotalRemovals();
         const spawnsPerHour = this.calcPerHour(totalSpawns, useRealtime).toFixed(2);
@@ -103,10 +101,13 @@ export class WorldLifetimeTracker {
     }
 
     getLocalizationKey(entityType) {
-        return this.localizationKeys[entityType];
+        return this.localizationKeys[entityType] || 'commands.lifetime.query.entity.unknowntype';
     }
     
     createDimensionRecords() {
+        this.dimensionToEntityLifetimeRecordMap["minecraft:overworld"] = new EntityLifetimeRecords(this, "minecraft:overworld");
+        this.dimensionToEntityLifetimeRecordMap["minecraft:nether"] = new EntityLifetimeRecords(this, "minecraft:nether");
+        this.dimensionToEntityLifetimeRecordMap["minecraft:the_end"] = new EntityLifetimeRecords(this, "minecraft:the_end");
         const dimensionIds = DimensionTypes.getAll().map(dimensionType => dimensionType.typeId);
         for (const dimensionId of dimensionIds) {
             if (Object.keys(this.dimensionToEntityLifetimeRecordMap).includes(dimensionId))
@@ -116,17 +117,17 @@ export class WorldLifetimeTracker {
     }
 
     subscribeToEvents() {
-        world.afterEvents.entitySpawn.subscribe(this.onEntitySpawnBound);
-        world.afterEvents.entityLoad.subscribe(this.onEntityLoadBound);
-        world.afterEvents.entityDie.subscribe(this.onEntityDieBound);
-        world.beforeEvents.entityRemove.subscribe(this.onEntityRemoveBound);
+        world.afterEvents.entitySpawn.subscribe(this.onEntitySpawn.bind(this));
+        world.afterEvents.entityLoad.subscribe(this.onEntityLoad.bind(this));
+        world.afterEvents.entityDie.subscribe(this.onEntityDie.bind(this));
+        world.beforeEvents.entityRemove.subscribe(this.onEntityRemove.bind(this));
     }
 
     unsubscribeFromEvents() {
-        world.afterEvents.entitySpawn.unsubscribe(this.onEntitySpawnBound);
-        world.afterEvents.entityLoad.unsubscribe(this.onEntityLoadBound);
-        world.afterEvents.entityDie.unsubscribe(this.onEntityDieBound);
-        world.beforeEvents.entityRemove.unsubscribe(this.onEntityRemoveBound);
+        world.afterEvents.entitySpawn.unsubscribe(this.onEntitySpawn.bind(this));
+        world.afterEvents.entityLoad.unsubscribe(this.onEntityLoad.bind(this));
+        world.afterEvents.entityDie.unsubscribe(this.onEntityDie.bind(this));
+        world.beforeEvents.entityRemove.unsubscribe(this.onEntityRemove.bind(this));
     }
 
     onEntitySpawn(event) {
@@ -151,10 +152,12 @@ export class WorldLifetimeTracker {
     }
 
     collectSpawn(event) {
+        this.localizationKeys[event.entity.typeId] = event.entity.localizationKey;
         this.dimensionToEntityLifetimeRecordMap[event.entity.dimension.id].collectSpawn(event.entity, event.cause);
     }
 
     collectRemoval(event) {
+        this.localizationKeys[event.entity.typeId] = event.entity.localizationKey;
         this.dimensionToEntityLifetimeRecordMap[event.entity.dimension.id].collectRemoval(event.entity, event.cause);
     }
 }

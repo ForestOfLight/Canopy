@@ -30,6 +30,8 @@ import './src/commands/loop'
 import './src/commands/debugentity'
 import './src/commands/hss'
 import './src/commands/biomeedges'
+import './src/commands/lifetimetracking'
+import './src/commands/lifetimequery'
 
 // Script Events
 import './src/commands/scriptevents/counter'

@@ -18,12 +18,14 @@ export class EntityLifetimeRecord {
         this.spawnReason = spawnReason;
         this.spawnTick = system.currentTick;
         this.spawnDate = Date.now();
+        // console.warn('Spawn Collection: ', JSON.stringify(this));
     }
 
     collectRemoval(removalReason) {
         this.removalReason = removalReason;
         this.removalTick = system.currentTick;
         this.removalDate = Date.now();
+        // console.warn('Remove Collection: ', JSON.stringify(this));
     }
 
     getLifetime(useRealtime) {
@@ -33,6 +35,6 @@ export class EntityLifetimeRecord {
     }
     
     hasBeenRemoved() {
-        this.removalReason();
+        return this.removalReason;
     }
 }

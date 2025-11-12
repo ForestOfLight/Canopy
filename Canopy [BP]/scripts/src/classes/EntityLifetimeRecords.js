@@ -1,3 +1,4 @@
+import { LIFETIME_QUERY_ACTIONS } from "../commands/lifetimequery";
 import { EntityLifetimeRecord } from "./EntityLifetimeRecord";
 
 export class EntityLifetimeRecords {
@@ -20,7 +21,11 @@ export class EntityLifetimeRecords {
     }
 
     collectRemoval(entity, removalReason) {
-        this.entityLifetimeRecords.find(record => record.entityId === entity.id).collectRemoval(removalReason);
+        this.entityLifetimeRecords.find(record => record.entityId === entity.id)?.collectRemoval(removalReason);
+    }
+
+    hasRecords() {
+        return this.entityLifetimeRecords.length > 0;
     }
 
     getTotalSpawns(entityType = false) {
@@ -37,29 +42,29 @@ export class EntityLifetimeRecords {
 
     getQueryAllMessage(useRealtime) {
         const message = { rawtext: [] };
-        for (const entityType in this.getEntityTypes()) {
+        for (const entityType of this.getEntityTypes()) {
             const lifetimeData = this.getLifetimeData(entityType, useRealtime);
             message.rawtext.push({ text: '\n' });
             message.rawtext.push({ translate: 'commands.lifetime.query.body', with: { rawtext: [
                 { translate: this.worldLifetimeTracker.getLocalizationKey(entityType) },
-                { text: this.getTotalSpawns(entityType) },
-                { text: this.getTotalRemovals(entityType) },
-                { text: lifetimeData.min },
-                { text: lifetimeData.max },
-                { text: lifetimeData.average }
+                { text: String(this.getTotalSpawns(entityType)) },
+                { text: String(this.getTotalRemovals(entityType)) },
+                { text: String(lifetimeData.min) },
+                { text: String(lifetimeData.max) },
+                { text: String(lifetimeData.average) }
             ] } });
             message.rawtext.push(this.getRealtimeUnitRawtext(useRealtime));
         }
         return message;
     }
 
-    getQueryMessage(entityType, useRealtime) {
+    getQueryMessage(entityType, queryType, useRealtime) {
         if (!this.getEntityTypes().includes(entityType))
-            throw new Error(`[Canopy] No entity lifetime information available for '${entityType}'`);
+            return { text: '' };
         return { rawtext: [
-            this.getQueryLifetimeMessage(entityType, useRealtime),
-            this.getQuerySpawnsMessage(entityType, useRealtime),
-            this.getQueryRemovalsMessage(entityType, useRealtime)
+            (!queryType || queryType === LIFETIME_QUERY_ACTIONS.LIFETIME ? this.getQueryLifetimeMessage(entityType, useRealtime) : { text: '' }),
+            (!queryType || queryType === LIFETIME_QUERY_ACTIONS.SPAWNING ? this.getQuerySpawnsMessage(entityType, useRealtime) : { text: '' }),
+            (!queryType || queryType === LIFETIME_QUERY_ACTIONS.REMOVAL ? this.getQueryRemovalsMessage(entityType, useRealtime) : { text: '' }),
         ]};
     }
 
@@ -69,17 +74,17 @@ export class EntityLifetimeRecords {
             { translate: 'commands.lifetime.query.entity.lifetime.header' }, { text: '\n' },
             { translate: 'commands.lifetime.query.entity.lifetime.min', with: [String(lifetimeData.min)] }, this.getRealtimeUnitRawtext(useRealtime), { text: '\n' },
             { translate: 'commands.lifetime.query.entity.lifetime.max', with: [String(lifetimeData.max)] }, this.getRealtimeUnitRawtext(useRealtime), { text: '\n' },
-            { translate: 'commands.lifetime.query.entity.lifetime.average', with: [String(lifetimeData.average)] }, this.getRealtimeUnitRawtext(useRealtime), { text: '\n' }
+            { translate: 'commands.lifetime.query.entity.lifetime.average', with: [lifetimeData.average.toFixed(4)] }, this.getRealtimeUnitRawtext(useRealtime), { text: '\n' }
         ] };
     }
 
     getQuerySpawnsMessage(entityType, useRealtime) {
         const spawnData = this.getSpawnData(entityType, useRealtime);
-        const message = { rawtext: [{ translate: 'commands.lifetime.query.entity.spawns.header' }] };
-        for (const spawnRecord in spawnData) {
+        const message = { rawtext: [{ translate: 'commands.lifetime.query.entity.spawns.header' }, { text: '\n' }] };
+        for (const spawnRecord of spawnData) {
             const spawnsPerHour = this.worldLifetimeTracker.calcPerHour(spawnRecord.count, useRealtime);
+            message.rawtext.push({ translate: 'commands.lifetime.query.entity.spawns', with: [spawnRecord.reason, String(spawnRecord.count), spawnsPerHour.toFixed(2), spawnRecord.percent.toFixed(2)] });
             message.rawtext.push({ text: '\n' });
-            message.rawtext.push({ translate: 'commands.lifetime.query.entity.spawns', with: [spawnRecord.reason, String(spawnRecord.count), String(spawnsPerHour), String(spawnRecord.percent)] });
         }
         return message;
     }
@@ -87,11 +92,11 @@ export class EntityLifetimeRecords {
     getQueryRemovalsMessage(entityType, useRealtime) {
         const removalData = this.getRemovalData(entityType, useRealtime);
         const message = { rawtext: [{ translate: 'commands.lifetime.query.entity.removals.header' }] };
-        for (const removalRecord in removalData) {
+        for (const removalRecord of removalData) {
             message.rawtext.push({ rawtext: [
                 { text: '\n' }, { translate: 'commands.lifetime.query.entity.removals', with: [removalRecord.reason, String(removalRecord.count), String(removalRecord.percent)] },
-                { text: '\n ' }, { translate: 'commands.lifetime.query.entity.lifetime.min', with: [String(removalRecord.minLifetime)] }, this.getRealtimeUnitRawtext(useRealtime), { text: '\n' },
-                { text: '\n ' }, { translate: 'commands.lifetime.query.entity.lifetime.max', with: [String(removalRecord.maxLifetime)] }, this.getRealtimeUnitRawtext(useRealtime), { text: '\n' },
+                { text: '\n ' }, { translate: 'commands.lifetime.query.entity.lifetime.min', with: [String(removalRecord.minLifetime)] }, this.getRealtimeUnitRawtext(useRealtime),
+                { text: '\n ' }, { translate: 'commands.lifetime.query.entity.lifetime.max', with: [String(removalRecord.maxLifetime)] }, this.getRealtimeUnitRawtext(useRealtime),
                 { text: '\n ' }, { translate: 'commands.lifetime.query.entity.lifetime.average', with: [String(removalRecord.averageLifetime)] }, this.getRealtimeUnitRawtext(useRealtime)
             ] });
         }
