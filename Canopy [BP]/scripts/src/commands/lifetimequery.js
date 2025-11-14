@@ -33,6 +33,7 @@ export class LifetimeQuery extends VanillaCommand {
             origin.sendMessage(this.queryAll(useRealtime));
             return;
         }
+        entityType = entityType.id;
         if (queryType === LIFETIME_QUERY_ACTIONS.REALTIME)
             origin.sendMessage(this.queryEntity(entityType, false, true));
         else if (Object.values(LIFETIME_QUERY_ACTIONS).includes(queryType))
@@ -44,11 +45,23 @@ export class LifetimeQuery extends VanillaCommand {
     }
 
     queryAll(useRealTime) {
-        return lifetimeTrackingCommand.getWorldLifetimeTracker().getQueryAllMessage(useRealTime);
+        try {
+            return lifetimeTrackingCommand.getWorldLifetimeTracker().getQueryAllMessage(useRealTime);
+        } catch(error) {
+            if (error.message.includes("WorldLifetimeTracker"))
+                return { translate: 'commands.lifetime.tracking.not' };
+            throw error;
+        }
     }
 
     queryEntity(entityType, queryType, useRealTime) {
-        return lifetimeTrackingCommand.getWorldLifetimeTracker().getQueryEntityMessage(entityType.id, queryType, useRealTime);
+        try {
+            return lifetimeTrackingCommand.getWorldLifetimeTracker().getQueryEntityMessage(entityType, queryType, useRealTime);
+        } catch(error) {
+            if (error.message.includes("WorldLifetimeTracker"))
+                return { translate: 'commands.lifetime.tracking.not' };
+            throw error;
+        }
     }
 }
 
