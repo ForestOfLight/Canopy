@@ -48,7 +48,9 @@ export class LifetimeTracking extends VanillaCommand {
     stop() {
         if (!this.worldLifetimeTracker)
             return { status: CustomCommandStatus.Failure, message: 'commands.lifetime.tracking.not' };
-        this.worldLifetimeTracker.stopCollecting();
+        system.run(() => {
+            this.worldLifetimeTracker.stopCollecting();
+        });
         return { status: CustomCommandStatus.Success, message: 'commands.lifetime.tracking.stop' };
     }
 

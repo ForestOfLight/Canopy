@@ -1,5 +1,6 @@
 import { LIFETIME_QUERY_ACTIONS } from "../commands/lifetimequery";
 import { EntityLifetimeRecord } from "./EntityLifetimeRecord";
+import { ItemLifetimeRecord } from "./ItemLifetimeRecord";
 
 export class EntityLifetimeRecords {
     worldLifetimeTracker;
@@ -17,24 +18,31 @@ export class EntityLifetimeRecords {
     }
 
     collectSpawn(entity, spawnReason) {
-        this.entityLifetimeRecords.push(new EntityLifetimeRecord(entity, spawnReason));
+        let record;
+        if (entity.typeId === "minecraft:item")
+            record = new ItemLifetimeRecord(entity, spawnReason);
+        else
+            record = new EntityLifetimeRecord(entity, spawnReason);
+        this.worldLifetimeTracker.setLocalizationKey(record.entityType, record.localizationKey);
+        this.entityLifetimeRecords.push(record);
     }
 
     collectRemoval(entity, removalReason) {
-        this.entityLifetimeRecords.find(record => record.entityId === entity.id)?.collectRemoval(removalReason);
+        const record = this.entityLifetimeRecords.find(lifetimeRecord => lifetimeRecord.entityId === entity.id);
+        record?.collectRemoval(removalReason);
     }
 
     hasRecords() {
         return this.entityLifetimeRecords.length > 0;
     }
 
-    getTotalSpawns(entityType = false) {
+    getTotalSpawns(entityType) {
         if (entityType)
             return this.getSpawnedEntityLifetimeRecords(entityType).length;
         return this.entityLifetimeRecords.length;
     }
 
-    getTotalRemovals(entityType = false) {
+    getTotalRemovals(entityType) {
         if (entityType)
             return this.getSpawnedEntityLifetimeRecords(entityType).filter((record) => record.hasBeenRemoved()).length;
         return this.entityLifetimeRecords.filter((record) => record.hasBeenRemoved()).length;
@@ -46,12 +54,12 @@ export class EntityLifetimeRecords {
             const lifetimeData = this.getLifetimeData(entityType, useRealtime);
             message.rawtext.push({ text: '\n' });
             message.rawtext.push({ translate: 'commands.lifetime.query.body', with: { rawtext: [
-                { translate: this.worldLifetimeTracker.getLocalizationKey(entityType) },
+                this.worldLifetimeTracker.getLocalizationKeyRawMessage(entityType),
                 { text: String(this.getTotalSpawns(entityType)) },
                 { text: String(this.getTotalRemovals(entityType)) },
                 { text: String(lifetimeData.min) },
                 { text: String(lifetimeData.max) },
-                { text: String(lifetimeData.average) }
+                { text: lifetimeData.average.toFixed(2) }
             ] } });
             message.rawtext.push(this.getRealtimeUnitRawtext(useRealtime));
         }
@@ -93,11 +101,12 @@ export class EntityLifetimeRecords {
         const removalData = this.getRemovalData(entityType, useRealtime);
         const message = { rawtext: [{ translate: 'commands.lifetime.query.entity.removals.header' }] };
         for (const removalRecord of removalData) {
+            const removalsPerHour = this.worldLifetimeTracker.calcPerHour(removalRecord.count, useRealtime);
             message.rawtext.push({ rawtext: [
-                { text: '\n' }, { translate: 'commands.lifetime.query.entity.removals', with: [removalRecord.reason, String(removalRecord.count), String(removalRecord.percent)] },
-                { text: '\n ' }, { translate: 'commands.lifetime.query.entity.lifetime.min', with: [String(removalRecord.minLifetime)] }, this.getRealtimeUnitRawtext(useRealtime),
-                { text: '\n ' }, { translate: 'commands.lifetime.query.entity.lifetime.max', with: [String(removalRecord.maxLifetime)] }, this.getRealtimeUnitRawtext(useRealtime),
-                { text: '\n ' }, { translate: 'commands.lifetime.query.entity.lifetime.average', with: [String(removalRecord.averageLifetime)] }, this.getRealtimeUnitRawtext(useRealtime)
+                { text: '\n' }, { translate: 'commands.lifetime.query.entity.removals', with: [removalRecord.reason, String(removalRecord.count), removalsPerHour.toFixed(2), removalRecord.percent.toFixed(2)] },
+                { text: '\n  ' }, { translate: 'commands.lifetime.query.entity.lifetime.min', with: [String(removalRecord.minLifetime)] }, this.getRealtimeUnitRawtext(useRealtime),
+                { text: '\n  ' }, { translate: 'commands.lifetime.query.entity.lifetime.max', with: [String(removalRecord.maxLifetime)] }, this.getRealtimeUnitRawtext(useRealtime),
+                { text: '\n  ' }, { translate: 'commands.lifetime.query.entity.lifetime.average', with: [removalRecord.averageLifetime.toFixed(4)] }, this.getRealtimeUnitRawtext(useRealtime)
             ] });
         }
         return message;
@@ -109,35 +118,35 @@ export class EntityLifetimeRecords {
         return { 
             min: Math.min(...entityLifetimes),
             max: Math.max(...entityLifetimes),
-            average: entityLifetimes.reduce((sum, lifetime) => sum + lifetime, 0) / entityLifetimes.length 
+            average: entityLifetimes.reduce((sum, lifetime) => sum + lifetime, 0) / entityLifetimes.length
         };
     }
 
     getSpawnData(entityType) {
         const entityLifetimeRecords = this.getSpawnedEntityLifetimeRecords(entityType);
-        const spawnReasons = entityLifetimeRecords.map(record => record.spawnReason);
-        const reasonMap = spawnReasons.reduce((acc, reason) => {
-            acc[reason] = (acc[reason] || 0) + 1;
+        const reasonMap = entityLifetimeRecords.reduce((acc, record) => {
+            const amount = record.amount || 1;
+            acc[record.spawnReason] = (acc[record.spawnReason] || 0) + amount;
             return acc;
         }, {});
         return Object.entries(reasonMap)
-            .map(([reason, count]) => ({ reason, count, percent: count / entityLifetimeRecords.length }))
+            .map(([reason, count]) => ({ reason, count, percent: (count / entityLifetimeRecords.length) * 100 }))
             .sort((a, b) => b.count - a.count);
     }
 
     getRemovalData(entityType, useRealtime) {
         const entityLifetimeRecords = this.getRemovedEntityLifetimeRecords(entityType);
-        const removalReasons = entityLifetimeRecords.map(record => record.removalReason);
-        const reasonMap = removalReasons.reduce((acc, reason) => {
-            acc[reason] = (acc[reason] || 0) + 1;
+        const reasonMap = entityLifetimeRecords.reduce((acc, record) => {
+            const amount = record.amount || 1;
+            acc[record.removalReason] = (acc[record.removalReason] || 0) + amount;
             return acc;
         }, {});
         return Object.entries(reasonMap).map(([reason, count]) => {
-            const reasonLifetimes = entityLifetimeRecords.filter(record => record.removalReason === reason).map(record => record.getLifetime(useRealtime))
+            const reasonLifetimes = entityLifetimeRecords.filter(record => record.removalReason === reason).map(record => record.getLifetime(useRealtime));
             return {
                 reason,
                 count,
-                percent: count / entityLifetimeRecords.length,
+                percent: (count / entityLifetimeRecords.length) * 100,
                 minLifetime: Math.min(...reasonLifetimes),
                 maxLifetime: Math.max(...reasonLifetimes),
                 averageLifetime: reasonLifetimes.reduce((sum, lifetime) => sum + lifetime, 0) / reasonLifetimes.length

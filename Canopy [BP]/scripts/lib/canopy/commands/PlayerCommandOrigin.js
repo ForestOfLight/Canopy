@@ -11,7 +11,6 @@ export class PlayerCommandOrigin extends CommandOrigin {
     }
 
     sendMessage(message) {
-        console.warn(JSON.stringify(message));
         this.source.sourceEntity.sendMessage(message);
         return FeedbackMessageType.ChatMessage;
     }

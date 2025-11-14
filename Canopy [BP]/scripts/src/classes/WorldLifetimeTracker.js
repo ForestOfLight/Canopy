@@ -38,11 +38,12 @@ export class WorldLifetimeTracker {
 
     getQueryAllMessage(useRealtime) {
         const message = { rawtext: [] };
-        message.rawtext.push({ text: '\n' });
         message.rawtext.push(this.getHeaderMessage(useRealtime));
         for (const dimensionId of Object.keys(this.dimensionToEntityLifetimeRecordMap)) {
+            if (!this.dimensionToEntityLifetimeRecordMap[dimensionId].hasRecords())
+                continue;
             message.rawtext.push({ text: '\n' });
-            message.rawtext.push(this.getDimensionHeaderMessage(dimensionId, useRealtime));
+            message.rawtext.push(this.getDimensionHeaderMessage(dimensionId, false, useRealtime));
             message.rawtext.push(this.dimensionToEntityLifetimeRecordMap[dimensionId].getQueryAllMessage(useRealtime));
         }
         return message;
@@ -52,10 +53,12 @@ export class WorldLifetimeTracker {
         const message = { rawtext: [] };
         message.rawtext.push(this.getHeaderMessage(useRealtime));
         message.rawtext.push({ text: '\n' });
-        message.rawtext.push({ translate: 'commands.lifetime.query.entity', with: { rawtext: [{ translate: this.getLocalizationKey(entityType)}] } });
+        message.rawtext.push({ translate: 'commands.lifetime.query.entity', with: { rawtext: [this.getLocalizationKeyRawMessage(entityType)] } });
         for (const dimensionId of Object.keys(this.dimensionToEntityLifetimeRecordMap)) {
+            if (!this.dimensionToEntityLifetimeRecordMap[dimensionId].hasRecords())
+                continue;
             message.rawtext.push({ text: '\n' });
-            message.rawtext.push(this.getDimensionHeaderMessage(dimensionId, useRealtime));
+            message.rawtext.push(this.getDimensionHeaderMessage(dimensionId, entityType, useRealtime));
             message.rawtext.push({ text: '\n' });
             message.rawtext.push(this.dimensionToEntityLifetimeRecordMap[dimensionId].getQueryMessage(entityType, queryType, useRealtime));
         }
@@ -68,40 +71,38 @@ export class WorldLifetimeTracker {
         return message;
     }
 
-    getDimensionHeaderMessage(dimensionId, useRealtime) {
+    getDimensionHeaderMessage(dimensionId, entityType, useRealtime) {
         const dimensionLifetimeRecords = this.dimensionToEntityLifetimeRecordMap[dimensionId];
         if (!dimensionLifetimeRecords?.hasRecords())
             return { text: '' };
-        const totalSpawns = dimensionLifetimeRecords.getTotalSpawns();
-        const totalRemovals = dimensionLifetimeRecords.getTotalRemovals();
-        const spawnsPerHour = this.calcPerHour(totalSpawns, useRealtime).toFixed(2);
-        const removalsPerHour = this.calcPerHour(totalRemovals, useRealtime).toFixed(2);
-        return { translate: 'commands.lifetime.query.dimensionheader', with: [getColoredDimensionName(dimensionId), String(totalSpawns), String(spawnsPerHour), String(totalRemovals), String(removalsPerHour)] };
+        const totalSpawns = dimensionLifetimeRecords.getTotalSpawns(entityType);
+        const totalRemovals = dimensionLifetimeRecords.getTotalRemovals(entityType);
+        const spawnsPerHour = this.calcPerHour(totalSpawns, useRealtime);
+        const removalsPerHour = this.calcPerHour(totalRemovals, useRealtime);
+        return { translate: 'commands.lifetime.query.dimensionheader', with: [getColoredDimensionName(dimensionId), String(totalSpawns), spawnsPerHour.toFixed(2), String(totalRemovals), removalsPerHour.toFixed(2)] };
     }
 
     calcPerHour(value, useRealtime) {
-        let ticks;
-        if (useRealtime)
-            ticks = this.getElapsedMs() / (1000 / TicksPerSecond);
-        else
-            ticks = this.getElapsedTicks();
-        return value / (ticks * 3600);
+        const ticksPerHour = TicksPerSecond * 60 * 60;
+        return value / (this.getElapsedTicks(useRealtime) / ticksPerHour);
     }
 
-    getElapsedTicks() {
+    getElapsedTicks(useRealtime) {
+        if (useRealtime)
+            return ((this.isCollecting ? Date.now() : this.stopDate) - this.startDate) / (1000 / TicksPerSecond)
         return (this.isCollecting ? system.currentTick : this.stopTick) - this.startTick;
     }
 
-    getElapsedMs() {
-        return (this.isCollecting ? Date.now() : this.stopDate) - this.startDate;
-    }
-
     getElapsedMin(useRealtime) {
-        return (useRealtime ? this.getElapsedMs() / 1000 : this.getElapsedTicks() / TicksPerSecond) / 60;
+        return (this.getElapsedTicks(useRealtime) / TicksPerSecond) / 60;
     }
 
-    getLocalizationKey(entityType) {
-        return this.localizationKeys[entityType] || 'commands.lifetime.query.entity.unknowntype';
+    getLocalizationKeyRawMessage(entityType) {
+        return this.localizationKeys[entityType] || { translate: 'commands.lifetime.query.entity.unknowntype' };
+    }
+
+    setLocalizationKey(entityType, localizationKey) {
+        this.localizationKeys[entityType] = localizationKey;
     }
     
     createDimensionRecords() {
@@ -135,13 +136,14 @@ export class WorldLifetimeTracker {
     }
 
     onEntityLoad(event) {
-        event.cause = EntityInitializationCause.Loaded
+        this.localizationKeys[event.entity.typeId] = event.entity.localizationKey;
+        event.cause = EntityInitializationCause.Loaded;
         this.collectSpawn(event);
     }
 
     onEntityDie(event) {
         event.entity = event.deadEntity;
-        event.cause = event.damageSource.cause;
+        event.cause = `Death §7(§f${event.damageSource.cause}§7)`;
         this.collectRemoval(event);
     }
 
@@ -152,12 +154,17 @@ export class WorldLifetimeTracker {
     }
 
     collectSpawn(event) {
-        this.localizationKeys[event.entity.typeId] = event.entity.localizationKey;
-        this.dimensionToEntityLifetimeRecordMap[event.entity.dimension.id].collectSpawn(event.entity, event.cause);
+        try {
+            this.dimensionToEntityLifetimeRecordMap[event.entity.dimension.id].collectSpawn(event.entity, event.cause);
+        } catch(error) {
+            if (error.name === "InvalidActorError")
+                console.warn('[Canopy] Entity was skipped because it was removed before its spawn data could not be collected.');
+            else
+                throw error;
+        }
     }
 
     collectRemoval(event) {
-        this.localizationKeys[event.entity.typeId] = event.entity.localizationKey;
         this.dimensionToEntityLifetimeRecordMap[event.entity.dimension.id].collectRemoval(event.entity, event.cause);
     }
 }

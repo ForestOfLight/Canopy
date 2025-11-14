@@ -1,24 +1,17 @@
 import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus } from "@minecraft/server";
 import { VanillaCommand, PlayerCommandOrigin, ServerCommandOrigin } from "../../lib/canopy/Canopy";
 import { lifetimeTrackingCommand } from "./lifetimetracking";
+import { LIFETIME_QUERY_ACTIONS } from "./lifetimequery";
 
-export const LIFETIME_QUERY_ACTIONS = Object.freeze({
-    LIFETIME: 'lifetime',
-    SPAWNING: 'spawning',
-    REMOVAL: 'removal',
-    REALTIME: 'realtime'
-});
-
-export class LifetimeQuery extends VanillaCommand {
+export class LifetimeQueryItem extends VanillaCommand {
     worldLifetimeTracker = void 0;
 
     constructor() {
         super({
-            name: 'canopy:lifetimequery',
-            description: 'commands.lifetime.query',
-            enums: [{ name: 'canopy:lifetimeQueryActions', values: Object.values(LIFETIME_QUERY_ACTIONS) }],
+            name: 'canopy:lifetimequeryitem',
+            description: 'commands.lifetime.query.item',
             optionalParameters: [
-                { name: 'entityType', type: CustomCommandParamType.EntityType },
+                { name: 'itemType', type: CustomCommandParamType.ItemType },
                 { name: 'canopy:lifetimeQueryActions', type: CustomCommandParamType.Enum },
                 { name: 'useRealTime', type: CustomCommandParamType.Boolean }
             ],
@@ -28,28 +21,32 @@ export class LifetimeQuery extends VanillaCommand {
         });
     }
 
-    lifetimeQueryCommand(origin, entityType, queryType, useRealtime) {
-        if (!entityType) {
+    lifetimeQueryCommand(origin, itemType, queryType, useRealtime) {
+        if (!itemType) {
             origin.sendMessage(this.queryAll(useRealtime));
             return;
         }
         if (queryType === LIFETIME_QUERY_ACTIONS.REALTIME)
-            origin.sendMessage(this.queryEntity(entityType, false, true));
+            origin.sendMessage(this.queryEntity(itemType, false, true));
         else if (Object.values(LIFETIME_QUERY_ACTIONS).includes(queryType))
-            origin.sendMessage(this.queryEntity(entityType, queryType, useRealtime));
+            origin.sendMessage(this.queryEntity(itemType, queryType, useRealtime));
         else if (queryType)
             return { status: CustomCommandStatus.Failure, message: 'commands.lifetime.query.invalidaction' };
         else
-            origin.sendMessage(this.queryEntity(entityType, false, useRealtime));
+            origin.sendMessage(this.queryEntity(itemType, false, useRealtime));
     }
 
     queryAll(useRealTime) {
         return lifetimeTrackingCommand.getWorldLifetimeTracker().getQueryAllMessage(useRealTime);
     }
 
-    queryEntity(entityType, queryType, useRealTime) {
-        return lifetimeTrackingCommand.getWorldLifetimeTracker().getQueryEntityMessage(entityType.id, queryType, useRealTime);
+    queryEntity(itemType, queryType, useRealTime) {
+        return lifetimeTrackingCommand.getWorldLifetimeTracker().getQueryEntityMessage(itemType, queryType, useRealTime);
+    }
+
+    getEntityType(itemType) {
+        return "minecraft:item-" + itemType;
     }
 }
 
-export const lifetimeQueryCommand = new LifetimeQuery();
+export const lifetimeQueryCommand = new LifetimeQueryItem();

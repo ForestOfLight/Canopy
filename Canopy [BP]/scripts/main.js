@@ -32,6 +32,7 @@ import './src/commands/hss'
 import './src/commands/biomeedges'
 import './src/commands/lifetimetracking'
 import './src/commands/lifetimequery'
+import './src/commands/lifetimequeryitem'
 
 // Script Events
 import './src/commands/scriptevents/counter'
