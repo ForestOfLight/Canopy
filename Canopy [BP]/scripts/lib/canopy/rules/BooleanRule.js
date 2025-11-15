@@ -1,4 +1,4 @@
-import { Rule } from './Rule';
+import { Rule } from './Rule.js';
 
 export class BooleanRule extends Rule {
     constructor(options) {
