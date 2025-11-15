@@ -16,7 +16,7 @@ export class ChunkBorders extends AbilityRule {
                 this.stopAllRenderingBorders();
             }
         }, { 
-            slotNumber: 13, 
+            slotNumber: 13,
             onPlayerEnableCallback: (player) => this.drawChunkBorders(player),
             onPlayerDisableCallback: (player) => this.stopRenderingBorders(player)
         });
