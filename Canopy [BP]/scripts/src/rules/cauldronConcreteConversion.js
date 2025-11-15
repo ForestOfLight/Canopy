@@ -4,7 +4,7 @@ import { system, world, DimensionTypes, ItemStack, FluidType, BlockComponentType
 const CONVERSION_TIME = 20*7;
 const CURRENT_CONVERSIONS = {};
 
-let runner;
+let runner = void 0;
 const onEntitySpawnBound = onEntitySpawn.bind(this);
 const onEntityRemoveBound = onEntityRemove.bind(this);
 new BooleanRule({
@@ -17,12 +17,13 @@ new BooleanRule({
         world.afterEvents.entityRemove.subscribe(onEntityRemoveBound);
     },
     onDisableCallback: () => {
-        system.clearRun(runner);
+        if (runner)
+            system.clearRun(runner);
+        runner = void 0;
         world.afterEvents.entitySpawn.unsubscribe(onEntitySpawnBound);
         world.afterEvents.entityRemove.unsubscribe(onEntityRemoveBound);
-        for (const id in CURRENT_CONVERSIONS) 
+        for (const id in CURRENT_CONVERSIONS)
             delete CURRENT_CONVERSIONS[id];
-        
     }
 });
 
