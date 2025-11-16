@@ -1,13 +1,13 @@
-import { Rule } from "lib/canopy/Canopy";
+import { BooleanRule } from "lib/canopy/Canopy";
 import { system, world, DimensionTypes, ItemStack, FluidType, BlockComponentTypes } from "@minecraft/server";
 
 const CONVERSION_TIME = 20*7;
 const CURRENT_CONVERSIONS = {};
 
-let runner;
+let runner = void 0;
 const onEntitySpawnBound = onEntitySpawn.bind(this);
 const onEntityRemoveBound = onEntityRemove.bind(this);
-new Rule({
+new BooleanRule({
     category: 'Rules',
     identifier: 'cauldronConcreteConversion',
     description: { translate: 'rules.cauldronConcreteConversion' },
@@ -17,12 +17,13 @@ new Rule({
         world.afterEvents.entityRemove.subscribe(onEntityRemoveBound);
     },
     onDisableCallback: () => {
-        system.clearRun(runner);
+        if (runner)
+            system.clearRun(runner);
+        runner = void 0;
         world.afterEvents.entitySpawn.unsubscribe(onEntitySpawnBound);
         world.afterEvents.entityRemove.unsubscribe(onEntityRemoveBound);
-        for (const id in CURRENT_CONVERSIONS) 
+        for (const id in CURRENT_CONVERSIONS)
             delete CURRENT_CONVERSIONS[id];
-        
     }
 });
 

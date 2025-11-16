@@ -1,17 +1,29 @@
-import { Rule, Rules } from "../../lib/canopy/Canopy";
+import { BooleanRule, GlobalRule } from "../../lib/canopy/Canopy";
 import { world } from "@minecraft/server";
 
-new Rule({
-    category: 'Rules',
-    identifier: 'entityInstantDeath',
-    description: { translate: 'rules.entityInstantDeath' }
-});
-
-world.afterEvents.entityDie.subscribe(async (event) => {
-    if (!await Rules.getNativeValue('entityInstantDeath')) return;
-    try {
-        event.deadEntity.remove();
-    } catch {
-        // already dead
+export class EntityInstantDeath extends BooleanRule {
+    constructor() {
+        super(GlobalRule.morphOptions({
+            identifier: 'entityInstantDeath',
+            onEnableCallback: () => this.subscribeToEvent(),
+            onDisableCallback: () => this.unsubscribeFromEvent()
+        }));
+        this.onEntityDieBound = this.onEntityDie.bind(this);
     }
-});
+
+    subscribeToEvent() {
+        world.afterEvents.entityDie.subscribe(this.onEntityDie)
+    }
+
+    unsubscribeFromEvent() {
+        world.afterEvents.entityDie.unsubscribe(this.onEntityDie)
+    }
+
+    onEntityDie(event) {
+        try {
+            event.deadEntity.remove();
+        } catch {
+            // already dead
+        }
+    }
+}

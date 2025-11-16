@@ -25,7 +25,7 @@ export class BlockStates extends InfoDisplayElement {
     tryFormatBlockStates() {
         const { blockRayResult, entityRayResult } = getRaycastResults(this.player, 7);
         const entity = entityRayResult[0]?.entity;
-        if (entity)
+        if (entity || blockRayResult?.block.isLiquid)
             return '';
         return this.formatBlockStates(blockRayResult);
     }

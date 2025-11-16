@@ -10,13 +10,13 @@ const cmd = new Command({
     usage: `distance [from [x y z]] [to [x y z]] OR ${Commands.getPrefix()}distance target`,
     args: [
         { type: 'string', name: 'actionArgOne' },
-        { type: 'number', name: 'fromArgX' },
-        { type: 'number', name: 'fromArgY' },
-        { type: 'number', name: 'fromArgZ' },
+        { type: 'float', name: 'fromArgX' },
+        { type: 'float', name: 'fromArgY' },
+        { type: 'float', name: 'fromArgZ' },
         { type: 'string', name: 'actionArgTwo' },
-        { type: 'number', name: 'toArgX' },
-        { type: 'number', name: 'toArgY' },
-        { type: 'number', name: 'toArgZ' }
+        { type: 'float', name: 'toArgX' },
+        { type: 'float', name: 'toArgY' },
+        { type: 'float', name: 'toArgZ' }
     ],
     callback: distanceCommand,
     helpEntries: [
@@ -32,13 +32,13 @@ new Command({
     description: { translate: 'commands.distance' },
     args: [
         { type: 'string', name: 'actionArgOne' },
-        { type: 'number', name: 'fromArgX' },
-        { type: 'number', name: 'fromArgY' },
-        { type: 'number', name: 'fromArgZ' },
+        { type: 'float', name: 'fromArgX' },
+        { type: 'float', name: 'fromArgY' },
+        { type: 'float', name: 'fromArgZ' },
         { type: 'string', name: 'actionArgTwo' },
-        { type: 'number', name: 'toArgX' },
-        { type: 'number', name: 'toArgY' },
-        { type: 'number', name: 'toArgZ' }
+        { type: 'float', name: 'toArgX' },
+        { type: 'float', name: 'toArgY' },
+        { type: 'float', name: 'toArgZ' }
     ],
     usage: `d to [from [x y z]] [to [x y z]] OR ${Commands.getPrefix()}d target`,
     callback: distanceCommand,

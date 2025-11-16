@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { CommandHelpEntry } from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/CommandHelpEntry";
-import { Commands } from "../../../../../../Canopy [BP]/scripts/lib/canopy/Commands";
+import { Commands } from "../../../../../../Canopy [BP]/scripts/lib/canopy/commands/Commands";
 
 vi.mock('@minecraft/server', () => ({
     world: { 

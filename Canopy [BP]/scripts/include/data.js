@@ -81,8 +81,6 @@ export const categoryToMobMap = {
         'ravager',
         'shulker',
         'silverfish',
-        'skeleton_horse',
-        'sniffer',
         'snow_golem',
         'tadpole',
         'trader_llama',
@@ -99,6 +97,54 @@ export const categoryToMobMap = {
         'zombie_villager_v2'
     ]
 }
+
+export const meleeMobs = [
+    'bee',
+    'dolphin',
+    'fox',
+    'goat',
+    'hoglin',
+    'panda',
+    'polar_bear',
+    'wolf',
+    'blaze',
+    'bogged',
+    'creeper',
+    'drowned',
+    'enderman',
+    'guardian',
+    'husk',
+    'magma_cube',
+    'phantom',
+    'piglin',
+    'skeleton',
+    'slime',
+    'spider',
+    'stray',
+    'wither_skeleton',
+    'zombie_pigman',
+    'zombie',
+    'pillager',
+    'axolotl',
+    'cave_spider',
+    'copper_golem',
+    'creaking',
+    'elder_guardian',
+    'ender_dragon',
+    'endermite',
+    'iron_golem',
+    'piglin_brute',
+    'player',
+    'ravager',
+    'silverfish',
+    'snow_golem',
+    'vex',
+    'vindicator',
+    'warden',
+    'zoglin',
+    'zombie_villager',
+    'zombie_villager_v2'
+];
 
 export const biomeToHexColorMap = {
     "bamboo_jungle": '#768E14',
@@ -191,16 +237,16 @@ export const biomeToHexColorMap = {
 
 export const HSSTypes = Object.freeze({
     Fortress: 'fortress',
-    OceanMonument: 'ocean_monument',
-    Outpost: 'outpost',
-    WitchHut: 'witch_hut'
+    OceanMonument: 'monument',
+    PillagerOutpost: 'pillager_outpost',
+    WitchHut: 'swamp_hut'
 });
 
 export const mobTypeToHSSMap = {
     'minecraft:blaze': HSSTypes.Fortress,
     'minecraft:guardian': HSSTypes.OceanMonument,
     'minecraft:magma_cube': HSSTypes.Fortress,
-    'minecraft:pillager': HSSTypes.Outpost,
+    'minecraft:pillager': HSSTypes.PillagerOutpost,
     'minecraft:skeleton': HSSTypes.Fortress,
     'minecraft:witch': HSSTypes.WitchHut,
     'minecraft:wither_skeleton': HSSTypes.Fortress,

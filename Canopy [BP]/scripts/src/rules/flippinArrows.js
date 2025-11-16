@@ -1,9 +1,9 @@
-import { Rule, Rules } from "../../lib/canopy/Canopy";
+import { BooleanRule, Rules } from "../../lib/canopy/Canopy";
 import { system, world, StructureMirrorAxis, BlockPistonState, EquipmentSlot } from "@minecraft/server";
 import BlockRotator from "../classes/BlockRotator";
 import DirectionStateFinder from "../classes/DirectionState";
 
-new Rule({
+new BooleanRule({
     category: 'Rules',
     identifier: 'flippinArrows',
     description: { translate: 'rules.flippinArrows' }

@@ -1,59 +1,128 @@
-import { EntityInitializationCause, system, TicksPerSecond, world } from "@minecraft/server";
-import { mobTypeToHSSMap } from "../../include/data";
+import { EntityInitializationCause, world } from "@minecraft/server";
+import { HSSTypes, mobTypeToHSSMap } from "../../include/data";
 import { Vector } from "../../lib/Vector";
+import { StructureBoundsFinder } from "./StructureBoundsFinder";
+import { HSSRenderer } from "./HSSRenderer";
+import { DebugBox, debugDrawer } from "@minecraft/debug-utilities";
+import { HSS_ACTIONS } from "../commands/hss";
+import { GeneratedStructureError } from "./errors/GeneratedStructureError";
 
 export class HSSFinder {
-    refreshRateSeconds = 5;
-    runner;
+    isFortress = false;
+    fortressHSSShapes = [];
+    renderer = void 0;
     
-    constructor() {
-        this.hssLocations = [];
-        this.onEntitySpawnBound = this.onEntitySpawn.bind(this);
-        world.afterEvents.entitySpawn.subscribe(this.onEntitySpawnBound);
-        this.runner = system.runInterval(this.displayHSSLocations.bind(this), this.refreshRateSeconds * TicksPerSecond);
+    constructor(dimensionLocation) {
+        if (dimensionLocation.mode === HSS_ACTIONS.FORTRESS) {
+            this.onEntitySpawnBound = this.onEntitySpawn.bind(this);
+            world.afterEvents.entitySpawn.subscribe(this.onEntitySpawnBound);
+            this.isFortress = true;
+        } else if (this.structureHasHSS(dimensionLocation)) {
+            this.processStructureAt(dimensionLocation);
+        } else {
+            throw new GeneratedStructureError('commands.hss.started.nostructure');
+        }
     }
 
     destroy() {
-        this.hssLocations = [];
-        this.source = null;
-        world.afterEvents.entitySpawn.unsubscribe(this.onEntitySpawnBound);
-        system.clearRun(this.runner);
+        if (this.isFortress) {
+            this.fortressHSSShapes.forEach((shape) => shape.remove());
+            world.afterEvents.entitySpawn.unsubscribe(this.onEntitySpawnBound);
+        } else {
+            this.renderer?.destroy();
+        }
+    }
+
+    processStructureAt(dimensionLocation) {
+        const dimension = dimensionLocation.dimension;
+        const location = dimensionLocation.location;
+        const structureBoundsFinder = new StructureBoundsFinder(dimension, Vector.from(location).floor());
+        const structureBounds = structureBoundsFinder.getBounds();
+        const calculatedHSS = this.calculateHSS(structureBounds);
+        this.renderer?.destroy();
+        this.renderer = new HSSRenderer(structureBoundsFinder, calculatedHSS);
+    }
+
+    calculateHSS(structureBounds) {
+        const CHUNK_SIZE = 16;
+        const chunkOverlay = {
+            min: structureBounds.min.divide(CHUNK_SIZE).floor().multiply(CHUNK_SIZE),
+            max: structureBounds.max.divide(CHUNK_SIZE).floor().add(new Vector(1, 1, 1)).multiply(CHUNK_SIZE)
+        };
+        const hssLocations = [];
+        for (let chunkX = chunkOverlay.min.x; chunkX < chunkOverlay.max.x; chunkX += CHUNK_SIZE) {
+            for (let chunkZ = chunkOverlay.min.z; chunkZ < chunkOverlay.max.z; chunkZ += CHUNK_SIZE) {
+                const baseX = Math.max(structureBounds.min.x, chunkX);
+                const baseZ = Math.max(structureBounds.min.z, chunkZ);
+                const remainingX = Math.min(structureBounds.max.x - baseX, chunkX + CHUNK_SIZE - baseX);
+                const remainingZ = Math.min(structureBounds.max.z - baseZ, chunkZ + CHUNK_SIZE - baseZ);
+                const location = new Vector(
+                    baseX + Math.floor((remainingX) * 0.5),
+                    86,
+                    baseZ + Math.floor((remainingZ) * 0.5)
+                );
+                hssLocations.push(location);
+            }
+        }
+        return hssLocations;
     }
 
     onEntitySpawn(event) {
         if (!event.entity || event.cause !== EntityInitializationCause.Spawned)
             return;
         const entity = event.entity;
-        const hssType = mobTypeToHSSMap[entity.typeId];
-        if (hssType)
-            this.addHSSLocation(entity, hssType);
+        if (mobTypeToHSSMap[entity?.typeId] === HSSTypes.Fortress && this.isStructureSpawn(entity?.location))
+            this.processFortressSpawn(entity.dimension, entity.location);
         try {
-            entity.remove();
+            entity?.remove()
         } catch {
             /* pass */
         }
     }
-
-    addHSSLocation(entity, hssType) {
-        if (!entity.isValid || !this.isStructureSpawn(entity?.location))
-            return;
-        this.hssLocations.push({ dimension: entity.dimension, location: entity.location, hssType });
-    }
-
-    displayHSSLocations() {
-        this.hssLocations.forEach(hssLocation => {
-            try {
-                hssLocation.dimension.spawnParticle(`canopy:${hssLocation.hssType}_hss_marker`, hssLocation.location);
-            } catch {
-                /* pass */
-            }
-        });
-    }
-
+    
     isStructureSpawn(location) {
         if (!location)
             return false;
         const flooredLocation = Vector.from(location).floor();
         return flooredLocation.x === location.x && flooredLocation.z === location.z;
+    }
+
+    processFortressSpawn(dimension, location) {
+        const flooredLocation = Vector.from(location).floor();
+        if (this.knowsFortressHSS(flooredLocation))
+            return;
+        const bottom = this.findStructureBottom(dimension, flooredLocation, "minecraft:fortress");
+        const top = this.findStructureTop(dimension, flooredLocation, "minecraft:fortress");
+        const height = top.y - bottom.y;
+
+        const box = new DebugBox(bottom);
+        box.bound = new Vector(1, height, 1);
+        box.color = { red: 0, green: 1, blue: 0 };
+        this.fortressHSSShapes.push(box);
+        debugDrawer.addShape(box);
+    }
+
+    knowsFortressHSS(hssLocation) {
+        return this.fortressHSSShapes.some((hss) => hssLocation.distance(hss.location) === 0);
+    }
+
+    findStructureBottom(dimension, startLocation, structureType) {
+        const bottom = new Vector(startLocation.x, startLocation.y, startLocation.z);
+        while (dimension.getGeneratedStructures(bottom)?.at(0) === structureType && startLocation.y - bottom.y < 500)
+            bottom.y--;
+        bottom.y++;
+        return bottom;
+    }
+
+    findStructureTop(dimension, startLocation, structureType) {
+        const top = new Vector(startLocation.x, startLocation.y, startLocation.z);
+        while (dimension.getGeneratedStructures(top)?.at(0) === structureType && startLocation.y - top.y < 500)
+            top.y++;
+        top.y--;
+        return top;
+    }
+
+    structureHasHSS(dimensionLocation) {
+        return Object.values(HSSTypes).includes(dimensionLocation.dimension.getGeneratedStructures(dimensionLocation.location).at(0)?.replace('minecraft:', ''));
     }
 }

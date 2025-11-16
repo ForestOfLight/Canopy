@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { HelpBook } from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/HelpBook";
 import { RuleHelpPage } from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/RuleHelpPage";
-import { Rule } from "../../../../../../Canopy [BP]/scripts/lib/canopy/Rule";
-import { Rules } from "../../../../../../Canopy [BP]/scripts/lib/canopy/Rules";
+import { BooleanRule } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule";
+import { Rules } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules";
 import { CommandHelpPage } from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/CommandHelpPage";
-import { Command } from "../../../../../../Canopy [BP]/scripts/lib/canopy/Command";
-import { Commands } from "../../../../../../Canopy [BP]/scripts/lib/canopy/Commands";
+import { Command } from "../../../../../../Canopy [BP]/scripts/lib/canopy/commands/Command";
+import { Commands } from "../../../../../../Canopy [BP]/scripts/lib/canopy/commands/Commands";
 
 vi.mock("@minecraft/server", () => ({
     world: { 
@@ -33,6 +33,89 @@ vi.mock("@minecraft/server", () => ({
 
 vi.mock("@minecraft/server-ui", () => ({
     ModalFormData: vi.fn()
+}));
+
+// Terrible practice. This is a workaround for a Vitest rollup error that causes the Rule class to not be imported properly in BooleanRule.
+vi.mock('../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rule', () => ({
+    Rule: class Rule {
+        #category;
+        #identifier;
+        #description;
+        #defaultValue;
+        #contingentRules;
+        #independentRules;
+
+        constructor({ category, identifier, description = '', defaultValue = void 0,
+                    contingentRules = [], independentRules = [], onModifyCallback = () => {} }) {
+            this.#category = category;
+            this.#identifier = identifier;
+            this.#description = typeof description === 'string' ? { text: description } : description;
+            this.#defaultValue = defaultValue;
+            this.#contingentRules = contingentRules;
+            this.#independentRules = independentRules;
+            this.onModify = onModifyCallback;
+        }
+
+        getCategory() {
+            return this.#category;
+        }
+
+        getID() {
+            return this.#identifier;
+        }
+
+        getDescription() {
+            return this.#description;
+        }
+
+        getContigentRuleIDs() {
+            return this.#contingentRules;
+        }
+
+        getIndependentRuleIDs() {
+            return this.#independentRules;
+        }
+
+        getDependentRuleIDs() {
+            return [];
+        }
+
+        getExtension() {
+            return null;
+        }
+
+        getType() {
+            return 'mock';
+        }
+
+        getDefaultValue() {
+            return this.#defaultValue;
+        }
+
+        resetToDefaultValue() {
+            this.setValue(this.#defaultValue);
+        }
+
+        getValue() {
+            return this.#defaultValue;
+        }
+
+        getNativeValue() {
+            return this.#defaultValue;
+        }
+
+        setValue() {
+            // Mock implementation
+        }
+
+        isInDomain() {
+            return true;
+        }
+
+        isInRange() {
+            return true;
+        }
+    }
 }));
 
 describe('HelpBook', () => {
@@ -76,7 +159,7 @@ describe('HelpBook', () => {
         it('should add an entry to the specified page', () => {
             const page = new RuleHelpPage({ title: 'Test Page' });
             book.newPage(page);
-            const rule = new Rule({ id: 'testRule', category: 'testCategory', description: 'Test Rule' });
+            const rule = new BooleanRule({ id: 'testRule', category: 'testCategory', description: 'Test Rule' });
             book.addEntry("Test Page", rule);
             expect(page.hasEntry(rule)).toBeTruthy();
         });
@@ -84,7 +167,7 @@ describe('HelpBook', () => {
         it('should add InfoDisplay pages to the InfoDisplay page', () => {
             const page = new RuleHelpPage({ title: 'InfoDisplay' });
             book.newPage(page);
-            const rule = new Rule({ id: 'testRule', category: 'InfoDisplay', description: 'Test Rule' });
+            const rule = new BooleanRule({ id: 'testRule', category: 'InfoDisplay', description: 'Test Rule' });
             book.addEntry("InfoDisplay", rule, true);
             expect(page.hasEntry(rule)).toBeTruthy();
         });
@@ -169,7 +252,7 @@ describe('HelpBook', () => {
         it('should print search results to the player', async () => {
             const page1 = new RuleHelpPage({ title: 'Page 1' });
             const page2 = new RuleHelpPage({ title: 'Page 2' });
-            page1.addEntry(new Rule({ identifier: 'searchableRule', category: 'testCategory', description: 'Searchable Rule' }));
+            page1.addEntry(new BooleanRule({ identifier: 'searchableRule', category: 'testCategory', description: 'Searchable Rule' }));
             book.newPage(page1);
             book.newPage(page2);
 
@@ -198,7 +281,7 @@ describe('HelpBook', () => {
         it('should handle translatable descriptions', async () => {
             const page1 = new RuleHelpPage({ title: 'Page 1' });
             const page2 = new RuleHelpPage({ title: 'Page 2' });
-            page1.addEntry(new Rule({ identifier: 'searchableRule', category: 'testCategory', description: { translate: 'rule.searchable' } }));
+            page1.addEntry(new BooleanRule({ identifier: 'searchableRule', category: 'testCategory', description: { translate: 'rule.searchable' } }));
             book.newPage(page1);
             book.newPage(page2);
 

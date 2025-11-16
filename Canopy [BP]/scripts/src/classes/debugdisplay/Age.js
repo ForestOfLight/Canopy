@@ -1,7 +1,7 @@
 import { DimensionTypes, system, world } from '@minecraft/server';
-import { DebugDisplayElement } from './DebugDisplayElement.js';
+import { DebugDisplayTextElement } from './DebugDisplayTextElement.js';
 
-export class Age extends DebugDisplayElement {
+export class Age extends DebugDisplayTextElement {
     static entitySpawnTicks = {};
 
     getFormattedData() {

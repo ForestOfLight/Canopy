@@ -1,7 +1,7 @@
 import { Speed } from '../../../../../../Canopy [BP]/scripts/src/rules/infodisplay/Speed';
 import { describe, it, expect, beforeAll, vi } from 'vitest';
 import { InfoDisplayElement } from '../../../../../../Canopy [BP]/scripts/src/rules/infodisplay/InfoDisplayElement';
-import { Rules } from '../../../../../../Canopy [BP]/scripts/lib/canopy/Rules';
+import { Rules } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules';
 
 vi.mock('@minecraft/server', () => ({
     world: { 
@@ -54,14 +54,14 @@ describe('Speed', () => {
 
     it('should have a method to return the player\'s formatted speed', () => {
         expect(speed.getFormattedDataOwnLine()).toEqual({
-            text: `§70.000 m/s`
+            text: "§d0.000§r m/s"
         });
     });
 
     it('should correctly calculate speed from player velocity', () => {
         mockPlayer.getVelocity.mockReturnValue({ x: 3, y: 4, z: 0 });
         expect(speed.getFormattedDataOwnLine()).toEqual({
-            text: `§7100.000 m/s`
+            text: "§d100.000§r m/s",
         });
     });
 });

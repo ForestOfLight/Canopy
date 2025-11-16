@@ -1,16 +1,16 @@
 import { EntityComponentTypes } from "@minecraft/server";
-import { GlobalRule } from "../../lib/canopy/GlobalRule";
+import { BooleanRule, GlobalRule } from "../../lib/canopy/Canopy";
 import { spawnEggSpawnEntityEvent } from "../events/SpawnEggSpawnEntityEvent";
 
-export class SpawnEggSpawnWithMinecart extends GlobalRule {
+export class SpawnEggSpawnWithMinecart extends BooleanRule {
     railBlockTypes = [ 'minecraft:rail', 'minecraft:golden_rail', 'minecraft:detector_rail', 'minecraft:activator_rail' ];
 
     constructor() {
-        super({
+        super(GlobalRule.morphOptions({
             identifier: 'spawnEggSpawnWithMinecart',
             onEnableCallback: () => this.subscribeToEvent(),
             onDisableCallback: () => this.unsubscribeFromEvent()
-        });
+        }));
         this.onSpawnEggSpawnBound = this.onSpawnEggSpawn.bind(this);
     }
 

@@ -1,6 +1,5 @@
+import { VanillaCommand, PlayerCommandOrigin } from '../../lib/canopy/Canopy';
 import { CommandPermissionLevel, system } from '@minecraft/server';
-import { VanillaCommand } from '../../lib/canopy/Canopy';
-import { PlayerCommandOrigin } from '../../lib/canopy/PlayerCommandOrigin';
 
 const gamemodeMap = {
     's': 'survival',

@@ -1,13 +1,13 @@
-import { GlobalRule } from "../../lib/canopy/Canopy";
+import { BooleanRule, GlobalRule } from "../../lib/canopy/Canopy";
 import { world, GameMode, system, Direction, LiquidType } from '@minecraft/server';
 
-class CreativeNetherWaterPlacement extends GlobalRule {
+class CreativeNetherWaterPlacement extends BooleanRule {
     constructor() {
-        super({
+        super(GlobalRule.morphOptions({
             identifier: 'creativeNetherWaterPlacement',
             onEnableCallback: () => this.subscribeToEvent(),
             onDisableCallback: () => this.unsubscribeFromEvent()
-        });
+        }));
         this.onPlayerInteractWithBlockBound = this.onPlayerInteractWithBlock.bind(this);
     }
 

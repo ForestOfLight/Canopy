@@ -1,12 +1,11 @@
-import { Rule, VanillaCommand } from "../../lib/canopy/Canopy";
+import { VanillaCommand, PlayerCommandOrigin, BooleanRule } from "../../lib/canopy/Canopy";
 import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, GameMode, system, world } from "@minecraft/server";
 import { stringifyLocation } from "../../include/utils";
-import { PlayerCommandOrigin } from "../../lib/canopy/PlayerCommandOrigin";
 
 const MAX_EFFECT_DURATION = 20000000;
 const TICKS_TO_COMPLETE_FADE = 10;
 
-new Rule({
+new BooleanRule({
     category: 'Rules',
     identifier: 'commandCamera',
     description: { translate: 'rules.commandCamera' },

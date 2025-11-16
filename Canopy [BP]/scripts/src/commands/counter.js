@@ -1,8 +1,8 @@
-import { Rule, Command } from "../../lib/canopy/Canopy";
+import { BooleanRule, Command } from "../../lib/canopy/Canopy";
 import { counterChannels } from "../classes/CounterChannels";
 import { broadcastActionBar, formatColorStr } from "../../include/utils";
 
-new Rule({
+new BooleanRule({
     category: 'Rules',
     identifier: 'hopperCounters',
     description: { translate: 'rules.hopperCounters' },

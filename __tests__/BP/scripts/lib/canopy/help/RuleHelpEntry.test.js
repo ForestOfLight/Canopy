@@ -21,7 +21,8 @@ describe('RuleHelpEntry', () => {
             const mockRule = {
                 getID: () => 'testRule',
                 getDescription: () => 'This is a test rule',
-                getValue: vi.fn().mockResolvedValue(true)
+                getValue: vi.fn().mockResolvedValue(true),
+                getType: () => 'boolean'
             };
             const entry = new RuleHelpEntry(mockRule);
             const rawMessage = await entry.toRawMessage();
@@ -37,7 +38,8 @@ describe('RuleHelpEntry', () => {
             const mockRule = {
                 getID: () => 'testRule',
                 getDescription: () => 'This is a test rule',
-                getValue: vi.fn().mockResolvedValue(false)
+                getValue: vi.fn().mockResolvedValue(false),
+                getType: () => 'boolean'
             };
             const entry = new RuleHelpEntry(mockRule);
             const rawMessage = await entry.toRawMessage();

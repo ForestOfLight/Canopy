@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { logCommand } from "../../../../../Canopy [BP]/scripts/src/commands/log";
 import { Player } from "@minecraft/server";
-import { PlayerCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/PlayerCommandOrigin";
+import { PlayerCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/commands/PlayerCommandOrigin";
 
 vi.mock("@minecraft/server", () => ({
     system: {

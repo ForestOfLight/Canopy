@@ -12,11 +12,21 @@ class Facing extends InfoDisplayElement {
     getFormattedDataOwnLine() {
         const rotation = this.player.getRotation();
 	    [ rotation.x, rotation.y ] = [ rotation.x.toFixed(2), rotation.y.toFixed(2) ];
-	    return { translate: 'rules.infoDisplay.facing.display', with: [rotation.x, rotation.y] };
+	    return { translate: 'rules.infoDisplay.facing.display', with: [
+            '§a' + this.getSignedNumber(rotation.x),
+            '§c' + this.getSignedNumber(rotation.y)
+        ] };
     }
 
     getFormattedDataSharedLine() {
         return this.getFormattedDataOwnLine();
+    }
+
+    getSignedNumber(num) {
+        const output = Math.abs(num).toFixed(2).padStart(6, '0');
+        if (num >= 0)
+            return '+' + output;
+        return '-' + output;
     }
 }
 

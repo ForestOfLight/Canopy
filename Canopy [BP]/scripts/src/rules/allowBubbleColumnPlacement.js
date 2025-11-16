@@ -1,13 +1,13 @@
-import { GlobalRule } from "../../lib/canopy/Canopy";
+import { BooleanRule, GlobalRule } from "../../lib/canopy/Canopy";
 import { world, system } from '@minecraft/server';
 
-class AllowBubbleColumnPlacement extends GlobalRule {
+class AllowBubbleColumnPlacement extends BooleanRule {
     constructor() {
-        super({
+        super(GlobalRule.morphOptions({
             identifier: 'allowBubbleColumnPlacement',
             onEnableCallback: () => this.subscribeToEvent(),
             onDisableCallback: () => this.unsubscribeFromEvent()
-        });
+        }));
         this.onPlayerPlaceBlockBound = this.onPlayerPlaceBlock.bind(this);
     }
 

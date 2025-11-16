@@ -10,13 +10,13 @@ const cmd = new Command({
     usage: 'spawn [action1] [action2] [x1 y1 z1] [x2 y2 z2]',
     args: [
         { type: 'string', name: 'action' },
-        { type: 'string|number|boolean', name: 'actionTwo' },
-        { type: 'number', name: 'x1' },
-        { type: 'number', name: 'y1' },
-        { type: 'number', name: 'z1' },
-        { type: 'number', name: 'x2' },
-        { type: 'number', name: 'y2' },
-        { type: 'number', name: 'z2' }
+        { type: 'string|float|boolean', name: 'actionTwo' },
+        { type: 'float', name: 'x1' },
+        { type: 'float', name: 'y1' },
+        { type: 'float', name: 'z1' },
+        { type: 'float', name: 'x2' },
+        { type: 'float', name: 'y2' },
+        { type: 'float', name: 'z2' }
     ],
     callback: spawnCommand,
     helpEntries: [

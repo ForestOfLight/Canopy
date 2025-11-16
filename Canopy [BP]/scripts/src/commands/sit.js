@@ -1,5 +1,4 @@
-import { VanillaCommand } from "../../lib/canopy/Canopy";
-import { PlayerCommandOrigin } from "../../lib/canopy/PlayerCommandOrigin";
+import { VanillaCommand, PlayerCommandOrigin } from "../../lib/canopy/Canopy";
 import { playerSit } from "../rules/playerSit";
 import { CommandPermissionLevel, CustomCommandStatus, EntityComponentTypes, system } from "@minecraft/server";
 

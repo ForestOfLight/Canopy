@@ -1,7 +1,7 @@
 import { BlockStates } from '../../../../../../Canopy [BP]/scripts/src/rules/infodisplay/BlockStates';
 import { describe, it, expect, beforeAll, vi } from 'vitest';
 import { InfoDisplayElement } from '../../../../../../Canopy [BP]/scripts/src/rules/infodisplay/InfoDisplayElement';
-import { Rules } from '../../../../../../Canopy [BP]/scripts/lib/canopy/Rules';
+import { Rules } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules';
 
 vi.mock('@minecraft/server', () => ({
     world: { 

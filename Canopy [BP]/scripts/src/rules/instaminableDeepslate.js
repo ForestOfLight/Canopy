@@ -1,7 +1,7 @@
-import { Rule } from 'lib/canopy/Canopy';
+import { BooleanRule } from 'lib/canopy/Canopy';
 import Instaminable from 'src/classes/Instaminable';
 
-const instamineableDeepslateRule = new Rule({
+const instamineableDeepslateRule = new BooleanRule({
     category: 'Rules',
     identifier: 'instaminableDeepslate',
     description: { translate: 'rules.instaminableDeepslate' }

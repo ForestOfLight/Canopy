@@ -1,5 +1,5 @@
 import { system, world } from "@minecraft/server";
-import { Rules } from "../../lib/canopy/Rules";
+import { Rules } from "../../lib/canopy/Canopy";
 
 class ItemCounterChannels {
     onTickRunner;
@@ -24,7 +24,8 @@ class ItemCounterChannels {
 
     disable() {
         world.afterEvents.playerPlaceBlock.unsubscribe(this.onPlayerPlaceBlock);
-        system.clearRun(this.onTickRunner);
+        if (this.onTickRunner)
+            system.clearRun(this.onTickRunner);
         for (const channel of Object.values(this.channels))
             channel.disable();
     }

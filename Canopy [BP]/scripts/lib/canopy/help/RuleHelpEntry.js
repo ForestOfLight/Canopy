@@ -1,6 +1,6 @@
 import { HelpEntry } from "./HelpEntry";
 
-class RuleHelpEntry extends HelpEntry {
+export class RuleHelpEntry extends HelpEntry {
     constructor(rule) {
         super(rule.getID(), rule.getDescription());
         this.rule = rule;
@@ -13,8 +13,15 @@ class RuleHelpEntry extends HelpEntry {
 
     async fetchColoredValue() {
         const value = await this.rule.getValue();
-        return value ? '§atrue§r' : '§cfalse§r';
+        switch(this.rule.getType()) {
+            case ('boolean'):
+                return value ? '§atrue§r' : '§cfalse§r';
+            case('integer'):
+                return '§u' + value;
+            case('float'):
+                return '§d' + value;
+            default:
+                return value;
+        }
     }
 }
-
-export { RuleHelpEntry };

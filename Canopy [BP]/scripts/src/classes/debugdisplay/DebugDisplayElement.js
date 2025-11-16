@@ -5,8 +5,4 @@ export class DebugDisplayElement {
         this.entity = entity;
         this.type = this.constructor.name;
     }
-
-    getFormattedData() {
-        throw new Error("Method 'getFormattedData()' must be implemented.");
-    }
 }

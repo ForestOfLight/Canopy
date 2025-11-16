@@ -1,5 +1,5 @@
 import { HelpEntry } from './HelpEntry';
-import { Commands } from '../Commands';
+import { Commands } from '../commands/Commands';
 
 class CommandHelpEntry extends HelpEntry {
     constructor(command) {

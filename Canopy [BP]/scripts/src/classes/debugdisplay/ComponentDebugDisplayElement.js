@@ -1,8 +1,8 @@
 import { Entity } from "@minecraft/server";
-import { DebugDisplayElement } from "./DebugDisplayElement";
+import { DebugDisplayTextElement } from "./DebugDisplayTextElement";
 import { getNameFromEntityId } from "../../../include/utils";
 
-export class ComponentDebugDisplayElement extends DebugDisplayElement {
+export class ComponentDebugDisplayElement extends DebugDisplayTextElement {
     commonIrrelevantProperties = ['componentId', 'entity', 'typeId', 'isValid'];
     relevantProperties = [];
 

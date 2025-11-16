@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { spawnedEntitiesThisTick, handleTntDuplication } from '../../../../../Canopy [BP]/scripts/src/rules/dupeTnt';
 import { system, world } from '@minecraft/server';
-import { Rule, Rules } from '../../../../../Canopy [BP]/scripts/lib/canopy/Canopy';
+import { BooleanRule, Rules } from '../../../../../Canopy [BP]/scripts/lib/canopy/Canopy';
 
 vi.mock("@minecraft/server", () => ({
     system: {
@@ -41,7 +41,7 @@ vi.mock("@minecraft/server", () => ({
 }));
 
 vi.mock('../../../../../Canopy [BP]/scripts/lib/canopy/Canopy', () => ({
-    Rule: vi.fn(),
+    BooleanRule: vi.fn(),
     Rules: {
         getNativeValue: vi.fn()
     }
@@ -57,7 +57,7 @@ describe('dupeTnt Rule', () => {
     });
 
     it('should create a new rule', () => {
-        expect(Rule).toHaveBeenCalledWith({
+        expect(BooleanRule).toHaveBeenCalledWith({
             category: 'Rules',
             identifier: 'dupeTnt',
             description: { translate: 'rules.dupeTnt' }

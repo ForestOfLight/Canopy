@@ -1,11 +1,11 @@
-import { Rule } from "../../../lib/canopy/Canopy";
+import { Rules } from "../../../lib/canopy/Canopy";
 import { system, world } from "@minecraft/server";
 import { counterChannels } from "../../classes/CounterChannels";
 import { broadcastActionBar, getScriptEventSourceName, formatColorStr } from "../../../include/utils";
 
 system.afterEvents.scriptEventReceive.subscribe(async (event) => {
     if (event.id !== 'canopy:counter') return;
-    if (!await Rule.getValue('hopperCounters')) 
+    if (!await Rules.getValue('hopperCounters'))
         return broadcastActionBar({ translate: 'rules.generic.blocked', with: ['hopperCounters'] });
     const sourceName = getScriptEventSourceName(event);
     const message = event.message;

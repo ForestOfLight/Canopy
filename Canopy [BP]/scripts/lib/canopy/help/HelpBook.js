@@ -95,17 +95,8 @@ class HelpBook {
         };
 
         const description = entryRawMessage.rawtext[1];
-        if (description.translate) {
-            newEntry.rawtext.push({
-                translate: description.translate,
-                with: description.with
-            });
-        } else if (description.text) {
-            newEntry.rawtext.push({
-                text: description.text
-            });
-        }
-
+        newEntry.rawtext.push(description);
+        
         message.rawtext.push(newEntry);
         return entryRawMessage;
     }

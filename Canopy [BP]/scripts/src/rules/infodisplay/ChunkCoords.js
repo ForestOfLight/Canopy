@@ -10,7 +10,10 @@ class ChunkCoords extends InfoDisplayElement {
     getFormattedDataOwnLine() {
         const chunkCoord = this.getChunkCoords(this.player);
         const withinChunkCoord = this.getWithinChunkCoords(this.player);
-        return { translate: 'rules.infoDisplay.chunkCoords.display', with: [`${withinChunkCoord.x} ${withinChunkCoord.y} ${withinChunkCoord.z}`, `${chunkCoord.x} ${chunkCoord.y} ${chunkCoord.z}`] };
+        return { translate: 'rules.infoDisplay.chunkCoords.display', with: [
+            `§d${String(withinChunkCoord.x).padStart(2, '0')} ${String(withinChunkCoord.y).padStart(2, '0')} ${String(withinChunkCoord.z).padStart(2, '0')}`,
+            `§l§d${chunkCoord.x} ${chunkCoord.y} ${chunkCoord.z}`
+        ] };
     }
 
     getFormattedDataSharedLine() {

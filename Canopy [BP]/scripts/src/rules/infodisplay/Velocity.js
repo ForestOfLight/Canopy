@@ -23,6 +23,12 @@ export class Velocity extends InfoDisplayElement {
 
     getFormattedPlayerVelocity() {
         const velocity = Vector.from(this.player.getVelocity());
-        return `§7${velocity.x.toFixed(3)}, ${velocity.y.toFixed(3)}, ${velocity.z.toFixed(3)} m/gt§r`;
+        return `§c${this.getSignedNumber(velocity.x)} §a${this.getSignedNumber(velocity.y)} §b${this.getSignedNumber(velocity.z)}§r m/gt§r`;
+    }
+
+    getSignedNumber(num) {
+        if (num >= 0)
+            return '+' + num.toFixed(3);
+        return num.toFixed(3);
     }
 }

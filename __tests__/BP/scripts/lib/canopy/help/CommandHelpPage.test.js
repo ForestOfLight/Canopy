@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { CommandHelpPage } from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/CommandHelpPage";
 import { CommandHelpEntry } from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/CommandHelpEntry";
-import { Command } from "../../../../../../Canopy [BP]/scripts/lib/canopy/Command";
-import { Commands } from "../../../../../../Canopy [BP]/scripts/lib/canopy/Commands";
+import { Command } from "../../../../../../Canopy [BP]/scripts/lib/canopy/commands/Command";
+import { Commands } from "../../../../../../Canopy [BP]/scripts/lib/canopy/commands/Commands";
 
 vi.mock("@minecraft/server", () => ({
     world: { 

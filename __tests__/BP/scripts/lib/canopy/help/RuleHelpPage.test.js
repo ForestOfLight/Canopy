@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { RuleHelpPage } from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/RuleHelpPage";
 import { RuleHelpEntry } from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/RuleHelpEntry";
-import { Rule } from "../../../../../../Canopy [BP]/scripts/lib/canopy/Rule";
-import { Rules } from "../../../../../../Canopy [BP]/scripts/lib/canopy/Rules";
+import { BooleanRule } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule";
+import { Rules } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules";
 
 vi.mock("@minecraft/server", () => ({
     world: { 
@@ -25,6 +25,89 @@ vi.mock("@minecraft/server", () => ({
             }
         },
         runJob: vi.fn()
+    }
+}));
+
+// Terrible practice. This is a workaround for a Vitest rollup error that causes the Rule class to not be imported properly in BooleanRule.
+vi.mock('../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rule', () => ({
+    Rule: class Rule {
+        #category;
+        #identifier;
+        #description;
+        #defaultValue;
+        #contingentRules;
+        #independentRules;
+
+        constructor({ category, identifier, description = '', defaultValue = void 0,
+                    contingentRules = [], independentRules = [], onModifyCallback = () => {} }) {
+            this.#category = category;
+            this.#identifier = identifier;
+            this.#description = typeof description === 'string' ? { text: description } : description;
+            this.#defaultValue = defaultValue;
+            this.#contingentRules = contingentRules;
+            this.#independentRules = independentRules;
+            this.onModify = onModifyCallback;
+        }
+
+        getCategory() {
+            return this.#category;
+        }
+
+        getID() {
+            return this.#identifier;
+        }
+
+        getDescription() {
+            return this.#description;
+        }
+
+        getContigentRuleIDs() {
+            return this.#contingentRules;
+        }
+
+        getIndependentRuleIDs() {
+            return this.#independentRules;
+        }
+
+        getDependentRuleIDs() {
+            return [];
+        }
+
+        getExtension() {
+            return null;
+        }
+
+        getType() {
+            return 'mock';
+        }
+
+        getDefaultValue() {
+            return this.#defaultValue;
+        }
+
+        resetToDefaultValue() {
+            this.setValue(this.#defaultValue);
+        }
+
+        getValue() {
+            return this.#defaultValue;
+        }
+
+        getNativeValue() {
+            return this.#defaultValue;
+        }
+
+        setValue() {
+            // Mock implementation
+        }
+
+        isInDomain() {
+            return true;
+        }
+
+        isInRange() {
+            return true;
+        }
     }
 }));
 
@@ -88,7 +171,7 @@ describe('RuleHelpPage', () => {
             const description = 'Test Description';
             const usage = 'Test Usage';
             const ruleHelpPage = new RuleHelpPage({ title, description, usage });
-            const rule = new Rule({ identifier: 'testRule', description: 'Test Rule', usage: 'testRule' });
+            const rule = new BooleanRule({ identifier: 'testRule', description: 'Test Rule', usage: 'testRule' });
             const ruleHelpEntry = new RuleHelpEntry(rule);
 
             ruleHelpPage.addEntry(rule);
@@ -101,7 +184,7 @@ describe('RuleHelpPage', () => {
             const description = 'Test Description';
             const usage = 'Test Usage';
             const ruleHelpPage = new RuleHelpPage({ title, description, usage });
-            const rule = new Rule({ identifier: 'testRule', description: 'Test Rule', usage: 'testRule' });
+            const rule = new BooleanRule({ identifier: 'testRule', description: 'Test Rule', usage: 'testRule' });
 
             ruleHelpPage.addEntry(rule);
             ruleHelpPage.addEntry(rule);
@@ -120,7 +203,7 @@ describe('RuleHelpPage', () => {
             const description = 'Test Description';
             const usage = 'Test Usage';
             const ruleHelpPage = new RuleHelpPage({ title, description, usage });
-            const rule = new Rule({ identifier: 'testRule', description: 'Test Rule', usage: 'testRule' });
+            const rule = new BooleanRule({ identifier: 'testRule', description: 'Test Rule', usage: 'testRule' });
 
             ruleHelpPage.addEntry(rule);
 
@@ -132,7 +215,7 @@ describe('RuleHelpPage', () => {
             const description = 'Test Description';
             const usage = 'Test Usage';
             const ruleHelpPage = new RuleHelpPage({ title, description, usage });
-            const rule = new Rule({ identifier: 'testRule', description: 'Test Rule', usage: 'testRule' });
+            const rule = new BooleanRule({ identifier: 'testRule', description: 'Test Rule', usage: 'testRule' });
 
             expect(ruleHelpPage.hasEntry(rule)).toBe(false);
         });
@@ -148,7 +231,7 @@ describe('RuleHelpPage', () => {
             const description = 'Test Description';
             const usage = 'Test Usage';
             const ruleHelpPage = new RuleHelpPage({ title, description, usage });
-            const rule = new Rule({ identifier: 'testRule', description: 'Test Rule', usage: 'testRule' });
+            const rule = new BooleanRule({ identifier: 'testRule', description: 'Test Rule', usage: 'testRule' });
             ruleHelpPage.addEntry(rule);
 
             const rawMessage = await ruleHelpPage.toRawMessage();

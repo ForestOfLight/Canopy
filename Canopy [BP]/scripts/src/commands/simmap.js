@@ -23,10 +23,10 @@ const cmd = new Command({
     description: { translate: 'commands.simmap' },
     usage: 'simmap [distance] [dimension x z] [display <distance / dimension x z / here>]',
     args: [
-        { type: 'number|string', name: 'argOne' },
-        { type: 'string|number', name: 'argTwo' },
-        { type: 'number', name: 'argThree' },
-        { type: 'number', name: 'argFour' }
+        { type: 'float|string', name: 'argOne' },
+        { type: 'string|float', name: 'argTwo' },
+        { type: 'float', name: 'argThree' },
+        { type: 'float', name: 'argFour' }
     ],
     callback: simmapCommand,
     helpEntries: [

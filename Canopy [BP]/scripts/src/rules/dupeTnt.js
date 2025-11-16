@@ -1,7 +1,7 @@
-import { Rule, Rules } from '../../lib/canopy/Canopy';
+import { BooleanRule, Rules } from '../../lib/canopy/Canopy';
 import { system, world } from '@minecraft/server';
 
-new Rule({
+new BooleanRule({
     category: 'Rules',
     identifier: 'dupeTnt',
     description: { translate: 'rules.dupeTnt' }

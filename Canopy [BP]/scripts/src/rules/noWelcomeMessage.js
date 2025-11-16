@@ -1,8 +1,8 @@
-import { Rule, Rules, Extensions } from "../../lib/canopy/Canopy";
+import { BooleanRule, Rules, Extensions } from "../../lib/canopy/Canopy";
 import { world } from "@minecraft/server";
 import { PACK_VERSION } from "../../constants";
 
-new Rule({
+new BooleanRule({
     category: 'Rules',
     identifier: 'noWelcomeMessage',
     description: { translate: 'rules.noWelcomeMessage' }

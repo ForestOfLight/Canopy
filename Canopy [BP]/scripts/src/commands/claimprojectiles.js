@@ -1,9 +1,9 @@
 import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, Player, system } from "@minecraft/server";
-import { Rule, VanillaCommand } from "../../lib/canopy/Canopy";
+import { BooleanRule, VanillaCommand } from "../../lib/canopy/Canopy";
 
 const CLAIM_RADIUS = 25;
 
-new Rule({
+new BooleanRule({
     category: 'Rules',
     identifier: 'commandClaimProjectiles',
     description: { translate: 'rules.commandClaimProjectiles' }

@@ -1,11 +1,11 @@
-import { Rule } from "../../../lib/canopy/Canopy";
+import { Rules } from "../../../lib/canopy/Canopy";
 import { system, world } from "@minecraft/server";
 import { generatorChannels } from "../../classes/GeneratorChannels";
 import { broadcastActionBar, getScriptEventSourceName, formatColorStr } from "../../../include/utils";
 
 system.afterEvents.scriptEventReceive.subscribe(async (event) => {
     if (event.id !== 'canopy:generator') return;
-    if (!await Rule.getValue('hopperGenerators'))
+    if (!await Rules.getValue('hopperGenerators'))
         return broadcastActionBar({ translate: 'rules.generic.blocked', with: ['hopperGenerators'] });
     const sourceName = getScriptEventSourceName(event);
     const message = event.message;

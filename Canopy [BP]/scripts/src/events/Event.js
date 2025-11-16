@@ -1,7 +1,7 @@
 import { system } from "@minecraft/server";
 
 export class Event {
-    runner;
+    runner = void 0;
     callbacks = [];
 
     constructor() {
@@ -51,6 +51,8 @@ export class Event {
     }
 
     stopTrackingEvent() {
-        system.clearRun(this.runner);
+        if (this.runner)
+            system.clearRun(this.runner);
+        this.runner = void 0;
     }
 }

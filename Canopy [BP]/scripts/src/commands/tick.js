@@ -8,8 +8,8 @@ const cmd = new Command({
     description: { translate: 'commands.tick' },
     usage: `tick <mspt/step/reset/sleep> [steps/milliseconds]`,
     args: [
-        { type: 'string|number', name: 'arg' },
-        { type: 'number', name: 'steps' }
+        { type: 'string|integer', name: 'arg' },
+        { type: 'integer', name: 'steps' }
     ],
     callback: tickCommand,
     helpEntries: [

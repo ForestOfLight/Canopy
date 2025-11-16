@@ -1,7 +1,6 @@
-import { VanillaCommand } from "../../lib/canopy/Canopy";
+import { VanillaCommand, PlayerCommandOrigin } from "../../lib/canopy/Canopy";
 import { CommandPermissionLevel, CustomCommandParamType, world } from '@minecraft/server';
 import { getColoredDimensionName } from "../../include/utils";
-import { PlayerCommandOrigin } from "../../lib/canopy/PlayerCommandOrigin";
 
 const NUM_RESULTS = 10;
 

@@ -1,0 +1,177 @@
+import { LIFETIME_QUERY_ACTIONS } from "../commands/lifetimequery";
+import { EntityLifetimeRecord } from "./EntityLifetimeRecord";
+import { ItemLifetimeRecord } from "./ItemLifetimeRecord";
+
+export class EntityLifetimeRecords {
+    worldLifetimeTracker;
+    dimensionId;
+    entityLifetimeRecords = [];
+    
+    constructor(worldLifetimeTracker, dimensionId) {
+        this.worldLifetimeTracker = worldLifetimeTracker;
+        this.dimensionId = dimensionId;
+    }
+    
+    destroy() {
+        this.entityLifetimeRecords.length = 0;
+        this.worldLifetimeTracker = void 0;
+    }
+
+    collectSpawn(entity, spawnReason) {
+        let record;
+        if (entity.typeId === "minecraft:item")
+            record = new ItemLifetimeRecord(entity, spawnReason);
+        else
+            record = new EntityLifetimeRecord(entity, spawnReason);
+        this.worldLifetimeTracker.setLocalizationKey(record.entityType, record.localizationKey);
+        this.entityLifetimeRecords.push(record);
+    }
+
+    collectRemoval(entity, removalReason) {
+        const record = this.entityLifetimeRecords.find(lifetimeRecord => lifetimeRecord.entityId === entity.id);
+        record?.collectRemoval(removalReason);
+    }
+
+    hasRecords() {
+        return this.entityLifetimeRecords.length > 0;
+    }
+
+    getTotalSpawns(entityType) {
+        if (entityType)
+            return this.getSpawnedEntityLifetimeRecords(entityType).length;
+        return this.entityLifetimeRecords.length;
+    }
+
+    getTotalRemovals(entityType) {
+        if (entityType)
+            return this.getSpawnedEntityLifetimeRecords(entityType).filter((record) => record.hasBeenRemoved()).length;
+        return this.entityLifetimeRecords.filter((record) => record.hasBeenRemoved()).length;
+    }
+
+    getQueryAllMessage(useRealtime) {
+        const message = { rawtext: [] };
+        for (const entityType of this.getEntityTypes()) {
+            const lifetimeData = this.getLifetimeData(entityType, useRealtime);
+            message.rawtext.push({ text: '\n' });
+            message.rawtext.push({ translate: 'commands.lifetime.query.body', with: { rawtext: [
+                this.worldLifetimeTracker.getLocalizationKeyRawMessage(entityType),
+                { text: String(this.getTotalSpawns(entityType)) },
+                { text: String(this.getTotalRemovals(entityType)) },
+                { text: String(lifetimeData.min) },
+                { text: String(lifetimeData.max) },
+                { text: lifetimeData.average.toFixed(2) }
+            ] } });
+            message.rawtext.push(this.getRealtimeUnitRawtext(useRealtime));
+        }
+        return message;
+    }
+
+    getQueryMessage(entityType, queryType, useRealtime) {
+        if (!this.getEntityTypes().includes(entityType))
+            return { text: '' };
+        return { rawtext: [
+            (!queryType || queryType === LIFETIME_QUERY_ACTIONS.LIFETIME ? this.getQueryLifetimeMessage(entityType, useRealtime) : { text: '' }),
+            (!queryType || queryType === LIFETIME_QUERY_ACTIONS.SPAWNING ? this.getQuerySpawnsMessage(entityType, useRealtime) : { text: '' }),
+            (!queryType || queryType === LIFETIME_QUERY_ACTIONS.REMOVAL ? this.getQueryRemovalsMessage(entityType, useRealtime) : { text: '' }),
+        ]};
+    }
+
+    getQueryLifetimeMessage(entityType, useRealtime) {
+        const lifetimeData = this.getLifetimeData(entityType, useRealtime);
+        return { rawtext: [
+            { translate: 'commands.lifetime.query.entity.lifetime.header' }, { text: '\n' },
+            { translate: 'commands.lifetime.query.entity.lifetime.min', with: [String(lifetimeData.min)] }, this.getRealtimeUnitRawtext(useRealtime), { text: '\n' },
+            { translate: 'commands.lifetime.query.entity.lifetime.max', with: [String(lifetimeData.max)] }, this.getRealtimeUnitRawtext(useRealtime), { text: '\n' },
+            { translate: 'commands.lifetime.query.entity.lifetime.average', with: [lifetimeData.average.toFixed(4)] }, this.getRealtimeUnitRawtext(useRealtime), { text: '\n' }
+        ] };
+    }
+
+    getQuerySpawnsMessage(entityType, useRealtime) {
+        const spawnData = this.getSpawnData(entityType, useRealtime);
+        const message = { rawtext: [{ translate: 'commands.lifetime.query.entity.spawns.header' }, { text: '\n' }] };
+        for (const spawnRecord of spawnData) {
+            const spawnsPerHour = this.worldLifetimeTracker.calcPerHour(spawnRecord.count, useRealtime);
+            message.rawtext.push({ translate: 'commands.lifetime.query.entity.spawns', with: [spawnRecord.reason, String(spawnRecord.count), spawnsPerHour.toFixed(2), spawnRecord.percent.toFixed(2)] });
+            message.rawtext.push({ text: '\n' });
+        }
+        return message;
+    }
+
+    getQueryRemovalsMessage(entityType, useRealtime) {
+        const removalData = this.getRemovalData(entityType, useRealtime);
+        const message = { rawtext: [{ translate: 'commands.lifetime.query.entity.removals.header' }] };
+        for (const removalRecord of removalData) {
+            const removalsPerHour = this.worldLifetimeTracker.calcPerHour(removalRecord.count, useRealtime);
+            message.rawtext.push({ rawtext: [
+                { text: '\n' }, { translate: 'commands.lifetime.query.entity.removals', with: [removalRecord.reason, String(removalRecord.count), removalsPerHour.toFixed(2), removalRecord.percent.toFixed(2)] },
+                { text: '\n  ' }, { translate: 'commands.lifetime.query.entity.lifetime.min', with: [String(removalRecord.minLifetime)] }, this.getRealtimeUnitRawtext(useRealtime),
+                { text: '\n  ' }, { translate: 'commands.lifetime.query.entity.lifetime.max', with: [String(removalRecord.maxLifetime)] }, this.getRealtimeUnitRawtext(useRealtime),
+                { text: '\n  ' }, { translate: 'commands.lifetime.query.entity.lifetime.average', with: [removalRecord.averageLifetime.toFixed(4)] }, this.getRealtimeUnitRawtext(useRealtime)
+            ] });
+        }
+        return message;
+    }
+
+    getLifetimeData(entityType, useRealtime) {
+        const entityLifetimeRecords = this.getSpawnedEntityLifetimeRecords(entityType);
+        const entityLifetimes = entityLifetimeRecords.map(record => record.getLifetime(useRealtime));
+        return { 
+            min: Math.min(...entityLifetimes),
+            max: Math.max(...entityLifetimes),
+            average: entityLifetimes.reduce((sum, lifetime) => sum + lifetime, 0) / entityLifetimes.length
+        };
+    }
+
+    getSpawnData(entityType) {
+        const entityLifetimeRecords = this.getSpawnedEntityLifetimeRecords(entityType);
+        const reasonMap = entityLifetimeRecords.reduce((acc, record) => {
+            const amount = record.amount || 1;
+            acc[record.spawnReason] = (acc[record.spawnReason] || 0) + amount;
+            return acc;
+        }, {});
+        return Object.entries(reasonMap)
+            .map(([reason, count]) => ({ reason, count, percent: (count / entityLifetimeRecords.length) * 100 }))
+            .sort((a, b) => b.count - a.count);
+    }
+
+    getRemovalData(entityType, useRealtime) {
+        const entityLifetimeRecords = this.getRemovedEntityLifetimeRecords(entityType);
+        const reasonMap = entityLifetimeRecords.reduce((acc, record) => {
+            const amount = record.amount || 1;
+            acc[record.removalReason] = (acc[record.removalReason] || 0) + amount;
+            return acc;
+        }, {});
+        return Object.entries(reasonMap).map(([reason, count]) => {
+            const reasonLifetimes = entityLifetimeRecords.filter(record => record.removalReason === reason).map(record => record.getLifetime(useRealtime));
+            return {
+                reason,
+                count,
+                percent: (count / entityLifetimeRecords.length) * 100,
+                minLifetime: Math.min(...reasonLifetimes),
+                maxLifetime: Math.max(...reasonLifetimes),
+                averageLifetime: reasonLifetimes.reduce((sum, lifetime) => sum + lifetime, 0) / reasonLifetimes.length
+            }
+        }).sort((a, b) => b.count - a.count);
+    }
+
+    getSpawnRemovalRatio(entityType) {
+        return this.getTotalSpawns(entityType) / this.getTotalRemovals(entityType);
+    }
+
+    getSpawnedEntityLifetimeRecords(entityType) {
+        return this.entityLifetimeRecords.filter(record => record.entityType === entityType);
+    }
+
+    getRemovedEntityLifetimeRecords(entityType) {
+        return this.getSpawnedEntityLifetimeRecords(entityType).filter((record) => record.hasBeenRemoved());
+    }
+
+    getEntityTypes() {
+        return [...new Set(this.entityLifetimeRecords.map(record => record.entityType))]
+            .sort((a, b) => this.getSpawnRemovalRatio(b) - this.getSpawnRemovalRatio(a));
+    }
+
+    getRealtimeUnitRawtext(useRealtime) {
+        return { translate: `commands.lifetime.query.${useRealtime ? 'realtime' : 'ticktime'}.unit` };
+    }
+}

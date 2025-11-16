@@ -1,9 +1,7 @@
-import { Rule, Rules, VanillaCommand } from "../../lib/canopy/Canopy";
+import { BooleanRule, Rules, VanillaCommand, PlayerCommandOrigin, EntityCommandOrigin } from "../../lib/canopy/Canopy";
 import { CommandPermissionLevel, GameMode, system } from "@minecraft/server";
-import { PlayerCommandOrigin } from "../../lib/canopy/PlayerCommandOrigin";
-import { EntityCommandOrigin } from "../../lib/canopy/EntityCommandOrigin";
 
-new Rule({
+new BooleanRule({
     category: 'Rules',
     identifier: 'commandJumpSurvival',
     description: { translate: 'rules.commandJumpSurvival' }

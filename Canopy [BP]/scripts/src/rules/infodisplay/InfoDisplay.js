@@ -18,10 +18,15 @@ import MoonPhase from './MoonPhase';
 import EventTrackers from './EventTrackers';
 import HopperCounterCounts from './HopperCounterCounts';
 import SimulationMap from './SimulationMap';
-import LookingAt from './LookingAt';
+import { Target } from './Target';
 import SignalStrength from './SignalStrength';
 import { PeekInventory } from './PeekInventory';
 import { BlockStates } from './BlockStates';
+import { Structures } from './Structures';
+import { Dimension } from './Dimension';
+import { Weather } from './Weather';
+import { LiquidTarget } from './LiquidTarget';
+import { LiquidStates } from './LiquidStates';
 
 const playerToInfoDisplayMap = {};
 let currentTickWorldwideElementData = {};
@@ -34,28 +39,33 @@ class InfoDisplay {
 	constructor(player) {
 		this.player = player;
 		this.elements = [
-			new Coords(player, 1),
-			new CardinalFacing(player, 1),
-			new Facing(player, 2),
-			new ChunkCoords(player, 3),
-			new SlimeChunk(player, 3),
-			new Velocity(player, 4),
-			new Speed(player, 5),
-			new TPS(6),
-			new Entities(player, 7),
-			new Light(player, 8),
-			new Biome(player, 8),
-			new WorldDay(9),
-			new TimeOfDay(9),
-			new SessionTime(player, 10),
-			new MoonPhase(11),
-			new EventTrackers(12),
-			new HopperCounterCounts(13),
-			new SimulationMap(player, 14),
-			new LookingAt(player, 15),
-			new SignalStrength(player, 16),
-			new BlockStates(player, 17),
-			new PeekInventory(player, 18)
+			new TPS(1),
+			new Dimension(player, 2),
+			new Coords(player, 3),
+			new CardinalFacing(player, 3),
+			new ChunkCoords(player, 4),
+			new SlimeChunk(player, 5),
+			new Light(player, 6),
+			new Biome(player, 7),
+			new Structures(player, 8),
+			new Velocity(player, 9),
+			new Speed(player, 10),
+			new Facing(player, 11),
+			new Entities(player, 12),
+			new MoonPhase(13),
+			new Weather(player, 14),
+			new WorldDay(15),
+			new TimeOfDay(16),
+			new SessionTime(player, 16),
+			new EventTrackers(17),
+			new HopperCounterCounts(18),
+			new SimulationMap(player, 19),
+			new Target(player, 20),
+			new SignalStrength(player, 20),
+			new BlockStates(player, 21),
+			new PeekInventory(player, 22),
+			new LiquidTarget(player, 23),
+			new LiquidStates(player, 24)
 		];
 		playerToInfoDisplayMap[player.id] = this;
 	}
@@ -89,7 +99,7 @@ class InfoDisplay {
 		
 
 		if (currIndex !== 0 && this.isOnNewLine(elements, currIndex) && !this.dataIsWhitespace(data)) 
-			this.infoMessage.rawtext.push({ text: '\n' });
+			this.infoMessage.rawtext.push({ text: '\n§r' });
 		
 		if (!this.isOnNewLine(elements, currIndex) && !this.dataIsWhitespace(data)) 
 			this.infoMessage.rawtext.push({ text: ' ' });
