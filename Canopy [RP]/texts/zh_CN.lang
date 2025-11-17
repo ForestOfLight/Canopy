@@ -3,7 +3,7 @@ entity.canopy:rideable.name=Canopy Rideable     ## 无需翻译
 action.hint.exit.canopy:rideable=潜行以站立
 
 ## generic
-generic.welcome.start=§7当前服务器已加载 §l§aCanopy§r§7. 输入"./help"开始熟悉指令.§r
+generic.welcome.start=§7当前服务器已加载 §l§aCanopy§r§7. 输入"./help"开始熟悉命令.§r
 generic.welcome.extensions=§7已加载扩展: §a%s
 generic.player.notfound=§c玩家 '%s' 未找到.
 generic.target.notfound=§c目标未找到.
@@ -11,21 +11,20 @@ generic.entity.notfound=§c实体未找到.
 generic.total=总数
 
 ## commands
-commands.generic.unknown=§c无效的指令: '%1'. 输入"%2help" 获取更多信息.
-commands.generic.nopermission=§c你没有足够的权限使用这个指令.
+commands.generic.unknown=§c无效的命令: '%1'. 输入"%2help" 获取更多信息.
+commands.generic.nopermission=§c你没有足够的权限使用这个命令.
 commands.generic.usage=§c使用方法: %s
-commands.generic.blocked.survival=§c此指令只能在创造模式或者旁观模式下使用.
+commands.generic.blocked.survival=§c此命令只能在创造模式或者旁观模式下使用.
 commands.generic.invalidsource=§c这个命令不能从这个来源执行.
-###commands.generic.invalidaction=§cInvalid action. Use /help <command> for more information.
 
-commands.help=显示指令帮助信息.
+commands.help=显示命令帮助信息.
 commands.help.search.noresult=§c没有与此相关的结果: '%s'
-commands.help.search.results=§l§aCanopy§r §2指令帮助页面找到此结果 '§r%1§2':%2
-commands.help.page.header=§l§aCanopy§r§2 指令帮助 页数: §f%1
+commands.help.search.results=§l§aCanopy§r §2命令帮助页面找到此结果 '§r%1§2':%2
+commands.help.page.header=§l§aCanopy§r§2 命令帮助 页数: §f%1
 commands.help.infodisplay=开关游戏中的信息显示.
 commands.help.rules=开关全局规则.
 commands.help.extension.rules=开关扩展 §a%s§2 的规则.
-commands.help.extension.commands=扩展 §a%s§2 的指令.
+commands.help.extension.commands=扩展 §a%s§2 的命令.
 
 ###commands.biomeedges=Finds and displays biome edges in a region.
 ###commands.biomeedges.finderadded=§7Analyzing biome edges...
@@ -42,7 +41,7 @@ commands.butcher.success=§7移除了 %1.
 commands.butcher.success.many=§7移除了 %1 个实体: 
 
 commands.camera=放置一个相机进行监视, 或者使用对生存友好的旁观模式.
-commands.camera.spectate=进入和退出生存友好的旁观模式. (快捷指令: cs)
+commands.camera.spectate=进入和退出生存友好的旁观模式. (快捷命令: cs)
 commands.camera.place.viewing=§c不能在监视过程中放置相机.
 commands.camera.place.success=§7相机放置在 %s.
 commands.camera.view.spectating=§c不能在旁观模式下进行相机监视.
@@ -82,10 +81,10 @@ commands.claimprojectiles.fail.nonefound=§7半径(%s blocks)内, 没有弹射�
 commands.claimprojectiles.success.self=§7成功将 %1 个弹射物(半径 %2 )的拥有者改为了你.
 commands.claimprojectiles.success.other=§7成功将 %1 个弹射物(半径 %2 )的拥有者改为了 %3.
 
-commands.cleanup=清除半径内所有的掉落物和经验球. (快捷指令: k)
+commands.cleanup=清除半径内所有的掉落物和经验球. (快捷命令: k)
 commands.cleanup.success=§7清除了 %s 个实体.
 
-commands.counter=管理漏斗计数器. (快捷指令: ct)
+commands.counter=管理漏斗计数器. (快捷命令: ct)
 commands.counter.channel.notfound=§c无效的颜色: %s. 请使用羊毛方块的颜色之一.
 commands.counter.query=显示指定的颜色频道的漏斗计数和效率.
 commands.counter.query.empty=§7没有漏斗计数器在工作.
@@ -124,7 +123,7 @@ commands.debugentity.invalidAction=§c调试行为无效.
 commands.debugentity.added=§7为 %2 个实体添加了 '%1' 调试信息显示: 
 commands.debugentity.removed=§7为 %2 个实体删除了 '%1' 调试信息显示: 
 
-commands.distance=计算两点的距离. (快捷指令: d)
+commands.distance=计算两点的距离. (快捷命令: d)
 commands.distance.target=计算你所指的方块或者实体与你的距离.
 commands.distance.fromto=计算两点的距离.
 commands.distance.from=保存位置用于计算距离.
@@ -148,7 +147,7 @@ commands.gamemode.a=已将你的游戏模式设为冒险.
 commands.gamemode.c=已将你的游戏模式设为创造.
 commands.gamemode.sp=已将你的游戏模式设为旁观.
 
-commands.generator=管理漏斗生成器. (快捷指令: gt)
+commands.generator=管理漏斗生成器. (快捷命令: gt)
 commands.generator.channel.notfound=§c无效颜色: %s. 请使用一种羊毛块颜色.
 commands.generator.query=显示指定颜色的漏斗生成器的计数和速率.
 commands.generator.query.empty=§7这里没有使用中的漏斗生成器.
@@ -180,7 +179,7 @@ commands.health.fail.mspt=§c不能计算出MSPT. 请反馈问题.
 ###commands.hss.alreadyrunning=§cYou are already finding fortress hardcoded spawn spots.
 ###commands.hss.notrunning=§cYou are not currently finding fortress hardcoded spawn spots.
 
-commands.info=启用/禁用信息显示规则. (快捷指令: i)
+commands.info=启用/禁用信息显示规则. (快捷命令: i)
 commands.info.menu=显示用于切换信息显示规则的菜单.
 commands.info.single=切换单个信息显示规则.
 commands.info.multiple=切换多个信息显示规则.
@@ -188,7 +187,7 @@ commands.info.all=切换所有信息显示规则.
 commands.info.allupdated=%s§r§7 所有信息显示规则.
 commands.info.canopyRule=§c规则 '%1' 是全局规则, 并且必须使用%2信息进行切换. 有关详细信息, 请使用%2帮助.
 
-commands.jump=传送到所指方块上. (快捷指令: j)
+commands.jump=传送到所指方块上. (快捷命令: j)
 commands.jump.fail.noblock=§c没找到方块传送跳跃.
 
 commands.log=追踪TNT、弹射物和下落的方块运动.
@@ -260,7 +259,7 @@ commands.simmap.config.reset=§7信息显示模拟地图位置更新为跟随您
 commands.sit=使您操作的玩家坐下.
 commands.sit.busy=§c您过忙以至于无法坐下.
 
-commands.spawn=模拟生成和检测生成指令.
+commands.spawn=模拟生成和检测生成命令.
 commands.spawn.entities=展示当前世界所有实体及其位置的列表.
 commands.spawn.recent=显示最近30s所有怪物的生成数据. 请指定一种怪物到筛选器中.
 commands.spawn.tracking.start=开始跟踪怪物生成. 请指定坐标划定区域用于跟踪.
@@ -317,7 +316,7 @@ commands.trackevent.stop=§7停止跟踪游戏事件 %s.
 commands.trackevent.start=§7开始跟踪游戏事件 %s.
 commands.trackevent.invalid=§c游戏事件 %1 未在 %2 中找到.
 
-commands.warp=传送和管理路径点. (快捷指令: w)
+commands.warp=传送和管理路径点. (快捷命令: w)
 commands.warp.edit=添加和移除路径点.
 commands.warp.tp=将你传送到一个路径点.
 commands.warp.list=列出所有可用的路径点.
@@ -344,14 +343,14 @@ rules.generic.disabled=§c已禁用
 rules.generic.ability=§7能力
 ###rules.generic.defaultvalue=(Default: %s)
 
-rules.commandCamera=开启camera指令.
-rules.commandClaimProjectiles=开启claimprojectiles指令.
-rules.hopperCounters=开启counter指令和漏斗计数器功能.
+rules.commandCamera=开启camera命令.
+rules.commandClaimProjectiles=开启claimprojectiles命令.
+rules.hopperCounters=开启counter命令和漏斗计数器功能.
 rules.hopperGenerators=启用生成器命令和漏斗生成器功能.
-rules.commandJumpSurvival=开启jump指令(在生存模式下).
+rules.commandJumpSurvival=开启jump命令(在生存模式下).
 rules.commandPosOthers=允许在其他玩家上使用pos命令.
-rules.commandWarp=开启warp & warps指令.
-rules.commandWarpSurvival=开启warp & warps指令(在生存模式下).
+rules.commandWarp=开启warp & warps命令.
+rules.commandWarpSurvival=开启warp & warps命令(在生存模式下).
 rules.allowBubbleColumnPlacement=关闭放置气泡柱限制.
 rules.allowPeekInventory=启用peek命令和PeekInventory信息显示规则，并可以使用小望远镜进行窥视.
 rules.armorStandRespawning=盔甲架被弹射物击中会掉落所持物品.
