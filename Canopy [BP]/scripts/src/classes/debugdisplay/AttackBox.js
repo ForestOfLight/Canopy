@@ -26,10 +26,18 @@ export class AttackBox extends DebugDisplayShapeElement {
     getAttackBox() {
         const AABB = this.entity.getAABB();
         const marginFromCollisionBox = this.getSpecialMargin();
-        return {
-            location: Vector.from(AABB.center).subtract(AABB.extent).subtract(marginFromCollisionBox),
-            size: Vector.from(AABB.extent).add(marginFromCollisionBox).multiply(2)
-        };
+        const isProjectile = this.entity.getComponent(EntityComponentTypes.Projectile)
+        if (!isProjectile) {
+            return {
+                location: Vector.from(AABB.center).subtract(AABB.extent).subtract(marginFromCollisionBox),
+                size: Vector.from(AABB.extent).add(marginFromCollisionBox).multiply(2)
+            };
+        } else {
+            return {
+                location: Vector.from(AABB.center).subtract(marginFromCollisionBox),
+                size: marginFromCollisionBox.multiply(2),
+            };
+        }
     }
 
     getSpecialMargin() {
