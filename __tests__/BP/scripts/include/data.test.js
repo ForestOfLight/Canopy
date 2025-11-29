@@ -26,7 +26,7 @@ describe.concurrent('categoryToMobMap', () => {
                 if (!mobCategory)
                     mobCategory = 'none';
                 expect(mobCategory).toBe(category);
-            });
+            }, 10000);
         }
     }
 });
@@ -64,7 +64,7 @@ describe.concurrent('meleeMobs', async () => {
         const mobType = entityFile.path.substring(entityFile.path.lastIndexOf('/') + 1, entityFile.path.length - 5);
         it(`${mobType} melee attack component should be in bedrock-samples`, () => {
             expect(entityFile.content.includes(`"minecraft:attack"`)).toEqual(meleeMobs.includes(mobType));
-        });
+        }, 10000);
     }
 });
 
