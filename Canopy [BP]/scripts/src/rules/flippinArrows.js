@@ -75,7 +75,7 @@ function isFlippableOnPlace(block) {
 }
 
 function isStair(block) {
-    return block.permutation.getState('upside_down_bit') !== void 0;
+    return block.permutation.getState('weirdo_direction') !== void 0;
 }
 
 function isSlab(block) {
