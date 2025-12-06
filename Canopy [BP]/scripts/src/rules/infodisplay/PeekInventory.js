@@ -9,7 +9,7 @@ class PeekInventory extends InfoDisplayElement {
     constructor(player, displayLine) {
 		const ruleData = { identifier: 'peekInventory', 
 			description: { translate: 'rules.infoDisplay.peekInventory' }, 
-			contingentRules: ['lookingAt'], 
+			contingentRules: ['target'], 
 			globalContingentRules: ['allowPeekInventory'] 
 		};
         super(ruleData, displayLine, false);
