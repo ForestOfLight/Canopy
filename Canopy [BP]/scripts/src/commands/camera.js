@@ -152,6 +152,8 @@ function endCameraView(player) {
 }
 
 function spectateAction(player) {
+    if (world.isHardcore)
+        return player.sendMessage({ translate: 'commands.camera.spectate.hardcore' });
     if (player.getDynamicProperty('isViewingCamera'))
         return player.sendMessage({ translate: 'commands.camera.spectate.viewing' });
     system.run(() => {

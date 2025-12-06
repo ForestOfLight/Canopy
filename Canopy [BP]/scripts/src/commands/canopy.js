@@ -6,7 +6,7 @@ import { forceShow } from "../../include/utils";
 const cmd = new Command({
     name: 'canopy',
     description: { translate: 'commands.canopy' },
-    usage: 'canopy <menu/rule/version> [true/false]',
+    usage: 'canopy <menu/rule/version> [true/false/integer/float]',
     args: [
         { type: 'string|array', name: 'ruleIDs' },
         { type: 'boolean|float|integer', name: 'newValue' }
@@ -14,8 +14,8 @@ const cmd = new Command({
     callback: canopyCommand,
     helpEntries: [
         { usage: 'canopy menu', description: { translate: 'commands.canopy.menu' } },
-        { usage: 'canopy <rule> [true/false]', description: { translate: 'commands.canopy.single' } },
-        { usage: 'canopy <[rule1,rule2,...]> [true/false]', description: { translate: 'commands.canopy.multiple' } },
+        { usage: 'canopy <rule> [true/false/integer/float]', description: { translate: 'commands.canopy.single' } },
+        { usage: 'canopy <[rule1,rule2,...]> [true/false/integer/float]', description: { translate: 'commands.canopy.multiple' } },
         { usage: 'canopy version', description: { translate: 'commands.canopy.version' } }
     ],
     opOnly: true

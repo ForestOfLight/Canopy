@@ -54,6 +54,7 @@ commands.camera.spectate.viewing=§cYou cannot spectate while viewing a camera.
 commands.camera.spectate.gamemode=§cYou cannot change your gamemode while spectating.
 commands.camera.spectate.started=§aSpectating
 commands.camera.spectate.ended=§7Spectating ended
+commands.camera.spectate.hardcore=§cPrevented you from spectating. Spectating in hardcore mode has a soft-locking bug. This is a Mojang issue.
 commands.camera.invalidaction=§cInvalid camera action.
 
 commands.canopy=Enable or disable a rule.
@@ -65,8 +66,8 @@ commands.canopy.menu.busy=§8Close your chat window to access the form.
 commands.canopy.menu.timeout=§8Form timed out after %s ticks.
 commands.canopy.menu.canceled=§8Form canceled. Rules were not updated.
 commands.canopy.menu.submit=§aApply
-commands.canopy.single=Enables or disables a single rule.
-commands.canopy.multiple=Enables or disables multiple rules.
+commands.canopy.single=Modifies the value of a single rule.
+commands.canopy.multiple=Modifies the value of multiple rules.
 commands.canopy.infodisplayRule=§cThe rule '%1' is part of the InfoDisplay, and must be toggled using %2info. Use %2help for more information.
 
 commands.changedimension=Teleports entities to the specified dimension.
