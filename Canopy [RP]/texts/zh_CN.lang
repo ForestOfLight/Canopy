@@ -66,8 +66,8 @@ commands.canopy.menu.busy=§8关闭聊天窗口以访问UI窗口.
 commands.canopy.menu.timeout=§8窗口在 %s 个刻度后超时.
 commands.canopy.menu.canceled=§8更改已放弃(规则不会更新).
 commands.canopy.menu.submit=§a确认(提交)
-commands.canopy.single=启用/禁用单个规则.
-commands.canopy.multiple=启用/禁用多个规则.
+commands.canopy.single=修改单个规则的值.
+commands.canopy.multiple=修改多个规则的值.
 commands.canopy.infodisplayRule=§c规则 '%1' 是 信息显示 的一部分, 并且必须使用%2信息进行切换. 有关详细信息, 请使用%2帮助.
 
 commands.changedimension=传送你到指定的维度.
