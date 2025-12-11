@@ -66,8 +66,8 @@ commands.canopy.menu.busy=§8Close your chat window to access the form.
 commands.canopy.menu.timeout=§8Form timed out after %s ticks.
 commands.canopy.menu.canceled=§8Form canceled. Rules were not updated.
 commands.canopy.menu.submit=§aApply
-commands.canopy.single=Enables or disables a single rule.
-commands.canopy.multiple=Enables or disables multiple rules.
+commands.canopy.single=Modifies the value of a single rule.
+commands.canopy.multiple=Modifies the value of multiple rules.
 commands.canopy.infodisplayRule=§cThe rule '%1' is part of the InfoDisplay, and must be toggled using %2info. Use %2help for more information.
 
 commands.changedimension=Teleports entities to the specified dimension.

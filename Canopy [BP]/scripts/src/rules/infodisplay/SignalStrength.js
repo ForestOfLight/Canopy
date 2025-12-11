@@ -5,7 +5,7 @@ class SignalStrength extends InfoDisplayElement {
     player;
 
     constructor(player, displayLine) {
-        const ruleData = { identifier: 'signalStrength', description: { translate: 'rules.infoDisplay.signalStrength' }, contingentRules: ['lookingAt'] };
+        const ruleData = { identifier: 'signalStrength', description: { translate: 'rules.infoDisplay.signalStrength' }, contingentRules: ['target'] };
         super(ruleData, displayLine, false);
         this.player = player;
     }

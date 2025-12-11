@@ -43,6 +43,8 @@
 	],
 	"metadata": {
 		"authors": [ "ForestOfLight" ],
-		"license": "MIT"
+		"license": "MIT",
+    	"url": "https://github.com/ForestOfLight/Canopy",
+		"product_type": "addon"
 	}
 }
