@@ -20,7 +20,8 @@ export class AttackBox extends DebugDisplayShapeElement {
         if (!this.canAttack())
             return;
         const attackBoxData = this.getAttackBox();
-        this.attackBox.location = attackBoxData.location;
+        const dimensionLocation = { ...attackBoxData.location, dimension: this.entity.dimension };
+        this.attackBox.setLocation(dimensionLocation);
         this.attackBox.bound = attackBoxData.size;
     }
 

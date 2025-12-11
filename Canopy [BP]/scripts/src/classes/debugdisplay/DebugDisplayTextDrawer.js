@@ -16,7 +16,8 @@ export class DebugDisplayTextDrawer {
     }
 
     update() {
-        this.textShape.location = this.getTextLocation();
+        const dimensionLocation = { ...this.getTextLocation(), dimension: this.dimension };
+        this.textShape.setLocation(dimensionLocation);
         this.textShape.text = this.debugDisplay.debugMessage;
     }
 

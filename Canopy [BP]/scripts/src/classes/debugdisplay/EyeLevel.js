@@ -14,7 +14,8 @@ export class EyeLevel extends DebugDisplayShapeElement {
 
     update() {
         const eyeLevelData = this.getEyeLevelBoxBounds();
-        this.eyeLevel.location = eyeLevelData.location;
+        const dimensionLocation = { ...eyeLevelData.location, dimension: this.entity.dimension };
+        this.eyeLevel.setLocation(dimensionLocation);
         this.eyeLevel.bound = eyeLevelData.size;
     }
 

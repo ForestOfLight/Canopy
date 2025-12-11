@@ -17,7 +17,8 @@ export class HitBox extends DebugDisplayShapeElement {
 
     update() {
         const hitboxData = this.getHitBox();
-        this.hitbox.location = hitboxData.location;
+        const dimensionLocation = { ...hitboxData.location, dimension: this.entity.dimension };
+        this.hitbox.setLocation(dimensionLocation);
         this.hitbox.bound = hitboxData.size;
     }
 

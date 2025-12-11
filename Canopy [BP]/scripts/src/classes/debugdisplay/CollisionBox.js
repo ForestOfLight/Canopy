@@ -14,7 +14,8 @@ export class CollisionBox extends DebugDisplayShapeElement {
 
     update() {
         const collisionBoxData = this.getCollisionBox();
-        this.collisionBox.location = collisionBoxData.location;
+        const dimensionLocation = { ...collisionBoxData.location, dimension: this.entity.dimension };
+        this.collisionBox.setLocation(dimensionLocation);
         this.collisionBox.bound = collisionBoxData.size;
     }
 

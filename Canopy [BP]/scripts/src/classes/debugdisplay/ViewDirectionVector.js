@@ -15,7 +15,8 @@ export class ViewDirectionVector extends DebugDisplayShapeElement {
 
     update() {
         const viewDirectionData = this.getViewDirectionBounds();
-        this.eyeLevel.location = viewDirectionData.location;
+        const dimensionLocation = { ...viewDirectionData.location, dimension: this.entity.dimension };
+        this.eyeLevel.setLocation(dimensionLocation);
         this.eyeLevel.endLocation = viewDirectionData.endLocation;
     }
 
