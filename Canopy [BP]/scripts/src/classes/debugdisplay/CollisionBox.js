@@ -5,7 +5,8 @@ import { DebugBox } from "@minecraft/debug-utilities";
 export class CollisionBox extends DebugDisplayShapeElement {
     createShapes() {
         const collisionBoxData = this.getCollisionBox();
-        this.collisionBox = new DebugBox(collisionBoxData.location);
+        const dimensionLocation = { ...collisionBoxData.location, dimension: this.entity.dimension };
+        this.collisionBox = new DebugBox(dimensionLocation);
         this.collisionBox.bound = collisionBoxData.size;
         this.collisionBox.color = { red: 1, green: 1, blue: 1 };
         this.shapes.push(this.collisionBox);

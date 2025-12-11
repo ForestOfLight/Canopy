@@ -9,8 +9,9 @@ export class AttackBox extends DebugDisplayShapeElement {
         if (!this.canAttack())
             return;
         const attackBoxData = this.getAttackBox();
-        this.attackBox = new DebugBox(attackBoxData.location);
-        this.attackBox.bound = attackBoxData.size
+        const dimensionLocation = { ...attackBoxData.location, dimension: this.entity.dimension };
+        this.attackBox = new DebugBox(dimensionLocation);
+        this.attackBox.bound = attackBoxData.size;
         this.attackBox.color = { red: 1, green: 0, blue: 0 };
         this.shapes.push(this.attackBox);
     }
