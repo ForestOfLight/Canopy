@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { velocityCommand } from "../../../../../Canopy [BP]/scripts/src/commands/velocity";
 import { Vector } from "../../../../../Canopy [BP]/scripts/lib/Vector";
+import { PlayerCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/Canopy";
 
 vi.mock("@minecraft/server", () => ({
     system: {
@@ -20,6 +21,7 @@ vi.mock("@minecraft/server", () => ({
         clearRun: vi.fn((runner) => {
             runner.clear();
         }),
+        run: vi.fn((callback) => callback()),
         afterEvents: {
             scriptEventReceive: {
                 subscribe: vi.fn(),
@@ -58,7 +60,7 @@ vi.mock("@minecraft/server", () => ({
     },
     CustomCommandParamType: {
         Enum: 'Enum',
-        Location: 'Location',
+        Float: 'Float',
     },
     CustomCommandStatus: {
         Success: 'Success',
@@ -76,11 +78,11 @@ vi.mock("@minecraft/server-ui", () => ({
 }));
 
 describe('velocityCommand', () => {
-    let mockAllOrigins;
+    let mockPlayerOrigin;
     let mockEntities;
 
     beforeEach(() => {
-        mockAllOrigins = void 0;
+        mockPlayerOrigin = new PlayerCommandOrigin({ sourceEntity: { sendMessage: vi.fn() } });
         mockEntities = [{ 
             typeId: 'minecraft:cow',
             isValid: true,
@@ -91,19 +93,23 @@ describe('velocityCommand', () => {
             applyImpulse: vi.fn((addVelocity) => { mockEntities[0].velocity = mockEntities[0].velocity.add(addVelocity) })
         }];
     });
+    
+    it('should handle invalid actions', () => {
+        expect(velocityCommand.velocityCommand(mockPlayerOrigin, mockEntities, 'invalidAction' )).toEqual({ status: 'Failure', message: 'commands.generic.invalidaction' });
+    });
 
     it('should allow the user to get the velocity', () => {
-        velocityCommand.velocityCommand(mockAllOrigins, mockEntities, 'query');
+        velocityCommand.velocityCommand(mockPlayerOrigin, mockEntities, 'query');
         expect(mockEntities[0].getVelocity).toHaveReturnedWith(mockEntities[0].velocity);
     });
 
     it('should allow the user to add velocity', () => {
-        velocityCommand.velocityCommand(mockAllOrigins, mockEntities, 'add', Vector.up);
+        velocityCommand.velocityCommand(mockPlayerOrigin, mockEntities, 'add', 0, 1, 0);
         expect(Vector.from(mockEntities[0].getVelocity()).distance(Vector.add(Vector.up, Vector.up))).toEqual(0);
     });
 
     it('should allow the user to set velocity', () => {
-        velocityCommand.velocityCommand(mockAllOrigins, mockEntities, 'set', Vector.down);
+        velocityCommand.velocityCommand(mockPlayerOrigin, mockEntities, 'set', 0, -1, 0);
         expect(Vector.from(mockEntities[0].getVelocity()).distance(Vector.zero)).toEqual(0);
     });
 
@@ -117,7 +123,7 @@ describe('velocityCommand', () => {
             clearVelocity: vi.fn(() => { this.velocity = Vector.zero }),
             applyImpulse: vi.fn((addVelocity) => { mockEntities[0].velocity = mockEntities[0].velocity.add(addVelocity) })
         });
-        velocityCommand.velocityCommand(mockAllOrigins, mockEntities, 'query');
+        velocityCommand.velocityCommand(mockPlayerOrigin, mockEntities, 'query');
         expect(mockEntities[1].getVelocity).toHaveReturnedWith(mockEntities[1].velocity);
     });
 
@@ -126,10 +132,19 @@ describe('velocityCommand', () => {
             typeId: 'minecraft:pig',
             isValid: false,
             localizationKey: 'pig.name',
-            getVelocity: vi.fn(),
-
+            getVelocity: vi.fn()
         });
-        velocityCommand.velocityCommand(mockAllOrigins, mockEntities, 'query');
+        velocityCommand.velocityCommand(mockPlayerOrigin, mockEntities, 'query');
+        velocityCommand.velocityCommand(mockPlayerOrigin, mockEntities, 'add', 0, 0, 0);
+        velocityCommand.velocityCommand(mockPlayerOrigin, mockEntities, 'set', 0, 0, 0);
         expect(mockEntities[1].getVelocity).not.toHaveBeenCalled();
+    });
+
+    it('should require all three velocity cardinals for add', () => {
+        expect(velocityCommand.velocityCommand(mockPlayerOrigin, mockEntities, 'add')).toEqual({ status: 'Failure', message: 'commands.velocity.missingvelocity' });
+    });
+
+    it('should require all three velocity cardinals for set', () => {
+        expect(velocityCommand.velocityCommand(mockPlayerOrigin, mockEntities, 'set')).toEqual({ status: 'Failure', message: 'commands.velocity.missingvelocity' });
     });
 });

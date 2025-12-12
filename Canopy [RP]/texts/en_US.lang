@@ -317,6 +317,11 @@ commands.trackevent.stop=§7Stopped tracking %s.
 commands.trackevent.start=§7Started tracking %s.
 commands.trackevent.invalid=§cEvent %1 not found in %2.
 
+commands.velocity=Affect the velocity of entities.
+commands.velocity.query=§7Entity velocities:
+commands.velocity.add=§7Added velocity to entities:
+commands.velocity.set=§7Set velocity for entities:
+
 commands.warp=Teleport to and manage warps. (Alias: w)
 commands.warp.edit=Adds or removes a warp.
 commands.warp.tp=Teleports you to a warp.
