@@ -5,7 +5,8 @@ import { DebugBox } from "@minecraft/debug-utilities";
 export class EyeLevel extends DebugDisplayShapeElement {
     createShapes() {
         const eyeLevelData = this.getEyeLevelBoxBounds();
-        this.eyeLevel = new DebugBox(eyeLevelData.location);
+        const dimensionLocation = { ...eyeLevelData.location, dimension: this.entity.dimension };
+        this.eyeLevel = new DebugBox(dimensionLocation);
         this.eyeLevel.bound = eyeLevelData.size;
         this.eyeLevel.color = { red: 1, green: 0, blue: 0 };
         this.shapes.push(this.eyeLevel);
@@ -13,7 +14,8 @@ export class EyeLevel extends DebugDisplayShapeElement {
 
     update() {
         const eyeLevelData = this.getEyeLevelBoxBounds();
-        this.eyeLevel.location = eyeLevelData.location;
+        const dimensionLocation = { ...eyeLevelData.location, dimension: this.entity.dimension };
+        this.eyeLevel.setLocation(dimensionLocation);
         this.eyeLevel.bound = eyeLevelData.size;
     }
 

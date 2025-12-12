@@ -40,7 +40,7 @@ export class HSSFinder {
         const structureBounds = structureBoundsFinder.getBounds();
         const calculatedHSS = this.calculateHSS(structureBounds);
         this.renderer?.destroy();
-        this.renderer = new HSSRenderer(structureBoundsFinder, calculatedHSS);
+        this.renderer = new HSSRenderer(structureBoundsFinder, calculatedHSS, dimension);
     }
 
     calculateHSS(structureBounds) {
@@ -95,6 +95,7 @@ export class HSSFinder {
         const top = this.findStructureTop(dimension, flooredLocation, "minecraft:fortress");
         const height = top.y - bottom.y;
 
+        bottom.dimension = dimension;
         const box = new DebugBox(bottom);
         box.bound = new Vector(1, height, 1);
         box.color = { red: 0, green: 1, blue: 0 };

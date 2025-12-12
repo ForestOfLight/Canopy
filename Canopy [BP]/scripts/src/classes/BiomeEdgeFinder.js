@@ -34,7 +34,7 @@ export class BiomeEdgeFinder {
     }
 
     startRenderer() {
-        this.renderer = new BiomeEdgeRenderer(this.blockVolume);
+        this.renderer = new BiomeEdgeRenderer(this.blockVolume, this.dimension);
     }
 
     stopRenderer() {

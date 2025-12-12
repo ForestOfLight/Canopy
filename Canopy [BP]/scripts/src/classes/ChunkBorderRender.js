@@ -4,10 +4,12 @@ import { Vector } from "../../lib/Vector";
 export class ChunkBorderRender {
     CHUNK_SIZE = 16;
     location;
+    dimension;
     debugShapes;
 
-    constructor(location) {
+    constructor(location, dimension) {
         this.location = location;
+        this.dimension = dimension;
         this.debugShapes = [];
         this.render();
     }
@@ -89,6 +91,7 @@ export class ChunkBorderRender {
     }
 
     renderLine(start, end, color = { red: 1, green: 1, blue: 0 }) {
+        start.dimension = this.dimension;
         const line = new DebugLine(start, end);
         line.color = color;
         this.drawShape(line);

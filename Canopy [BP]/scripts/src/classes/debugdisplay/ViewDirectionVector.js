@@ -2,18 +2,20 @@ import { DebugDisplayShapeElement } from "./DebugDisplayShapeElement";
 import { Vector } from "../../../lib/Vector";
 import { DebugLine } from "@minecraft/debug-utilities";
 
-export class ViewDirectionVector extends DebugDisplayShapeElement {
+export class ViewDirectionVector extends DebugDisplayShapeElement {    
     createShapes() {
         const viewDirectionData = this.getViewDirectionBounds();
-        this.eyeLevel = new DebugLine(viewDirectionData.location, viewDirectionData.endLocation);
-        this.eyeLevel.color = { red: 0, green: 0, blue: 1 };
-        this.shapes.push(this.eyeLevel);
+        const dimensionLocation = { ...viewDirectionData.location, dimension: this.entity.dimension };
+        this.viewDirectionVector = new DebugLine(dimensionLocation, viewDirectionData.endLocation);
+        this.viewDirectionVector.color = { red: 0, green: 0, blue: 1 };
+        this.shapes.push(this.viewDirectionVector);
     }
 
     update() {
         const viewDirectionData = this.getViewDirectionBounds();
-        this.eyeLevel.location = viewDirectionData.location;
-        this.eyeLevel.endLocation = viewDirectionData.endLocation;
+        const dimensionLocation = { ...viewDirectionData.location, dimension: this.entity.dimension };
+        this.viewDirectionVector.setLocation(dimensionLocation);
+        this.viewDirectionVector.endLocation = viewDirectionData.endLocation;
     }
 
     getViewDirectionBounds() {
@@ -21,6 +23,6 @@ export class ViewDirectionVector extends DebugDisplayShapeElement {
         return {
             location,
             endLocation: location.add(this.entity.getViewDirection())
-        }
+        };
     }
 }

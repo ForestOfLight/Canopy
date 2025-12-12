@@ -16,14 +16,16 @@ export class DebugDisplayTextDrawer {
     }
 
     update() {
-        this.textShape.location = this.getTextLocation();
+        const dimensionLocation = { ...this.getTextLocation(), dimension: this.dimension };
+        this.textShape.setLocation(dimensionLocation);
         this.textShape.text = this.debugDisplay.debugMessage;
     }
 
     beginDraw() {
         if (this.isDrawing())
             return;
-        this.textShape = new DebugText(this.getTextLocation(), this.debugDisplay.debugMessage);
+        const dimensionLocation = { ...this.getTextLocation(), dimension: this.dimension };
+        this.textShape = new DebugText(dimensionLocation, this.debugDisplay.debugMessage);
         debugDrawer.addShape(this.textShape);
     }
     
