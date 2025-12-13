@@ -57,6 +57,10 @@ Found a bug? Let us know by opening an [issue](https://github.com/ForestOfLight/
 
 Got a fix or a new feature? Submit a **pull request**! Just follow our coding standards and include tests where possible.
 
+### Adding Translations
+
+**Canopy** currently supports American English, German (thanks to [theonlytruemuck](https://www.github.com/theonlytruemuck)), Indonesian (thanks to [IdotIcom](https://www.github.com/IdotIcom)), and Chinese (thanks to [TickPoints](https://www.github.com/TickPoints)). If you would like to contribute a translation, please join our Discord and reach out!
+
 ## An Amelix Foundation Project
 
 <div align="center">
