@@ -10,7 +10,7 @@ export class Age extends DebugDisplayTextElement {
             Age.entitySpawnTicks[this.entity.id] = this.entity.getDynamicProperty('spawnTick');
             spawnTick = Age.entitySpawnTicks[this.entity.id];
         }
-        const age = system.currentTick - spawnTick || '?';
+        const age = system.currentTick - spawnTick || '?'; // Does not stop count while the entity is unloaded.
         return `§7${age} ticks`;
     }
 

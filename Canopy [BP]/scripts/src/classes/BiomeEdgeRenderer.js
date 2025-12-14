@@ -12,8 +12,9 @@ export class BiomeEdgeRenderer {
     analysisBoundingBoxShape;
     analysisColor = { red: 0, green: 0, blue: 1 };
 
-    constructor(blockVolume) {
+    constructor(blockVolume, dimension) {
         this.blockVolume = blockVolume;
+        this.dimension = dimension;
         this.drawAnalysisBoundingBox(this.analysisColor);
     }
 
@@ -138,6 +139,7 @@ export class BiomeEdgeRenderer {
         const bound = new Vector(...changeInMiddleAxis).add(new Vector(...changeInFinalAxis));
         
         const worldLocation = Vector.from(this.blockVolume.getMin()).add(new Vector(...localLocation));
+        worldLocation.dimension = this.dimension;
         const sidedBox = new DebugBox(worldLocation);
         sidedBox.bound = bound;
         sidedBox.color = { red: 1, green: 1, blue: 1 };
@@ -166,7 +168,8 @@ export class BiomeEdgeRenderer {
     }
 
     renderAnalysisLocation(location) {
-        const tempBox = new DebugBox(location);
+        const dimensionLocation = { ...location, dimension: this.dimension };
+        const tempBox = new DebugBox(dimensionLocation);
         tempBox.color = { red: 1, green: 1, blue: 1 };
         debugDrawer.addShape(tempBox);
         system.runTimeout(() => {
@@ -177,7 +180,8 @@ export class BiomeEdgeRenderer {
     drawAnalysisBoundingBox() {
         if (this.analysisBoundingBoxShape)
             this.analysisBoundingBoxShape.remove();
-        const boundingBox = new DebugBox(this.blockVolume.getMin());
+        const dimensionLocation = { ...this.blockVolume.getMin(), dimension: this.dimension };
+        const boundingBox = new DebugBox(dimensionLocation);
         boundingBox.bound = this.blockVolume.getSpan();
         boundingBox.color = this.analysisColor;
         this.analysisBoundingBoxShape = boundingBox;
@@ -222,6 +226,7 @@ export class BiomeEdgeRenderer {
             const segmentEnd = new Vector(nextX, nextY, nextZ);
 
             const color = this.getBiomeColorForLineBetweenVertices(segmentStart, segmentEnd, max);
+            segmentStart.dimension = this.dimension;
             const line = new DebugLine(segmentStart, segmentEnd);
             line.color = color;
             debugLines.push(line);

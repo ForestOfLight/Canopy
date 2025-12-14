@@ -8,15 +8,17 @@ const BIG_PROJECTILES = ["minecraft:wither_skull", "minecraft:wither_skull_dange
 export class HitBox extends DebugDisplayShapeElement {
     createShapes() {
         const hitboxData = this.getHitBox();
-        this.hitbox = new DebugBox(hitboxData.location);
-        this.hitbox.bound = hitboxData.size
+        const dimensionLocation = { ...hitboxData.location, dimension: this.entity.dimension };
+        this.hitbox = new DebugBox(dimensionLocation);
+        this.hitbox.bound = hitboxData.size;
         this.hitbox.color = { red: 0, green: 1, blue: 0 };
         this.shapes.push(this.hitbox);
     }
 
     update() {
         const hitboxData = this.getHitBox();
-        this.hitbox.location = hitboxData.location;
+        const dimensionLocation = { ...hitboxData.location, dimension: this.entity.dimension };
+        this.hitbox.setLocation(dimensionLocation);
         this.hitbox.bound = hitboxData.size;
     }
 

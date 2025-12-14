@@ -47,6 +47,7 @@ export const categoryToMobMap = {
         'stray',
         'witch',
         'wither_skeleton',
+        'zombie_horse',
         'zombie_pigman',
         'zombie'
     ],
@@ -92,7 +93,6 @@ export const categoryToMobMap = {
         'warden',
         'wither',
         'zoglin',
-        'zombie_horse',
         'zombie_villager',
         'zombie_villager_v2'
     ]
@@ -115,6 +115,8 @@ export const meleeMobs = [
     'guardian',
     'husk',
     'magma_cube',
+    'nautilus',
+    'parched',
     'phantom',
     'piglin',
     'skeleton',
@@ -142,6 +144,7 @@ export const meleeMobs = [
     'vindicator',
     'warden',
     'zoglin',
+    'zombie_nautilus',
     'zombie_villager',
     'zombie_villager_v2'
 ];

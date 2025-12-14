@@ -7,7 +7,7 @@ export class EntityCommandOrigin extends CommandOrigin {
     }
 
     sendMessage(message) {
-        this.source.sourceEntity.sendMessage(message);
+        this.getSource().sendMessage(message);
         return FeedbackMessageType.ChatMessage;
     }
 }
