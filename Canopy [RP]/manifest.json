@@ -20,6 +20,9 @@
       "version": [1, 5, 2]
     }
   ],
+  "capabilities": [
+    "pbr"
+  ],
   "metadata": {
     "authors": [ "ForestOfLight" ],
     "license": "MIT",
