@@ -55,6 +55,7 @@ import { HitBox } from './HitBox';
 import { EyeLevel } from './EyeLevel';
 import { ViewDirectionVector } from './ViewDirectionVector';
 import { AttackBox } from './AttackBox';
+import { Movement } from './Movement';
 
 const entityToDebugDisplayMap = {};
 const debugableProperties = Object.freeze({
@@ -85,6 +86,7 @@ const debugableProperties = Object.freeze({
     lavamovement: LavaMovement,
     leash: Leash,
     location: Location,
+    movement: Movement,
     nametag: NameTag,
     onfire: OnFire,
     projectile: Projectile,

@@ -3,7 +3,7 @@ import { ComponentDebugDisplayElement } from './ComponentDebugDisplayElement.js'
 export class AttributeDebugDisplayElement extends ComponentDebugDisplayElement {
     constructor(entity, componentType, valueColorCode) {
         super(entity, componentType);
-        this.valueColorCode = valueColorCode;
+        this.valueColorCode = valueColorCode || '';
     }
 
     getFormattedData() {
