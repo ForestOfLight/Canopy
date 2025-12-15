@@ -56,6 +56,7 @@ import { EyeLevel } from './EyeLevel';
 import { ViewDirectionVector } from './ViewDirectionVector';
 import { AttackBox } from './AttackBox';
 import { Movement } from './Movement';
+import { UnderwaterMovement } from './UnderwaterMovement';
 
 const entityToDebugDisplayMap = {};
 const debugableProperties = Object.freeze({
@@ -102,6 +103,7 @@ const debugableProperties = Object.freeze({
     target: Target,
     tnt: TNT,
     typeid: TypeID,
+    underwatermovement: UnderwaterMovement,
     families: Families,
     variant: Variant,
     velocity: Velocity,
