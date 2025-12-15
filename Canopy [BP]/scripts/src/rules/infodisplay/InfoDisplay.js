@@ -55,7 +55,7 @@ class InfoDisplay {
 			new MoonPhase(13),
 			new Weather(player, 14),
 			new WorldDay(15),
-			new TimeOfDay(16),
+			new TimeOfDay(15),
 			new SessionTime(player, 16),
 			new EventTrackers(17),
 			new HopperCounterCounts(18),
