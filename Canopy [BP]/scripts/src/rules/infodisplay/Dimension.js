@@ -9,8 +9,8 @@ class Dimension extends InfoDisplayElement {
     }
 
     getFormattedDataOwnLine() {
-        const dimensionId = this.player.dimension.id;
-        return { text: getColorByDimension(dimensionId) + dimensionId };
+        const dimension = this.player.dimension;
+        return { rawtext: [{ text: getColorByDimension(dimension.id) }, { translate: dimension.localizationKey }] };
     }
 
     getFormattedDataSharedLine() {
