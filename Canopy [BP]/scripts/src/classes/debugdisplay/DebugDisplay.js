@@ -57,6 +57,7 @@ import { ViewDirectionVector } from './ViewDirectionVector';
 import { AttackBox } from './AttackBox';
 import { Movement } from './Movement';
 import { UnderwaterMovement } from './UnderwaterMovement';
+import { Horse } from './Horse';
 
 const entityToDebugDisplayMap = {};
 const debugableProperties = Object.freeze({
@@ -71,6 +72,7 @@ const debugableProperties = Object.freeze({
     growup: GrowUp,
     headlocation: HeadLocation,
     health: Health,
+    horse: Horse,
     hunger: Hunger,
     id: ID,
     isclimbing: IsClimbing,
