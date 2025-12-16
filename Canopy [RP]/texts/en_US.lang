@@ -386,6 +386,7 @@ rules.instaminableEndstone=Makes endstone instaminable while using netherite, ef
 rules.noWelcomeMessage=Disables the §lCanopy§r§8 welcome message.
 rules.pistonBedrockBreaking=Allows pistons to break bedrock when facing away from a bedrock block and expanding.
 rules.playerSit=Allows players to sit down after %s quick sneaks.
+rules.potionBoostedBreeding=Reintroduces the behavior that allows speed potions to affect breeding attributes.
 rules.quickFillContainer=Using an item on a container with an arrow in inventory slot 9 (top left) will deposit all of that item into the container.
 rules.quickFillContainer.filled.pt1=§7Filled 
 rules.quickFillContainer.filled.pt2= with all 
