@@ -27,3 +27,5 @@ export class EntityInstantDeath extends BooleanRule {
         }
     }
 }
+
+export const entityInstantDeath = new EntityInstantDeath();
