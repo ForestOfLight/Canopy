@@ -20,6 +20,16 @@
 					"bpName": "project.name+'[BP]'"
 				},
 				"filters": []
+			},
+			"preview": {
+				"export": {
+					"build": "preview",
+					"readOnly": false,
+					"target": "development",
+					"rpName": "project.name+'[RP]'",
+					"bpName": "project.name+'[BP]'"
+				},
+				"filters": []
 			}
 		}
 	}
