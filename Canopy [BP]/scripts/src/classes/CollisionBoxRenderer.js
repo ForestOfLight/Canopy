@@ -42,8 +42,6 @@ export class CollisionBoxRenderer {
             this.stopRender();
             return;
         }
-        this.collisionBox.update();
-        this.eyeLevel.update();
         this.viewDirectionVector.update();
     }
 }

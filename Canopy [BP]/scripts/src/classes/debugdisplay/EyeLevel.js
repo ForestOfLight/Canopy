@@ -6,23 +6,16 @@ export class EyeLevel extends DebugDisplayShapeElement {
     createShapes() {
         const eyeLevelData = this.getEyeLevelBoxBounds();
         const dimensionLocation = { ...eyeLevelData.location, dimension: this.entity.dimension };
-        this.eyeLevel = new DebugBox(dimensionLocation);
-        this.eyeLevel.bound = eyeLevelData.size;
-        this.eyeLevel.color = { red: 1, green: 0, blue: 0 };
-        this.shapes.push(this.eyeLevel);
-    }
-
-    update() {
-        const eyeLevelData = this.getEyeLevelBoxBounds();
-        const dimensionLocation = { ...eyeLevelData.location, dimension: this.entity.dimension };
-        this.eyeLevel.setLocation(dimensionLocation);
-        this.eyeLevel.bound = eyeLevelData.size;
+        const eyeLevel = new DebugBox(dimensionLocation);
+        eyeLevel.bound = eyeLevelData.size;
+        eyeLevel.color = { red: 1, green: 0, blue: 0 };
+        this.drawShape(eyeLevel);
     }
 
     getCollisionBox() {
         const AABB = this.entity.getAABB();
         return {
-            location: Vector.from(AABB.center).subtract(AABB.extent),
+            location: Vector.from(AABB.center).subtract(this.entity.location).subtract(AABB.extent),
             size: Vector.from(AABB.extent).multiply(2)
         };
     }

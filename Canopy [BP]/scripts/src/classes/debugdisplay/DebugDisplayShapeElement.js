@@ -10,7 +10,6 @@ export class DebugDisplayShapeElement extends DebugDisplayElement {
         if (this.constructor === DebugDisplayShapeElement) 
             throw new TypeError("Abstract class 'DebugDisplayShapeElement' cannot be instantiated directly.");
         this.createShapes();
-        this.drawShapes();
     }
 
     destroy() {
@@ -31,6 +30,12 @@ export class DebugDisplayShapeElement extends DebugDisplayElement {
 
     clearShapes() {
         this.shapes.forEach(shape => debugDrawer.removeShape(shape));
+    }
+
+    drawShape(debugShape) {
+        debugShape.attachedTo = this.entity;
+        this.shapes.push(debugShape);
+        debugDrawer.addShape(debugShape);
     }
 
     update() {
