@@ -4,8 +4,9 @@ import { DebugDisplayElement } from "./DebugDisplayElement";
 export class DebugDisplayShapeElement extends DebugDisplayElement {
     shapes = [];
     
-    constructor(entity) {
+    constructor(entity, visibleToPlayer = void 0) {
         super(entity);
+        this.visibleToPlayer = visibleToPlayer;
         if (this.constructor === DebugDisplayShapeElement) 
             throw new TypeError("Abstract class 'DebugDisplayShapeElement' cannot be instantiated directly.");
         this.createShapes();
@@ -21,7 +22,11 @@ export class DebugDisplayShapeElement extends DebugDisplayElement {
     }
 
     drawShapes() {
-        this.shapes.forEach(shape => debugDrawer.addShape(shape));
+        this.shapes.forEach(shape => {
+            if (this.visibleToPlayer)
+                shape.visibleTo = [this.visibleToPlayer];
+            debugDrawer.addShape(shape)
+        });
     }
 
     clearShapes() {
