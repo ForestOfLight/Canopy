@@ -10,9 +10,9 @@ export class CollisionBoxRenderer {
     viewDirectionVector;
     runner = void 0;
 
-    constructor(entity) {
+    constructor(entity, visibleToPlayer) {
         this.entity = entity;
-        this.startRender();
+        this.startRender(visibleToPlayer);
     }
 
     destroy() {
@@ -20,10 +20,10 @@ export class CollisionBoxRenderer {
         this.entity = void 0;
     }
 
-    startRender() {
-        this.collisionBox = new CollisionBox(this.entity);
-        this.eyeLevel = new EyeLevel(this.entity);
-        this.viewDirectionVector = new ViewDirectionVector(this.entity);
+    startRender(visibleToPlayer) {
+        this.collisionBox = new CollisionBox(this.entity, visibleToPlayer);
+        this.eyeLevel = new EyeLevel(this.entity, visibleToPlayer);
+        this.viewDirectionVector = new ViewDirectionVector(this.entity, visibleToPlayer);
         this.runner = system.runInterval(this.onTick.bind(this));
     }
 

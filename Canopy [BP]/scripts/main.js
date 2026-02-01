@@ -76,6 +76,7 @@ import './src/rules/spawnEggSpawnWithMinecart'
 import './src/rules/chunkBorders'
 import './src/rules/echoShardsEnableShriekers'
 import './src/rules/collisionBoxes'
+import './src/rules/potionBoostedBreeding'
 
 // Load Time Processes
 import './src/onStart'

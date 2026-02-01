@@ -4,7 +4,7 @@ import { CollisionBoxRenderer } from "../classes/CollisionBoxRenderer";
 
 export class CollisionBoxes extends AbilityRule {
     RENDER_DISTANCE = 32;
-    collisionBoxRenderers = [];
+    collisionBoxRenderers = {};
     runners = {};
 
     constructor() {
@@ -16,7 +16,7 @@ export class CollisionBoxes extends AbilityRule {
             }
         }, { 
             slotNumber: 14,
-            onPlayerEnableCallback: (player) => this.startRenderingCollisionBoxes(player),
+            onPlayerEnableCallback: (player) => this.startRenderingCollisionBoxes(player.id),
             onPlayerDisableCallback: (player) => this.stopRenderingCollisionBoxes(player.id)
         });
     }
@@ -31,13 +31,18 @@ export class CollisionBoxes extends AbilityRule {
             system.clearRun(this.runners[playerId]);
             delete this.runners[playerId];
         }
-        this.collisionBoxRenderers.forEach(collisionBoxRenderer => collisionBoxRenderer.destroy());
+        if (this.collisionBoxRenderers[playerId]) {
+            for (const renderer of Object.values(this.collisionBoxRenderers[playerId]))
+                renderer.destroy();
+            delete this.collisionBoxRenderers[playerId];
+        }
     }
 
-    startRenderingCollisionBoxes(player) {
-        if (this.runners[player.id])
-            this.stopRenderingCollisionBoxes(player.id);
-        this.runners[player.id] = system.runInterval(this.onTick.bind(this));
+    startRenderingCollisionBoxes(playerId) {
+        if (this.runners[playerId])
+            this.stopRenderingCollisionBoxes(playerId);
+        this.collisionBoxRenderers[playerId] = {};
+        this.runners[playerId] = system.runInterval(this.onTick.bind(this));
     }
 
     onTick() {
@@ -52,24 +57,20 @@ export class CollisionBoxes extends AbilityRule {
     }
 
     renderCollisionForNearbyEntities(player) {
-        const entities = this.getNearbyEntities(player).filter(entity => entity?.typeId !== player.typeId);
-        const rendererMap = {};
-        for (const collisionBoxRenderer of this.collisionBoxRenderers) {
-            const id = collisionBoxRenderer.entity?.id;
-            if (id)
-                rendererMap[id] = collisionBoxRenderer;
-        }
-        for (const [id, renderer] of Object.entries(rendererMap)) {
-            if (!entities.map(e => e.id).includes(id)) {
+        const entities = this.getNearbyEntities(player).filter(entity => entity?.id !== player.id);
+        const rendererMap = this.collisionBoxRenderers[player.id] || {};
+        
+        for (const [entityId, renderer] of Object.entries(rendererMap)) {
+            if (!entities.some(e => e.id === entityId)) {
                 renderer.destroy();
-                delete rendererMap[id];
+                delete rendererMap[entityId];
             }
-        }
+        }        
         for (const entity of entities) {
-            if (!Object.keys(rendererMap).includes(entity.id))
-                rendererMap[entity.id] = new CollisionBoxRenderer(entity);
+            if (!rendererMap[entity.id])
+                rendererMap[entity.id] = new CollisionBoxRenderer(entity, player);
         }
-        this.collisionBoxRenderers = Object.values(rendererMap);
+        this.collisionBoxRenderers[player.id] = rendererMap;
     }
 
     getNearbyEntities(player) {

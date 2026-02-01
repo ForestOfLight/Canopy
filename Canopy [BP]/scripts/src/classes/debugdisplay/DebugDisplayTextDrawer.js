@@ -16,8 +16,6 @@ export class DebugDisplayTextDrawer {
     }
 
     update() {
-        const dimensionLocation = { ...this.getTextLocation(), dimension: this.dimension };
-        this.textShape.setLocation(dimensionLocation);
         this.textShape.text = this.debugDisplay.debugMessage;
     }
 
@@ -26,6 +24,7 @@ export class DebugDisplayTextDrawer {
             return;
         const dimensionLocation = { ...this.getTextLocation(), dimension: this.dimension };
         this.textShape = new DebugText(dimensionLocation, this.debugDisplay.debugMessage);
+        this.textShape.attachedTo = this.debugDisplay.entity;
         debugDrawer.addShape(this.textShape);
     }
     
@@ -35,8 +34,7 @@ export class DebugDisplayTextDrawer {
 
     getTextLocation() {
         const entity = this.debugDisplay.entity;
-        const entityLocation = Vector.from(entity.location);
-        const heightDisplacement = new Vector(0, Vector.from(entity.getHeadLocation()).subtract(entityLocation).y, 0).add(Vector.up);
-        return entityLocation.add(heightDisplacement);
+        const heightDisplacement = new Vector(0, Vector.from(entity.getHeadLocation()).subtract(entity.location).y, 0).add(Vector.up);
+        return heightDisplacement;
     }
 }
