@@ -17,7 +17,7 @@ export class Rule {
             throw new TypeError("Abstract class 'Rule' cannot be instantiated directly.");
         this.#category = category;
         this.#identifier = identifier;
-        this.#description = this.#parseDescription(description)
+        this.#description = this.#parseDescription(description);
         this.#defaultValue = defaultValue;
         this.#contingentRules = contingentRules;
         this.#independentRules = independentRules;
@@ -68,7 +68,7 @@ export class Rule {
 
     async getValue() {
         if (this.#extension)
-            return await this.#extension.getRuleValue(this.#identifier);
+            return this.#parseRuleValueString(await this.#extension.getRuleValue(this.#identifier));
         return this.#parseRuleValueString(world.getDynamicProperty(this.#identifier));
     }
 
@@ -106,8 +106,10 @@ export class Rule {
     }
     
     #parseRuleValueString(value) {
-        if (value === 'undefined' || value === void 0)
+        if (value === 'undefined' || value === void 0) {
+            this.resetToDefaultValue();
             return this.getDefaultValue();
+        }
         try {
             return JSON.parse(value);
         } catch {

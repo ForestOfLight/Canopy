@@ -2,6 +2,8 @@ import { Command } from "./commands/Command";
 import IPC from "../MCBE-IPC/ipc";
 import { RegisterCommand, RegisterRule, RuleValueRequest, RuleValueSet, CommandCallbackRequest, Ready, RuleValueResponse } from "./extension.ipc";
 import { BooleanRule } from "./rules/BooleanRule";
+import { IntegerRule } from "./rules/IntegerRule";  
+import { FloatRule } from "./rules/FloatRule";
 
 class Extension {
     id = null;
@@ -77,7 +79,7 @@ class Extension {
     }
 
     setRuleValue(identifier, value) {
-        IPC.send(`canopyExtension:${this.id}:ruleValueSet`, RuleValueSet, { ruleID: identifier, value: value });
+        IPC.send(`canopyExtension:${this.id}:ruleValueSet`, RuleValueSet, { ruleID: identifier, value: String(value) });
     }
 
     runCommand(sender, commandName, args) {
@@ -107,7 +109,22 @@ class Extension {
 
     #setupRuleRegistration() {
         IPC.on(`canopyExtension:${this.id}:registerRule`, RegisterRule, (ruleData) => {
-            this.rules.push(new BooleanRule({ category: "Rules", ...ruleData }));
+            switch (ruleData.type) {
+                case 'boolean':
+                    ruleData.defaultValue = Boolean(ruleData.defaultValue);
+                    this.rules.push(new BooleanRule({ category: "Rules", ...ruleData }));
+                    break;
+                case 'integer':
+                    ruleData.defaultValue = parseInt(ruleData.defaultValue);
+                    this.rules.push(new IntegerRule({ category: "Rules", ...ruleData }));
+                    break;
+                case 'float':
+                    ruleData.defaultValue = parseFloat(ruleData.defaultValue);
+                    this.rules.push(new FloatRule({ category: "Rules", ...ruleData }));
+                    break;
+                default:
+                    throw new Error(`[Canopy] Could not register rule: ${ruleData.identifier}. Invalid data type.`);
+            }
         });
     }
 
