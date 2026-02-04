@@ -138,7 +138,7 @@ export class BiomeEdgeRenderer {
         changeInFinalAxis[finalAxis] = quadHeight;
         const bound = new Vector(...changeInMiddleAxis).add(new Vector(...changeInFinalAxis));
         
-        const worldLocation = Vector.from(this.blockVolume.getMin()).add(new Vector(...localLocation));
+        const worldLocation = Vector.from(this.blockVolume.getMin()).add(bound.multiply(0.5)).add(new Vector(...localLocation));
         worldLocation.dimension = this.dimension;
         const sidedBox = new DebugBox(worldLocation);
         sidedBox.bound = bound;
@@ -168,7 +168,8 @@ export class BiomeEdgeRenderer {
     }
 
     renderAnalysisLocation(location) {
-        const dimensionLocation = { ...location, dimension: this.dimension };
+        const dimensionLocation = Vector.from(location).add(new Vector(0.5, 0.5, 0.5));
+        dimensionLocation.dimension = this.dimension;
         const tempBox = new DebugBox(dimensionLocation);
         tempBox.color = { red: 1, green: 1, blue: 1 };
         debugDrawer.addShape(tempBox);
@@ -180,7 +181,8 @@ export class BiomeEdgeRenderer {
     drawAnalysisBoundingBox() {
         if (this.analysisBoundingBoxShape)
             this.analysisBoundingBoxShape.remove();
-        const dimensionLocation = { ...this.blockVolume.getMin(), dimension: this.dimension };
+        const dimensionLocation = Vector.from(this.blockVolume.getMin()).add(Vector.from(this.blockVolume.getSpan()).multiply(0.5));
+        dimensionLocation.dimension = this.dimension;
         const boundingBox = new DebugBox(dimensionLocation);
         boundingBox.bound = this.blockVolume.getSpan();
         boundingBox.color = this.analysisColor;

@@ -93,10 +93,11 @@ export class HSSFinder {
             return;
         const bottom = this.findStructureBottom(dimension, flooredLocation, "minecraft:fortress");
         const top = this.findStructureTop(dimension, flooredLocation, "minecraft:fortress");
-        const height = top.y - bottom.y;
+        const height = top.y - bottom.y + 1;
 
-        bottom.dimension = dimension;
-        const box = new DebugBox(bottom);
+        const dimensionLocation = bottom.add(new Vector(0.5, height * 0.5, 0.5));
+        dimensionLocation.dimension = dimension;
+        const box = new DebugBox(dimensionLocation);
         box.bound = new Vector(1, height, 1);
         box.color = { red: 0, green: 1, blue: 0 };
         this.fortressHSSShapes.push(box);

@@ -3,6 +3,8 @@ import { Vector } from "../../../lib/Vector";
 import { DebugBox } from "@minecraft/debug-utilities";
 
 export class EyeLevel extends DebugDisplayShapeElement {
+    eyeLevel;
+
     createShapes() {
         const eyeLevelData = this.getEyeLevelBoxBounds();
         const dimensionLocation = { ...eyeLevelData.location, dimension: this.entity.dimension };
@@ -12,19 +14,16 @@ export class EyeLevel extends DebugDisplayShapeElement {
         this.drawShape(eyeLevel);
     }
 
-    getCollisionBox() {
-        const AABB = this.entity.getAABB();
-        return {
-            location: Vector.from(AABB.center).subtract(this.entity.location).subtract(AABB.extent),
-            size: Vector.from(AABB.extent).multiply(2)
-        };
+    update() {
+        const eyeLevelData = this.getEyeLevelBoxBounds();
+        this.shapes[0].bound = eyeLevelData.size;
     }
 
     getEyeLevelBoxBounds() {
-        const collisionBoxData = this.getCollisionBox();
+        const AABB = this.entity.getAABB();
         return {
-            location: Vector.from(collisionBoxData.location).add(new Vector(0, this.entity.getHeadLocation().y - this.entity.location.y, 0)),
-            size: new Vector(collisionBoxData.size.x, 0, collisionBoxData.size.z)
+            location: new Vector(0, this.entity.getHeadLocation().y - this.entity.location.y, 0),
+            size: new Vector(AABB.extent.x * 2, 0, AABB.extent.z * 2)
         }
     }
 }

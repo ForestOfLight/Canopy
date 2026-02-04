@@ -9,24 +9,22 @@ export class HitBox extends DebugDisplayShapeElement {
     createShapes() {
         const hitboxData = this.getHitBox();
         const dimensionLocation = { ...hitboxData.location, dimension: this.entity.dimension };
-        this.hitbox = new DebugBox(dimensionLocation);
-        this.hitbox.bound = hitboxData.size;
-        this.hitbox.color = { red: 0, green: 1, blue: 0 };
-        this.shapes.push(this.hitbox);
+        const hitbox = new DebugBox(dimensionLocation);
+        hitbox.bound = hitboxData.size;
+        hitbox.color = { red: 0, green: 1, blue: 0 };
+        this.drawShape(hitbox);
     }
 
     update() {
         const hitboxData = this.getHitBox();
-        const dimensionLocation = { ...hitboxData.location, dimension: this.entity.dimension };
-        this.hitbox.setLocation(dimensionLocation);
-        this.hitbox.bound = hitboxData.size;
+        this.shapes[0].bound = hitboxData.size;
     }
 
     getHitBox() {
         const AABB = this.entity.getAABB();
         const marginFromCollisionBox = this.getMargin();
         return {
-            location: Vector.from(AABB.center).subtract(AABB.extent).subtract(marginFromCollisionBox),
+            location: new Vector(0, AABB.extent.y, 0),
             size: Vector.from(AABB.extent).add(marginFromCollisionBox).multiply(2)
         };
     }
