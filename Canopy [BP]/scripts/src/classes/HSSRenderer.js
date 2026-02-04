@@ -23,7 +23,8 @@ export class HSSRenderer {
     }
 
     renderBoundingBox() {
-        const dimensionLocation = { ...this.structureBounds.getMin(), dimension: this.dimension };
+        const dimensionLocation = this.structureBounds.getCenterpoint();
+        dimensionLocation.dimension = this.dimension;
         const box = new DebugBox(dimensionLocation);
         box.bound = this.structureBounds.getSize();
         box.color = { red: 1, green: 1, blue: 1 };
@@ -36,7 +37,7 @@ export class HSSRenderer {
     }
 
     renderSingleHSS(location) {
-        const bottom = new Vector(location.x, this.structureBounds.getMin().y, location.z);
+        const bottom = new Vector(location.x + 0.5, this.structureBounds.getCenterpoint().y, location.z + 0.5);
         bottom.dimension = this.dimension;
         const box = new DebugBox(bottom);
         box.bound = new Vector(1, this.structureBounds.getSize().y, 1);
