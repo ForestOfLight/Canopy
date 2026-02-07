@@ -73,37 +73,24 @@ class InfoDisplay {
 	update() {
 		this.infoMessage = { rawtext: [] };
 		const enabledElements = this.getEnabledElements();
-
-		for (let i = 0; i < enabledElements.length; i++) 
+		for (let i = 0; i < enabledElements.length; i++)
 			this.updateElementData(enabledElements, i);
-		
-
-		this.trimTrailingWhitespace();
 		this.sendInfoMessage();
 	}
 	
 	updateElementData(elements, currIndex) {
 		const element = elements[currIndex];
-		
-		if (element.isWorldwide) {
-			if (!currentTickWorldwideElementData[element.identifier]) 
-				currentTickWorldwideElementData[element.identifier] = { own: element.getFormattedDataOwnLine(), shared: element.getFormattedDataSharedLine() };
-			
-		}
-		
+		if (element.isWorldwide && !currentTickWorldwideElementData[element.identifier])
+			currentTickWorldwideElementData[element.identifier] = { own: element.getFormattedDataOwnLine(), shared: element.getFormattedDataSharedLine() };
 		let data;
-		if (this.getElementsOnLine(elements, element.lineNumber).length === 1) 
+		if (this.getElementsOnLine(elements, element.lineNumber).length === 1)
 			data = currentTickWorldwideElementData[element.identifier]?.own || element.getFormattedDataOwnLine();
-		 else 
+		else
 			data = currentTickWorldwideElementData[element.identifier]?.shared || element.getFormattedDataSharedLine();
-		
-
-		if (currIndex !== 0 && this.isOnNewLine(elements, currIndex) && !this.dataIsWhitespace(data)) 
+		if (currIndex !== 0 && this.isOnNewLine(elements, currIndex) && !this.dataIsWhitespace(data))
 			this.infoMessage.rawtext.push({ text: '\n§r' });
-		
-		if (!this.isOnNewLine(elements, currIndex) && !this.dataIsWhitespace(data)) 
+		if (!this.isOnNewLine(elements, currIndex) && !this.dataIsWhitespace(data))
 			this.infoMessage.rawtext.push({ text: ' ' });
-		
 		this.infoMessage.rawtext.push(data);
 	}
 
@@ -127,14 +114,23 @@ class InfoDisplay {
 		return this.infoMessage.rawtext[this.infoMessage.rawtext.length - 1]?.text === '\n';
 	}
 
+	sendInfoMessage() {
+		this.prepInfoMessage();
+		this.player.onScreenDisplay.setTitle(this.infoMessage);
+	}
+
+	prepInfoMessage() {
+		this.trimTrailingWhitespace();
+		this.addSingleSpaceWhenEmpty();
+	}
+
 	trimTrailingWhitespace() {
 		this.infoMessage.rawtext[this.infoMessage.rawtext.length - 1]?.text?.trim();
 	}
 
-	sendInfoMessage() {
-		if (this.infoMessage.rawtext.length === 0)
-			return;
-		this.player.onScreenDisplay.setTitle(this.infoMessage);
+	addSingleSpaceWhenEmpty() { // If the message is fully empty, any text from the last InfoMessage will stick around on screen. 
+		if (this.infoMessage.rawtext.length === 1 && this.infoMessage.rawtext[0].text.length === 0)
+			this.infoMessage.rawtext[0].text = ' ';
 	}
 }
 
