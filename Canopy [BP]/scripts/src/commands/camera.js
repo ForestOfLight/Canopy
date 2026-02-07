@@ -152,19 +152,27 @@ function endCameraView(player) {
 }
 
 function spectateAction(player) {
-    if (world.isHardcore)
-        return player.sendMessage({ translate: 'commands.camera.spectate.hardcore' });
-    if (player.getDynamicProperty('isViewingCamera'))
-        return player.sendMessage({ translate: 'commands.camera.spectate.viewing' });
     system.run(() => {
-        if (player.getDynamicProperty('isSpectating'))
+        if (player.getDynamicProperty('isSpectating')) {
             endSpectate(player);
-        else
-            startSpectate(player);
+        } else {
+            try {
+                startSpectate(player);
+            } catch (error) {
+                player.sendMessage({ translate: error.message });
+                player.setDynamicProperty('isSpectating', false);
+            }
+        }
     });
 }
 
 function startSpectate(player) {
+    if (world.isHardcore)
+        throw new Error('commands.camera.spectate.hardcore');
+    if (player.getDynamicProperty('isViewingCamera'))
+        throw new Error('commands.camera.spectate.viewing');
+    if (!player.isOnGround && player.getGameMode() !== GameMode.Creative)
+        throw new Error('commands.camera.spectate.flying');
     cameraFadeOut(player);
     player.setDynamicProperty('isSpectating', true);
     const savedPlayer = new BeforeSpectatorPlayer(player);
