@@ -35,6 +35,7 @@ class InfoDisplay {
 	player;
 	elements = [];
 	infoMessage = { rawtext: [] };
+	clearedPreviousMessage = false;
 
 	constructor(player) {
 		this.player = player;
@@ -87,10 +88,12 @@ class InfoDisplay {
 			data = currentTickWorldwideElementData[element.identifier]?.own || element.getFormattedDataOwnLine();
 		else
 			data = currentTickWorldwideElementData[element.identifier]?.shared || element.getFormattedDataSharedLine();
-		if (currIndex !== 0 && this.isOnNewLine(elements, currIndex) && !this.dataIsWhitespace(data))
+		if (this.infoMessage.rawtext.length !== 0 && this.isOnNewLine(elements, currIndex) && !this.dataIsWhitespace(data))
 			this.infoMessage.rawtext.push({ text: '\n§r' });
 		if (!this.isOnNewLine(elements, currIndex) && !this.dataIsWhitespace(data))
 			this.infoMessage.rawtext.push({ text: ' ' });
+		if (this.dataIsWhitespace(data))
+			return;
 		this.infoMessage.rawtext.push(data);
 	}
 
@@ -107,7 +110,8 @@ class InfoDisplay {
 	}
 
 	dataIsWhitespace(data) {
-		return data.text === '' || data.text === ' ' || data.text === '\n';
+		const success = data.text === '' || data.text === ' ' || data.text === '\n';
+		return success;
 	}
 
 	lastElementHasNewline() {
@@ -116,21 +120,36 @@ class InfoDisplay {
 
 	sendInfoMessage() {
 		this.prepInfoMessage();
+		if (this.infoMessage.rawtext?.length === 0)
+			return;
 		this.player.onScreenDisplay.setTitle(this.infoMessage);
 	}
 
 	prepInfoMessage() {
-		this.trimTrailingWhitespace();
-		this.addSingleSpaceWhenEmpty();
+		this.trimWhitespace();
+		// If the message is a fully empty RawMessage, it will not flush the last infoMessage.
+		if (this.isEndOfMessages())
+			this.setToClearMessage();
+		if (this.isStartOfMessages())
+			this.clearedPreviousMessage = false;
 	}
 
-	trimTrailingWhitespace() {
+	trimWhitespace() {
+		this.infoMessage.rawtext[0]?.text?.trim();
 		this.infoMessage.rawtext[this.infoMessage.rawtext.length - 1]?.text?.trim();
 	}
 
-	addSingleSpaceWhenEmpty() { // If the message is fully empty, any text from the last InfoMessage will stick around on screen. 
-		if (this.infoMessage.rawtext.length === 1 && this.infoMessage.rawtext[0].text.length === 0)
-			this.infoMessage.rawtext[0].text = ' ';
+	isEndOfMessages() {
+		return this.infoMessage.rawtext.length === 0 && !this.clearedPreviousMessage;
+	}
+
+	isStartOfMessages() {
+		return this.infoMessage.rawtext?.length > 0 && this.clearedPreviousMessage;
+	}
+
+	setToClearMessage() {
+		this.infoMessage = '';
+		this.clearedPreviousMessage = true;
 	}
 }
 
