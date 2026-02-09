@@ -10,19 +10,17 @@ export class AttackBox extends DebugDisplayShapeElement {
             return;
         const attackBoxData = this.getAttackBox();
         const dimensionLocation = { ...attackBoxData.location, dimension: this.entity.dimension };
-        this.attackBox = new DebugBox(dimensionLocation);
-        this.attackBox.bound = attackBoxData.size;
-        this.attackBox.color = { red: 1, green: 0, blue: 0 };
-        this.shapes.push(this.attackBox);
+        const attackBox = new DebugBox(dimensionLocation);
+        attackBox.bound = attackBoxData.size;
+        attackBox.color = { red: 1, green: 0, blue: 0 };
+        this.drawShape(attackBox);
     }
 
     update() {
         if (!this.canAttack())
             return;
         const attackBoxData = this.getAttackBox();
-        const dimensionLocation = { ...attackBoxData.location, dimension: this.entity.dimension };
-        this.attackBox.setLocation(dimensionLocation);
-        this.attackBox.bound = attackBoxData.size;
+        this.shapes[0].bound = attackBoxData.size;
     }
 
     getAttackBox() {
@@ -31,13 +29,13 @@ export class AttackBox extends DebugDisplayShapeElement {
         if (isProjectile) {
             const marginFromCenter = this.getProjectileMargin();
             return {
-                location: Vector.from(AABB.center).subtract(marginFromCenter),
+                location: new Vector(0, AABB.extent.y, 0),
                 size: marginFromCenter.multiply(2)
             };
         }
         const marginFromCollisionBox = new Vector(0.8, 0, 0.8);
         return {
-            location: Vector.from(AABB.center).subtract(AABB.extent).subtract(marginFromCollisionBox),
+            location: new Vector(0, AABB.extent.y, 0),
             size: Vector.from(AABB.extent).add(marginFromCollisionBox).multiply(2)
         };
     }

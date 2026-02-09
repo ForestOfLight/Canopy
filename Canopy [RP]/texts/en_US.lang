@@ -55,6 +55,7 @@ commands.camera.spectate.gamemode=§cYou cannot change your gamemode while spect
 commands.camera.spectate.started=§aSpectating
 commands.camera.spectate.ended=§7Spectating ended
 commands.camera.spectate.hardcore=§cPrevented you from spectating. Spectating in hardcore mode has a soft-locking bug. This is a Mojang issue.
+commands.camera.spectate.flying=§cYou must be on the ground to spectate.
 commands.camera.invalidaction=§cInvalid camera action.
 
 commands.canopy=Enable or disable a rule.

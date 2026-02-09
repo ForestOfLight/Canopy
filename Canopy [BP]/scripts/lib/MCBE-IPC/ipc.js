@@ -306,16 +306,18 @@ export var PROTO;
     function Array(value) {
         return {
             *serialize(array, stream) {
+                const actualValue = typeof value === 'function' ? value() : value;
                 yield* PROTO.UVarInt32.serialize(array.length, stream);
                 for (const item of array) {
-                    yield* value.serialize(item, stream);
+                    yield* actualValue.serialize(item, stream);
                 }
             },
             *deserialize(stream) {
+                const actualValue = typeof value === 'function' ? value() : value;
                 const result = [];
                 const length = yield* PROTO.UVarInt32.deserialize(stream);
                 for (let i = 0; i < length; i++) {
-                    result[i] = yield* value.deserialize(stream);
+                    result[i] = yield* actualValue.deserialize(stream);
                 }
                 return result;
             }
