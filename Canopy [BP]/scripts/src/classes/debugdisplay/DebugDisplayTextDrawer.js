@@ -34,7 +34,8 @@ export class DebugDisplayTextDrawer {
 
     getTextLocation() {
         const entity = this.debugDisplay.entity;
-        const heightDisplacement = new Vector(0, Vector.from(entity.getHeadLocation()).subtract(entity.location).y, 0).add(Vector.up);
+        const AABB = entity.getAABB();
+        const heightDisplacement = new Vector(0, Vector.from(entity.getHeadLocation()).subtract(AABB.center).y, 0).add(Vector.up);
         return heightDisplacement;
     }
 }
