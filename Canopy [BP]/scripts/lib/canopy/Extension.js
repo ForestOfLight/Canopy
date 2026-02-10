@@ -116,7 +116,7 @@ class Extension {
                     this.rules.push(new BooleanRule({ category: "Rules", ...ruleData }));
                     break;
                 case 'integer':
-                    ruleData.defaultValue = parseInt(ruleData.defaultValue);
+                    ruleData.defaultValue = parseInt(ruleData.defaultValue, 10);
                     this.rules.push(new IntegerRule({ category: "Rules", ...ruleData }));
                     break;
                 case 'float':
