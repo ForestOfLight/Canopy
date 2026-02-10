@@ -35,11 +35,12 @@ vi.mock("@minecraft/server-ui", () => ({
 
 const mockPlayer = {
     dimension: {
-        id: 'minecraft:overworld'
+        id: 'minecraft:overworld',
+        localizationKey: 'dimension.overworld.name'
     }
 };
 
-describe('BlockStates', () => {
+describe('Dimension', () => {
     let dimension;
     beforeAll(() => {
         dimension = new Dimension(mockPlayer, 0);
@@ -54,16 +55,19 @@ describe('BlockStates', () => {
     });
 
     it('should have a method to return formatted dimensionId', () => {
-        expect(dimension.getFormattedDataOwnLine()).toEqual({ text: '§aminecraft:overworld' });
+        expect(dimension.getFormattedDataOwnLine()).toEqual({ rawtext: [
+            { text: "§a" },
+            { translate: 'dimension.overworld.name' }
+        ]});
     });
 
     it('should change the color for the nether', () => {
         mockPlayer.dimension.id = "minecraft:nether";
-        expect(dimension.getFormattedDataOwnLine()).toEqual({ text: '§cminecraft:nether' });
+        expect(dimension.getFormattedDataOwnLine().rawtext[0]).toEqual({ text: '§c' });
     });
 
     it('should change the color for the end', () => {
         mockPlayer.dimension.id = "minecraft:the_end";
-        expect(dimension.getFormattedDataOwnLine()).toEqual({ text: '§dminecraft:the_end' });
+        expect(dimension.getFormattedDataOwnLine().rawtext[0]).toEqual({ text: '§d' });
     });
 });

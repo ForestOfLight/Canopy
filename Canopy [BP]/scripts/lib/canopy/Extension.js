@@ -109,6 +109,7 @@ class Extension {
 
     #setupRuleRegistration() {
         IPC.on(`canopyExtension:${this.id}:registerRule`, RegisterRule, (ruleData) => {
+            ruleData.extension = this;
             switch (ruleData.type) {
                 case 'boolean':
                     ruleData.defaultValue = Boolean(ruleData.defaultValue);

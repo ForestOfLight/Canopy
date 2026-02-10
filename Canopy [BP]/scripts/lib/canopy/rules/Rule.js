@@ -1,6 +1,5 @@
 import { world } from '@minecraft/server';
 import { Rules } from "./Rules";
-import { Extensions } from '../Extensions';
 
 export class Rule {
     #category;
@@ -12,7 +11,7 @@ export class Rule {
     #extension;
 
     constructor({ category, identifier, description = '', defaultValue = void 0,
-                contingentRules = [], independentRules = [], onModifyCallback = () => {}, extensionName = false }) {
+                contingentRules = [], independentRules = [], onModifyCallback = () => {}, extension = false }) {
         if (this.constructor === Rule) 
             throw new TypeError("Abstract class 'Rule' cannot be instantiated directly.");
         this.#category = category;
@@ -22,7 +21,7 @@ export class Rule {
         this.#contingentRules = contingentRules;
         this.#independentRules = independentRules;
         this.onModify = onModifyCallback;
-        this.#extension = Extensions.getFromName(extensionName);
+        this.#extension = extension;
         Rules.register(this);
     }
 
@@ -67,7 +66,7 @@ export class Rule {
     }
 
     async getValue() {
-        if (this.#extension)
+        if (this.#extension) 
             return this.#parseRuleValueString(await this.#extension.getRuleValue(this.#identifier));
         return this.#parseRuleValueString(world.getDynamicProperty(this.#identifier));
     }

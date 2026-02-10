@@ -38,21 +38,23 @@ vi.mock("@minecraft/server-ui", () => ({
 }));
 
 describe('BooleanRule', () => {
+    const testExtension = new Extension({
+        name: 'Test Extension',
+        version: '1.0.0',
+        author: 'Author Name',
+        description: 'This is a test extension'
+    });
+    Extensions.extensions['Test Extension'] = testExtension;
     beforeEach(() => {
         Rules.clear();
-        Extensions.extensions['Test Extension'] = new Extension({
-            name: 'Test Extension',
-            version: '1.0.0',
-            author: 'Author Name',
-            description: 'This is a test extension'
-        });
         new BooleanRule({ 
             category: 'test', 
             identifier: 'test_rule',
             description: 'This is a test rule',
             extensionName: 'Test Extension',
             contingentRules: ['test_rule_2'],
-            independentRules: ['test_rule_3']
+            independentRules: ['test_rule_3'],
+            extension: testExtension
         });
     });
 
@@ -64,7 +66,7 @@ describe('BooleanRule', () => {
                 description: 'test_description',
                 contingentRules: ['rule1', 'rule2'],
                 independentRules: ['rule3', 'rule4'],
-                extensionName: 'test_extension'
+                extension: testExtension
             };
             const rule = new BooleanRule(ruleData);
 
@@ -95,7 +97,7 @@ describe('BooleanRule', () => {
             expect(rule.getDescription()).toEqual({ text: '' });
             expect(rule.getContigentRuleIDs()).toEqual([]);
             expect(rule.getIndependentRuleIDs()).toEqual([]);
-            expect(rule.getExtension()).toBe(undefined);
+            expect(rule.getExtension()).toBeFalsy();
         });
     });
 
@@ -162,9 +164,9 @@ describe('BooleanRule', () => {
     describe('getValue', () => {
         it('should return the value from the extension if it exists', async () => {
             const ipcInvokeMock = vi.spyOn(IPC, "invoke");
-            ipcInvokeMock.mockResolvedValue({ value: {"test": "value"} });
+            ipcInvokeMock.mockResolvedValue({ value: false });
             const value = await Rules.get('test_rule').getValue();
-            expect(value).toEqual({ test: 'value' });
+            expect(value).toEqual(false);
         });
 
         it.skip('should return the value from the world if it does not exist in the extension', async () => {
@@ -222,9 +224,9 @@ describe('BooleanRule', () => {
             expect(ipcSendMock).toHaveBeenCalledWith(
                 `canopyExtension:${Rules.get('test_rule').getExtension().getID()}:ruleValueSet`,
                 RuleValueSet,
-                { 
+                {
                     ruleID: 'test_rule',
-                    value: true 
+                    value: "true" 
                 }
             );
         });
