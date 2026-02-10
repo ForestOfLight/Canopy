@@ -59,7 +59,7 @@ Got a fix or a new feature? Submit a **pull request**! Just follow our coding st
 
 ### Adding Translations
 
-**Canopy** currently supports American English, German (thanks to [theonlytruemuck](https://www.github.com/theonlytruemuck)), Indonesian (thanks to [IdotIcom](https://www.github.com/IdotIcom)), and Chinese (thanks to [TickPoints](https://www.github.com/TickPoints)). If you would like to contribute a translation, please join our Discord and reach out!
+**Canopy** currently supports American English, German (thanks to [theonlytruemuck](https://www.github.com/theonlytruemuck)), Indonesian (thanks to [IdotIcom](https://www.github.com/IdotIcom)), Chinese (thanks to [TickPoints](https://www.github.com/TickPoints)), Welsh (thanks to [Firebee45](https://www.github.com/Firebee45)), and Japanese (thanks to [ru-in-1](https://www.github.com/ru-in-1)). If you would like to contribute a translation, please join our Discord and reach out!
 
 ## An Amelix Foundation Project
 
