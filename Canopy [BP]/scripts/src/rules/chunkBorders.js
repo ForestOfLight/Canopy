@@ -45,7 +45,7 @@ export class ChunkBorders extends AbilityRule {
     drawChunkBorders(player) {
         if (this.chunkBorderRenderers[player.id])
             this.chunkBorderRenderers[player.id].destroy();
-        this.chunkBorderRenderers[player.id] = new ChunkBorderRender(player.location, player.dimension);
+        this.chunkBorderRenderers[player.id] = new ChunkBorderRender(player);
     }
 }
 

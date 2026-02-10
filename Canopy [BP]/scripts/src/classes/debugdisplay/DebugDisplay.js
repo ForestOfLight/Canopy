@@ -55,6 +55,9 @@ import { HitBox } from './HitBox';
 import { EyeLevel } from './EyeLevel';
 import { ViewDirectionVector } from './ViewDirectionVector';
 import { AttackBox } from './AttackBox';
+import { Movement } from './Movement';
+import { UnderwaterMovement } from './UnderwaterMovement';
+import { Horse } from './Horse';
 
 const entityToDebugDisplayMap = {};
 const debugableProperties = Object.freeze({
@@ -69,6 +72,7 @@ const debugableProperties = Object.freeze({
     growup: GrowUp,
     headlocation: HeadLocation,
     health: Health,
+    horse: Horse,
     hunger: Hunger,
     id: ID,
     isclimbing: IsClimbing,
@@ -85,6 +89,7 @@ const debugableProperties = Object.freeze({
     lavamovement: LavaMovement,
     leash: Leash,
     location: Location,
+    movement: Movement,
     nametag: NameTag,
     onfire: OnFire,
     projectile: Projectile,
@@ -100,6 +105,7 @@ const debugableProperties = Object.freeze({
     target: Target,
     tnt: TNT,
     typeid: TypeID,
+    underwatermovement: UnderwaterMovement,
     families: Families,
     variant: Variant,
     velocity: Velocity,

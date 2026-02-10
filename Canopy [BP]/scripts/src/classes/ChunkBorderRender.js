@@ -7,9 +7,10 @@ export class ChunkBorderRender {
     dimension;
     debugShapes;
 
-    constructor(location, dimension) {
-        this.location = location;
-        this.dimension = dimension;
+    constructor(player) {
+        this.player = player;
+        this.location = player.location;
+        this.dimension = player.dimension;
         this.debugShapes = [];
         this.render();
     }
@@ -98,6 +99,7 @@ export class ChunkBorderRender {
     }
 
     drawShape(shape) {
+        shape.visibleTo = [this.player];
         debugDrawer.addShape(shape);
         this.debugShapes.push(shape);
     }

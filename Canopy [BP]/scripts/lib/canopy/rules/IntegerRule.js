@@ -4,7 +4,7 @@ export class IntegerRule extends Rule {
     valueRange;
 
     constructor(options) {
-        options.defaulValue = options.defaultValue || 0;
+        options.defaultValue = options.defaultValue || 0;
         super({ ...options });
         this.valueRange = options.valueRange;
     }

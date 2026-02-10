@@ -76,19 +76,21 @@ class QuickFillContainer extends AbilityRule {
     sendFeedbackMessage(isFilling, player, block, itemStack, inventory) {
         const feedback = { rawtext: [] };
         if (isFilling) {
-            feedback.rawtext.push({ rawtext: [
-                { translate: `rules.quickFillContainer.filled.pt1` },
-                { translate: block.localizationKey },
-                { translate: `rules.quickFillContainer.filled.pt2` },
-                { translate: itemStack.localizationKey }
-            ]});
+            feedback.rawtext.push({
+                translate: 'rules.quickFillContainer.filled',
+                with: { rawtext: [
+                    { translate: block.localizationKey },
+                    { translate: itemStack.localizationKey }
+                ]}
+            });
         } else {
-            feedback.rawtext.push({ rawtext: [
-                { translate: `rules.quickFillContainer.taken.pt1` },
-                { translate: itemStack.localizationKey },
-                { translate: `rules.quickFillContainer.taken.pt2` },
-                { translate: block.localizationKey }
-            ]});
+            feedback.rawtext.push({
+                translate: 'rules.quickFillContainer.taken',
+                with: { rawtext: [
+                    { translate: itemStack.localizationKey },
+                    { translate: block.localizationKey }
+                ]}
+            });
         }
         feedback.rawtext.push({ text: ` (§a${inventory.size - inventory.emptySlotsCount}§7/§a${inventory.size}§7)` });
         player.onScreenDisplay.setActionBar(feedback);

@@ -37,6 +37,10 @@ export class StructureBoundsFinder {
         return this.max.subtract(this.min).add(new Vector(1, 1, 1));
     }
 
+    getCenterpoint() {
+        return this.min.add(this.getSize().multiply(0.5));
+    }
+
     tryAnalyzeStructureBounds() {
         try {
             this.min = this.findStructureMin();

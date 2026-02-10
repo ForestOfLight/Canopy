@@ -48,7 +48,7 @@ describe('InfoDisplayRule', () => {
                 description: 'This is a test rule',
                 contingentRules: ['test_rule_2'],
                 independentRules: [],
-                extensionName: false
+                extension: false
             };
 
             expect(rule.getCategory()).toBe("InfoDisplay");
