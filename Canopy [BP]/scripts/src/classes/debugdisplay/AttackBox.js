@@ -29,13 +29,13 @@ export class AttackBox extends DebugDisplayShapeElement {
         if (isProjectile) {
             const marginFromCenter = this.getProjectileMargin();
             return {
-                location: new Vector(0, AABB.extent.y, 0),
+                location: Vector.from(AABB.center).subtract(marginFromCenter),
                 size: marginFromCenter.multiply(2)
             };
         }
         const marginFromCollisionBox = new Vector(0.8, 0, 0.8);
         return {
-            location: new Vector(0, AABB.extent.y, 0),
+            location: Vector.from(AABB.center).subtract(AABB.extent).subtract(marginFromCollisionBox),
             size: Vector.from(AABB.extent).add(marginFromCollisionBox).multiply(2)
         };
     }

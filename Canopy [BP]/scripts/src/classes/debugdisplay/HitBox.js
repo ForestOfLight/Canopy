@@ -24,7 +24,7 @@ export class HitBox extends DebugDisplayShapeElement {
         const AABB = this.entity.getAABB();
         const marginFromCollisionBox = this.getMargin();
         return {
-            location: new Vector(0, AABB.extent.y, 0),
+            location: new Vector(-AABB.extent.x, 0, -AABB.extent.z).subtract(marginFromCollisionBox),
             size: Vector.from(AABB.extent).add(marginFromCollisionBox).multiply(2)
         };
     }
