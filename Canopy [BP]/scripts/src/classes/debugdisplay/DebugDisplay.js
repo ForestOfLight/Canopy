@@ -203,12 +203,15 @@ export class DebugDisplay {
 
     static refreshAllElements() {
         for (const debugDisplay of Object.values(entityToDebugDisplayMap)) {
+            const propertiesToRefresh = [];
             for (const element of debugDisplay.getEnabledElements()) {
                 const property = Object.entries(debugableProperties).find(([, cls]) => element instanceof cls)?.[0];
-                if (property) {
-                    debugDisplay.removeElement(property);
-                    debugDisplay.addElement(property);
-                }
+                if (property)
+                    propertiesToRefresh.push(property);
+            }
+            for (const property of propertiesToRefresh) {
+                debugDisplay.removeElement(property);
+                debugDisplay.addElement(property);
             }
         };
     }

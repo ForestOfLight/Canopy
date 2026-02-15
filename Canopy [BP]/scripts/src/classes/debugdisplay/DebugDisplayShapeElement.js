@@ -27,6 +27,7 @@ export class DebugDisplayShapeElement extends DebugDisplayElement {
 
     clearShapes() {
         this.shapes.forEach(shape => debugDrawer.removeShape(shape));
+        this.shapes.length = 0;
     }
 
     drawShape(debugShape) {
