@@ -19,8 +19,10 @@ new VanillaCommand({
 });
 
 function posCommand(origin, player) {
-    if (player && !isOp(origin) && !Rules.getNativeValue('commandPosOthers'))
-        return origin.sendMessage({ translate: 'rules.generic.blocked', with: ['commandPosOthers'] });
+    if (player && !isOp(origin) && !Rules.getNativeValue('commandPosOthers')) {
+        origin.sendMessage({ translate: 'rules.generic.blocked', with: ['commandPosOthers'] });
+        return;
+    }
     if (player?.length > 0) {
         for (const currPlayer of player) {
             if (!currPlayer)

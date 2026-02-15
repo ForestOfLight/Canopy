@@ -1,10 +1,10 @@
 {
 	"format_version": 2,
 	"header": {
-		"name": "Canopy [BP] v1.5.3",
+		"name": "Canopy [BP] v1.5.4",
 		"description": "Technical informatics & features addon by §aForestOfLight§r.",
 		"uuid": "7f6b23df-a583-476b-b0e4-87457e65f7c0",
-		"version": [1, 5, 3],
+		"version": [1, 5, 4],
 		"min_engine_version": [1, 26, 0]
 	},
 	"modules": [
@@ -38,7 +38,7 @@
 		},
 		{
 			"uuid": "bcf34368-ed0c-4cf7-938e-582cccf9950d",
-			"version": [1, 5, 3]
+			"version": [1, 5, 4]
 		}
 	],
 	"metadata": {

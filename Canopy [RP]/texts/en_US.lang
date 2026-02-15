@@ -394,6 +394,7 @@ rules.quickFillContainer.taken=§7Took all %1 from %2
 rules.refillHand=Refills your hand with items from your inventory when you run out. Put an arrow in inventory slot 10 (next to the top left) to use.
 rules.renewableElytraDropChance=Gives phantoms a chance to drop elytra when killed by a shulker bullet.
 rules.renewableSponge=Guardians transform into elder guardians when hurt by lightning.
+rules.serverSideCollisionBoxes=Renders collision boxes according to the entity's server position instead of its client position.
 rules.spawnEggSpawnWithMinecart=When using a spawn egg on a rail, the spawned entity will be placed in a minecart on the rail.
 rules.tntFuse=The TNT fuse time in ticks.
 rules.tntPrimeMomentum=Hardcodes the TNT prime momentum.

@@ -22,8 +22,12 @@ export class EyeLevel extends DebugDisplayShapeElement {
     getEyeLevelBoxBounds() {
         const AABB = this.entity.getAABB();
         return {
-            location: new Vector(0, this.entity.getHeadLocation().y - this.entity.location.y, 0),
+            location: new Vector(-AABB.extent.x, this.entity.getHeadLocation().y - this.entity.location.y, -AABB.extent.z),
             size: new Vector(AABB.extent.x * 2, 0, AABB.extent.z * 2)
         }
+    }
+
+    getClientSideLocation() {
+        return this.getEyeLevelBoxBounds().location;
     }
 }

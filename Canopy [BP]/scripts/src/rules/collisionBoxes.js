@@ -12,21 +12,23 @@ export class CollisionBoxes extends AbilityRule {
             identifier: 'collisionBoxes',
             onEnableCallback: () => {},
             onDisableCallback: () => {
-                this.stopAllRenderingCollisionBoxes();
+                this.stopAllRendering();
             }
         }, { 
             slotNumber: 14,
-            onPlayerEnableCallback: (player) => this.startRenderingCollisionBoxes(player.id),
-            onPlayerDisableCallback: (player) => this.stopRenderingCollisionBoxes(player.id)
+            onPlayerEnableCallback: (player) => this.startRendering(player.id),
+            onPlayerDisableCallback: (player) => this.stopRendering(player.id)
         });
     }
 
-    stopAllRenderingCollisionBoxes() {
-        for (const playerId of Object.keys(this.runners))
-            this.stopRenderingCollisionBoxes(playerId);
+    startRendering(playerId) {
+        if (this.runners[playerId])
+            this.stopRendering(playerId);
+        this.collisionBoxRenderers[playerId] = {};
+        this.runners[playerId] = system.runInterval(this.onTick.bind(this));
     }
 
-    stopRenderingCollisionBoxes(playerId) {
+    stopRendering(playerId) {
         if (this.runners[playerId]) {
             system.clearRun(this.runners[playerId]);
             delete this.runners[playerId];
@@ -38,25 +40,30 @@ export class CollisionBoxes extends AbilityRule {
         }
     }
 
-    startRenderingCollisionBoxes(playerId) {
-        if (this.runners[playerId])
-            this.stopRenderingCollisionBoxes(playerId);
-        this.collisionBoxRenderers[playerId] = {};
-        this.runners[playerId] = system.runInterval(this.onTick.bind(this));
+    refresh() {
+        for (const playerId of Object.keys(this.runners)) {
+            this.stopRendering(playerId);
+            this.startRendering(playerId);
+        }
+    }
+
+    stopAllRendering() {
+        for (const playerId of Object.keys(this.runners))
+            this.stopRendering(playerId);
     }
 
     onTick() {
         for (const playerId of Object.keys(this.runners)) {
             const player = world.getEntity(playerId);
             if (!player) {
-                this.stopRenderingCollisionBoxes(playerId);
+                this.stopRendering(playerId);
                 continue;
             }
-            this.renderCollisionForNearbyEntities(player);
+            this.renderForNearbyEntities(player);
         }
     }
 
-    renderCollisionForNearbyEntities(player) {
+    renderForNearbyEntities(player) {
         const entities = this.getNearbyEntities(player).filter(entity => entity?.id !== player.id);
         const rendererMap = this.collisionBoxRenderers[player.id] || {};
         
@@ -78,4 +85,4 @@ export class CollisionBoxes extends AbilityRule {
     }
 }
 
-export const hitboxes = new CollisionBoxes();
+export const collisionBoxes = new CollisionBoxes();

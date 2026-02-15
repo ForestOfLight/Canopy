@@ -14,10 +14,18 @@ class TNTFuseRule extends IntegerRule {
 
     subscribeToEvents() {
         world.afterEvents.entitySpawn.subscribe(this.onEntitySpawn.bind(this));
+        world.afterEvents.entityLoad.subscribe(this.onEntityLoad.bind(this));
     }
     
     onEntitySpawn(event) {
-        if (event.entity?.typeId !== 'minecraft:tnt' || event.cause === 'Event') return;
+        if (event.entity?.typeId !== 'minecraft:tnt' || event.cause === 'Event')
+            return;
+        this.startFuse(event.entity, this.getGlobalFuseTicks());
+    }
+
+    onEntityLoad(event) {
+        if (event.entity?.typeId !== 'minecraft:tnt')
+            return;
         this.startFuse(event.entity, this.getGlobalFuseTicks());
     }
 
