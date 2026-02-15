@@ -31,7 +31,7 @@ jobs:
             cd ..
 
       - name: Upload asset to GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@e798e6a1ede8d07b74ac4cdac6bdfa4cc1653907
         with:
           files: Canopy-${{ github.event.release.tag_name }}.mcaddon
         env:
