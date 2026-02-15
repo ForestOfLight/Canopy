@@ -1,0 +1,88 @@
+name: Build & Publish Bedrock Addon
+
+permissions:
+  contents: write
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Package mcaddon
+        run: |
+            VERSION=${{ github.event.release.tag_name }}
+            OUTPUT="Canopy-${VERSION}.mcaddon"
+
+            mkdir build
+            cp -r "Canopy [BP]" "build/Canopy[BP]"
+            cp -r "Canopy [RP]" "build/Canopy[RP]"
+            cp LICENSE "build/Canopy[BP]"
+            cp LICENSE "build/Canopy[RP]"
+
+            cd build
+            zip -r "$OUTPUT" "Canopy[BP]" "Canopy[RP]"
+            mv "$OUTPUT" ..
+            cd ..
+
+      - name: Upload asset to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Canopy-${{ github.event.release.tag_name }}.mcaddon
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload to CurseForge
+        run: |
+            VERSION=${{ github.event.release.tag_name }}
+
+            # Read the game version from manifest.json
+            MIN_ENGINE_VERSION=$(jq -r '.header.min_engine_version | @csv' "Canopy [BP]/manifest.json")
+            IFS=',' read -r LEADING MAJOR MINOR <<< "$MIN_ENGINE_VERSION"
+            ENGINE_PREFIX="${MAJOR}.${MINOR}"
+
+            # Fetch all Bedrock versions from CurseForge API
+            CF_VERSIONS_JSON=$(curl -s -H "X-Api-Token: ${{ secrets.CF_API_TOKEN }}" \
+                "https://minecraft-bedrock.curseforge.com/api/game/versions")
+
+            # Extract all game version IDs whose name matches the game version from the manifest.json
+            GAME_VERSION_IDS=$(echo "$CF_VERSIONS_JSON" | jq -c --arg prefix "$ENGINE_PREFIX" '
+                [ .[] | select(.name | startswith($prefix)) | .id ]
+            ')
+            if [ -z "$GAME_VERSION_IDS" ]; then
+                echo "No matching CurseForge versions found for engine prefix $ENGINE_PREFIX"
+                exit 1
+            fi
+            echo "Found CurseForge version IDs for game version $ENGINE_PREFIX: $GAME_VERSION_IDS"
+
+            # Use the Github release body as the changelog
+            CHANGELOG=$(jq -Rs . <<< "${{ github.event.release.body }}")
+            ADDON_FILENAME=Canopy-$VERSION.mcaddon
+
+            # Upload the addon
+            RESPONSE=$(curl -s -X POST \
+                -H "X-Api-Token: ${{ secrets.CF_API_TOKEN }}" \
+                -F "metadata={
+                    \"changelog\": $CHANGELOG,
+                    \"changelogType\": \"markdown\",
+                    \"displayName\": \"$ADDON_FILENAME\",
+                    \"releaseType\": \"release\",
+                    \"gameVersions\": $GAME_VERSION_IDS
+                }" \
+                -F "file=@$ADDON_FILENAME" \
+                https://minecraft-bedrock.curseforge.com/api/projects/1062078/upload-file
+            )
+            
+            UPLOADED_ID=$(echo "$RESPONSE" | jq -r '.id // empty')
+            if [ -n "$UPLOADED_ID" ]; then
+                echo "Successfully uploaded release. File ID: $UPLOADED_ID"
+            else
+                echo "Upload failed. Response:"
+                echo "$RESPONSE"
+                exit 1
+            fi
