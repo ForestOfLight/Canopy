@@ -26,4 +26,8 @@ export class EyeLevel extends DebugDisplayShapeElement {
             size: new Vector(AABB.extent.x * 2, 0, AABB.extent.z * 2)
         }
     }
+
+    getClientSideLocation() {
+        return this.getEyeLevelBoxBounds().location;
+    }
 }

@@ -223,6 +223,7 @@ export class DebugDisplay {
         if (!entity || !entityToDebugDisplayMap[entity.id])
             return;
         entityToDebugDisplayMap[entity.id].destroy();
+        delete entityToDebugDisplayMap[entity.id];
     }
 
     static onShutdown() {

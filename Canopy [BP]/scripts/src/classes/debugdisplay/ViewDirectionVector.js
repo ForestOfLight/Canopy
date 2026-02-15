@@ -1,8 +1,9 @@
 import { DebugDisplayShapeElement } from "./DebugDisplayShapeElement";
 import { Vector } from "../../../lib/Vector";
 import { DebugArrow } from "@minecraft/debug-utilities";
+import { serverSideCollisionBoxes } from "../../rules/serverSideCollisionBoxes";
 
-export class ViewDirectionVector extends DebugDisplayShapeElement {    
+export class ViewDirectionVector extends DebugDisplayShapeElement {
     createShapes() {
         const viewDirectionData = this.getViewDirectionBounds();
         const dimensionLocation = { ...viewDirectionData.location, dimension: this.entity.dimension };
@@ -15,7 +16,10 @@ export class ViewDirectionVector extends DebugDisplayShapeElement {
 
     update() {
         const viewDirectionData = this.getViewDirectionBounds();
-        this.shapes[0].endLocation = viewDirectionData.endLocation;
+        let endLocation = viewDirectionData.endLocation;
+        if (serverSideCollisionBoxes.getNativeValue())
+            endLocation = endLocation.add(this.entity.location);
+        this.shapes[0].endLocation = endLocation;
     }
 
     getViewDirectionBounds() {
@@ -25,5 +29,9 @@ export class ViewDirectionVector extends DebugDisplayShapeElement {
             location,
             endLocation: location.add(this.entity.getViewDirection()).multiply(1 + AABB.extent.x)
         };
+    }
+
+    getClientSideLocation() {
+        return this.getViewDirectionBounds().location;
     }
 }

@@ -26,4 +26,8 @@ export class CollisionBox extends DebugDisplayShapeElement {
             size: Vector.from(AABB.extent).multiply(2)
         };
     }
+    
+    getClientSideLocation() {
+        return this.getCollisionBox().location;
+    }
 }

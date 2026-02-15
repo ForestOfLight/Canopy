@@ -53,4 +53,8 @@ export class AttackBox extends DebugDisplayShapeElement {
             return true;
         return meleeMobs.includes(this.entity.typeId.replace("minecraft:", ""));
     }
+
+    getClientSideLocation() {
+        return this.getAttackBox().location;
+    }
 }

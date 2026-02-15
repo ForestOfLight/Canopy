@@ -36,4 +36,8 @@ export class HitBox extends DebugDisplayShapeElement {
             return new Vector(1, 1, 1);
         return new Vector(0.1, 0.1, 0.1);
     }
+
+    getClientSideLocation() {
+        return this.getHitBox().location;
+    }
 }
