@@ -38,6 +38,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload to CurseForge
+        env:
+          RELEASE_BODY: ${{ github.event.release.body }}
         run: |
             VERSION=${{ github.event.release.tag_name }}
 
@@ -61,7 +63,7 @@ jobs:
             echo "Found CurseForge version IDs for game version $ENGINE_PREFIX: $GAME_VERSION_IDS"
 
             # Use the Github release body as the changelog
-            CHANGELOG=$(jq -Rs . <<< "${{ github.event.release.body }}")
+            CHANGELOG=$(printf "%s" "$RELEASE_BODY" | jq -Rs .)
             ADDON_FILENAME=Canopy-$VERSION.mcaddon
 
             # Upload the addon
