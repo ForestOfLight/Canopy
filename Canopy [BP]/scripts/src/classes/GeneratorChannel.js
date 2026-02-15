@@ -1,5 +1,5 @@
 import ItemCounterChannel from "./ItemCounterChannel";
-import { world, ItemStack } from "@minecraft/server";
+import { world, BlockComponentTypes, ItemStack } from "@minecraft/server";
 
 class GeneratorChannel extends ItemCounterChannel {
     constructor(color) {
@@ -22,17 +22,19 @@ class GeneratorChannel extends ItemCounterChannel {
         const generatedItems = [];
         for (const hopperGenerator of this.hopperList) {
             const hopper = world.getDimension(hopperGenerator.dimensionId).getBlock(hopperGenerator.location);
-            if (!hopper) continue;
-            const hopperContainer = hopper.getComponent('minecraft:inventory').container;
-            const itemStack = hopperContainer?.getItem(0);
-            if (itemStack) {
-                hopperGenerator.outputItemType = itemStack.typeId;
-                hopperGenerator.outputItemAmount = itemStack.amount;
+            if (!hopper)
+                continue;
+            const hopperContainer = hopper.getComponent(BlockComponentTypes.Inventory)?.container;
+            const itemStackToClone = hopperContainer?.getItem(0);
+            if (itemStackToClone) {
+                hopperGenerator.outputItemStack = itemStackToClone;
             } else {
-                if (hopperGenerator.outputItemType === null)
+                if (!(hopperGenerator.outputItemStack instanceof ItemStack))
                     continue;
-                hopperContainer.setItem(0, new ItemStack(hopperGenerator.outputItemType));
-                generatedItems.push({ typeId: hopperGenerator.outputItemType, amount: 1 });
+                const generatedItemStack = hopperGenerator.outputItemStack.clone();
+                generatedItemStack.amount = 1;
+                hopperContainer.setItem(0, generatedItemStack);
+                generatedItems.push({ typeId: generatedItemStack.typeId, amount: 1 });
             }
         }
         return generatedItems;
