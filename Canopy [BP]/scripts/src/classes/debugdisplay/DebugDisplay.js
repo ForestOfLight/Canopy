@@ -201,6 +201,18 @@ export class DebugDisplay {
         return entityToDebugDisplayMap[entity.id];
     }
 
+    static refreshAllElements() {
+        for (const debugDisplay of Object.values(entityToDebugDisplayMap)) {
+            for (const element of debugDisplay.getEnabledElements()) {
+                const property = Object.entries(debugableProperties).find(([, cls]) => element instanceof cls)?.[0];
+                if (property) {
+                    debugDisplay.removeElement(property);
+                    debugDisplay.addElement(property);
+                }
+            }
+        };
+    }
+
     static getDebugableProperties() {
         return Object.keys(debugableProperties);
     }
@@ -223,7 +235,6 @@ export class DebugDisplay {
         if (!entity || !entityToDebugDisplayMap[entity.id])
             return;
         entityToDebugDisplayMap[entity.id].destroy();
-        delete entityToDebugDisplayMap[entity.id];
     }
 
     static onShutdown() {

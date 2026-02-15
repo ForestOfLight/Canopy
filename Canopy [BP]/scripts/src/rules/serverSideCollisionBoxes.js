@@ -1,4 +1,5 @@
 import { BooleanRule, GlobalRule } from "../../lib/canopy/Canopy";
+import { DebugDisplay } from "../classes/debugdisplay/DebugDisplay";
 import { collisionBoxes } from "./collisionBoxes";
 
 export class ServerSideCollisionBoxes extends BooleanRule {
@@ -9,9 +10,11 @@ export class ServerSideCollisionBoxes extends BooleanRule {
             identifier: 'serverSideCollisionBoxes',
             onEnableCallback: () => {
                 collisionBoxes.refresh();
+                DebugDisplay.refreshAllElements();
             },
             onDisableCallback: () => {
                 collisionBoxes.refresh();
+                DebugDisplay.refreshAllElements();
             }
         }));
     }
