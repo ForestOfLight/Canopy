@@ -25,7 +25,7 @@ export class EntitySeparation extends BooleanRule {
     onPressurePlatePush(event) {
         const entity = event.source;
         const activationBlock = this.findActivationBlock(event.block);
-        if (entity?.isValid && activationBlock && this.numEntitiesStacked(entity) > 1) {
+        if (entity?.isValid && activationBlock) {
             const facingDirection = activationBlock.permutation.getState('facing_direction');
             const offset = this.getOffsetFromFacingDirection(facingDirection);
             this.separateEntity(entity, offset);
@@ -67,11 +67,6 @@ export class EntitySeparation extends BooleanRule {
             5: Vector.right
         };
         return facingDirectionToOffset[facingDirection];
-    }
-
-    numEntitiesStacked(entity) {
-        const blockLocation = Vector.from(entity.location).floor();
-        return entity.dimension.getEntitiesAtBlockLocation(blockLocation).length;
     }
 }
 

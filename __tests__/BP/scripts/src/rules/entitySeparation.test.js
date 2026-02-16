@@ -93,12 +93,6 @@ describe('entitySeparation', () => {
         expect(sourceEntity.teleport).not.toHaveBeenCalled();
     });
 
-    it('should not succeed if there is only one entity on the pressure plate', () => {
-        sourceEntity.dimension.getEntitiesAtBlockLocation.mockReturnValue([{ id: 0 }]);
-        entitySeparation.onPressurePlatePush(successfulEvent);
-        expect(sourceEntity.teleport).not.toHaveBeenCalled();
-    });
-
     it.each([
         [0, Vector.down],
         [1, Vector.up],
