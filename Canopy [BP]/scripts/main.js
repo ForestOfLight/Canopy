@@ -78,6 +78,7 @@ import './src/rules/echoShardsEnableShriekers'
 import './src/rules/collisionBoxes'
 import './src/rules/potionBoostedBreeding'
 import './src/rules/serverSideCollisionBoxes'
+import './src/rules/entitySeparation'
 
 // Load Time Processes
 import './src/onStart'

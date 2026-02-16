@@ -377,6 +377,7 @@ rules.durabilityNotifier.alert=§cDurability remaining: %s
 rules.durabilitySwap=Swaps 0 durability items out of your hand.
 rules.echoShardsEnableShriekers=Using an echo shard on a sculk shrieker allows it to summon wardens.
 rules.entityInstantDeath=Removes the 20gt death animation. Entities will also not drop xp.
+rules.entitySeparation=When stacked entities trigger a pressure plate, one entity will be unstacked in the direction a neighboring dropper is facing.
 rules.explosionChainReactionOnly=Makes explosions only affect TNT blocks.
 rules.explosionNoBlockDamage=Makes explosions not affect blocks.
 rules.explosionOff=Disables explosions entirely.
