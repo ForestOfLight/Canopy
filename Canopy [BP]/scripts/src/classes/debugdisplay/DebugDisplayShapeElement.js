@@ -56,6 +56,10 @@ export class DebugDisplayShapeElement extends DebugDisplayElement {
     }
 
     updateServerSidePosition() {
+        if (!this.entity?.isValid) {
+            this.destroy();
+            return;
+        }
         const dimensionLocation = this.getClientSideLocation().add(this.entity.location);
         dimensionLocation.dimension = this.entity.dimension;
         this.shapes.forEach((debugShape) => debugShape.setLocation(dimensionLocation));
