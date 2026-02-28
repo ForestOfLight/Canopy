@@ -1,0 +1,151 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "minecraft:ender_pearl",
+      "is_spawnable": false,
+      "is_summonable": false,
+      "is_experimental": false
+    },
+    "component_groups": {
+      "minecraft:no_spawn": {
+        "minecraft:projectile": {
+          "on_hit": {
+            "teleport_owner": { },
+            "remove_on_hit": { }
+          },
+          "power": 1.5,
+          "gravity": 0.025,
+          "angle_offset": 0.0,
+          "inertia": 1,
+          "liquid_inertia": 1
+        }
+      },
+      "canopy:tick_world_r2": {
+        "minecraft:tick_world": {
+            "never_despawn": true,
+            "radius": 2
+        }
+      },
+      "canopy:tick_world_r3": {
+        "minecraft:tick_world": {
+            "never_despawn": true,
+            "radius": 3
+        }
+      },
+      "canopy:tick_world_r4": {
+        "minecraft:tick_world": {
+            "never_despawn": true,
+            "radius": 4
+        }
+      },
+      "canopy:tick_world_r5": {
+        "minecraft:tick_world": {
+            "never_despawn": true,
+            "radius": 5
+        }
+      },
+      "canopy:tick_world_r6": {
+        "minecraft:tick_world": {
+            "never_despawn": true,
+            "radius": 6
+        }
+      }
+    },
+
+    "components": {
+      "minecraft:collision_box": {
+        "width": 0.25,
+        "height": 0.25
+      },
+      "minecraft:projectile": {
+        "on_hit": {
+          "teleport_owner": { },
+          "spawn_chance": {
+            "first_spawn_percent_chance": 5.0,
+            "first_spawn_count": 1,
+            "spawn_definition": "minecraft:endermite"
+          },
+          "remove_on_hit": { }
+        },
+        "power": 1.5,
+        "gravity": 0.025,
+        "angle_offset": 0.0,
+        "inertia": 1,
+        "liquid_inertia": 1
+      },
+	    "minecraft:physics": {
+      },
+      "minecraft:pushable": {
+        "is_pushable": true,
+        "is_pushable_by_piston": true
+      },
+      "minecraft:conditional_bandwidth_optimization": {
+        "default_values": {
+          "max_optimized_distance": 80.0,
+          "max_dropped_ticks": 7,
+          "use_motion_prediction_hints": true
+        }
+      }
+    },
+
+    "events": {
+      "minecraft:entity_spawned": {
+        "sequence": [
+          {
+            "filters": {"test": "is_game_rule", "domain": "domobspawning", "value": false},
+            "add": {
+              "component_groups": [ "minecraft:no_spawn" ]
+            }
+          }
+        ]
+      },
+      "canopy:start_ticking_r2": {
+        "add": {
+					"component_groups": [
+						"canopy:tick_world_r2"
+					]
+        }
+      },
+			"canopy:start_ticking_r3": {
+				"add": {
+					"component_groups": [
+						"canopy:tick_world_r3"
+					]
+				}
+			},
+			"canopy:start_ticking_r4": {
+				"add": {
+					"component_groups": [
+						"canopy:tick_world_r4"
+					]
+				}
+			},
+			"canopy:start_ticking_r5": {
+				"add": {
+					"component_groups": [
+						"canopy:tick_world_r5"
+					]
+				}
+			},
+			"canopy:start_ticking_r6": {
+				"add": {
+					"component_groups": [
+						"canopy:tick_world_r6"
+					]
+				}
+			},
+			"canopy:stop_ticking": {
+				"remove": {
+					"component_groups": [
+						"canopy:tick_world_r2",
+						"canopy:tick_world_r3",
+						"canopy:tick_world_r4",
+						"canopy:tick_world_r5",
+						"canopy:tick_world_r6"
+					]
+				}
+			}
+    }
+  }
+}

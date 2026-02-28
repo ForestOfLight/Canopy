@@ -79,6 +79,7 @@ import './src/rules/collisionBoxes'
 import './src/rules/potionBoostedBreeding'
 import './src/rules/serverSideCollisionBoxes'
 import './src/rules/entitySeparation'
+import './src/rules/enderPearlChunkLoading'
 
 // Load Time Processes
 import './src/onStart'
