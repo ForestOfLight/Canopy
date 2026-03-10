@@ -28,6 +28,8 @@ import { Weather } from './Weather';
 import { LiquidTarget } from './LiquidTarget';
 import { LiquidStates } from './LiquidStates';
 
+import { RenderSignalStrength } from './RenderSignalStrength';
+
 const playerToInfoDisplayMap = {};
 let currentTickWorldwideElementData = {};
 
@@ -66,7 +68,9 @@ class InfoDisplay {
 			new BlockStates(player, 21),
 			new PeekInventory(player, 22),
 			new LiquidTarget(player, 23),
-			new LiquidStates(player, 24)
+			new LiquidStates(player, 24),
+
+			new RenderSignalStrength(player)
 		];
 		playerToInfoDisplayMap[player.id] = this;
 	}
