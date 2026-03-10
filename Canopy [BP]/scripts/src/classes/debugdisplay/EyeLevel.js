@@ -10,7 +10,7 @@ export class EyeLevel extends DebugDisplayShapeElement {
         const dimensionLocation = { ...eyeLevelData.location, dimension: this.entity.dimension };
         const eyeLevel = new DebugBox(dimensionLocation);
         eyeLevel.bound = eyeLevelData.size;
-        eyeLevel.color = { red: 1, green: 0, blue: 0 };
+        eyeLevel.color = { red: 1, green: 0, blue: 0, alpha: 1 };
         this.drawShape(eyeLevel);
     }
 

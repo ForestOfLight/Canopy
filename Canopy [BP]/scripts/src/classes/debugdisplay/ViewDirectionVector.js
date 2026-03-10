@@ -10,7 +10,7 @@ export class ViewDirectionVector extends DebugDisplayShapeElement {
         const viewDirectionVector = new DebugArrow(dimensionLocation, viewDirectionData.endLocation);
         viewDirectionVector.headLength = 0.20;
         viewDirectionVector.headRadius = 0.10;
-        viewDirectionVector.color = { red: 0, green: 0, blue: 1 };
+        viewDirectionVector.color = { red: 0, green: 0, blue: 1, alpha: 1 };
         this.drawShape(viewDirectionVector);
     }
 

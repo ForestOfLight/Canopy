@@ -10,7 +10,7 @@ export class BiomeEdgeRenderer {
     shouldStop = false;
     drawRunner = null;
     analysisBoundingBoxShape;
-    analysisColor = { red: 0, green: 0, blue: 1 };
+    analysisColor = { red: 0, green: 0, blue: 1, alpha: 1 };
 
     constructor(blockVolume, dimension) {
         this.blockVolume = blockVolume;
@@ -142,7 +142,7 @@ export class BiomeEdgeRenderer {
         worldLocation.dimension = this.dimension;
         const sidedBox = new DebugBox(worldLocation);
         sidedBox.bound = bound;
-        sidedBox.color = { red: 1, green: 1, blue: 1 };
+        sidedBox.color = { red: 1, green: 1, blue: 1, alpha: 1 };
         this.drawShape(sidedBox);
     }
 
@@ -162,8 +162,9 @@ export class BiomeEdgeRenderer {
         const biomeId = biome?.replace('minecraft:', '');
         const hexColor = biomeToHexColorMap[biomeId];
         if (!hexColor)
-            return { red: 1, green: 1, blue: 1 };
+            return { red: 1, green: 1, blue: 1, alpha: 1 };
         const biomeRGB = hexToRGB(hexColor);
+        biomeRGB.alpha = 1;
         return biomeRGB;
     }
 
@@ -171,7 +172,7 @@ export class BiomeEdgeRenderer {
         const dimensionLocation = Vector.from(location);
         dimensionLocation.dimension = this.dimension;
         const tempBox = new DebugBox(dimensionLocation);
-        tempBox.color = { red: 1, green: 1, blue: 1 };
+        tempBox.color = { red: 1, green: 1, blue: 1, alpha: 1 };
         debugDrawer.addShape(tempBox);
         system.runTimeout(() => {
             debugDrawer.removeShape(tempBox);

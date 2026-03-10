@@ -99,7 +99,7 @@ export class HSSFinder {
         dimensionLocation.dimension = dimension;
         const box = new DebugBox(dimensionLocation);
         box.bound = new Vector(1, height, 1);
-        box.color = { red: 0, green: 1, blue: 0 };
+        box.color = { red: 0, green: 1, blue: 0, alpha: 1 };
         this.fortressHSSShapes.push(box);
         debugDrawer.addShape(box);
     }

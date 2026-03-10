@@ -12,7 +12,7 @@ export class AttackBox extends DebugDisplayShapeElement {
         const dimensionLocation = { ...attackBoxData.location, dimension: this.entity.dimension };
         const attackBox = new DebugBox(dimensionLocation);
         attackBox.bound = attackBoxData.size;
-        attackBox.color = { red: 1, green: 0, blue: 0 };
+        attackBox.color = { red: 1, green: 0, blue: 0, alpha: 1 };
         this.drawShape(attackBox);
     }
 
