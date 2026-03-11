@@ -95,7 +95,7 @@ export class HSSFinder {
         const top = this.findStructureTop(dimension, flooredLocation, "minecraft:fortress");
         const height = top.y - bottom.y + 1;
 
-        const dimensionLocation = bottom;
+        const dimensionLocation = bottom.add(new Vector(0.5, height * 0.5, 0.5));
         dimensionLocation.dimension = dimension;
         const box = new DebugBox(dimensionLocation);
         box.bound = new Vector(1, height, 1);
