@@ -2,7 +2,6 @@ import { InfoDisplayElement } from './InfoDisplayElement';
 
 class InfoDisplayShapeElement extends InfoDisplayElement {
     identifier;
-    rule;
     isWorldwide;
 
     constructor(ruleData, isWorldwide = false) {
