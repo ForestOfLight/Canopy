@@ -1,4 +1,4 @@
-import { debugDrawer, DebugText } from '@minecraft/debug-utilities';
+import { world, TextPrimitive } from '@minecraft/server';
 import { Vector } from "../../../lib/Vector";
 
 export class DebugDisplayTextDrawer {
@@ -11,21 +11,21 @@ export class DebugDisplayTextDrawer {
     }
 
     destroy() {
-        debugDrawer.removeShape(this.textShape);
+        this.textShape.remove();
         this.debugDisplay = void 0;
     }
 
     update() {
-        this.textShape.text = this.debugDisplay.debugMessage;
+        this.textShape.setText(this.debugDisplay.debugMessage);
     }
 
     beginDraw() {
         if (this.isDrawing())
             return;
         const dimensionLocation = { ...this.getTextLocation(), dimension: this.dimension };
-        this.textShape = new DebugText(dimensionLocation, this.debugDisplay.debugMessage);
+        this.textShape = new TextPrimitive(dimensionLocation, this.debugDisplay.debugMessage);
         this.textShape.attachedTo = this.debugDisplay.entity;
-        debugDrawer.addShape(this.textShape);
+        world.primitiveShapesManager.addText(this.textShape);
     }
     
     isDrawing() {
