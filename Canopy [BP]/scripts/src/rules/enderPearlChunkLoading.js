@@ -62,7 +62,7 @@ class EnderPearlChunkLoading extends IntegerRule {
         try {
             pearl?.triggerEvent(eventName);
         } catch(error) {
-            if (error.includes(`${eventName} does not exist on minecraft:ender_pearl`))
+            if (error.message.includes(`${eventName} does not exist on minecraft:ender_pearl`))
                 throw new Error(`[Canopy] ${eventName} could not be triggered on minecraft:ender_pearl. Are you using another pack that overrides ender pearls?`);
         }
     }
