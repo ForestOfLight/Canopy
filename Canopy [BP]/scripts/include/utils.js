@@ -34,7 +34,7 @@ export function getClosestTarget(player, blockRayResult, entityRayResult) {
 }
 
 export function parseName(target, includePrefix = true) {
-	if (target.typeId.replace('minecraft:', '') === 'player') 
+	if (target.typeId === 'minecraft:player')
 		return `§o${target.name}§r`;
 	return includePrefix ? target.typeId : target.typeId.replace('minecraft:', '');
 }
