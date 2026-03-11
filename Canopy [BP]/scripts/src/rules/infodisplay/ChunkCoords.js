@@ -1,6 +1,6 @@
-import { InfoDisplayElement } from './InfoDisplayElement.js';
+import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 
-class ChunkCoords extends InfoDisplayElement {
+class ChunkCoords extends InfoDisplayTextElement {
     constructor(player, displayLine) {
         const ruleData = { identifier: 'chunkCoords', description: { translate: 'rules.infoDisplay.chunkCoords' } };
         super(ruleData, displayLine);

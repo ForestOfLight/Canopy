@@ -1,7 +1,7 @@
-import { InfoDisplayElement } from "./InfoDisplayElement";
+import { InfoDisplayTextElement } from "./InfoDisplayTextElement";
 import { getRaycastResults } from "../../../include/utils";
 
-class SignalStrength extends InfoDisplayElement {
+class SignalStrength extends InfoDisplayTextElement {
     player;
 
     constructor(player, displayLine) {

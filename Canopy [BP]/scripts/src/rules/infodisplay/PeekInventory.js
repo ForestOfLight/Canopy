@@ -1,9 +1,9 @@
-import { InfoDisplayElement } from "./InfoDisplayElement";
+import { InfoDisplayTextElement } from "./InfoDisplayTextElement";
 import { getRaycastResults, getClosestTarget } from "../../../include/utils";
 import { currentQuery } from "../../commands/peek";
 import { ItemStack } from "@minecraft/server";
 
-class PeekInventory extends InfoDisplayElement {
+class PeekInventory extends InfoDisplayTextElement {
     player;
 
     constructor(player, displayLine) {

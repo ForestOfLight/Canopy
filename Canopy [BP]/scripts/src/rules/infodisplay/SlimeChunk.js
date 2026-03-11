@@ -1,7 +1,7 @@
-import { InfoDisplayElement } from './InfoDisplayElement.js'
+import { InfoDisplayTextElement } from './InfoDisplayTextElement.js'
 import { playerChangeSubChunkEvent } from '../../events/PlayerChangeSubChunkEvent.js'
 
-export class SlimeChunk extends InfoDisplayElement {
+export class SlimeChunk extends InfoDisplayTextElement {
     player;
     infoMessage = { text: '' };
 

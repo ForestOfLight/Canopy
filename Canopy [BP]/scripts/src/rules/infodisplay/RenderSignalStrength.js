@@ -1,93 +1,75 @@
-import { BlockVolume, system } from '@minecraft/server';
-import { InfoDisplayElement } from './InfoDisplayElement';
+import { InfoDisplayShapeElement } from './InfoDisplayShapeElement';
+import { BlockVolume } from '@minecraft/server';
 import { SignalStrengthRenderer } from '../../classes/SignalStrengthRenderer';
 import { Vector } from '../../../lib/Vector';
 
-class RenderSignalStrength extends InfoDisplayElement{
+class RenderSignalStrength extends InfoDisplayShapeElement {
     player;
     playerId;
-    RENDER_DISTANCE = 8;
-    signalStrengthRenderers = new Map();
-    runner = void 0;
+    RENDER_DISTANCE = 10;
+    signalStrengthRenderers = {};
 
     constructor(player) {
         const ruleData = {
             identifier: 'renderSignalStrength',
             description: { translate: 'rules.infoDisplay.renderSignalStrength' },
-            onEnableCallback: () => this.startRendering(),
-            onDisableCallback: () => this.stopRendering()
+            onEnableCallback: () => this.startRender(),
+            onDisableCallback: () => this.stopRender()
         };
         super(ruleData, 0);
         this.player = player;
         this.playerId = player.id;
     }
 
-    startRendering() {
-        if (this.runner !== void 0)
-            this.stopRendering();
-        this.signalStrengthRenderers = new Map();
-        this.runner = system.runInterval(this.onTick.bind(this));
+    startRender() {
+        this.signalStrengthRenderers = {};
     }
 
-    stopRendering() {
-        if (this.runner !== void 0) {
-            system.clearRun(this.runner);
-            this.runner = void 0;
+    stopRender() {
+        for (const [key, renderer] of Object.entries(this.signalStrengthRenderers)) {
+            renderer.destroy();
+            delete this.signalStrengthRenderers[key];
         }
-        if (this.signalStrengthRenderers.size > 0) {
-            for (const renderer of this.signalStrengthRenderers.values())
-                renderer.destroy();
-            this.signalStrengthRenderers.clear();
-        }
-    }
-
-    refresh() {
-        this.stopRendering();
-        this.startRendering();
+        this.signalStrengthRenderers = {};
     }
 
     onTick() {
-        if (this.player)
-            this.renderForNearbyBlocks();
-        else
-            this.stopRendering();
+        this.renderForNearbyBlocks();
     }
 
     renderForNearbyBlocks() {
-        const blockLocationIterator = this.getNearbyBlockLocationIterator();
+        const dimension = this.player.dimension;
+        const signalStrengthRendererKeys = Object.keys(this.signalStrengthRenderers);
+        const blockKeys = [];
+        const blockLocationIterator = this.getNearbyBlockLocationIterator(dimension, this.player.location);
         let locationResult = blockLocationIterator.next();
-        const blocks = [];
         while (!locationResult.done) {
-            const block = this.player.dimension.getBlock(locationResult.value);
-            blocks.push(block);
-            const key = Vector.from(block.location).toString();
-            if (!this.signalStrengthRenderers.has(key))
-                this.signalStrengthRenderers.set(key, new SignalStrengthRenderer(block, this.player));
+            const block = dimension.getBlock(locationResult.value);
+            const key = this.getKey(block);
+            blockKeys.push(key);
+            if (!signalStrengthRendererKeys.includes(key))
+                this.signalStrengthRenderers[key] = new SignalStrengthRenderer(block, dimension, this.player);
             locationResult = blockLocationIterator.next();
         }
-        for (const [key, renderer] of this.signalStrengthRenderers) {
-            if (!blocks.some(e => e.id === renderer.block.id)) {
+        for (const [key, renderer] of Object.entries(this.signalStrengthRenderers)) {
+            if (!blockKeys.includes(key)) {
                 renderer.destroy();
-                this.signalStrengthRenderers.delete(key);
+                delete this.signalStrengthRenderers[key];
             }
         }
     }
 
-    getNearbyBlockLocationIterator() {
-        const min = Vector.from(this.player.location).subtract(new Vector(this.RENDER_DISTANCE, this.RENDER_DISTANCE, this.RENDER_DISTANCE));
-        const max = Vector.from(this.player.location).add(new Vector(this.RENDER_DISTANCE, 2, this.RENDER_DISTANCE));
+    getNearbyBlockLocationIterator(dimension, location) {
+        const locationVector = Vector.from(location);
+        const min = locationVector.subtract(new Vector(this.RENDER_DISTANCE, this.RENDER_DISTANCE, this.RENDER_DISTANCE));
+        const max = locationVector.add(new Vector(this.RENDER_DISTANCE, 2, this.RENDER_DISTANCE));
         const volume = new BlockVolume(min, max);
-        const blockVolume = this.player.dimension.getBlocks(volume, { includeTypes: ["minecraft:redstone_wire"] }, true);
+        const blockVolume = dimension.getBlocks(volume, { includeTypes: ["minecraft:redstone_wire"] }, true);
         return blockVolume.getBlockLocationIterator();
     }
 
-    getFormattedDataOwnLine() {
-        this.onTick();
-        return { text: '' };
-    }
-
-    getFormattedDataSharedLine() {
-        return this.getFormattedDataOwnLine();
+    getKey(block) {
+        return `<${block.x}, ${block.y}, ${block.z}>`;
     }
 }
 

@@ -1,8 +1,8 @@
-import { InfoDisplayElement } from './InfoDisplayElement.js';
+import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 import { Vector } from '../../../lib/Vector.js';
 import { TicksPerSecond } from '@minecraft/server';
 
-export class Speed extends InfoDisplayElement {
+export class Speed extends InfoDisplayTextElement {
     player;
 
     constructor(player, displayLine) {

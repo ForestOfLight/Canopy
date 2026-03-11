@@ -1,6 +1,6 @@
 import { ChunkCoords } from '../../../../../../Canopy [BP]/scripts/src/rules/infodisplay/ChunkCoords';
 import { describe, it, expect, beforeAll, vi } from 'vitest';
-import { InfoDisplayElement } from '../../../../../../Canopy [BP]/scripts/src/rules/infodisplay/InfoDisplayElement';
+import { InfoDisplayTextElement } from '../../../../../../Canopy [BP]/scripts/src/rules/infodisplay/InfoDisplayTextElement';
 import { Rules } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules';
 
 vi.mock('@minecraft/server', () => ({
@@ -47,8 +47,8 @@ describe('BlockStates', () => {
         chunkCoords = new ChunkCoords(mockPlayer, 0);
     });
 
-    it('should inherit from InfoDisplayElement', () => {
-        expect(chunkCoords).toBeInstanceOf(InfoDisplayElement);
+    it('should inherit from InfoDisplayTextElement', () => {
+        expect(chunkCoords).toBeInstanceOf(InfoDisplayTextElement);
     });
 
     it('should create a new InfoDisplay rule', () => {

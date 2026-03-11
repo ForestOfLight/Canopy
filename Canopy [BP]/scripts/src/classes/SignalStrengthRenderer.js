@@ -1,15 +1,16 @@
-import { debugDrawer, DebugText } from "@minecraft/debug-utilities";
-import { system } from "@minecraft/server";
+import { system, TextPrimitive, world } from "@minecraft/server";
 import { Vector } from "../../lib/Vector";
 
 export class SignalStrengthRenderer {
     block;
+    dimension;
     visibleToPlayer;
     textShape;
     runner = void 0;
 
-    constructor(block, visibleToPlayer) {
+    constructor(block, dimension, visibleToPlayer) {
         this.block = block;
+        this.dimension = dimension;
         this.visibleToPlayer = visibleToPlayer;
         this.startRender();
     }
@@ -35,7 +36,7 @@ export class SignalStrengthRenderer {
     }
 
     onTick() {
-        if (!this.block?.isValid || this.block.isAir) {
+        if (!this.block?.isValid || this.block.typeId !== "minecraft:redstone_wire") {
             this.stopRender();
             return;
         }
@@ -43,20 +44,19 @@ export class SignalStrengthRenderer {
     }
 
     createTextShape() {
-        const dimensionlocation = Vector.from(this.block.center()).add(new Vector(0, -7.5/16, 0.1));
-        dimensionlocation.dimension = this.block.dimension;
-        this.textShape = new DebugText(dimensionlocation, String(this.block.getRedstonePower()));
+        const dimensionlocation = Vector.from(this.block.center()).add(new Vector(-0.0125, -7.7/16, 0.0925));
+        dimensionlocation.dimension = this.dimension;
+        this.textShape = new TextPrimitive(dimensionlocation, String(this.block.getRedstonePower()));
         this.textShape.backgroundColorOverride = { red: 0, green: 0, blue: 0, alpha: 0 };
         this.textShape.rotation = { x: 90, y: 0, z: 0 };
         this.textShape.useRotation = true;
         this.textShape.depthTest = true;
-        this.drawShape(this.textShape);
+        this.drawShape();
     }
 
-    drawShape(debugShape) {
+    drawShape() {
         if (this.visibleToPlayer)
-            debugShape.visibleTo = [this.visibleToPlayer];
-        this.textShape = debugShape;
-        debugDrawer.addShape(debugShape);
+            this.textShape.visibleTo = [this.visibleToPlayer];
+        world.primitiveShapesManager.addText(this.textShape);
     }
 }

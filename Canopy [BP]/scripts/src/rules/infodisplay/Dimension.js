@@ -1,7 +1,7 @@
 import { getColorByDimension } from '../../../include/utils.js';
-import { InfoDisplayElement } from './InfoDisplayElement.js';
+import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 
-class Dimension extends InfoDisplayElement {
+class Dimension extends InfoDisplayTextElement {
     constructor(player, displayLine) {
         const ruleData = { identifier: 'dimension', description: { translate: 'rules.infoDisplay.dimension' } };
         super(ruleData, displayLine);

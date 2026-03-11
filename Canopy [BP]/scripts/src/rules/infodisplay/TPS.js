@@ -1,8 +1,8 @@
-import { InfoDisplayElement } from './InfoDisplayElement.js';
+import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 import { Profiler } from '../../classes/Profiler.js';
 import { TicksPerSecond } from '@minecraft/server';
 
-class TPS extends InfoDisplayElement {
+class TPS extends InfoDisplayTextElement {
     constructor(displayLine) {
         const ruleData = { identifier: 'tps', description: { translate: 'rules.infoDisplay.tps' } };
         super(ruleData, displayLine, true);

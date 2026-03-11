@@ -1,7 +1,7 @@
-import { InfoDisplayElement } from './InfoDisplayElement.js';
+import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 import { Vector } from '../../../lib/Vector.js';
 
-export class Velocity extends InfoDisplayElement {
+export class Velocity extends InfoDisplayTextElement {
     player;
 
     constructor(player, displayLine) {

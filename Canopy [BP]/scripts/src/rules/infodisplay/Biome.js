@@ -1,6 +1,6 @@
-import { InfoDisplayElement } from './InfoDisplayElement.js';
+import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 
-class Biome extends InfoDisplayElement {
+class Biome extends InfoDisplayTextElement {
     player;
 
     constructor(player, displayLine) {

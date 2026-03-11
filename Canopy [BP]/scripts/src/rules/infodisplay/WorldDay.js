@@ -1,7 +1,7 @@
-import { InfoDisplayElement } from './InfoDisplayElement.js';
+import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 import { world } from '@minecraft/server';
 
-class WorldDay extends InfoDisplayElement {
+class WorldDay extends InfoDisplayTextElement {
     constructor(displayLine) {
         const ruleData = { identifier: 'worldDay', description: { translate: 'rules.infoDisplay.worldDay' } };
         super(ruleData, displayLine, true);

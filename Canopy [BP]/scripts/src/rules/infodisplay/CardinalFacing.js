@@ -1,6 +1,6 @@
-import { InfoDisplayElement } from './InfoDisplayElement.js';
+import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 
-class CardinalFacing extends InfoDisplayElement {
+class CardinalFacing extends InfoDisplayTextElement {
     player;
 
     constructor(player, displayLine) {

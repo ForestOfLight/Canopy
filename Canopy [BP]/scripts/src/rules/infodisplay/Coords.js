@@ -1,6 +1,6 @@
-import { InfoDisplayElement } from './InfoDisplayElement.js';
+import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 
-class Coords extends InfoDisplayElement {
+class Coords extends InfoDisplayTextElement {
     player;
 
     constructor(player, displayLine) {

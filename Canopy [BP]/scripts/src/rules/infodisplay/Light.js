@@ -1,6 +1,6 @@
-import { InfoDisplayElement } from './InfoDisplayElement.js';
+import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 
-class Light extends InfoDisplayElement {
+class Light extends InfoDisplayTextElement {
     player;
 
     constructor(player, displayLine) {

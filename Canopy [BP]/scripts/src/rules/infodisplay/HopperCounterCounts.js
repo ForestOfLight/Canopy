@@ -1,8 +1,8 @@
-import { InfoDisplayElement } from "./InfoDisplayElement";
+import { InfoDisplayTextElement } from "./InfoDisplayTextElement";
 import { counterChannels } from "../../classes/CounterChannels";
 import { getColorCode } from "../../../include/utils";
 
-class HopperCounterCounts extends InfoDisplayElement {
+class HopperCounterCounts extends InfoDisplayTextElement {
     constructor(displayLine) {
         const ruleData = { identifier: 'hopperCounterCounts', description: { translate: 'rules.infoDisplay.hopperCounterCounts' } };
         super(ruleData, displayLine, true);

@@ -44,6 +44,9 @@ vi.mock("@minecraft/server", () => ({
             },
             entitySpawn: {
                 subscribe: vi.fn()
+            },
+            entityLoad: {
+                subscribe: vi.fn()
             }
         },
         setDynamicProperty: (identifier, ticks) => { tntFuseDP = ticks },
@@ -81,5 +84,12 @@ describe('tntFuseRule', () => {
     it('should properly initialize the fuse ticks DP', () => {
         tntFuseDP = void 0;
         expect(tntFuseRule.getGlobalFuseTicks()).toBe(80);
+    });
+
+    it('should restart the fuse when the entity loads', () => {
+        const startFuseMock = vi.spyOn(tntFuseRule, 'startFuse');
+        tntFuseRule.setValue(15);
+        tntFuseRule.onEntityLoad({ entity: tntEntity });
+        expect(startFuseMock).toHaveBeenCalledWith(tntEntity, 15);
     });
 });

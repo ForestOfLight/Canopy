@@ -1,7 +1,7 @@
-import { InfoDisplayElement } from './InfoDisplayElement.js';
+import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 import { LiquidType } from '@minecraft/server';
 
-export class LiquidStates extends InfoDisplayElement {
+export class LiquidStates extends InfoDisplayTextElement {
     player;
 
     constructor(player, displayLine) {
