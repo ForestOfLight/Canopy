@@ -5,8 +5,8 @@ class ItemCounterChannels {
     onTickRunner;
 
     constructor(ChannelClass, controllingRuleID) {
-        ItemCounterChannels.colors = Object.freeze(['red', 'orange', 'yellow', 'lime', 'green', 'cyan', 'lightBlue', 'blue', 'purple', 
-            'pink', 'magenta', 'brown', 'black', 'white', 'lightGray', 'gray']);
+        ItemCounterChannels.colors = Object.freeze(['white', 'light_gray', 'gray', 'black', 'brown', 'red', 'orange', 'yellow', 'lime', 'green', 'cyan',
+            'light_blue', 'blue', 'purple', 'magenta', 'pink']);
         ItemCounterChannels.modes = Object.freeze(['count', 'hr', 'min', 'sec']);
         this.colors = ItemCounterChannels.colors;
         this.modes = ItemCounterChannels.modes;

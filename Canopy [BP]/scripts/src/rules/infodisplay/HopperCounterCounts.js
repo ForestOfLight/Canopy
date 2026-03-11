@@ -24,8 +24,7 @@ class HopperCounterCounts extends InfoDisplayElement {
                 output += channel.getModedTotalCount();
             output += '§r ';
         }
-        output += '\n';
-        return { text: output.trim() };
+        return { text: output };
     }
 
     getFormattedDataSharedLine() {
