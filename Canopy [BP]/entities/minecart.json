@@ -13,14 +13,38 @@
             "looping": false,
             "time": 10,
             "time_down_event": {
-              "event": "canopy:disable_ticking"
+              "event": "canopy:stop_ticking"
             }
           }
         },
-        "canopy:ticking": {
+        "canopy:tick_world_r2": {
           "minecraft:tick_world": {
             "never_despawn": true,
             "radius": 2
+          }
+        },
+        "canopy:tick_world_r3": {
+          "minecraft:tick_world": {
+            "never_despawn": true,
+            "radius": 3
+          }
+        },
+        "canopy:tick_world_r4": {
+          "minecraft:tick_world": {
+            "never_despawn": true,
+            "radius": 4
+          }
+        },
+        "canopy:tick_world_r5": {
+          "minecraft:tick_world": {
+            "never_despawn": true,
+            "radius": 5
+          }
+        },
+        "canopy:tick_world_r6": {
+          "minecraft:tick_world": {
+            "never_despawn": true,
+            "radius": 6
           }
         }
       },
@@ -73,14 +97,41 @@
       }
     },
     "events": {
-      "canopy:tick_tenSeconds": {
+      "canopy:tick_tenSeconds_r2": {
         "add": {
-          "component_groups": [ "canopy:ticking", "canopy:ticking_timer"]
+          "component_groups": [ "canopy:tick_world_r2", "canopy:ticking_timer"]
         }
       },
-      "canopy:disable_ticking": {
+      "canopy:tick_tenSeconds_r3": {
+        "add": {
+          "component_groups": [ "canopy:tick_world_r3", "canopy:ticking_timer"]
+        }
+      },
+      "canopy:tick_tenSeconds_r4": {
+        "add": {
+          "component_groups": [ "canopy:tick_world_r4", "canopy:ticking_timer"]
+        }
+      },
+      "canopy:tick_tenSeconds_r5": {
+        "add": {
+          "component_groups": [ "canopy:tick_world_r5", "canopy:ticking_timer"]
+        }
+      },
+      "canopy:tick_tenSeconds_r6": {
+        "add": {
+          "component_groups": [ "canopy:tick_world_r6", "canopy:ticking_timer"]
+        }
+      },
+      "canopy:stop_ticking": {
         "remove": {
-          "component_groups": [ "canopy:ticking", "canopy:ticking_timer" ]
+          "component_groups": [
+            "canopy:tick_world_r2",
+						"canopy:tick_world_r3",
+						"canopy:tick_world_r4",
+						"canopy:tick_world_r5",
+						"canopy:tick_world_r6",
+            "canopy:ticking_timer"
+          ]
         }
       }
     }
