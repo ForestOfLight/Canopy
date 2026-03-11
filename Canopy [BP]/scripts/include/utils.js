@@ -56,10 +56,10 @@ export function getColorCode(color) {
 		case 'cyan': return '§3';
 		case 'light_blue': return '§b';
 		case 'blue': return '§9';
-		case 'purple': return '§5';
+		case 'purple': return '§u';
 		case 'pink': return '§d';
-		case 'magenta': return '§d';
-		case 'brown': return '§6';
+		case 'magenta': return '§5';
+		case 'brown': return '§n';
 		case 'black': return '§0';
 		case 'white': return '§f';
 		case 'light_gray': return '§7';
