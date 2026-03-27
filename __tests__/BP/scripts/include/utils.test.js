@@ -16,14 +16,12 @@ vi.mock("@minecraft/server-ui", () => ({
 }));
 
 describe('calcDistance()', () => {
-	it('returns correct distance (no Y)', () => {
-		const distance = calcDistance({ x: 0, y: 0, z: 0 }, { x: 3, y: 4, z: 4 }, false);
-		expect(distance).toBe(Math.sqrt(3*3 + 4*4));
-	});
-
-	it('returns correct distance (with Y)', () => {
-		const distance = calcDistance({ x: 0, y: 0, z: 0 }, { x: 3, y: 4, z: 4 }, true);
-		expect(distance).toBe(Math.sqrt(3*3 + 4*4 + 4*4));
+	it.each([
+		[false, { x: 0, y: 0, z: 0 }, { x: 3, y: 4, z: 4 }, Math.sqrt(3*3 + 4*4)],
+		[true, { x: 0, y: 0, z: 0 }, { x: 3, y: 4, z: 4 }, Math.sqrt(3*3 + 4*4 + 4*4)]
+	])('returns correct distance (including Y: %s)', (useY, from, to, expected) => {
+		const distance = calcDistance(from, to, useY);
+		expect(distance).toBe(expected);
 	});
 });
 
@@ -145,99 +143,41 @@ describe('parseName()', () => {
 });
 
 describe('stringifyLocation()', () => {
-	it('returns correct string with default precision', () => {
-		const location = { x: 1.234, y: 5.678, z: 9.012 };
-		expect(stringifyLocation(location)).toBe('[1, 6, 9]');
-	});
-
-	it('returns correct string with specified precision', () => {
-		const location = { x: 1.234, y: 5.678, z: 9.012 };
-		expect(stringifyLocation(location, 2)).toBe('[1.23, 5.68, 9.01]');
-	});
-
-	it('returns correct string with zero precision', () => {
-		const location = { x: 1.234, y: 5.678, z: 9.012 };
-		expect(stringifyLocation(location, 0)).toBe('[1, 6, 9]');
+	it.each([
+		[{ x: 1.234, y: 5.678, z: 9.012 }, '[1, 6, 9]'],
+		[{ x: 1.234, y: 5.678, z: 9.012 }, '[1.23, 5.68, 9.01]', 2],
+		[{ x: 1.234, y: 5.678, z: 9.012 }, '[1, 6, 9]', 0],
+		[{ x: 1.23456789, y: 5.67890123, z: 9.01234567 }, '[1.23456789, 5.67890123, 9.01234567]', 8]
+	])('returns correct string, respecting precision', (location, expected, precision) => {
+		expect(stringifyLocation(location, precision)).toBe(expected);
 	});
 
 	it('throws an error when precision is negative', () => {
 		const location = { x: 1.234, y: 5.678, z: 9.012 };
 		expect(() => stringifyLocation(location, -1)).toThrow('Precision cannot be negative');
 	});
-
-	it('returns correct string with large precision', () => {
-		const location = { x: 1.23456789, y: 5.67890123, z: 9.01234567 };
-		expect(stringifyLocation(location, 8)).toBe('[1.23456789, 5.67890123, 9.01234567]');
-	});
 });
 
 describe('getColorCode()', () => {
-	it('returns correct color code for red', () => {
-		expect(getColorCode('red')).toBe('§c');
-	});
-
-	it('returns correct color code for orange', () => {
-		expect(getColorCode('orange')).toBe('§6');
-	});
-
-	it('returns correct color code for yellow', () => {
-		expect(getColorCode('yellow')).toBe('§e');
-	});
-
-	it('returns correct color code for lime', () => {
-		expect(getColorCode('lime')).toBe('§a');
-	});
-
-	it('returns correct color code for green', () => {
-		expect(getColorCode('green')).toBe('§2');
-	});
-
-	it('returns correct color code for cyan', () => {
-		expect(getColorCode('cyan')).toBe('§3');
-	});
-
-	it('returns correct color code for light_blue', () => {
-		expect(getColorCode('light_blue')).toBe('§b');
-	});
-
-	it('returns correct color code for blue', () => {
-		expect(getColorCode('blue')).toBe('§9');
-	});
-
-	it('returns correct color code for purple', () => {
-		expect(getColorCode('purple')).toBe('§5');
-	});
-
-	it('returns correct color code for pink', () => {
-		expect(getColorCode('pink')).toBe('§d');
-	});
-
-	it('returns correct color code for magenta', () => {
-		expect(getColorCode('magenta')).toBe('§d');
-	});
-
-	it('returns correct color code for brown', () => {
-		expect(getColorCode('brown')).toBe('§6');
-	});
-
-	it('returns correct color code for black', () => {
-		expect(getColorCode('black')).toBe('§0');
-	});
-
-	it('returns correct color code for white', () => {
-		expect(getColorCode('white')).toBe('§f');
-	});
-
-	it('returns correct color code for light_gray', () => {
-		expect(getColorCode('light_gray')).toBe('§7');
-	});
-
-	it('returns correct color code for gray', () => {
-		expect(getColorCode('gray')).toBe('§8');
-	});
-
-	it('returns empty string for unknown color', () => {
-		expect(getColorCode('unknown')).toBe('');
+	it.each([
+		['red', '§c'],
+		['orange', '§6'],
+		['yellow', '§e'],
+		['lime', '§a'],
+		['green', '§2'],
+		['cyan', '§3'],
+		['light_blue', '§b'],
+		['blue', '§9'],
+		['purple', '§u'],
+		['pink', '§d'],
+		['magenta', '§5'],
+		['brown', '§n'],
+		['black', '§0'],
+		['white', '§f'],
+		['light_gray', '§7'],
+		['gray', '§8']
+	])('returns correct color code for %s', (color, expectedCode) => {
+		expect(getColorCode(color)).toBe(expectedCode);
 	});
 });
 
@@ -328,147 +268,67 @@ describe.skip('broadcastActionBar()', () => {
 	// Gametest
 });
 
-describe.skip('broadcastActionBar()', () => {
-	// Gametest  
-});
-
 describe('locationInArea()', () => {
-	it('returns true when position is within the area', () => {
-		const area = {
-			dimensionId: 'minecraft:overworld',
-			posOne: { x: 0, y: 0, z: 0 },
-			posTwo: { x: 10, y: 10, z: 10 }
-		};
-		const position = {
-			dimensionId: 'minecraft:overworld',
-			location: { x: 5, y: 5, z: 5 }
-		};
-		expect(locationInArea(area, position)).toBe(true);
-	});
-
-	it('returns false when position is outside the area', () => {
-		const area = {
-			dimensionId: 'minecraft:overworld',
-			posOne: { x: 0, y: 0, z: 0 },
-			posTwo: { x: 10, y: 10, z: 10 }
-		};
-		const position = {
-			dimensionId: 'minecraft:overworld',
-			location: { x: 15, y: 15, z: 15 }
-		};
-		expect(locationInArea(area, position)).toBe(false);
-	});
-
-	it('returns false when position is in a different dimension', () => {
-		const area = {
-			dimensionId: 'minecraft:overworld',
-			posOne: { x: 0, y: 0, z: 0 },
-			posTwo: { x: 10, y: 10, z: 10 }
-		};
-		const position = {
-			dimensionId: 'minecraft:nether',
-			location: { x: 5, y: 5, z: 5 }
-		};
-		expect(locationInArea(area, position)).toBe(false);
-	});
-
-	it('returns true when position is on the boundary of the area', () => {
-		const area = {
-			dimensionId: 'minecraft:overworld',
-			posOne: { x: 0, y: 0, z: 0 },
-			posTwo: { x: 10, y: 10, z: 10 }
-		};
-		const position = {
-			dimensionId: 'minecraft:overworld',
-			location: { x: 10, y: 10, z: 10 }
-		};
-		expect(locationInArea(area, position)).toBe(true);
-	});
-
-	it('returns false when area is undefined', () => {
-		const position = {
-			dimensionId: 'minecraft:overworld',
-			location: { x: 5, y: 5, z: 5 }
-		};
-		expect(locationInArea(undefined, position)).toBe(false);
-	});
-
-	it('returns false when position is undefined', () => {
-		const area = {
-			dimensionId: 'minecraft:overworld',
-			posOne: { x: 0, y: 0, z: 0 },
-			posTwo: { x: 10, y: 10, z: 10 }
-		};
-		expect(locationInArea(area, undefined)).toBe(false);
+	it.each([
+		[
+			{ dimensionId: 'minecraft:overworld', posOne: { x: 0, y: 0, z: 0 }, posTwo: { x: 10, y: 10, z: 10 } },
+			{ dimensionId: 'minecraft:overworld', location: { x: 5, y: 5, z: 5 } }, 
+			true
+		],
+		[
+			{ dimensionId: 'minecraft:overworld', posOne: { x: 0, y: 0, z: 0 }, posTwo: { x: 10, y: 10, z: 10 } },
+			{ dimensionId: 'minecraft:overworld', location: { x: 15, y: 15, z: 15 } },
+			false
+		],
+		[
+			{ dimensionId: 'minecraft:overworld', posOne: { x: 0, y: 0, z: 0 }, posTwo: { x: 10, y: 10, z: 10 } },
+			{ dimensionId: 'minecraft:nether', location: { x: 5, y: 5, z: 5 } },
+			false
+		],
+		[
+			{ dimensionId: 'minecraft:overworld', posOne: { x: 0, y: 0, z: 0 }, posTwo: { x: 10, y: 10, z: 10 } },
+			{ dimensionId: 'minecraft:overworld', location: { x: 10, y: 10, z: 10 } },
+			true
+		],
+		[
+			undefined,
+			{ dimensionId: 'minecraft:overworld', location: { x: 5, y: 5, z: 5 } }, 
+			false
+		],
+		[
+			{ dimensionId: 'minecraft:overworld', posOne: { x: 0, y: 0, z: 0 }, posTwo: { x: 10, y: 10, z: 10 } },
+			undefined,
+			false
+		]
+	])('identifies when the position is inside the area', (area, position, expected) => {
+		expect(locationInArea(area, position)).toBe(expected);
 	});
 });
 
 describe('getColoredDimensionName()', () => {
-	it('returns correct color code for overworld', () => {
-		expect(getColoredDimensionName('minecraft:overworld')).toBe('§aOverworld');
-		expect(getColoredDimensionName('overworld')).toBe('§aOverworld');
-	});
-
-	it('returns correct color code for nether', () => {
-		expect(getColoredDimensionName('minecraft:nether')).toBe('§cNether');
-		expect(getColoredDimensionName('nether')).toBe('§cNether');
-	});
-
-	it('returns correct color code for the end', () => {
-		expect(getColoredDimensionName('minecraft:the_end')).toBe('§dEnd');
-		expect(getColoredDimensionName('the_end')).toBe('§dEnd');
-	});
-
-	it('returns correct color code for unknown dimension', () => {
-		expect(getColoredDimensionName('unknown_dimension')).toBe('§funknown_dimension');
+	it.each([
+		[ 'minecraft:overworld', '§aOverworld' ],
+		[ 'overworld', '§aOverworld' ],
+		[ 'minecraft:nether', '§cNether' ],
+		[ 'nether', '§cNether' ],
+		[ 'minecraft:the_end', '§dEnd' ],
+		[ 'the_end', '§dEnd' ],
+		[ 'unknown_dimension', '§funknown_dimension' ]
+	])('returns correct colored string for %s', (string, expected) => {
+		expect(getColoredDimensionName(string)).toBe(expected);
 	});
 });
 
 describe('getScriptEventSourceName()', () => {
-	it('returns correct name for command block', () => {
-		const event = {
-			sourceType: 'Block',
-			sourceBlock: { typeId: 'minecraft:command_block' }
-		};
-		expect(getScriptEventSourceName(event)).toBe('!');
-	});
-
-	it('returns correct name for non-command block', () => {
-		const event = {
-			sourceType: 'Block',
-			sourceBlock: { typeId: 'minecraft:stone' }
-		};
-		expect(getScriptEventSourceName(event)).toBe('minecraft:stone');
-	});
-
-	it('returns correct name for player entity', () => {
-		const event = {
-			sourceType: 'Entity',
-			sourceEntity: { typeId: 'minecraft:player', name: 'Steve' }
-		};
-		expect(getScriptEventSourceName(event)).toBe('Steve');
-	});
-
-	it('returns correct name for non-player entity', () => {
-		const event = {
-			sourceType: 'Entity',
-			sourceEntity: { typeId: 'minecraft:cow' }
-		};
-		expect(getScriptEventSourceName(event)).toBe('minecraft:cow');
-	});
-
-	it('returns "Server" for server source type', () => {
-		const event = {
-			sourceType: 'Server'
-		};
-		expect(getScriptEventSourceName(event)).toBe('Server');
-	});
-
-	it('returns "Unknown" for unknown source type', () => {
-		const event = {
-			sourceType: 'Unknown'
-		};
-		expect(getScriptEventSourceName(event)).toBe('Unknown');
+	it.each([
+		['command block', { sourceType: 'Block', sourceBlock: { typeId: 'minecraft:command_block' } }, '!'],
+		['non-command block', { sourceType: 'Block', sourceBlock: { typeId: 'minecraft:stone' } }, 'minecraft:stone'],
+		['player entity', { sourceType: 'Entity', sourceEntity: { typeId: 'minecraft:player', name: 'Steve' } }, 'Steve'],
+		['non-player entity', { sourceType: 'Entity', sourceEntity: { typeId: 'minecraft:cow' } }, 'minecraft:cow'],
+		['server', { sourceType: 'Server' }, 'Server'],
+		['unknown', { sourceType: 'Unknown' }, 'Unknown']
+	])('returns correct name for %s', (type, event, expected) => {
+		expect(getScriptEventSourceName(event)).toBe(expected);
 	});
 });
 
@@ -505,54 +365,19 @@ describe('getScriptEventSourceObject()', () => {
 });
 
 describe('recolor()', () => {
-	it('recolors the term in the text with the specified color code', () => {
-		const result = recolor('Hello World', 'World', '§c');
-		expect(result).toBe('Hello §cWorld§f');
-	});
-
-	it('recolors the term in the text with the default color code', () => {
-		const result = recolor('Hello World', 'World');
-		expect(result).toBe('Hello §fWorld§f');
-	});
-
-	it('recolors multiple occurrences of the term in the text', () => {
-		const result = recolor('Hello World, World!', 'World', '§c');
-		expect(result).toBe('Hello §cWorld§f, §cWorld§f!');
-	});
-
-	it('returns the original text if the term is not found', () => {
-		const result = recolor('Hello World', 'Universe', '§c');
-		expect(result).toBe('Hello World');
-	});
-
-	it('is case insensitive when searching for the term', () => {
-		const result = recolor('Hello World', 'world', '§c');
-		expect(result).toBe('Hello §cWorld§f');
-	});
-
-	it('preserves existing color codes in the text', () => {
-		const result = recolor('Hello §aWorld', 'World', '§c');
-		expect(result).toBe('Hello §a§cWorld§a');
-	});
-
-	it('handles text with no color codes correctly', () => {
-		const result = recolor('Hello World', 'Hello', '§b');
-		expect(result).toBe('§bHello§f World');
-	});
-
-	it('handles empty text correctly', () => {
-		const result = recolor('', 'World', '§c');
-		expect(result).toBe('');
-	});
-
-	it('handles empty term correctly', () => {
-		const result = recolor('Hello World', '', '§c');
-		expect(result).toBe('Hello World');
-	});
-
-	it('handles empty color code correctly', () => {
-		const result = recolor('Hello World', 'World', '');
-		expect(result).toBe('Hello World');
+	it.each([
+		['Hello World', 'World', '§c', 'Hello §cWorld§f'],
+		['Hello World', 'World', void 0, 'Hello §fWorld§f'],
+		['Hello World, World!', 'World', '§c', 'Hello §cWorld§f, §cWorld§f!'],
+		['Hello World', 'Universe', '§c', 'Hello World'],
+		['Hello World', 'world', '§c', 'Hello §cWorld§f'],
+		['Hello §aWorld', 'World', '§c', 'Hello §a§cWorld§a'],
+		['Hello World', 'Hello', '§b', '§bHello§f World'],
+		['', 'World', '§c', ''],
+		['Hello World', '', '§c', 'Hello World'],
+		['Hello World', 'World', '', 'Hello World']
+	])('recolors the term in the text with the specified color code', (string, term, colorCode, expected) => {
+		expect(recolor(string, term, colorCode)).toBe(expected);
 	});
 });
 
@@ -565,36 +390,17 @@ describe.skip('getRaycastResults()', () => {
 });
 
 describe('titleCase()', () => {
-	it('converts camelCase to Title Case', () => {
-		expect(titleCase('camelCaseString')).toBe('Camel Case String');
-	});
-
-	it('converts snake_case to Title Case', () => {
-		expect(titleCase('snake_case_string')).toBe('Snake Case String');
-	});
-
-	it('converts mixedCase to Title Case', () => {
-		expect(titleCase('mixedCase_string')).toBe('Mixed Case String');
-	});
-
-	it('converts single word to Title Case', () => {
-		expect(titleCase('word')).toBe('Word');
-	});
-
-	it('converts empty string to empty string', () => {
-		expect(titleCase('')).toBe('');
-	});
-
-	it('converts string with multiple underscores to Title Case', () => {
-		expect(titleCase('multiple__underscores')).toBe('Multiple  Underscores');
-	});
-
-	it('converts string with multiple camelCase words to Title Case', () => {
-		expect(titleCase('multipleCamelCaseWords')).toBe('Multiple Camel Case Words');
-	});
-
-	it('converts string with numbers and special characters to Title Case', () => {
-		expect(titleCase('string_with_123_numbers_and_$pecial_characters')).toBe('String With 123 Numbers And $pecial Characters');
+	it.each([
+		['camelCaseString', 'Camel Case String'],
+		['snake_case_string', 'Snake Case String'],
+		['mixedCase_string', 'Mixed Case String'],
+		['word', 'Word'],
+		['', ''],
+		['multiple__underscores', 'Multiple  Underscores'],
+		['multipleCamelCaseWords', 'Multiple Camel Case Words'],
+		['string_with_123_numbers_and_$pecial_characters', 'String With 123 Numbers And $pecial Characters']
+	])('converts %s to Title Case', (input, expected) => {
+		expect(titleCase(input)).toBe(expected);
 	});
 });
 

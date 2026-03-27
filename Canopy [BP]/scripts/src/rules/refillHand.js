@@ -39,7 +39,7 @@ class RefillHand extends AbilityRule {
         let minSlotIndex = -1;
         for (let slotIndex = 0; slotIndex < playerInventory.size; slotIndex++) {
             const slot = playerInventory.getSlot(slotIndex);
-            if (slot.hasItem() && slot.isStackableWith(beforeItemStack)) {
+            if (slot.hasItem() && this.canFillInFor(slot, beforeItemStack)) {
                 if (slot.amount < minAmount) {
                     minAmount = slot.amount;
                     minSlotIndex = slotIndex;
@@ -52,6 +52,12 @@ class RefillHand extends AbilityRule {
 
     hasRunOutOfItems(beforeItemStack, afterItemStack) {
         return beforeItemStack?.typeId !== afterItemStack?.typeId;
+    }
+
+    canFillInFor(slot, beforeItemStack) {
+        if (beforeItemStack.maxAmount === 1)
+            return slot.typeId === beforeItemStack.typeId;
+        return slot.isStackableWith(beforeItemStack);
     }
 }
 
