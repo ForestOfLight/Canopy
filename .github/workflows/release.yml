@@ -62,20 +62,26 @@ jobs:
             fi
             echo "Found CurseForge version IDs for game version $ENGINE_PREFIX: $GAME_VERSION_IDS"
 
-            # Use the Github release body as the changelog
-            CHANGELOG=$(printf "%s" "$RELEASE_BODY" | jq -Rs .)
             ADDON_FILENAME=Canopy-$VERSION.mcaddon
 
+            # Build metadata as JSON so the changelog is uploaded with preserved Markdown.
+            printf "%s" "$RELEASE_BODY" > curseforge-changelog.md
+            jq -n \
+              --rawfile changelog curseforge-changelog.md \
+              --arg displayName "$ADDON_FILENAME" \
+              --argjson gameVersions "$GAME_VERSION_IDS" \
+              '{
+                changelog: $changelog,
+                changelogType: "markdown",
+                displayName: $displayName,
+                releaseType: "release",
+                gameVersions: $gameVersions
+              }' > curseforge-metadata.json
+
             # Upload the addon
-            RESPONSE=$(curl -s -X POST \
+            RESPONSE=$(curl -s --fail-with-body -X POST \
                 -H "X-Api-Token: ${{ secrets.CF_API_TOKEN }}" \
-                -F "metadata={
-                    \"changelog\": $CHANGELOG,
-                    \"changelogType\": \"markdown\",
-                    \"displayName\": \"$ADDON_FILENAME\",
-                    \"releaseType\": \"release\",
-                    \"gameVersions\": $GAME_VERSION_IDS
-                }" \
+              -F "metadata=@curseforge-metadata.json;type=application/json" \
                 -F "file=@$ADDON_FILENAME" \
                 https://minecraft-bedrock.curseforge.com/api/projects/1062078/upload-file
             )
