@@ -10,6 +10,11 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    env:
+      PROJECT_NAME: Canopy
+      BP_SOURCE: "Canopy [BP]"
+      RP_SOURCE: "Canopy [RP]"
+      CF_PROJECT_ID: 1062078
 
     steps:
       - uses: actions/checkout@v4
@@ -17,23 +22,23 @@ jobs:
       - name: Package mcaddon
         run: |
             VERSION=${{ github.event.release.tag_name }}
-            OUTPUT="Canopy-${VERSION}.mcaddon"
+            OUTPUT="${PROJECT_NAME}-${VERSION}.mcaddon"
 
             mkdir build
-            cp -r "Canopy [BP]" "build/Canopy[BP]"
-            cp -r "Canopy [RP]" "build/Canopy[RP]"
-            cp LICENSE "build/Canopy[BP]"
-            cp LICENSE "build/Canopy[RP]"
+            cp -r "$BP_SOURCE" "build/${BP_SOURCE}"
+            cp -r "$RP_SOURCE" "build/${RP_SOURCE}"
+            cp LICENSE "build/${BP_SOURCE}"
+            cp LICENSE "build/${RP_SOURCE}"
 
             cd build
-            zip -r "$OUTPUT" "Canopy[BP]" "Canopy[RP]"
+            zip -r "$OUTPUT" "${BP_SOURCE}" "${RP_SOURCE}"
             mv "$OUTPUT" ..
             cd ..
 
       - name: Upload asset to GitHub Release
         uses: softprops/action-gh-release@e798e6a1ede8d07b74ac4cdac6bdfa4cc1653907
         with:
-          files: Canopy-${{ github.event.release.tag_name }}.mcaddon
+          files: ${{ env.PROJECT_NAME }}-${{ github.event.release.tag_name }}.mcaddon
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -42,33 +47,56 @@ jobs:
           RELEASE_BODY: ${{ github.event.release.body }}
         run: |
             VERSION=${{ github.event.release.tag_name }}
+            set -euo pipefail
 
             # Read the game version from manifest.json
-            MIN_ENGINE_VERSION=$(jq -r '.header.min_engine_version | @csv' "Canopy [BP]/manifest.json")
+            MIN_ENGINE_VERSION=$(sed -E 's,//.*$,,' "$BP_SOURCE/manifest.json" | jq -r '.header.min_engine_version | @csv')
             IFS=',' read -r LEADING MAJOR MINOR <<< "$MIN_ENGINE_VERSION"
             ENGINE_PREFIX="${MAJOR}.${MINOR}"
 
             # Fetch all Bedrock versions from CurseForge API
-            CF_VERSIONS_JSON=$(curl -s -H "X-Api-Token: ${{ secrets.CF_API_TOKEN }}" \
+            CF_VERSIONS_HTTP=$(curl -sS -L \
+                -o curseforge-versions.json \
+                -w "%{http_code}" \
+                -H "Accept: application/json" \
+                -H "X-Api-Token: ${{ secrets.CF_API_TOKEN }}" \
                 "https://minecraft-bedrock.curseforge.com/api/game/versions")
+            if [ "$CF_VERSIONS_HTTP" -lt 200 ] || [ "$CF_VERSIONS_HTTP" -ge 300 ]; then
+                echo "CurseForge versions API returned HTTP $CF_VERSIONS_HTTP"
+                cat curseforge-versions.json
+                exit 1
+            fi
+
+            # Guard against non-JSON responses (HTML/proxy errors), which break jq parsing later.
+            if ! jq -e . curseforge-versions.json >/dev/null; then
+                echo "CurseForge versions API response was not valid JSON"
+                cat curseforge-versions.json
+                exit 1
+            fi
 
             # Extract all game version IDs whose name matches the game version from the manifest.json
-            GAME_VERSION_IDS=$(echo "$CF_VERSIONS_JSON" | jq -c --arg prefix "$ENGINE_PREFIX" '
-                [ .[] | select(.name | startswith($prefix)) | .id ]
-            ')
-            if [ -z "$GAME_VERSION_IDS" ]; then
+            GAME_VERSION_IDS=$(jq -c --arg prefix "$ENGINE_PREFIX" '
+                if type == "array" then
+                  [ .[] | select((.name // "") | startswith($prefix)) | .id ]
+                elif (type == "object" and has("data") and (.data | type == "array")) then
+                  [ .data[] | select((.name // "") | startswith($prefix)) | .id ]
+                else
+                  []
+                end
+            ' curseforge-versions.json)
+            if [ "$GAME_VERSION_IDS" = "[]" ]; then
                 echo "No matching CurseForge versions found for engine prefix $ENGINE_PREFIX"
                 exit 1
             fi
             echo "Found CurseForge version IDs for game version $ENGINE_PREFIX: $GAME_VERSION_IDS"
 
-            ADDON_FILENAME=Canopy-$VERSION.mcaddon
+            PACK_FILENAME=${PROJECT_NAME}-$VERSION.mcaddon
 
             # Build metadata as JSON so the changelog is uploaded with preserved Markdown.
             printf "%s" "$RELEASE_BODY" > curseforge-changelog.md
             jq -n \
               --rawfile changelog curseforge-changelog.md \
-              --arg displayName "$ADDON_FILENAME" \
+              --arg displayName "$PACK_FILENAME" \
               --argjson gameVersions "$GAME_VERSION_IDS" \
               '{
                 changelog: $changelog,
@@ -77,20 +105,35 @@ jobs:
                 releaseType: "release",
                 gameVersions: $gameVersions
               }' > curseforge-metadata.json
+            METADATA_JSON=$(jq -c . curseforge-metadata.json)
 
-            # Upload the addon
-            RESPONSE=$(curl -s --fail-with-body -X POST \
+            # Upload the behavior pack
+            UPLOAD_HTTP=$(curl -sS -X POST \
+              -o curseforge-upload-response.json \
+              -w "%{http_code}" \
+              -H "Accept: application/json" \
                 -H "X-Api-Token: ${{ secrets.CF_API_TOKEN }}" \
-              -F "metadata=@curseforge-metadata.json;type=application/json" \
-                -F "file=@$ADDON_FILENAME" \
-                https://minecraft-bedrock.curseforge.com/api/projects/1062078/upload-file
+              --form-string "metadata=$METADATA_JSON" \
+                -F "file=@$PACK_FILENAME" \
+                https://minecraft-bedrock.curseforge.com/api/projects/$CF_PROJECT_ID/upload-file
             )
+            if [ "$UPLOAD_HTTP" -lt 200 ] || [ "$UPLOAD_HTTP" -ge 300 ]; then
+              echo "CurseForge upload returned HTTP $UPLOAD_HTTP"
+              cat curseforge-upload-response.json
+              exit 1
+            fi
+
+            if ! jq -e . curseforge-upload-response.json >/dev/null; then
+              echo "CurseForge upload response was not valid JSON"
+              cat curseforge-upload-response.json
+              exit 1
+            fi
             
-            UPLOADED_ID=$(echo "$RESPONSE" | jq -r '.id // empty')
+            UPLOADED_ID=$(jq -r '.id // empty' curseforge-upload-response.json)
             if [ -n "$UPLOADED_ID" ]; then
                 echo "Successfully uploaded release. File ID: $UPLOADED_ID"
             else
                 echo "Upload failed. Response:"
-                echo "$RESPONSE"
+              cat curseforge-upload-response.json
                 exit 1
             fi
