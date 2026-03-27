@@ -23,15 +23,17 @@ jobs:
         run: |
             VERSION=${{ github.event.release.tag_name }}
             OUTPUT="${PROJECT_NAME}-${VERSION}.mcaddon"
+            BP_DIR="${PROJECT_NAME}[BP]"
+            RP_DIR="${PROJECT_NAME}[RP]"
 
             mkdir build
-            cp -r "$BP_SOURCE" "build/${BP_SOURCE}"
-            cp -r "$RP_SOURCE" "build/${RP_SOURCE}"
-            cp LICENSE "build/${BP_SOURCE}"
-            cp LICENSE "build/${RP_SOURCE}"
+            cp -r "$BP_SOURCE" "build/$BP_DIR"
+            cp -r "$RP_SOURCE" "build/$RP_DIR"
+            cp LICENSE "build/$BP_DIR"
+            cp LICENSE "build/$RP_DIR"
 
             cd build
-            zip -r "$OUTPUT" "${BP_SOURCE}" "${RP_SOURCE}"
+            zip -r "$OUTPUT" "$BP_DIR" "$RP_DIR"
             mv "$OUTPUT" ..
             cd ..
 
