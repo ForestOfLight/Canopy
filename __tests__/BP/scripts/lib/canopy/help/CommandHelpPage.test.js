@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { CommandHelpPage } from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/CommandHelpPage";
 import { CommandHelpEntry } from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/CommandHelpEntry";
 import { Command } from "../../../../../../Canopy [BP]/scripts/lib/canopy/commands/Command";
