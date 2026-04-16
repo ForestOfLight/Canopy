@@ -2,65 +2,38 @@ import { allowPeekInventory } from "../../../../../Canopy [BP]/scripts/src/rules
 import { expect, it, describe, vi, afterEach } from "vitest";
 import { InventoryUI } from "../../../../../Canopy [BP]/scripts/src/classes/InventoryUI";
 
-vi.mock("@minecraft/server", () => ({
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        system: {
+            ...original.system,
+            currentTick: (Date.now() / 50),
+            runInterval: vi.fn((callback, interval) => {
+                const intervalId = setInterval(callback, interval * 50);
+                return { clear: () => clearInterval(intervalId) };
+            }),
+            clearRun: vi.fn((runner) => { runner.clear(); }),
+            run: vi.fn((callback) => { callback(); })
         },
-        runJob: vi.fn(),
-        currentTick: (Date.now() / 50),
-        runInterval: vi.fn((callback, interval) => {
-            const intervalId = setInterval(callback, interval * 50);
-            return {
-                clear: () => clearInterval(intervalId)
-            };
-        }),
-        clearRun: vi.fn((runner) => {
-            runner.clear();
-        }),
-        run: vi.fn((callback) => {
-            callback();
-        })
-    },
-    world: {
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            },
-            playerInteractWithBlock: {
-                subscribe: vi.fn(),
-                unsubscribe: vi.fn()
-            },
-            playerInteractWithEntity: {
-                subscribe: vi.fn(),
-                unsubscribe: vi.fn()
+        world: {
+            ...original.world,
+            beforeEvents: {
+                ...original.world.beforeEvents,
+                playerInteractWithBlock: { subscribe: vi.fn(), unsubscribe: vi.fn() },
+                playerInteractWithEntity: { subscribe: vi.fn(), unsubscribe: vi.fn() }
             }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: vi.fn()
-            }
-        },
-        getDynamicProperty: vi.fn(),
-        setDynamicProperty: vi.fn()
-    },
-    EntityComponentTypes: {
-        Inventory: 'inventory'
-    },
-    ItemComponentTypes: {
-        Durability: 'durability',
-        Enchantable: 'enchantable'
-    }
-}));
+        }
+    };
+});
 
-vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn(),
-    uiManager: {
-        closeAllForms: vi.fn()
-    }
-}));
+vi.mock("@minecraft/server-ui", async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        uiManager: { closeAllForms: vi.fn() }
+    };
+});
 
 describe('allowPeekInventory', () => {
     afterEach(() => {

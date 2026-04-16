@@ -4,29 +4,6 @@ import { CommandHelpEntry } from "../../../../../../Canopy [BP]/scripts/lib/cano
 import { Command } from "../../../../../../Canopy [BP]/scripts/lib/canopy/commands/Command";
 import { Commands } from "../../../../../../Canopy [BP]/scripts/lib/canopy/commands/Commands";
 
-vi.mock("@minecraft/server", () => ({
-    world: { 
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: vi.fn()
-            }
-        }
-    },
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
-        },
-        runJob: vi.fn()
-    }
-}));
-
 describe('CommandHelpPage', () => {
     describe('constructor', () => {
         it('should create an instance with title and description', () => {

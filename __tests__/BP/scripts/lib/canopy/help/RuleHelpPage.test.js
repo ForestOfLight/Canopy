@@ -4,30 +4,6 @@ import { RuleHelpEntry } from "../../../../../../Canopy [BP]/scripts/lib/canopy/
 import { BooleanRule } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule";
 import { Rules } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules";
 
-vi.mock("@minecraft/server", () => ({
-    world: { 
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: vi.fn()
-            }
-        },
-        getDynamicProperty: vi.fn()
-    },
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
-        },
-        runJob: vi.fn()
-    }
-}));
-
 // Terrible practice. This is a workaround for a Vitest rollup error that causes the Rule class to not be imported properly in BooleanRule.
 vi.mock('../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rule', () => ({
     Rule: class Rule {

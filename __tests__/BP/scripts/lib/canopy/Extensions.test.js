@@ -1,29 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { Extensions } from "../../../../../Canopy [BP]/scripts/lib/canopy/Extensions.js";
 import { Extension } from "../../../../../Canopy [BP]/scripts/lib/canopy/Extension.js";
-
-vi.mock("@minecraft/server", () => ({
-    world: {
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: vi.fn()
-            }
-        }
-    },
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
-        },
-        runJob: vi.fn()
-    }
-}));
 
 describe("Extensions", () => {
     beforeEach(() => {

@@ -2,37 +2,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { AbilityRule } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/AbilityRule";
 import { Rules } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules";
 
-vi.mock('@minecraft/server', () => ({
-    world: { 
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: vi.fn()
-            },
-            playerInventoryItemChange: {
-                subscribe: vi.fn(),
-                unsubscribe: vi.fn()
-            }
-        }
-    },
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
-        },
-        runJob: vi.fn()
-    }
-}));
-
-vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn()
-}));
-
 const onPlayerEnableCallback = vi.fn();
 const onPlayerDisableCallback = vi.fn();
 

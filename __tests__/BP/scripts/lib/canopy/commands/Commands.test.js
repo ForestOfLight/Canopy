@@ -3,38 +3,24 @@ import { Commands } from "../../../../../../Canopy [BP]/scripts/lib/canopy/comma
 import { BooleanRule } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule";
 import { Rules } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules";
 
-vi.mock("@minecraft/server", () => ({
-    world: { 
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        world: {
+            ...original.world,
+            afterEvents: {
+                ...original.world.afterEvents,
+                worldLoad: { subscribe: (callback) => callback() }
             }
         },
-        afterEvents: {
-            worldLoad: {
-                subscribe: (callback) => {
-                    callback();
-                }
-            }
-        }
-    },
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
+        system: {
+            ...original.system,
+            run: (callback) => callback()
         },
-        runJob: vi.fn(),
-        run: (callback) => callback()
-    },
-    CommandPermissionLevel: {
-        Any: 0,
-        GameDirectors: 1,
-        Admin: 2,
-        Host: 3,
-        Owner: 4
-    }
-}));
+        CommandPermissionLevel: { Any: 0, GameDirectors: 1, Admin: 2, Host: 3, Owner: 4 }
+    };
+});
 
 describe('Commands', () => {
     beforeEach(() => {

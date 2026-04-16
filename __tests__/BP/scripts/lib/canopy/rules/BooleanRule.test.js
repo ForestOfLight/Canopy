@@ -6,36 +6,20 @@ import { Extensions } from '../../../../../../Canopy [BP]/scripts/lib/canopy/Ext
 import { Extension } from '../../../../../../Canopy [BP]/scripts/lib/canopy/Extension.js';
 import { RuleValueSet } from '../../../../../../Canopy [BP]/scripts/lib/canopy/extension.ipc.js';
 
-vi.mock('@minecraft/server', () => ({
-    world: { 
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: (callback) => {
-                    callback();
-                }
-            }
-        },
-        setDynamicProperty: vi.fn(),
-        getDynamicProperty: vi.fn(() => false)
-    },
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
-        },
-        runJob: vi.fn()
-    }
-}));
-
-vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn()
-}));
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        world: {
+            ...original.world,
+            afterEvents: {
+                ...original.world.afterEvents,
+                worldLoad: { subscribe: (callback) => callback() }
+            },
+            getDynamicProperty: vi.fn(() => false)
+        }
+    };
+});
 
 describe('BooleanRule', () => {
     const testExtension = new Extension({

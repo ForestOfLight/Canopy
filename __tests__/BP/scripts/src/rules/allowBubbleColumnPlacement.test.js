@@ -1,45 +1,16 @@
 import { allowBubbleColumnPlacement } from "../../../../../Canopy [BP]/scripts/src/rules/allowBubbleColumnPlacement";
 import { expect, test, describe, vi, afterEach } from "vitest";
 
-vi.mock("@minecraft/server", () => ({
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            },
-            playerPlaceBlock: {
-                subscribe: vi.fn()
-            }
-        },
-        runJob: vi.fn(),
-        run: vi.fn((callback) => callback())
-    },
-    world: {
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            },
-            playerPlaceBlock: {
-                subscribe: vi.fn(),
-                unsubscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: vi.fn()
-            }
-        },
-        getDynamicProperty: vi.fn(),
-        setDynamicProperty: vi.fn(),
-        structureManager: {
-            place: vi.fn()
+vi.mock("@minecraft/server", async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        system: {
+            ...original.system,
+            run: vi.fn((callback) => callback())
         }
-    }
-}));
-
-vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn()
-}));
+    };
+});
 
 describe('allowBubbleColumnPlacement', () => {
     afterEach(() => {

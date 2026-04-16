@@ -6,29 +6,6 @@ import { Extension } from "../../../../../../Canopy [BP]/scripts/lib/canopy/Exte
 import { Extensions } from "../../../../../../Canopy [BP]/scripts/lib/canopy/Extensions";
 import { CommandCallbackRequest } from "../../../../../../Canopy [BP]/scripts/lib/canopy/extension.ipc";
 
-vi.mock("@minecraft/server", () => ({
-    world: { 
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: vi.fn()
-            }
-        }
-    },
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
-        },
-        runJob: vi.fn()
-    }
-}));
-
 describe("Command", () => {
     beforeEach(() => {
         Commands.clear();

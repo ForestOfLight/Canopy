@@ -14,50 +14,28 @@ const mockCustomCommandRegistry = {
     registerEnum: vi.fn()
 };
 
-vi.mock("@minecraft/server", () => ({
-    world: { 
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        world: {
+            ...original.world,
+            afterEvents: {
+                ...original.world.afterEvents,
+                worldLoad: { subscribe: (callback) => callback() }
             }
         },
-        afterEvents: {
-            worldLoad: {
-                subscribe: (callback) => {
-                    callback();
+        system: {
+            ...original.system,
+            beforeEvents: {
+                startup: {
+                    subscribe: () => ({ customCommandRegistry: mockCustomCommandRegistry }),
+                    unsubscribe: vi.fn()
                 }
             }
-        },
-        setDynamicProperty: vi.fn(),
-        getDynamicProperty: vi.fn()
-    },
-    system: {
-        beforeEvents: {
-            startup: {
-                subscribe: () => ({ customCommandRegistry: mockCustomCommandRegistry }),
-                unsubscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
-        },
-        runJob: vi.fn()
-    },
-    CustomCommandSource: {
-        Block: "Block",
-        Entity: "Entity",
-        Server: "Server"
-    },
-    CustomCommandStatus: {
-        Failure: "Failure",
-        Success: "Success"
-    },
-    Block: class {},
-    Entity: class {},
-    Player: class { sendMessage = vi.fn() }
-}));
+        }
+    };
+});
 
 describe("VanillaCommand", () => {
     let mockCommand;

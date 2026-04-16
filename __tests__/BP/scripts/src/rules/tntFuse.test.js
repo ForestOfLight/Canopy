@@ -13,50 +13,30 @@ const tntEntity = {
 };
 let tntFuseDP = false;
 
-vi.mock("@minecraft/server", () => ({
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        system: {
+            ...original.system,
+            currentTick: (Date.now() / 50),
+            runInterval: vi.fn((callback, interval) => {
+                const intervalId = setInterval(callback, interval * 50);
+                return { clear: () => clearInterval(intervalId) };
+            }),
+            clearRun: vi.fn((runner) => { runner.clear(); })
         },
-        runJob: vi.fn(),
-        currentTick: (Date.now() / 50),
-        runInterval: vi.fn((callback, interval) => {
-            const intervalId = setInterval(callback, interval * 50);
-            return {
-                clear: () => clearInterval(intervalId)
-            };
-        }),
-        clearRun: vi.fn((runner) => {
-            runner.clear();
-        })
-    },
-    world: {
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: vi.fn()
+        world: {
+            ...original.world,
+            afterEvents: {
+                ...original.world.afterEvents,
+                entityLoad: { subscribe: vi.fn() }
             },
-            entitySpawn: {
-                subscribe: vi.fn()
-            },
-            entityLoad: {
-                subscribe: vi.fn()
-            }
-        },
-        setDynamicProperty: (identifier, ticks) => { tntFuseDP = ticks },
-        getDynamicProperty: () => tntFuseDP
-    }
-}));
-
-vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn()
-}));
+            setDynamicProperty: (identifier, ticks) => { tntFuseDP = ticks },
+            getDynamicProperty: () => tntFuseDP
+        }
+    };
+});
 
 describe('tntFuseRule', () => {
     afterEach(() => {

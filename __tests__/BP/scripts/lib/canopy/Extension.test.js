@@ -3,29 +3,6 @@ import { Extension } from '../../../../../Canopy [BP]/scripts/lib/canopy/Extensi
 import { Command } from '../../../../../Canopy [BP]/scripts/lib/canopy/commands/Command.js';
 import { BooleanRule } from '../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule.js';
 
-vi.mock('@minecraft/server', () => ({
-    world: { 
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: vi.fn()
-            }
-        }
-    },
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
-        },
-        runJob: vi.fn()
-    }
-}));
-
 describe('Extension', () => {
     const extensionData = {
         name: 'Test Extension',

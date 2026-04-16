@@ -3,79 +3,32 @@ import { velocityCommand } from "../../../../../Canopy [BP]/scripts/src/commands
 import { Vector } from "../../../../../Canopy [BP]/scripts/lib/Vector";
 import { PlayerCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/Canopy";
 
-vi.mock("@minecraft/server", () => ({
-    system: {
-        runInterval: vi.fn((callback, interval) => {
-            const intervalId = setInterval(callback, interval * 50);
-            return {
-                clear: () => clearInterval(intervalId)
-            };
-        }),
-        runTimeout: vi.fn((callback, timeout) => {
-            const timeoutId = setTimeout(callback, timeout * 50);
-            return {
-                clear: () => clearTimeout(timeoutId)
-            };
-        }),
-        runJob: vi.fn(),
-        clearRun: vi.fn((runner) => {
-            runner.clear();
-        }),
-        run: vi.fn((callback) => callback()),
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn(),
-                unsubscribe: vi.fn()
-            }
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        system: {
+            ...original.system,
+            runInterval: vi.fn((callback, interval) => {
+                const intervalId = setInterval(callback, interval * 50);
+                return { clear: () => clearInterval(intervalId) };
+            }),
+            runTimeout: vi.fn((callback, timeout) => {
+                const timeoutId = setTimeout(callback, timeout * 50);
+                return { clear: () => clearTimeout(timeoutId) };
+            }),
+            clearRun: vi.fn((runner) => { runner.clear(); }),
+            run: vi.fn((callback) => callback())
         },
-        beforeEvents: {
-            startup: {
-                subscribe: vi.fn()
-            }
+        CommandPermissionLevel: { GameDirectors: 'GameDirectors' },
+        CustomCommandParamType: { Enum: 'Enum', Float: 'Float' },
+        Player: class {
+            sendMessage = vi.fn();
+            getDynamicProperty = vi.fn();
+            setDynamicProperty = vi.fn();
         }
-    },
-    world: {
-        afterEvents: {
-            entitySpawn: {
-                subscribe: vi.fn()
-            },
-            worldLoad: {
-                subscribe: vi.fn()
-            }
-        },
-        beforeEvents: {
-            entityRemove: {
-                subscribe: vi.fn()
-            },
-            chatSend: {
-                subscribe: vi.fn()
-            },
-            playerLeave: {
-                subscribe: vi.fn()
-            }
-        },
-    },
-    CommandPermissionLevel: {
-        GameDirectors: 'GameDirectors',
-    },
-    CustomCommandParamType: {
-        Enum: 'Enum',
-        Float: 'Float',
-    },
-    CustomCommandStatus: {
-        Success: 'Success',
-        Failure: 'Failure',
-    },
-    Player: class {
-        sendMessage = vi.fn();
-        getDynamicProperty = vi.fn();
-        setDynamicProperty = vi.fn();
-    }
-}));
-
-vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn()
-}));
+    };
+});
 
 describe('velocityCommand', () => {
     let mockPlayerOrigin;
