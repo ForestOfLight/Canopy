@@ -234,6 +234,47 @@ describe('Rules', () => {
         });
     });
 
+    describe('registerQueuedRules', () => {
+        it('should register all queued rules', async () => {
+            Rules.clear();
+            const mockRule = {
+                getID: () => 'queued_rule',
+                getCategory: () => 'test',
+            };
+            Rules.rulesToRegister = [mockRule];
+            await Rules.registerQueuedRules();
+            expect(Rules.get('queued_rule')).toBe(mockRule);
+            expect(Rules.rulesToRegister).toHaveLength(0);
+        });
+    });
+
+    describe('register with worldLoaded and Rules category', () => {
+        it('should call onModify when the rule has a defined value', async () => {
+            const onModify = vi.fn();
+            const mockRule = {
+                getID: () => 'rules_category_rule',
+                getCategory: () => 'Rules',
+                getValue: vi.fn().mockResolvedValue(true),
+                onModify
+            };
+            await Rules.register(mockRule);
+            expect(onModify).toHaveBeenCalledWith(true);
+        });
+
+        it('should call resetToDefaultValue when the rule value is undefined', async () => {
+            const resetToDefaultValue = vi.fn();
+            const mockRule = {
+                getID: () => 'rules_category_rule_2',
+                getCategory: () => 'Rules',
+                getValue: vi.fn().mockResolvedValue(undefined),
+                resetToDefaultValue,
+                onModify: vi.fn()
+            };
+            await Rules.register(mockRule);
+            expect(resetToDefaultValue).toHaveBeenCalled();
+        });
+    });
+
     describe('getByCategory', () => {
         it('should return all rules of a specific category', () => {
             new BooleanRule({

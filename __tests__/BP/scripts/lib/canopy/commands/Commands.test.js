@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Commands } from "../../../../../../Canopy [BP]/scripts/lib/canopy/commands/Commands";
 import { BooleanRule } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule";
 import { Rules } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules";
+import { world } from "@minecraft/server";
 
 vi.mock('@minecraft/server', async (importOriginal) => {
     const original = await importOriginal();
@@ -197,6 +198,20 @@ describe('Commands', () => {
             expect(command.runCallback).toHaveBeenCalledWith(sender, { strArg: null, boolArg: null, intArg: null, floatArg: null, entityArg: null, arrayArg: null, playerArg: null });
         });
 
+        it('should return null for a multi-type arg when no type matches', async () => {
+            const command2 = { name: 'test2',
+                getName: () => 'test2',
+                isOpOnly: () => false,
+                getContingentRules: () => ['rule1'],
+                getArgs: () => [
+                    { type: 'boolean|integer', name: 'multiArg' }
+                ],
+                runCallback: vi.fn() };
+            Commands.register(command2);
+            await Commands.executeCommand(sender, 'test2', [{}]);
+            expect(command2.runCallback).toHaveBeenCalledWith(sender, { multiArg: null });
+        });
+
         it('should interpret any multiarguments', async () => {
             const command2 = { name: 'test2', 
                 getName: () => 'test2', 
@@ -262,9 +277,9 @@ describe('Commands', () => {
         });
 
         it('should interpret the player argument without spaces', async () => {
-            const command2 = { name: 'test2', 
-                getName: () => 'test2', 
-                isOpOnly: () => false, 
+            const command2 = { name: 'test2',
+                getName: () => 'test2',
+                isOpOnly: () => false,
                 getContingentRules: () => ['rule1'],
                 getArgs: () => [
                     { type: 'string|boolean|integer|identifier', name: 'multiArg' }
@@ -273,6 +288,38 @@ describe('Commands', () => {
             Commands.register(command2);
             await Commands.executeCommand(sender, 'test2', ['@player']);
             expect(command2.runCallback).toHaveBeenCalledWith(sender, { multiArg: '@player' });
+        });
+    });
+
+    describe('chatSend event handler', () => {
+        let chatCallback;
+        let chatSender;
+
+        beforeEach(() => {
+            Commands.clear();
+            Rules.clear();
+            chatCallback = world.beforeEvents.chatSend.subscribe.mock.calls[0][0];
+            chatSender = { sendMessage: vi.fn(), commandPermissionLevel: 1 };
+        });
+
+        it('should cancel and execute the command when message starts with the prefix', async () => {
+            const command = {
+                getName: () => 'test',
+                isOpOnly: () => false,
+                getContingentRules: () => [],
+                getArgs: () => [],
+                runCallback: vi.fn()
+            };
+            Commands.register(command);
+            const event = { sender: chatSender, message: './test', cancel: false };
+            chatCallback(event);
+            expect(event.cancel).toBe(true);
+        });
+
+        it('should not cancel when the message does not start with the prefix', () => {
+            const event = { sender: chatSender, message: 'hello world', cancel: false };
+            chatCallback(event);
+            expect(event.cancel).toBe(false);
         });
     });
 });

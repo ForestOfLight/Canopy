@@ -80,6 +80,15 @@ describe('ArgumentParser', () => {
             });
         });
 
+        it('should parse a command string with a float argument', () => {
+            const commandString = 'command 1.5';
+            const result = ArgumentParser.parseCommandString(commandString);
+            expect(result).toEqual({
+                name: 'command',
+                args: [1.5]
+            });
+        });
+
         it('should be able to parse args back to their command string', () => {
             const commandString = 'command true 42 "test string" [1,2,3] "@e[type=creeper]"';
             const result = ArgumentParser.parseCommandString(commandString);

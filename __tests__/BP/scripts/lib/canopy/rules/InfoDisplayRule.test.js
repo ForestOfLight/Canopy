@@ -134,4 +134,19 @@ describe('InfoDisplayRule', () => {
             expect(rules[0].getID()).toBe('test_rule');
         });
     });
+
+    describe('getGlobalContingentRuleIDs', () => {
+        it('should return an empty array by default', () => {
+            expect(rule.getGlobalContingentRuleIDs()).toEqual([]);
+        });
+
+        it('should return the provided globalContingentRules', () => {
+            const ruleWithGlobals = new InfoDisplayRule({
+                identifier: 'global_rule',
+                description: 'rule with globals',
+                globalContingentRules: ['someRule', 'anotherRule']
+            });
+            expect(ruleWithGlobals.getGlobalContingentRuleIDs()).toEqual(['someRule', 'anotherRule']);
+        });
+    });
 });
