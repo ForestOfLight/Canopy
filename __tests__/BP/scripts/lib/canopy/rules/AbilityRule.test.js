@@ -167,7 +167,7 @@ describe('AbilityRule', () => {
         expect(abilityRule.playerJoinTick['player1']).toBe(0);
     });
 
-    it('should disable the player on leave', async () => {
+    it('should disable the player on leave', () => {
         const player = { id: 'player1', onScreenDisplay: { setActionBar: vi.fn() } };
         abilityRule.enableForPlayer(player);
         abilityRule.onPlayerLeave({ player });

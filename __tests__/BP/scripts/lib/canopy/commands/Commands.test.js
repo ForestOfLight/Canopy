@@ -302,7 +302,7 @@ describe('Commands', () => {
             chatSender = { sendMessage: vi.fn(), commandPermissionLevel: 1 };
         });
 
-        it('should cancel and execute the command when message starts with the prefix', async () => {
+        it('should cancel and execute the command when message starts with the prefix', () => {
             const command = {
                 getName: () => 'test',
                 isOpOnly: () => false,
