@@ -23,7 +23,7 @@ export class CollisionBox extends DebugDisplayShapeElement {
         const AABB = this.entity.getAABB();
         return {
             location: new Vector(0, AABB.extent.y, 0),
-            size: Vector.from(AABB.extent).multiply(2)
+            size: Vector.from(AABB.extent).scale(2)
         };
     }
     

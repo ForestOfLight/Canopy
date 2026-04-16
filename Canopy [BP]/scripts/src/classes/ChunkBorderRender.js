@@ -105,7 +105,7 @@ export class ChunkBorderRender {
     }
 
     getSubChunkWorldCoords(location) {
-        return Vector.from(location).divide(this.CHUNK_SIZE).floor().multiply(this.CHUNK_SIZE);
+        return Vector.from(location).scale(1/this.CHUNK_SIZE).floor().scale(this.CHUNK_SIZE);
     }
 
     getLowerBound(subChunkCoords) {

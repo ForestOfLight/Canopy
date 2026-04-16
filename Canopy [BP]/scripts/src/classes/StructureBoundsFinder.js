@@ -38,7 +38,7 @@ export class StructureBoundsFinder {
     }
 
     getCenterpoint() {
-        return this.min.add(this.getSize().multiply(0.5));
+        return this.min.add(this.getSize().scale(0.5));
     }
 
     tryAnalyzeStructureBounds() {
