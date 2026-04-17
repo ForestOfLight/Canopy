@@ -58,7 +58,7 @@ Vector.prototype = {
     floor() { return Vector.floor(this); },
     add(vec) { return Vector.add(this, vec); },
     subtract(vec) { return Vector.subtract(this, vec); },
-    multiply(num) { return Vector.scale(this, num); },
+    scale(num) { return Vector.scale(this, num); },
     get length() { return Vector.magnitude(this); },
     get normalized() { return Vector.normalize(this); },
     x: 0,
