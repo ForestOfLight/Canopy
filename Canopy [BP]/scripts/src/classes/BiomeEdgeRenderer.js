@@ -138,7 +138,7 @@ export class BiomeEdgeRenderer {
         changeInFinalAxis[finalAxis] = quadHeight;
         const bound = new Vector(...changeInMiddleAxis).add(new Vector(...changeInFinalAxis));
         
-        const worldLocation = Vector.from(this.blockVolume.getMin()).add(bound.multiply(0.5)).add(new Vector(...localLocation));
+        const worldLocation = Vector.from(this.blockVolume.getMin()).add(bound.scale(0.5)).add(new Vector(...localLocation));
         worldLocation.dimension = this.dimension;
         const sidedBox = new DebugBox(worldLocation);
         sidedBox.bound = bound;
@@ -181,7 +181,7 @@ export class BiomeEdgeRenderer {
     drawAnalysisBoundingBox() {
         if (this.analysisBoundingBoxShape)
             this.analysisBoundingBoxShape.remove();
-        const dimensionLocation = Vector.from(this.blockVolume.getMin()).add(Vector.from(this.blockVolume.getSpan()).multiply(0.5));
+        const dimensionLocation = Vector.from(this.blockVolume.getMin()).add(Vector.from(this.blockVolume.getSpan()).scale(0.5));
         dimensionLocation.dimension = this.dimension;
         const boundingBox = new DebugBox(dimensionLocation);
         boundingBox.bound = this.blockVolume.getSpan();

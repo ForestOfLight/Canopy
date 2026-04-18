@@ -1,29 +1,22 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+
+vi.mock('../../../../../Canopy [BP]/scripts/lib/MCBE-IPC/ipc.js', async (importOriginal) => {
+    const actual = await importOriginal();
+    return {
+        ...actual,
+        default: {
+            ...actual.default,
+            on: vi.fn(),
+            send: vi.fn(),
+            invoke: vi.fn(),
+            handle: vi.fn(),
+        }
+    };
+});
+
 import { Extensions } from "../../../../../Canopy [BP]/scripts/lib/canopy/Extensions.js";
 import { Extension } from "../../../../../Canopy [BP]/scripts/lib/canopy/Extension.js";
-
-vi.mock("@minecraft/server", () => ({
-    world: {
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: vi.fn()
-            }
-        }
-    },
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
-        },
-        runJob: vi.fn()
-    }
-}));
+import IPC from "../../../../../Canopy [BP]/scripts/lib/MCBE-IPC/ipc.js";
 
 describe("Extensions", () => {
     beforeEach(() => {
@@ -101,7 +94,18 @@ describe("Extensions", () => {
         });
     });
 
-    describe.skip('setupExtensionRegistration()', () => {
-        // Gametest
+    describe('setupExtensionRegistration()', () => {
+        it('should register an extension and log when the IPC message is received', () => {
+            const registerCall = IPC.on.mock.calls.find(([channel]) => channel === 'canopyExtension:registerExtension');
+            const callback = registerCall[2];
+
+            Extensions.clear();
+            const consoleSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
+            callback({ name: 'Remote Ext', version: '2.0.0', author: 'Dev', description: 'Remote' });
+
+            expect(Extensions.get('remote_ext')).toBeDefined();
+            expect(consoleSpy).toHaveBeenCalledWith('[Canopy] Registered Remote Ext v2.0.0.');
+            consoleSpy.mockRestore();
+        });
     });
 });

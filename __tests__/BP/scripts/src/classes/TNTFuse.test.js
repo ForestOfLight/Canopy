@@ -1,45 +1,31 @@
 import { describe, it, expect, vi, afterEach, beforeAll, afterAll } from "vitest";
 import { TNTFuse } from "../../../../../Canopy [BP]/scripts/src/classes/TNTFuse.js";
 
-vi.mock("@minecraft/server", () => ({
-    system: {
-        currentTick: (Date.now() / 50),
-        runInterval: vi.fn((callback, interval) => {
-            const intervalId = setInterval(callback, interval * 50);
-            return {
-                clear: () => clearInterval(intervalId)
-            };
-        }),
-        clearRun: vi.fn((runner) => {
-            runner.clear();
-        })
-    },
-    world: {
-        afterEvents: {
-            entitySpawn: {
-                subscribe: vi.fn()
-            }
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        system: {
+            ...original.system,
+            currentTick: (Date.now() / 50),
+            runInterval: vi.fn((callback, interval) => {
+                const intervalId = setInterval(callback, interval * 50);
+                return { clear: () => clearInterval(intervalId) };
+            }),
+            clearRun: vi.fn((runner) => { runner.clear(); })
         },
-        beforeEvents: {
-            entityRemove: {
-                subscribe: vi.fn()
-            }
-        },
-        getDimension: vi.fn(() => ({
-            getEntities: vi.fn(() => [
-                { typeId: 'minecraft:tnt', id: 'entity1', location: { x: 1, y: 2, z: 3 }, dimension: { id: 'overworld' },
-                    isValid: vi.fn(() => true)
-                },
-                { typeId: 'minecraft:tnt', id: 'entity2', location: { x: 4, y: 5, z: 6 }, dimension: { id: 'overworld' },
-                    isValid: vi.fn(() => true)
-                },
-                { typeId: 'minecraft:tnt', id: 'entity3', location: { x: 7, y: 8, z: 9 }, dimension: { id: 'overworld' },
-                    isValid: vi.fn(() => false)
-                }
-            ])
-        }))
-    }
-}));
+        world: {
+            ...original.world,
+            getDimension: vi.fn(() => ({
+                getEntities: vi.fn(() => [
+                    { typeId: 'minecraft:tnt', id: 'entity1', location: { x: 1, y: 2, z: 3 }, dimension: { id: 'overworld' }, isValid: vi.fn(() => true) },
+                    { typeId: 'minecraft:tnt', id: 'entity2', location: { x: 4, y: 5, z: 6 }, dimension: { id: 'overworld' }, isValid: vi.fn(() => true) },
+                    { typeId: 'minecraft:tnt', id: 'entity3', location: { x: 7, y: 8, z: 9 }, dimension: { id: 'overworld' }, isValid: vi.fn(() => false) }
+                ])
+            }))
+        }
+    };
+});
 
 const tnt = { 
     typeId: 'minecraft:tnt',

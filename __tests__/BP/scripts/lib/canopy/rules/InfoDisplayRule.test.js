@@ -3,30 +3,19 @@ import { Rules } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Ru
 import { InfoDisplayRule } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/InfoDisplayRule.js';
 import { BooleanRule } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule.js';
 
-vi.mock('@minecraft/server', () => ({
-    world: { 
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: (callback) => {
-                    callback();
-                }
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        world: {
+            ...original.world,
+            afterEvents: {
+                ...original.world.afterEvents,
+                worldLoad: { subscribe: (callback) => callback() }
             }
         }
-    },
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
-        },
-        runJob: vi.fn()
-    }
-}));
+    };
+});
 
 describe('InfoDisplayRule', () => {
     let rule;
@@ -143,6 +132,21 @@ describe('InfoDisplayRule', () => {
             const rules = InfoDisplayRule.getAll();
             expect(rules.length).toBe(1);
             expect(rules[0].getID()).toBe('test_rule');
+        });
+    });
+
+    describe('getGlobalContingentRuleIDs', () => {
+        it('should return an empty array by default', () => {
+            expect(rule.getGlobalContingentRuleIDs()).toEqual([]);
+        });
+
+        it('should return the provided globalContingentRules', () => {
+            const ruleWithGlobals = new InfoDisplayRule({
+                identifier: 'global_rule',
+                description: 'rule with globals',
+                globalContingentRules: ['someRule', 'anotherRule']
+            });
+            expect(ruleWithGlobals.getGlobalContingentRuleIDs()).toEqual(['someRule', 'anotherRule']);
         });
     });
 });

@@ -3,54 +3,26 @@ import { describe, it, expect, beforeAll, vi } from 'vitest';
 import { InfoDisplayElement } from '../../../../../../Canopy [BP]/scripts/src/rules/infodisplay/InfoDisplayElement';
 import { Rules } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules';
 
-vi.mock('@minecraft/server', () => ({
-    world: { 
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        world: {
+            ...original.world,
+            afterEvents: {
+                ...original.world.afterEvents,
+                worldLoad: { subscribe: (callback) => callback() }
             }
         },
-        afterEvents: {
-            worldLoad: {
-                subscribe: (callback) => {
-                    callback();
-                }
-            }
-        },
-        setDynamicProperty: vi.fn()
-    },
-    system: {
-        beforeEvents: {
-            startup: {
-                subscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
-        },
-        runJob: vi.fn()
-    },
-    ItemStack: vi.fn((typeId, amount) => ({
-        typeId: typeId,
-        amount: amount || 1,
-        localizationKey: `item.${typeId.replace("minecraft:", '')}.name`
-    })),
-    CommandPermissionLevel: {
-        Any: 'Any'
-    },
-    CustomCommandParamType: {
-        String: 'String'
-    },
-    CustomCommandStatus: {
-        Failure: 'Failure'
-    }
-}));
-
-vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn()
-}));
+        ItemStack: vi.fn((typeId, amount) => ({
+            typeId: typeId,
+            amount: amount || 1,
+            localizationKey: `item.${typeId.replace("minecraft:", '')}.name`
+        })),
+        CommandPermissionLevel: { Any: 'Any' },
+        CustomCommandParamType: { String: 'String' }
+    };
+});
 
 const mockPlayer = {
     getBlockFromViewDirection: vi.fn(() => ({

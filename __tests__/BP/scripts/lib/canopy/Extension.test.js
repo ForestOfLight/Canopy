@@ -1,30 +1,10 @@
-import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, vi, beforeAll, afterAll, beforeEach, afterEach } from 'vitest';
 import { Extension } from '../../../../../Canopy [BP]/scripts/lib/canopy/Extension.js';
 import { Command } from '../../../../../Canopy [BP]/scripts/lib/canopy/commands/Command.js';
 import { BooleanRule } from '../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule.js';
-
-vi.mock('@minecraft/server', () => ({
-    world: { 
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: vi.fn()
-            }
-        }
-    },
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
-        },
-        runJob: vi.fn()
-    }
-}));
+import IPC from '../../../../../Canopy [BP]/scripts/lib/MCBE-IPC/ipc.js';
+import { Commands } from '../../../../../Canopy [BP]/scripts/lib/canopy/commands/Commands.js';
+import { Rules } from '../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules.js';
 
 describe('Extension', () => {
     const extensionData = {
@@ -144,6 +124,86 @@ describe('Extension', () => {
             });
             extension.rules.push(rule);
             expect(extension.getRule('test_rule')).toBe(rule);
+        });
+    });
+
+    describe('runCommand', () => {
+        it('should call sender.runCommand when isEndstone is true', () => {
+            const endstoneExt = new Extension({ name: 'Endstone Ext', version: '1.0.0', author: 'Author', description: 'Test', isEndstone: true });
+            const sender = { runCommand: vi.fn() };
+            endstoneExt.runCommand(sender, 'myCmd', { arg1: 'val1' });
+            expect(sender.runCommand).toHaveBeenCalledWith('myCmd val1');
+        });
+    });
+
+    describe('IPC registration callbacks', () => {
+        let ipcExt;
+        let capturedCallbacks;
+
+        beforeEach(() => {
+            capturedCallbacks = {};
+            Commands.clear();
+            Rules.clear();
+            vi.spyOn(IPC, 'on').mockImplementation((channel, _deserializer, callback) => {
+                capturedCallbacks[channel] = callback;
+            });
+            ipcExt = new Extension({ name: 'IPC Test Ext', version: '1.0.0', author: 'Author', description: 'Test' });
+        });
+
+        afterEach(() => {
+            vi.restoreAllMocks();
+        });
+
+        it('should push a Command when the registerCommand IPC message is received', () => {
+            capturedCallbacks['canopyExtension:ipc_test_ext:registerCommand']({
+                name: 'ipc_cmd',
+                usage: 'ipc_cmd'
+            });
+            expect(ipcExt.getCommands().length).toBe(1);
+        });
+
+        it('should push a BooleanRule when registerRule receives type boolean', () => {
+            capturedCallbacks['canopyExtension:ipc_test_ext:registerRule']({
+                identifier: 'ipc_bool_rule',
+                type: 'boolean',
+                defaultValue: 'false',
+                description: 'test'
+            });
+            expect(ipcExt.getRules().length).toBe(1);
+            expect(ipcExt.getRules()[0].getType()).toBe('boolean');
+        });
+
+        it('should push an IntegerRule when registerRule receives type integer', () => {
+            capturedCallbacks['canopyExtension:ipc_test_ext:registerRule']({
+                identifier: 'ipc_int_rule',
+                type: 'integer',
+                defaultValue: '5',
+                description: 'test',
+                valueRange: { range: { min: 0, max: 10 } }
+            });
+            expect(ipcExt.getRules().length).toBe(1);
+            expect(ipcExt.getRules()[0].getType()).toBe('integer');
+        });
+
+        it('should push a FloatRule when registerRule receives type float', () => {
+            capturedCallbacks['canopyExtension:ipc_test_ext:registerRule']({
+                identifier: 'ipc_float_rule',
+                type: 'float',
+                defaultValue: '0.5',
+                description: 'test',
+                valueRange: { range: { min: 0.0, max: 1.0 } }
+            });
+            expect(ipcExt.getRules().length).toBe(1);
+            expect(ipcExt.getRules()[0].getType()).toBe('float');
+        });
+
+        it('should throw for an invalid rule type', () => {
+            expect(() => capturedCallbacks['canopyExtension:ipc_test_ext:registerRule']({
+                identifier: 'ipc_bad_rule',
+                type: 'invalid',
+                defaultValue: 'x',
+                description: 'test'
+            })).toThrow('[Canopy] Could not register rule: ipc_bad_rule. Invalid data type.');
         });
     });
 

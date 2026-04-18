@@ -27,7 +27,7 @@ export class ViewDirectionVector extends DebugDisplayShapeElement {
         const location = new Vector(0, this.entity.getHeadLocation().y - this.entity.location.y, 0);
         return {
             location,
-            endLocation: location.add(this.entity.getViewDirection()).multiply(1 + AABB.extent.x)
+            endLocation: location.add(this.entity.getViewDirection()).scale(1 + AABB.extent.x)
         };
     }
 

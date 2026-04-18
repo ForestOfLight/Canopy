@@ -3,52 +3,29 @@ import { spawnedEntitiesThisTick, handleTntDuplication } from '../../../../../Ca
 import { system, world } from '@minecraft/server';
 import { BooleanRule, Rules } from '../../../../../Canopy [BP]/scripts/lib/canopy/Canopy';
 
-vi.mock("@minecraft/server", () => ({
-    system: {
-        runInterval: vi.fn((callback, interval) => {
-            const intervalId = setInterval(() => {
-                callback();
-            }, interval * 50);
-            return {
-                clear: () => clearInterval(intervalId)
-            };
-        }),
-        runTimeout: vi.fn((callback, timeout) => {
-            const timeoutId = setTimeout(() => {
-                callback();
-            }, timeout * 50);
-            return {
-                clear: () => clearTimeout(timeoutId)
-            };
-        }),
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn(),
-                unsubscribe: vi.fn()
-            }
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        system: {
+            ...original.system,
+            runInterval: vi.fn((callback, interval) => {
+                const intervalId = setInterval(() => { callback(); }, interval * 50);
+                return { clear: () => clearInterval(intervalId) };
+            }),
+            runTimeout: vi.fn((callback, timeout) => {
+                const timeoutId = setTimeout(() => { callback(); }, timeout * 50);
+                return { clear: () => clearTimeout(timeoutId) };
+            })
         }
-    },
-    world: {
-        afterEvents: {
-            entitySpawn: {
-                subscribe: vi.fn()
-            },
-            pistonActivate: {
-                subscribe: vi.fn()
-            }
-        }
-    }
-}));
+    };
+});
 
 vi.mock('../../../../../Canopy [BP]/scripts/lib/canopy/Canopy', () => ({
     BooleanRule: vi.fn(),
     Rules: {
         getNativeValue: vi.fn()
     }
-}));
-
-vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn()
 }));
 
 describe('dupeTnt Rule', () => {

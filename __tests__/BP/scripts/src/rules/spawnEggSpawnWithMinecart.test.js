@@ -15,62 +15,30 @@ const mockMinecart = {
     }))
 };
 
-vi.mock("@minecraft/server", () => ({
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            },
-            playerPlaceBlock: {
-                subscribe: vi.fn()
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        system: {
+            ...original.system,
+            run: vi.fn((callback) => callback()),
+            runInterval: vi.fn((callback, interval) => {
+                const intervalId = setInterval(callback, interval * 50);
+                return { clear: () => clearInterval(intervalId) };
+            }),
+            clearRun: vi.fn((runner) => { runner.clear(); })
+        },
+        world: {
+            ...original.world,
+            afterEvents: {
+                ...original.world.afterEvents,
+                playerInteractWithBlock: { subscribe: vi.fn(), unsubscribe: vi.fn() },
+                entitySpawn: { subscribe: vi.fn(), unsubscribe: vi.fn() }
             }
         },
-        runJob: vi.fn(),
-        run: vi.fn((callback) => callback()),
-        runInterval: vi.fn((callback, interval) => {
-            const intervalId = setInterval(callback, interval * 50);
-            return {
-                clear: () => clearInterval(intervalId)
-            };
-        }),
-        clearRun: vi.fn((runner) => {
-            runner.clear();
-        })
-    },
-    world: {
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: vi.fn()
-            },
-            playerInteractWithBlock: {
-                subscribe: vi.fn(),
-                unsubscribe: vi.fn()
-            },
-            entitySpawn: {
-                subscribe: vi.fn(),
-                unsubscribe: vi.fn()
-            }
-        },
-        getDynamicProperty: vi.fn(),
-        setDynamicProperty: vi.fn(),
-        structureManager: {
-            place: vi.fn()
-        }
-    },
-    EntityComponentTypes: {
-        Rideable: 'rideable',
-        Riding: 'riding'
-    }
-}));
-
-vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn()
-}));
+        EntityComponentTypes: { ...original.EntityComponentTypes, Rideable: 'rideable', Riding: 'riding' }
+    };
+});
 
 describe('spawnEggSpawnWithMinecart', () => {
     afterEach(() => {

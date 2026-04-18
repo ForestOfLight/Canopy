@@ -8,7 +8,20 @@
 	},
 	"regolith": {
 		"dataPath": "./data",
-		"filterDefinitions": {},
+		"filterDefinitions": {
+			"bump_version": {
+				"runWith": "nodejs",
+				"script": "filters/bump_version/main.js"
+			},
+			"update_mob_data": {
+				"runWith": "nodejs",
+				"script": "filters/update_mob_data/main.js"
+			},
+			"package_mcaddon": {
+				"runWith": "nodejs",
+				"script": "filters/package_mcaddon/main.js"
+			}
+		},
 		"formatVersion": "1.4.0",
 		"profiles": {
 			"default": {
@@ -30,6 +43,23 @@
 					"bpName": "project.name+'[BP]'"
 				},
 				"filters": []
+			},
+			"release": {
+				"export": {
+					"target": "none"
+				},
+				"filters": [
+					{ "filter": "update_mob_data" },
+					{ "filter": "package_mcaddon" }
+				]
+			},
+			"bump-version": {
+				"export": {
+					"target": "none"
+				},
+				"filters": [
+					{ "filter": "bump_version" }
+				]
 			}
 		}
 	}

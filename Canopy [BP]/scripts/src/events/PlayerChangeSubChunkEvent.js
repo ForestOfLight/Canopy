@@ -41,8 +41,9 @@ class PlayerChangeSubChunkEvent extends Event {
     }
 
     isInSameSubChunk(currentLocation, lastLocation) {
-        const currentChunkVec = new Vector(currentLocation.x, currentLocation.y, currentLocation.z).divide(16).floor();
-        const lastChunkVec = new Vector(lastLocation.x, lastLocation.y, lastLocation.z).divide(16).floor();
+        const CHUNK_SIZE = 16;
+        const currentChunkVec = new Vector(currentLocation.x, currentLocation.y, currentLocation.z).scale(1/CHUNK_SIZE).floor();
+        const lastChunkVec = new Vector(lastLocation.x, lastLocation.y, lastLocation.z).scale(1/CHUNK_SIZE).floor();
         return currentChunkVec.x === lastChunkVec.x &&
                currentChunkVec.y === lastChunkVec.y &&
                currentChunkVec.z === lastChunkVec.z;

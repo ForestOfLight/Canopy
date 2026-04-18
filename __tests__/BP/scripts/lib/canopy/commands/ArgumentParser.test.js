@@ -1,28 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { ArgumentParser } from '../../../../../../Canopy [BP]/scripts/lib/canopy/commands/ArgumentParser.js';
-
-vi.mock("@minecraft/server", () => ({
-    world: { 
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: vi.fn()
-            }
-        }
-    },
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
-        },
-        runJob: vi.fn()
-    }
-}));
 
 describe('ArgumentParser', () => {
     describe('parseCommandString', () => {
@@ -100,6 +77,15 @@ describe('ArgumentParser', () => {
             expect(result).toEqual({
                 name: 'command',
                 args: [true, 42, 'test string', [1, 2, 3], '@e[type=creeper]']
+            });
+        });
+
+        it('should parse a command string with a float argument', () => {
+            const commandString = 'command 1.5';
+            const result = ArgumentParser.parseCommandString(commandString);
+            expect(result).toEqual({
+                name: 'command',
+                args: [1.5]
             });
         });
 

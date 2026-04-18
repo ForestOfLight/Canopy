@@ -2,9 +2,9 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "regolith: run",
+            "label": "regolith: run default",
             "type": "shell",
-            "command": "regolith run",
+            "command": "regolith run default",
             "problemMatcher": [],
             "group": {
                 "kind": "build",
@@ -16,7 +16,42 @@
             }
         },
         {
-            "label": "regolith: watch",
+            "label": "regolith: run preview",
+            "type": "shell",
+            "command": "regolith run preview",
+            "problemMatcher": [],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "close": true
+            }
+        },
+        {
+            "label": "regolith: run release",
+            "type": "shell",
+            "command": "regolith run release",
+            "problemMatcher": [],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "close": false
+            }
+        },
+        {
+            "label": "regolith: bump version",
+            "type": "shell",
+            "command": "regolith run bump-version",
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "panel": "new",
+                "close": false
+            }
+        },
+        {
+            "label": "regolith: watch default",
             "type": "shell",
             "command": "regolith watch default",
             "isBackground": true,

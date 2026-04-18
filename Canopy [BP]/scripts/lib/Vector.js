@@ -17,20 +17,16 @@ Vector.dot = function dot(a, b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
 Vector.angleBetween = function angleBetween(a, b) { return Math.acos(Vector.dot(a, b) / (Vector.magnitude(a) * Vector.magnitude(b))); }
 Vector.subtract = function subtract(a, b) { return { x: a.x - b.x, y: a.y - b.y, z: a.z - b.z, __proto__: Vector.prototype } };
 Vector.add = function add(a, b) { return { x: a.x + b.x, y: a.y + b.y, z: a.z + b.z, __proto__: Vector.prototype } };
-Vector.multiply = function multiply(vec, num) {
+Vector.scale = function scale(vec, num) {
     if (typeof num == "number") return { x: vec.x * num, y: vec.y * num, z: vec.z * num, __proto__: Vector.prototype };
     return { x: vec.x * num.x, y: vec.y * num.y, z: vec.z * num.z, __proto__: Vector.prototype };
 }
-Vector.divide = function divide(vec, num) {
-    if (typeof num == "number") return { x: vec.x / num, y: vec.y / num, z: vec.z / num, __proto__: Vector.prototype };
-    return { x: vec.x / num.x, y: vec.y / num.y, z: vec.z / num.z, __proto__: Vector.prototype };
-}
 Vector.isVec3 = function isVec3(vec) { return vec[isVec3Symbol] === true; }
 Vector.floor = function floor(vec) { return { x: Math.floor(vec.x), y: Math.floor(vec.y), z: Math.floor(vec.z), __proto__: Vector.prototype }; }
-Vector.projection = function projection(a, b) { return Vector.multiply(b, Vector.dot(a, b) / ((b.x * b.x + b.y * b.y + b.z * b.z) ** 2)); }
+Vector.projection = function projection(a, b) { return Vector.scale(b, Vector.dot(a, b) / ((b.x * b.x + b.y * b.y + b.z * b.z) ** 2)); }
 Vector.rejection = function rejection(a, b) { return Vector.subtract(a, Vector.projection(a, b)); }
-Vector.reflect = function reflect(v, n) { return Vector.subtract(v, Vector.multiply(n, 2 * Vector.dot(v, n))); }
-Vector.lerp = function lerp(a, b, t) { return Vector.multiply(a, 1 - t).add(Vector.multiply(b, t)); }
+Vector.reflect = function reflect(v, n) { return Vector.subtract(v, Vector.scale(n, 2 * Vector.dot(v, n))); }
+Vector.lerp = function lerp(a, b, t) { return Vector.scale(a, 1 - t).add(Vector.scale(b, t)); }
 Vector.distance = function distance(a, b) { return Vector.magnitude(Vector.subtract(a, b)); }
 Vector.from = function from(object) {
     if (Vector.isVec3(object)) return object;
@@ -62,8 +58,7 @@ Vector.prototype = {
     floor() { return Vector.floor(this); },
     add(vec) { return Vector.add(this, vec); },
     subtract(vec) { return Vector.subtract(this, vec); },
-    multiply(num) { return Vector.multiply(this, num); },
-    divide(num) { return Vector.divide(this, num); },
+    scale(num) { return Vector.scale(this, num); },
     get length() { return Vector.magnitude(this); },
     get normalized() { return Vector.normalize(this); },
     x: 0,

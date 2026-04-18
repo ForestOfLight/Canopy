@@ -46,8 +46,8 @@ export class HSSFinder {
     calculateHSS(structureBounds) {
         const CHUNK_SIZE = 16;
         const chunkOverlay = {
-            min: structureBounds.min.divide(CHUNK_SIZE).floor().multiply(CHUNK_SIZE),
-            max: structureBounds.max.divide(CHUNK_SIZE).floor().add(new Vector(1, 1, 1)).multiply(CHUNK_SIZE)
+            min: structureBounds.min.scale(1/CHUNK_SIZE).floor().scale(CHUNK_SIZE),
+            max: structureBounds.max.scale(1/CHUNK_SIZE).floor().add(new Vector(1, 1, 1)).scale(CHUNK_SIZE)
         };
         const hssLocations = [];
         for (let chunkX = chunkOverlay.min.x; chunkX < chunkOverlay.max.x; chunkX += CHUNK_SIZE) {
