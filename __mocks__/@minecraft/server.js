@@ -58,6 +58,26 @@ export const CustomCommandStatus = {
     Success: 'Success',
 };
 
+export const CustomCommandParamType = {
+    Boolean: 'Boolean',
+    Enum: 'Enum',
+    Float: 'Float',
+    Integer: 'Integer',
+    Location: 'Location',
+    String: 'String',
+    EntitySelector: 'EntitySelector',
+    EntityType: 'EntityType',
+    BlockType: 'BlockType',
+};
+
+export const CommandPermissionLevel = {
+    Any: 'Any',
+    GameDirectors: 'GameDirectors',
+    Admin: 'Admin',
+    Owner: 'Owner',
+    Internal: 'Internal',
+};
+
 export const DimensionTypes = {};
 export const ScriptEventSource = {};
 export const InputButton = {};
