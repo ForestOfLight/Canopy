@@ -11,6 +11,7 @@ export default defineConfig({
     setupFiles: ['./vitest.setup.js'],
     env: {
       NODE_ENV: 'test'
-    }
+    },
+    exclude: ['**/node_modules/**', 'docs/scripts/**']
   }
 });
