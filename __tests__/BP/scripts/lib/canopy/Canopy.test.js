@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import * as Canopy from "../../../../../Canopy [BP]/scripts/lib/canopy/Canopy";
+import * as Canopy from "../../../../../Canopy[BP]/scripts/lib/canopy/Canopy";
 
 describe('Canopy module', () => {
     it('should export Commands', () => {

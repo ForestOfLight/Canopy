@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { tntFuseRule } from "../../../../../Canopy [BP]/scripts/src/rules/tntFuse";
+import { tntFuseRule } from "../../../../../Canopy[BP]/scripts/src/rules/tntFuse";
 
 const tntEntity = {
     typeId: 'minecraft:tnt',

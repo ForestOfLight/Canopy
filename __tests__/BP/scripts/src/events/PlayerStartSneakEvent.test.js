@@ -1,4 +1,4 @@
-import { PlayerStartSneakEvent, playerStartSneakEvent } from "../../../../../Canopy [BP]/scripts/src/events/PlayerStartSneakEvent";
+import { PlayerStartSneakEvent, playerStartSneakEvent } from "../../../../../Canopy[BP]/scripts/src/events/PlayerStartSneakEvent";
 import { expect, test, describe, vi } from "vitest";
 
 const mockPlayer1 = { id: 'player1', inputInfo: { getButtonState: vi.fn(() => "Pressed" ) }, isOnGround: true, location: { x: 0, y: 0, z: 0 }, getRotation: vi.fn(() => ({ x: 0, y: 0 })) };

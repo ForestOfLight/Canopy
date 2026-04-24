@@ -3,7 +3,7 @@ import {
 	calcDistance, isString, isNumeric, parseName, getClosestTarget, stringifyLocation, 
 	getColorCode, wait, getInventory, locationInArea, getColoredDimensionName, 
 	getScriptEventSourceName, getScriptEventSourceObject, recolor, titleCase, formatColorStr
-} from '../../../../Canopy [BP]/scripts/include/utils.js';
+} from '../../../../Canopy[BP]/scripts/include/utils.js';
 
 
 describe('calcDistance()', () => {

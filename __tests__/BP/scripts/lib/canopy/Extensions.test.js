@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-vi.mock('../../../../../Canopy [BP]/scripts/lib/MCBE-IPC/ipc.js', async (importOriginal) => {
+vi.mock('../../../../../Canopy[BP]/scripts/lib/MCBE-IPC/ipc.js', async (importOriginal) => {
     const actual = await importOriginal();
     return {
         ...actual,
@@ -14,9 +14,9 @@ vi.mock('../../../../../Canopy [BP]/scripts/lib/MCBE-IPC/ipc.js', async (importO
     };
 });
 
-import { Extensions } from "../../../../../Canopy [BP]/scripts/lib/canopy/Extensions.js";
-import { Extension } from "../../../../../Canopy [BP]/scripts/lib/canopy/Extension.js";
-import IPC from "../../../../../Canopy [BP]/scripts/lib/MCBE-IPC/ipc.js";
+import { Extensions } from "../../../../../Canopy[BP]/scripts/lib/canopy/Extensions.js";
+import { Extension } from "../../../../../Canopy[BP]/scripts/lib/canopy/Extension.js";
+import IPC from "../../../../../Canopy[BP]/scripts/lib/MCBE-IPC/ipc.js";
 
 describe("Extensions", () => {
     beforeEach(() => {

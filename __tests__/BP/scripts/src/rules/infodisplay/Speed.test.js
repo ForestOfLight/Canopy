@@ -1,7 +1,7 @@
-import { Speed } from '../../../../../../Canopy [BP]/scripts/src/rules/infodisplay/Speed';
+import { Speed } from '../../../../../../Canopy[BP]/scripts/src/rules/infodisplay/Speed';
 import { describe, it, expect, beforeAll, vi } from 'vitest';
-import { InfoDisplayElement } from '../../../../../../Canopy [BP]/scripts/src/rules/infodisplay/InfoDisplayElement';
-import { Rules } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules';
+import { InfoDisplayElement } from '../../../../../../Canopy[BP]/scripts/src/rules/infodisplay/InfoDisplayElement';
+import { Rules } from '../../../../../../Canopy[BP]/scripts/lib/canopy/rules/Rules';
 
 vi.mock('@minecraft/server', async (importOriginal) => {
     const original = await importOriginal();

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { FloatRule } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/FloatRule.js';
-import { Rules } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules.js';
+import { FloatRule } from '../../../../../../Canopy[BP]/scripts/lib/canopy/rules/FloatRule.js';
+import { Rules } from '../../../../../../Canopy[BP]/scripts/lib/canopy/rules/Rules.js';
 
 describe('FloatRule', () => {
     let rule;

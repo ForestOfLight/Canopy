@@ -1,6 +1,6 @@
-import { allowPeekInventory } from "../../../../../Canopy [BP]/scripts/src/rules/allowPeekInventory";
+import { allowPeekInventory } from "../../../../../Canopy[BP]/scripts/src/rules/allowPeekInventory";
 import { expect, it, describe, vi, afterEach } from "vitest";
-import { InventoryUI } from "../../../../../Canopy [BP]/scripts/src/classes/InventoryUI";
+import { InventoryUI } from "../../../../../Canopy[BP]/scripts/src/classes/InventoryUI";
 
 vi.mock('@minecraft/server', async (importOriginal) => {
     const original = await importOriginal();

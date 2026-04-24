@@ -1,4 +1,4 @@
-import { PlayerChangeSubChunkEvent, playerChangeSubChunkEvent } from "../../../../../Canopy [BP]/scripts/src/events/PlayerChangeSubChunkEvent";
+import { PlayerChangeSubChunkEvent, playerChangeSubChunkEvent } from "../../../../../Canopy[BP]/scripts/src/events/PlayerChangeSubChunkEvent";
 import { expect, it, describe, vi, beforeEach } from "vitest";
 
 const mockPlayer1 = { id: 'player1' };

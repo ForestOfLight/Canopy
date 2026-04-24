@@ -1,6 +1,6 @@
-import { playerSit } from "../../../../../Canopy [BP]/scripts/src/rules/playerSit";
+import { playerSit } from "../../../../../Canopy[BP]/scripts/src/rules/playerSit";
 import { expect, test, describe, vi, beforeAll, afterAll, afterEach } from "vitest";
-import { playerStartSneakEvent } from "../../../../../Canopy [BP]/scripts/src/events/PlayerStartSneakEvent";
+import { playerStartSneakEvent } from "../../../../../Canopy[BP]/scripts/src/events/PlayerStartSneakEvent";
 
 const rideableEntity = {
     type: 'canopy:rideable',

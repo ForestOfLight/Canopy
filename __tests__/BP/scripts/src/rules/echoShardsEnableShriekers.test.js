@@ -1,5 +1,5 @@
 import { vi, it, describe, expect } from "vitest";
-import { echoShardsEnableShriekers } from "../../../../../Canopy [BP]/scripts/src/rules/echoShardsEnableShriekers";
+import { echoShardsEnableShriekers } from "../../../../../Canopy[BP]/scripts/src/rules/echoShardsEnableShriekers";
 
 vi.mock('@minecraft/server', async (importOriginal) => {
     const original = await importOriginal();

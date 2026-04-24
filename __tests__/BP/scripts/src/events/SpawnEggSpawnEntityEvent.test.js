@@ -1,4 +1,4 @@
-import { SpawnEggSpawnEntityEvent, spawnEggSpawnEntityEvent } from "../../../../../Canopy [BP]/scripts/src/events/SpawnEggSpawnEntityEvent";
+import { SpawnEggSpawnEntityEvent, spawnEggSpawnEntityEvent } from "../../../../../Canopy[BP]/scripts/src/events/SpawnEggSpawnEntityEvent";
 import { expect, test, describe, vi, beforeEach } from "vitest";
 
 vi.mock('@minecraft/server', async (importOriginal) => {

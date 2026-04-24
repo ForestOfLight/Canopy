@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach, beforeAll, afterAll } from "vitest";
-import { TNTFuse } from "../../../../../Canopy [BP]/scripts/src/classes/TNTFuse.js";
+import { TNTFuse } from "../../../../../Canopy[BP]/scripts/src/classes/TNTFuse.js";
 
 vi.mock('@minecraft/server', async (importOriginal) => {
     const original = await importOriginal();

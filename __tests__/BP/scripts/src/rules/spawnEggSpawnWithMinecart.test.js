@@ -1,4 +1,4 @@
-import { spawnEggSpawnWithMinecart } from "../../../../../Canopy [BP]/scripts/src/rules/spawnEggSpawnWithMinecart";
+import { spawnEggSpawnWithMinecart } from "../../../../../Canopy[BP]/scripts/src/rules/spawnEggSpawnWithMinecart";
 import { expect, describe, vi, afterEach, it } from "vitest";
 
 const mockMinecart = {

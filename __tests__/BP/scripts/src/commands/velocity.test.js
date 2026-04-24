@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { velocityCommand } from "../../../../../Canopy [BP]/scripts/src/commands/velocity";
-import { Vector } from "../../../../../Canopy [BP]/scripts/lib/Vector";
-import { PlayerCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/Canopy";
+import { velocityCommand } from "../../../../../Canopy[BP]/scripts/src/commands/velocity";
+import { Vector } from "../../../../../Canopy[BP]/scripts/lib/Vector";
+import { PlayerCommandOrigin } from "../../../../../Canopy[BP]/scripts/lib/canopy/Canopy";
 
 vi.mock('@minecraft/server', async (importOriginal) => {
     const original = await importOriginal();

@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { RuleHelpPage } from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/RuleHelpPage";
-import { RuleHelpEntry } from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/RuleHelpEntry";
-import { BooleanRule } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule";
-import { Rules } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules";
+import { RuleHelpPage } from "../../../../../../Canopy[BP]/scripts/lib/canopy/help/RuleHelpPage";
+import { RuleHelpEntry } from "../../../../../../Canopy[BP]/scripts/lib/canopy/help/RuleHelpEntry";
+import { BooleanRule } from "../../../../../../Canopy[BP]/scripts/lib/canopy/rules/BooleanRule";
+import { Rules } from "../../../../../../Canopy[BP]/scripts/lib/canopy/rules/Rules";
 
 // Terrible practice. This is a workaround for a Vitest rollup error that causes the Rule class to not be imported properly in BooleanRule.
-vi.mock('../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rule', () => ({
+vi.mock('../../../../../../Canopy[BP]/scripts/lib/canopy/rules/Rule', () => ({
     Rule: class Rule {
         #category;
         #identifier;

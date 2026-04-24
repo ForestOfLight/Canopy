@@ -1,6 +1,6 @@
 import { vi, it, describe, expect, beforeEach } from "vitest";
-import { entitySeparation } from "../../../../../Canopy [BP]/scripts/src/rules/entitySeparation";
-import { Vector } from "../../../../../Canopy [BP]/scripts/lib/Vector";
+import { entitySeparation } from "../../../../../Canopy[BP]/scripts/src/rules/entitySeparation";
+import { Vector } from "../../../../../Canopy[BP]/scripts/lib/Vector";
 
 vi.mock('@minecraft/server', async (importOriginal) => {
     const original = await importOriginal();

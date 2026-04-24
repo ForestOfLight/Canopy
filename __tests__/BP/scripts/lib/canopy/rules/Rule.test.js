@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { Rule } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rule.js';
-import { BooleanRule } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule.js';
-import { IntegerRule } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/IntegerRule.js';
-import { Rules } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules.js';
+import { Rule } from '../../../../../../Canopy[BP]/scripts/lib/canopy/rules/Rule.js';
+import { BooleanRule } from '../../../../../../Canopy[BP]/scripts/lib/canopy/rules/BooleanRule.js';
+import { IntegerRule } from '../../../../../../Canopy[BP]/scripts/lib/canopy/rules/IntegerRule.js';
+import { Rules } from '../../../../../../Canopy[BP]/scripts/lib/canopy/rules/Rules.js';
 
 class ConcreteRule extends Rule {}
 

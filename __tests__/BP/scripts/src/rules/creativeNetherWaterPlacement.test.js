@@ -1,4 +1,4 @@
-import { creativeNetherWaterPlacement } from "../../../../../Canopy [BP]/scripts/src/rules/creativeNetherWaterPlacement";
+import { creativeNetherWaterPlacement } from "../../../../../Canopy[BP]/scripts/src/rules/creativeNetherWaterPlacement";
 import { expect, test, describe, vi, afterEach } from "vitest";
 
 vi.mock('@minecraft/server', async (importOriginal) => {

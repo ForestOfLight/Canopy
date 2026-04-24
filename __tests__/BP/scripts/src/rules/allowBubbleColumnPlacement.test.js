@@ -1,4 +1,4 @@
-import { allowBubbleColumnPlacement } from "../../../../../Canopy [BP]/scripts/src/rules/allowBubbleColumnPlacement";
+import { allowBubbleColumnPlacement } from "../../../../../Canopy[BP]/scripts/src/rules/allowBubbleColumnPlacement";
 import { expect, test, describe, vi, afterEach } from "vitest";
 
 vi.mock("@minecraft/server", async (importOriginal) => {

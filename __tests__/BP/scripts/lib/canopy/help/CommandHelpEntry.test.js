@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { CommandHelpEntry } from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/CommandHelpEntry";
-import { Commands } from "../../../../../../Canopy [BP]/scripts/lib/canopy/commands/Commands";
+import { CommandHelpEntry } from "../../../../../../Canopy[BP]/scripts/lib/canopy/help/CommandHelpEntry";
+import { Commands } from "../../../../../../Canopy[BP]/scripts/lib/canopy/commands/Commands";
 
 describe('CommandHelpEntry', () => {
     const mockCommand = {

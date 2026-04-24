@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { IntegerRule } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/IntegerRule.js';
-import { Rules } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules.js';
+import { IntegerRule } from '../../../../../../Canopy[BP]/scripts/lib/canopy/rules/IntegerRule.js';
+import { Rules } from '../../../../../../Canopy[BP]/scripts/lib/canopy/rules/Rules.js';
 
 describe('IntegerRule', () => {
     let rule;

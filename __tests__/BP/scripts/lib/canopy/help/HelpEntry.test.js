@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { HelpEntry } from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/HelpEntry";
+import { HelpEntry } from "../../../../../../Canopy[BP]/scripts/lib/canopy/help/HelpEntry";
 
 describe('HelpEntry', () => {
     it('should throw an error when instantiated directly', () => {

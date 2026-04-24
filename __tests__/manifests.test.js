@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import fs from "fs";
 import path from 'path';
-import { PACK_VERSION, MC_VERSION } from "../Canopy [BP]/scripts/constants";
+import { PACK_VERSION, MC_VERSION } from "../Canopy[BP]/scripts/constants";
 
-const manifestPathBP = path.resolve('Canopy [BP]/manifest.json');
-const manifestPathRP = path.resolve('Canopy [RP]/manifest.json');
+const manifestPathBP = path.resolve('Canopy[BP]/manifest.json');
+const manifestPathRP = path.resolve('Canopy[RP]/manifest.json');
 
 function getManifestObject(manifestPath) {
     const manifestContent = fs.readFileSync(manifestPath, 'utf-8');
@@ -30,7 +30,7 @@ describe('Manifests', () => {
         });
 
         it('should include version number in its name', () => {
-            expect(manifestContentBP.header.name).toBe(`Canopy [BP] v${getCanopyManifestVersion()}`);
+            expect(manifestContentBP.header.name).toBe(`Canopy[BP] v${getCanopyManifestVersion()}`);
         });
     
         it('should match constants version number', () => {
@@ -45,7 +45,7 @@ describe('Manifests', () => {
     describe('RP', () => {
         it('RP name should include version number', () => {
             const manifestContentRP = getManifestObject(manifestPathRP);
-            expect(manifestContentRP.header.name).toBe(`Canopy [RP] v${getCanopyManifestVersion()}`);
+            expect(manifestContentRP.header.name).toBe(`Canopy[RP] v${getCanopyManifestVersion()}`);
         });
     });
 });

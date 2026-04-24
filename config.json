@@ -3,8 +3,8 @@
 	"author": "ForestOfLight",
 	"name": "Canopy",
 	"packs": {
-		"behaviorPack": "./Canopy [BP]",
-		"resourcePack": "./Canopy [RP]"
+		"behaviorPack": "./Canopy[BP]",
+		"resourcePack": "./Canopy[RP]"
 	},
 	"regolith": {
 		"dataPath": "./data",

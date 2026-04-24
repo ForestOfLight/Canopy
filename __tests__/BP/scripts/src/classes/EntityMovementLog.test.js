@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeAll } from "vitest";
-import { EntityMovementLog } from "../../../../../Canopy [BP]/scripts/src/classes/EntityMovementLog";
+import { EntityMovementLog } from "../../../../../Canopy[BP]/scripts/src/classes/EntityMovementLog";
 
 vi.mock('@minecraft/server', async (importOriginal) => {
     const original = await importOriginal();

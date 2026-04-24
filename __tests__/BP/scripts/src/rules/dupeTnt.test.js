@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { spawnedEntitiesThisTick, handleTntDuplication } from '../../../../../Canopy [BP]/scripts/src/rules/dupeTnt';
+import { spawnedEntitiesThisTick, handleTntDuplication } from '../../../../../Canopy[BP]/scripts/src/rules/dupeTnt';
 import { system, world } from '@minecraft/server';
-import { BooleanRule, Rules } from '../../../../../Canopy [BP]/scripts/lib/canopy/Canopy';
+import { BooleanRule, Rules } from '../../../../../Canopy[BP]/scripts/lib/canopy/Canopy';
 
 vi.mock('@minecraft/server', async (importOriginal) => {
     const original = await importOriginal();
@@ -21,7 +21,7 @@ vi.mock('@minecraft/server', async (importOriginal) => {
     };
 });
 
-vi.mock('../../../../../Canopy [BP]/scripts/lib/canopy/Canopy', () => ({
+vi.mock('../../../../../Canopy[BP]/scripts/lib/canopy/Canopy', () => ({
     BooleanRule: vi.fn(),
     Rules: {
         getNativeValue: vi.fn()

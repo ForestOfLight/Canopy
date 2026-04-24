@@ -21,7 +21,7 @@ function versionToArray(versionStr) {
 
 function getCurrentVersion() {
     const content = fs.readFileSync(
-        path.join(projectRoot, 'Canopy [BP]', 'scripts', 'constants.js'), 'utf8'
+        path.join(projectRoot, 'Canopy[BP]', 'scripts', 'constants.js'), 'utf8'
     );
     const match = content.match(/PACK_VERSION\s*=\s*['"]([^'"]+)['"]/);
     if (!match) throw new Error('Could not find PACK_VERSION in constants.js');
@@ -100,9 +100,9 @@ async function main() {
     const newVersion = bumpVersion(currentVersion, bumpType);
     console.log(`[bump-version] ${currentVersion} → ${newVersion}`);
 
-    updateConstants(path.join(projectRoot, 'Canopy [BP]', 'scripts', 'constants.js'), newVersion);
-    updateManifest(path.join(projectRoot, 'Canopy [BP]', 'manifest.json'), newVersion);
-    updateManifest(path.join(projectRoot, 'Canopy [RP]', 'manifest.json'), newVersion);
+    updateConstants(path.join(projectRoot, 'Canopy[BP]', 'scripts', 'constants.js'), newVersion);
+    updateManifest(path.join(projectRoot, 'Canopy[BP]', 'manifest.json'), newVersion);
+    updateManifest(path.join(projectRoot, 'Canopy[RP]', 'manifest.json'), newVersion);
 
     updateConstants('BP/scripts/constants.js', newVersion);
     updateManifest('BP/manifest.json', newVersion);

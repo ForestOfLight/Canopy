@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeAll, afterAll, beforeEach, afterEach } from 'vitest';
-import { Extension } from '../../../../../Canopy [BP]/scripts/lib/canopy/Extension.js';
-import { Command } from '../../../../../Canopy [BP]/scripts/lib/canopy/commands/Command.js';
-import { BooleanRule } from '../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule.js';
-import IPC from '../../../../../Canopy [BP]/scripts/lib/MCBE-IPC/ipc.js';
-import { Commands } from '../../../../../Canopy [BP]/scripts/lib/canopy/commands/Commands.js';
-import { Rules } from '../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules.js';
+import { Extension } from '../../../../../Canopy[BP]/scripts/lib/canopy/Extension.js';
+import { Command } from '../../../../../Canopy[BP]/scripts/lib/canopy/commands/Command.js';
+import { BooleanRule } from '../../../../../Canopy[BP]/scripts/lib/canopy/rules/BooleanRule.js';
+import IPC from '../../../../../Canopy[BP]/scripts/lib/MCBE-IPC/ipc.js';
+import { Commands } from '../../../../../Canopy[BP]/scripts/lib/canopy/commands/Commands.js';
+import { Rules } from '../../../../../Canopy[BP]/scripts/lib/canopy/rules/Rules.js';
 
 describe('Extension', () => {
     const extensionData = {

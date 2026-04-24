@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ArgumentParser } from '../../../../../../Canopy [BP]/scripts/lib/canopy/commands/ArgumentParser.js';
+import { ArgumentParser } from '../../../../../../Canopy[BP]/scripts/lib/canopy/commands/ArgumentParser.js';
 
 describe('ArgumentParser', () => {
     describe('parseCommandString', () => {

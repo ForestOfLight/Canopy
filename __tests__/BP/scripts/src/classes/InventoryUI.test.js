@@ -1,6 +1,6 @@
-import { InventoryUI } from "../../../../../Canopy [BP]/scripts/src/classes/InventoryUI";
+import { InventoryUI } from "../../../../../Canopy[BP]/scripts/src/classes/InventoryUI";
 import { describe, it, expect, vi, afterEach } from "vitest";
-import * as Utils from "../../../../../Canopy [BP]/scripts/include/utils";
+import * as Utils from "../../../../../Canopy[BP]/scripts/include/utils";
 
 vi.mock('@minecraft/server', async (importOriginal) => {
     const original = await importOriginal();
