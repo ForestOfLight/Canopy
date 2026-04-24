@@ -2,7 +2,8 @@ import { Rule } from './Rule';
 
 export class BooleanRule extends Rule {
     constructor(options) {
-        options.defaultValue = options.defaultValue || false;
+        options.suggestedOptions = options.suggestedOptions ?? [false, true];
+        options.defaultValue = options.defaultValue ?? false;
         options.onModifyCallback = (value) => this.onModifyBool(value);
         super({ ...options });
         this.onEnable = options.onEnableCallback || (() => {});

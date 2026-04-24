@@ -80,4 +80,33 @@ describe('Rule', () => {
             await expect(rule.getValue()).rejects.toThrow('Failed to parse value for DynamicProperty');
         });
     });
+
+    describe('getWikiDescription', () => {
+        it('should return the wikiDescription when provided', () => {
+            const rule = new BooleanRule({ category: 'Rules', identifier: 'wiki_desc_rule', wikiDescription: 'My **wiki** description.' });
+            expect(rule.getWikiDescription()).toBe('My **wiki** description.');
+        });
+
+        it('should return undefined when wikiDescription is not provided', () => {
+            const rule = new BooleanRule({ category: 'Rules', identifier: 'no_wiki_desc_rule' });
+            expect(rule.getWikiDescription()).toBeUndefined();
+        });
+    });
+
+    describe('getSuggestedOptions', () => {
+        it('should return suggestedOptions when provided', () => {
+            const rule = new IntegerRule({ category: 'Rules', identifier: 'opts_rule', suggestedOptions: [1, 10, 80], valueRange: { range: { min: 1, max: 80 } } });
+            expect(rule.getSuggestedOptions()).toEqual([1, 10, 80]);
+        });
+
+        it('should return [false, true] for BooleanRule by default', () => {
+            const rule = new BooleanRule({ category: 'Rules', identifier: 'bool_opts_rule' });
+            expect(rule.getSuggestedOptions()).toEqual([false, true]);
+        });
+
+        it('should return undefined for IntegerRule when not provided', () => {
+            const rule = new IntegerRule({ category: 'Rules', identifier: 'no_opts_rule', valueRange: { range: { min: 0, max: 10 } } });
+            expect(rule.getSuggestedOptions()).toBeUndefined();
+        });
+    });
 });

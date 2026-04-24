@@ -9,10 +9,13 @@ export class Rule {
     #contingentRules;
     #independentRules;
     #extension;
+    #wikiDescription;
+    #suggestedOptions;
 
     constructor({ category, identifier, description = '', defaultValue = void 0,
-                contingentRules = [], independentRules = [], onModifyCallback = () => {}, extension = false }) {
-        if (this.constructor === Rule) 
+                contingentRules = [], independentRules = [], onModifyCallback = () => {}, extension = false,
+                wikiDescription = undefined, suggestedOptions = undefined }) {
+        if (this.constructor === Rule)
             throw new TypeError("Abstract class 'Rule' cannot be instantiated directly.");
         this.#category = category;
         this.#identifier = identifier;
@@ -22,6 +25,8 @@ export class Rule {
         this.#independentRules = independentRules;
         this.onModify = onModifyCallback;
         this.#extension = extension;
+        this.#wikiDescription = wikiDescription;
+        this.#suggestedOptions = suggestedOptions;
         Rules.register(this);
     }
 
@@ -59,6 +64,14 @@ export class Rule {
 
     getDefaultValue() {
         return this.#defaultValue;
+    }
+
+    getWikiDescription() {
+        return this.#wikiDescription;
+    }
+
+    getSuggestedOptions() {
+        return this.#suggestedOptions;
     }
 
     resetToDefaultValue() {
