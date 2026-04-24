@@ -10,6 +10,7 @@ export class CollisionBoxes extends AbilityRule {
     constructor() {
         super({
             identifier: 'collisionBoxes',
+            wikiDescription: 'Enables entity collision box visualization when an arrow is in inventory slot 14 (the slot to the right of the top middle slot in your inventory).',
             onEnableCallback: () => {},
             onDisableCallback: () => {
                 this.stopAllRendering();

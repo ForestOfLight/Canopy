@@ -4,7 +4,8 @@ import { CommandPermissionLevel, GameMode, system } from "@minecraft/server";
 new BooleanRule({
     category: 'Rules',
     identifier: 'commandJumpSurvival',
-    description: { translate: 'rules.commandJumpSurvival' }
+    description: { translate: 'rules.commandJumpSurvival' },
+    wikiDescription: 'Determines whether the `/jump` command can be used while in Survival mode.'
 });
 
 new VanillaCommand({

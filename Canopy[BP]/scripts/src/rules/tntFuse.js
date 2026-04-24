@@ -6,6 +6,8 @@ class TNTFuseRule extends IntegerRule {
     constructor() {
         super(GlobalRule.morphOptions({
             identifier: 'tntFuse',
+            wikiDescription: 'Sets the TNT fuse time (in ticks) for all TNT.',
+            suggestedOptions: [1, 10, 80, 200, 72000],
             defaultValue: TNTFuse.VANILLA_FUSE_TICKS,
             valueRange: { range: { min: 1, max: 72000 } }
         }));

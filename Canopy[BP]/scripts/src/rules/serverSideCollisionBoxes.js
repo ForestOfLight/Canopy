@@ -8,6 +8,7 @@ export class ServerSideCollisionBoxes extends BooleanRule {
     constructor() {
         super(GlobalRule.morphOptions({
             identifier: 'serverSideCollisionBoxes',
+            wikiDescription: 'Renders entity collision boxes based on their server-side position rather than their client-side position. Useful for debugging desyncs.',
             onEnableCallback: () => {
                 collisionBoxes.refresh();
                 DebugDisplay.refreshAllElements();

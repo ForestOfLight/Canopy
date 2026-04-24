@@ -8,6 +8,7 @@ export class EchoShardsEnableShriekers extends BooleanRule {
     constructor() {
         super(GlobalRule.morphOptions({
             identifier: 'echoShardsEnableShriekers',
+            wikiDescription: 'Using an echo shard on a sculk shrieker allows it to summon wardens.',
             onEnableCallback: () => this.subscribeToEvent(),
             onDisableCallback: () => this.unsubscribeFromEvent()
         }));

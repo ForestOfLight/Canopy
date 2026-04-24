@@ -6,7 +6,8 @@ const CLAIM_RADIUS = 25;
 new BooleanRule({
     category: 'Rules',
     identifier: 'commandClaimProjectiles',
-    description: { translate: 'rules.commandClaimProjectiles' }
+    description: { translate: 'rules.commandClaimProjectiles' },
+    wikiDescription: 'Determines whether the `/claimprojectiles` command can be used.'
 });
 
 new VanillaCommand( {

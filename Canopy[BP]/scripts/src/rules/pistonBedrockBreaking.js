@@ -5,7 +5,8 @@ import DirectionStateFinder from "../classes/DirectionState";
 new BooleanRule({
     category: 'Rules',
     identifier: 'pistonBedrockBreaking',
-    description: { translate: 'rules.pistonBedrockBreaking' }
+    description: { translate: 'rules.pistonBedrockBreaking' },
+    wikiDescription: 'Enables/disables the ability to break bedrock with pistons. To break bedrock, place a piston facing away from the bedrock block and power it. The piston will extend into the bedrock and break it when retracted. The piston also drops as an item.'
 });
 
 const insideBedrockPistonList = [];

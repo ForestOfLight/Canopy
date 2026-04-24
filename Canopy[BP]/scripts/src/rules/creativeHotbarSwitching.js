@@ -10,6 +10,7 @@ class CreativeHotbarSwitching extends AbilityRule {
     constructor() {
         super({
             identifier: 'creativeHotbarSwitching',
+            wikiDescription: 'Allows you to quickly switch between multiple hotbars. With an arrow in the top right of your inventory, sneak and change hotbar slots to cycle through your saved hotbars. For Creative mode use only.',
             onEnableCallback: () => { this.runner = system.runInterval(this.onTick.bind(this)); },
             onDisableCallback: () => { 
                 if (this.runner !== void 0) 

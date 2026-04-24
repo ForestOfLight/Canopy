@@ -4,7 +4,8 @@ import { world, GameMode, EntityComponentTypes } from "@minecraft/server";
 new BooleanRule({
     category: 'Rules',
     identifier: 'creativeInstantTame',
-    description: { translate: 'rules.creativeInstantTame' }
+    description: { translate: 'rules.creativeInstantTame' },
+    wikiDescription: 'Enables/disables the ability to tame animals instantly by feeding or mounting them in creative mode.'
 });
 
 

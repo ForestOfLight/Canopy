@@ -8,6 +8,7 @@ export class SpawnEggSpawnWithMinecart extends BooleanRule {
     constructor() {
         super(GlobalRule.morphOptions({
             identifier: 'spawnEggSpawnWithMinecart',
+            wikiDescription: 'When using a spawn egg on a rail, the spawned entity will be placed inside a minecart on that rail.',
             onEnableCallback: () => this.subscribeToEvent(),
             onDisableCallback: () => this.unsubscribeFromEvent()
         }));

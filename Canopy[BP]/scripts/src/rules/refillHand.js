@@ -5,6 +5,7 @@ class RefillHand extends AbilityRule {
     constructor() {
         super({
             identifier: 'refillHand',
+            wikiDescription: 'Replenishes your hand from your inventory when you run out of the item you are holding. Place an arrow in slot 10 (the slot to the right of the top left) to activate.',
             onEnableCallback: () => this.subscribeToEvents(),
             onDisableCallback: () => this.unsubscribeFromEvents()
         }, { slotNumber: 10 });

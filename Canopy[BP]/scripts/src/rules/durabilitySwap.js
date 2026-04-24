@@ -5,7 +5,8 @@ import { usedDurability, getRemainingDurability } from 'src/rules/durabilityNoti
 const rule = new BooleanRule({
     category: 'Rules',
     identifier: 'durabilitySwap',
-    description: { translate: 'rules.durabilitySwap' }
+    description: { translate: 'rules.durabilitySwap' },
+    wikiDescription: 'When your tool hits 0 durability, it is automatically swapped out of your hand. Swap priority: empty slots first, then items that don\'t take durability damage, then items with durability remaining.'
 });
 
 world.afterEvents.playerBreakBlock.subscribe((event) => durabilitySwap(event.player, event.itemStackBeforeBreak, event.itemStackAfterBreak));

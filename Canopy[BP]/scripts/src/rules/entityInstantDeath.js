@@ -5,6 +5,7 @@ export class EntityInstantDeath extends BooleanRule {
     constructor() {
         super(GlobalRule.morphOptions({
             identifier: 'entityInstantDeath',
+            wikiDescription: 'Removes the 20-gametick entity death animation, removing the entity immediately. Also causes entities not to drop XP.',
             onEnableCallback: () => this.subscribeToEvent(),
             onDisableCallback: () => this.unsubscribeFromEvent()
         }));

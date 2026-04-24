@@ -7,7 +7,8 @@ const REMOVAL_DISTANCE = 2.5;
 new BooleanRule({
     category: 'Rules',
     identifier: 'creativeNoTileDrops',
-    description: { translate: 'rules.creativeNoTileDrops' }
+    description: { translate: 'rules.creativeNoTileDrops' },
+    wikiDescription: 'Enables/disables items dropping from blocks when breaking them in creative mode. Unlike the vanilla gamerule, this also suppresses drops from containers and only applies when you break them — not when they break in the world.'
 });
 
 let brokenBlockEventsThisTick = [];

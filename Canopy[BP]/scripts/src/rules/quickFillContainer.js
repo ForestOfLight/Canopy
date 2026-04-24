@@ -7,6 +7,7 @@ class QuickFillContainer extends AbilityRule {
     constructor() {
         super({
             identifier: 'quickFillContainer',
+            wikiDescription: 'With an arrow in the top left of your inventory (slot 9), using an item on a container moves all matching items from your inventory into the container. Hold sneak to reverse the flow.',
             onEnableCallback: () => { world.beforeEvents.playerInteractWithBlock.subscribe(this.onPlayerInteractWithBlockBound); },
             onDisableCallback: () => { world.beforeEvents.playerInteractWithBlock.unsubscribe(this.onPlayerInteractWithBlockBound); }
         }, { slotNumber: 9 });

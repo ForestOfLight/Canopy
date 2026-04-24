@@ -5,6 +5,7 @@ class CreativeNetherWaterPlacement extends BooleanRule {
     constructor() {
         super(GlobalRule.morphOptions({
             identifier: 'creativeNetherWaterPlacement',
+            wikiDescription: 'Allows players in creative mode to place water in the Nether.',
             onEnableCallback: () => this.subscribeToEvent(),
             onDisableCallback: () => this.unsubscribeFromEvent()
         }));

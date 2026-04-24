@@ -8,6 +8,7 @@ export class EntitySeparation extends BooleanRule {
     constructor() {
         super(GlobalRule.morphOptions({
             identifier: 'entitySeparation',
+            wikiDescription: 'When stacked entities trigger a pressure plate, one entity will be pushed in the direction a neighboring dropper is facing.',
             onEnableCallback: () => this.subscribeToEvent(),
             onDisableCallback: () => this.unsubscribeFromEvent()
         }));

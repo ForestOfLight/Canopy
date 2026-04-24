@@ -7,7 +7,8 @@ const ADDITIONAL_DURABILITIES = [20];
 const rule = new BooleanRule({
     category: 'Rules',
     identifier: 'durabilityNotifier',
-    description: { translate: 'rules.durabilityNotifier', with: [ACTIVE_DURABILITY.toString()] }
+    description: { translate: 'rules.durabilityNotifier', with: [ACTIVE_DURABILITY.toString()] },
+    wikiDescription: 'Enables a sound and tooltip when your tool has three hits left before breaking. An additional tooltip appears when your tool has 20 durability remaining.'
 });
 
 world.afterEvents.playerBreakBlock.subscribe((event) => durabilityNotifier(event.player, event.itemStackBeforeBreak, event.itemStackAfterBreak));

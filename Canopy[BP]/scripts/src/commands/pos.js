@@ -7,7 +7,8 @@ const NETHER_SCALE_FACTOR = 8;
 new BooleanRule({
     category: 'Rules',
     identifier: 'commandPosOthers',
-    description: { translate: 'rules.commandPosOthers' }
+    description: { translate: 'rules.commandPosOthers' },
+    wikiDescription: 'Determines whether non-operators can use `/pos` on players other than themselves.'
 });
 
 new VanillaCommand({

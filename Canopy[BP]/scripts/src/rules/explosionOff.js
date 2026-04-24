@@ -5,7 +5,8 @@ new BooleanRule({
     category: 'Rules',
     identifier: 'explosionOff',
     description: { translate: 'rules.explosionOff' },
-    independentRules: ['explosionChainReactionOnly', 'explosionNoBlockDamage']
+    independentRules: ['explosionChainReactionOnly', 'explosionNoBlockDamage'],
+    wikiDescription: 'Enables/disables all explosions.'
 });
 
 world.beforeEvents.explosion.subscribe((event) => {

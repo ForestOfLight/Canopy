@@ -10,6 +10,7 @@ export class PotionBoostedBreeding extends BooleanRule {
     constructor() {
         super(GlobalRule.morphOptions({
             identifier: 'potionBoostedBreeding',
+            wikiDescription: 'Reintroduces the behavior that allows speed potions to affect breeding attributes in animals.',
             onEnableCallback: () => this.subscribeToEvents(),
             onDisableCallback: () => this.unsubscribeFromEvents()
         }));

@@ -6,7 +6,8 @@ import DirectionStateFinder from "../classes/DirectionState";
 new BooleanRule({
     category: 'Rules',
     identifier: 'flippinArrows',
-    description: { translate: 'rules.flippinArrows' }
+    description: { translate: 'rules.flippinArrows' },
+    wikiDescription: 'Using an arrow on a block will flip, rotate, or open it. Keeping the arrow in your offhand while placing blocks will place them in the opposite direction they would normally face.'
 });
 
 const WAIT_TICKS_BETWEEN_USE = 5;

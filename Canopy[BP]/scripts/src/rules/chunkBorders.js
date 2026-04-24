@@ -8,6 +8,7 @@ export class ChunkBorders extends AbilityRule {
     constructor() {
         super({
             identifier: 'chunkBorders',
+            wikiDescription: 'Enables chunk border visualization when an arrow is in the inventory slot below your offhand slot. Not available in the realms version.',
             onEnableCallback: () => {
                 playerChangeSubChunkEvent.subscribe(this.onPlayerChangeSubChunkBound);
             },

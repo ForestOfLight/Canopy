@@ -6,6 +6,7 @@ new BooleanRule({
     category: 'Rules',
     identifier: 'hopperGenerators',
     description: { translate: 'rules.hopperGenerators' },
+    wikiDescription: 'Enables/disables the generator command and hopper generator functionality. Disabling this rule also resets all generators.',
     onEnableCallback: () => generatorChannels.enable(),
     onDisableCallback: () => generatorChannels.disable()
 });

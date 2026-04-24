@@ -5,6 +5,8 @@ class TNTPrimeMomentum extends FloatRule {
     constructor() {
         super(GlobalRule.morphOptions({
             identifier: 'tntPrimeMomentum',
+            wikiDescription: 'When enabled, gives all TNT a fixed priming momentum in a random direction. Set to `-1` to disable. Useful for testing TNT-based contraptions in a controlled environment.',
+            suggestedOptions: [-1, 0, 0.0196],
             defaultValue: -1,
             valueRange: { range: { min: 0, max: 0.0196 }, other: [-1] } // Max from vanilla TNT: 49/2500
         }));

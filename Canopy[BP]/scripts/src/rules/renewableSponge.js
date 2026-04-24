@@ -4,7 +4,8 @@ import { world } from "@minecraft/server";
 new BooleanRule({
     category: 'Rules',
     identifier: 'renewableSponge',
-    description: { translate: 'rules.renewableSponge' }
+    description: { translate: 'rules.renewableSponge' },
+    wikiDescription: 'When enabled, guardians struck by lightning will transform into elder guardians.'
 });
 
 world.afterEvents.entityHurt.subscribe((event) => {

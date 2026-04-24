@@ -5,6 +5,7 @@ class AllowBubbleColumnPlacement extends BooleanRule {
     constructor() {
         super(GlobalRule.morphOptions({
             identifier: 'allowBubbleColumnPlacement',
+            wikiDescription: 'Removes the vanilla restriction on placing bubble column items. A soul sand or magma block underneath is still required.',
             onEnableCallback: () => this.subscribeToEvent(),
             onDisableCallback: () => this.unsubscribeFromEvent()
         }));

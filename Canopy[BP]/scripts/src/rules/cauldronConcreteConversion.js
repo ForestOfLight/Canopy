@@ -11,6 +11,7 @@ new BooleanRule({
     category: 'Rules',
     identifier: 'cauldronConcreteConversion',
     description: { translate: 'rules.cauldronConcreteConversion' },
+    wikiDescription: 'Concrete powder items inside water cauldrons will convert to concrete after 7 seconds.',
     onEnableCallback: () => {
         runner = system.runInterval(onTick.bind(this));
         world.afterEvents.entitySpawn.subscribe(onEntitySpawnBound);

@@ -5,14 +5,16 @@ import Warps from '../classes/Warps';
 new BooleanRule({
     category: 'Rules',
     identifier: 'commandWarp',
-    description: { translate: 'rules.commandWarp' }
+    description: { translate: 'rules.commandWarp' },
+    wikiDescription: 'Determines whether the `./warp` and `./warps` commands can be used.'
 });
 
 new BooleanRule({
     category: 'Rules',
     identifier: 'commandWarpSurvival',
     description: { translate: 'rules.commandWarpSurvival' },
-    contingentRules: ['commandWarp']
+    contingentRules: ['commandWarp'],
+    wikiDescription: 'Determines whether the `./warp` command can be used while in Survival mode.'
 });
 
 const cmd = new Command({

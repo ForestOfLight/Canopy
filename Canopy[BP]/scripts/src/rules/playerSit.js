@@ -14,6 +14,7 @@ class PlayerSit extends BooleanRule {
     constructor() {
         super(GlobalRule.morphOptions({
             identifier: ruleID,
+            wikiDescription: 'Allows players to sit down anywhere after 3 quick sneaks. Also determines whether the `/sit` command can be used.',
             description: { translate: `rules.${ruleID}`, with: [SNEAK_COUNT.toString()] },
             onEnableCallback: () => playerStartSneakEvent.subscribe(this.onPlayerStartSneakBound),
             onDisableCallback: () => playerStartSneakEvent.unsubscribe(this.onPlayerStartSneakBound)

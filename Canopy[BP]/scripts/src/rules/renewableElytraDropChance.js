@@ -5,6 +5,8 @@ class RenewableElytraDropChance extends FloatRule {
     constructor() {
         super(GlobalRule.morphOptions({
             identifier: 'renewableElytraDropChance',
+            wikiDescription: 'Gives phantoms a chance to drop elytra when killed by a shulker bullet. Set to `0` to disable.',
+            suggestedOptions: [0, 0.01, 0.2, 1],
             defaultValue: 0,
             valueRange: { range: { min: 0, max: 1 } }
         }));

@@ -4,7 +4,8 @@ import { world } from "@minecraft/server";
 new BooleanRule({
     category: 'Rules',
     identifier: 'armorStandRespawning',
-    description: { translate: 'rules.armorStandRespawning' }
+    description: { translate: 'rules.armorStandRespawning' },
+    wikiDescription: 'Enables/disables armor stands dropping their items and respawning when broken by a projectile. This rule is useful for sorting items with armor stands.'
 });
 
 world.afterEvents.projectileHitEntity.subscribe((event) => {

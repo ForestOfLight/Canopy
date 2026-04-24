@@ -4,7 +4,8 @@ import { system, world } from '@minecraft/server';
 new BooleanRule({
     category: 'Rules',
     identifier: 'dupeTnt',
-    description: { translate: 'rules.dupeTnt' }
+    description: { translate: 'rules.dupeTnt' },
+    wikiDescription: 'Enables/disables TNT duping. To dupe a block of TNT, it must be moved by a piston while adjacent to a note block, then ignited.\n\nThe TNT will drop with normal priming momentum in the block below where it was ignited. Note that using this rule alongside `tntPrimeMomentum` will cause a 1-gametick slowdown before the TNT drops.\n\n![Dupe TNT Example](./exampleAssets/dupeTnt.png)'
 });
 
 export let spawnedEntitiesThisTick = [];

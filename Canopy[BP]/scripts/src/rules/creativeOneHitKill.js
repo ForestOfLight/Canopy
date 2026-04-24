@@ -4,7 +4,8 @@ import { world, InputButton, ButtonState, GameMode } from "@minecraft/server";
 new BooleanRule({
     category: 'Rules',
     identifier: 'creativeOneHitKill',
-    description: { translate: 'rules.creativeOneHitKill' }
+    description: { translate: 'rules.creativeOneHitKill' },
+    wikiDescription: 'Allows players in creative to kill entities in one hit. If the player is sneaking, all entities in a small radius will be killed. Does not affect items, xp orbs, or players.'
 });
 
 world.afterEvents.entityHitEntity.subscribe((event) => {

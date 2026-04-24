@@ -8,6 +8,7 @@ class AllowPeekInventory extends BooleanRule {
     constructor() {
         super(GlobalRule.morphOptions({
             identifier: 'allowPeekInventory',
+            wikiDescription: 'Enables all peek inventory functionality. This rule must be enabled to use `peekInventory` in your InfoDisplay. It also enables the `/peek` command and the ability to peek inside containers by holding a spyglass.',
             onEnableCallback: () => this.subscribeToEvents(),
             onDisableCallback: () => this.unsubscribeFromEvents()
         }));

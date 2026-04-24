@@ -6,6 +6,7 @@ new BooleanRule({
     category: 'Rules',
     identifier: 'hopperCounters',
     description: { translate: 'rules.hopperCounters' },
+    wikiDescription: 'Enables/disables the counter command and hopper counter functionality. Disabling this rule also resets all counters.',
     onEnableCallback: () => counterChannels.enable(),
     onDisableCallback: () => counterChannels.disable()
 });

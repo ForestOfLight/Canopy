@@ -9,6 +9,7 @@ new BooleanRule({
     category: 'Rules',
     identifier: 'commandCamera',
     description: { translate: 'rules.commandCamera' },
+    wikiDescription: 'Determines whether the `/cam` command can be used.',
     onEnableCallback: () => {
         world.afterEvents.playerGameModeChange.subscribe(onPlayerGameModeChange);
         world.beforeEvents.playerLeave.subscribe(onPlayerLeave);

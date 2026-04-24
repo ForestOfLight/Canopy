@@ -5,7 +5,8 @@ import { calcDistance } from "../../include/utils";
 new BooleanRule({
     category: 'Rules',
     identifier: 'autoItemPickup',
-    description: { translate: 'rules.autoItemPickup' }
+    description: { translate: 'rules.autoItemPickup' },
+    wikiDescription: 'Enables/disables the automatic pickup of items that drop when you break a block.'
 });
 
 new BooleanRule({

@@ -6,6 +6,8 @@ class MinecartChunkLoading extends IntegerRule {
     constructor() {
         super(GlobalRule.morphOptions({
             identifier: 'minecartChunkLoading',
+            wikiDescription: 'Allows minecarts to tick the chunks around them in a square radius for 10 seconds after they are spawned. The minecart must remain present for the full duration. Set to `-1` to disable.',
+            suggestedOptions: [-1, 2, 3, 4],
             onModifyCallback: (newValue) => this.tryStartTicking(newValue),
             defaultValue: -1,
             valueRange: { range: { min: 2, max: 6 }, other: [-1] }

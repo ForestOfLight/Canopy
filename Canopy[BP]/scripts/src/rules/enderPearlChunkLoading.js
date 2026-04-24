@@ -6,6 +6,8 @@ class EnderPearlChunkLoading extends IntegerRule {
     constructor() {
         super(GlobalRule.morphOptions({
             identifier: 'enderPearlChunkLoading',
+            wikiDescription: 'Allows ender pearls to tick the chunks around them in a square radius. Set to `-1` to disable.',
+            suggestedOptions: [-1, 2, 3, 4],
             onModifyCallback: (newValue) => this.tryStartTicking(newValue),
             defaultValue: -1,
             valueRange: { range: { min: 2, max: 6 }, other: [-1] }
