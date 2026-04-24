@@ -30,7 +30,7 @@ describe('Manifests', () => {
         });
 
         it('should include version number in its name', () => {
-            expect(manifestContentBP.header.name).toBe(`Canopy[BP] v${getCanopyManifestVersion()}`);
+            expect(manifestContentBP.header.name).toBe(`Canopy [BP] v${getCanopyManifestVersion()}`);
         });
     
         it('should match constants version number', () => {
@@ -45,7 +45,7 @@ describe('Manifests', () => {
     describe('RP', () => {
         it('RP name should include version number', () => {
             const manifestContentRP = getManifestObject(manifestPathRP);
-            expect(manifestContentRP.header.name).toBe(`Canopy[RP] v${getCanopyManifestVersion()}`);
+            expect(manifestContentRP.header.name).toBe(`Canopy [RP] v${getCanopyManifestVersion()}`);
         });
     });
 });
