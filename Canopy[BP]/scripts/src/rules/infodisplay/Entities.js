@@ -5,7 +5,7 @@ class Entities extends InfoDisplayElement {
     player;
 
     constructor(player, displayLine) {
-        const ruleData = { identifier: 'entities', description: { translate: 'rules.infoDisplay.entities' } };
+        const ruleData = { identifier: 'entities', description: { translate: 'rules.infoDisplay.entities' }, wikiDescription: 'Shows the number of entities in front of your player. If there are many entities in the world, having this enabled may cause lag.' };
         super(ruleData, displayLine);
         this.player = player;
     }

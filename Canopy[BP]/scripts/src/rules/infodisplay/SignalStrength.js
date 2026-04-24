@@ -5,7 +5,7 @@ class SignalStrength extends InfoDisplayElement {
     player;
 
     constructor(player, displayLine) {
-        const ruleData = { identifier: 'signalStrength', description: { translate: 'rules.infoDisplay.signalStrength' }, contingentRules: ['target'] };
+        const ruleData = { identifier: 'signalStrength', description: { translate: 'rules.infoDisplay.signalStrength' }, contingentRules: ['target'], wikiDescription: 'Shows the redstone signal strength of the block you are targeting.' };
         super(ruleData, displayLine, false);
         this.player = player;
     }

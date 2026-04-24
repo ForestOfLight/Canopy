@@ -8,7 +8,8 @@ export class BlockStates extends InfoDisplayElement {
     constructor(player, displayLine) {
         const ruleData = {
             identifier: 'blockStates',
-            description: { translate: 'rules.infoDisplay.blockStates' }
+            description: { translate: 'rules.infoDisplay.blockStates' },
+            wikiDescription: 'Shows the block states of the block you are targeting. Especially useful with [Construct](https://github.com/ForestOfLight/Construct), which shows desired block states as you build. Includes waterlogged status.'
         }
         super(ruleData, displayLine);
         this.player = player;

@@ -7,7 +7,8 @@ export class Velocity extends InfoDisplayElement {
     constructor(player, displayLine) {
         const ruleData = {
             identifier: 'velocity',
-            description: { translate: 'rules.infoDisplay.velocity' }
+            description: { translate: 'rules.infoDisplay.velocity' },
+            wikiDescription: 'Shows your current x, y, and z velocity values in meters per tick.'
         }
         super(ruleData, displayLine);
         this.player = player;

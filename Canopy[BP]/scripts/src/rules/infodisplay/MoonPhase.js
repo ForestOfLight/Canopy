@@ -3,7 +3,7 @@ import { world } from '@minecraft/server';
 
 class MoonPhase extends InfoDisplayElement {
     constructor(displayLine) {
-        const ruleData = { identifier: 'moonPhase', description: { translate: 'rules.infoDisplay.moonPhase' } };
+        const ruleData = { identifier: 'moonPhase', description: { translate: 'rules.infoDisplay.moonPhase' }, wikiDescription: 'Shows the current phase of the moon.' };
         super(ruleData, displayLine, true);
     }
 

@@ -4,7 +4,7 @@ class SessionTime extends InfoDisplayElement {
     player;
 
     constructor(player, displayLine) {
-        const ruleData = { identifier: 'sessionTime', description: { translate: 'rules.infoDisplay.sessionTime' } };
+        const ruleData = { identifier: 'sessionTime', description: { translate: 'rules.infoDisplay.sessionTime' }, wikiDescription: 'Shows the elapsed time since you joined the world in this session.' };
         super(ruleData, displayLine);
         this.player = player;
         player.setDynamicProperty('joinDate', Date.now());

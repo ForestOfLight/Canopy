@@ -3,7 +3,7 @@ import { getRaycastResults, parseName, stringifyLocation } from "../../../includ
 
 export class Target extends InfoDisplayElement {
     constructor(player, displayLine) {
-        const ruleData = { identifier: 'target', description: { translate: 'rules.infoDisplay.target' } };
+        const ruleData = { identifier: 'target', description: { translate: 'rules.infoDisplay.target' }, wikiDescription: 'Shows the identifier of the block or entity you are targeting.' };
         super(ruleData, displayLine);
         this.player = player;
     }

@@ -3,7 +3,7 @@ import { parseName, stringifyLocation } from "../../../include/utils";
 
 export class LiquidTarget extends InfoDisplayElement {
     constructor(player, displayLine) {
-        const ruleData = { identifier: 'liquidTarget', description: { translate: 'rules.infoDisplay.liquidTarget' } };
+        const ruleData = { identifier: 'liquidTarget', description: { translate: 'rules.infoDisplay.liquidTarget' }, wikiDescription: 'Shows the identifier of the liquid you are targeting.' };
         super(ruleData, displayLine);
         this.player = player;
     }

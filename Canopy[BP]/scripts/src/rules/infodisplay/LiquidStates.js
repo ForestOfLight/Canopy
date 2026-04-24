@@ -7,7 +7,8 @@ export class LiquidStates extends InfoDisplayElement {
     constructor(player, displayLine) {
         const ruleData = {
             identifier: 'liquidStates',
-            description: { translate: 'rules.infoDisplay.liquidStates' }
+            description: { translate: 'rules.infoDisplay.liquidStates' },
+            wikiDescription: 'Shows the states of the liquid you are targeting.'
         }
         super(ruleData, displayLine);
         this.player = player;

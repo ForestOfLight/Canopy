@@ -7,10 +7,11 @@ class PeekInventory extends InfoDisplayElement {
     player;
 
     constructor(player, displayLine) {
-		const ruleData = { identifier: 'peekInventory', 
-			description: { translate: 'rules.infoDisplay.peekInventory' }, 
-			contingentRules: ['target'], 
-			globalContingentRules: ['allowPeekInventory'] 
+		const ruleData = { identifier: 'peekInventory',
+			description: { translate: 'rules.infoDisplay.peekInventory' },
+			contingentRules: ['target'],
+			globalContingentRules: ['allowPeekInventory'],
+			wikiDescription: 'Shows the inventory of the block or entity you are targeting in your InfoDisplay. Requires the `allowPeekInventory` global rule to be enabled.'
 		};
         super(ruleData, displayLine, false);
         this.player = player;

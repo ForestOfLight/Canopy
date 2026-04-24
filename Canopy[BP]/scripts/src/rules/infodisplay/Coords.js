@@ -4,7 +4,7 @@ class Coords extends InfoDisplayElement {
     player;
 
     constructor(player, displayLine) {
-        const ruleData = { identifier: 'coords', description: { translate: 'rules.infoDisplay.coords' } };
+        const ruleData = { identifier: 'coords', description: { translate: 'rules.infoDisplay.coords' }, wikiDescription: 'Shows your coordinates truncated at 2 decimal places.' };
         super(ruleData, displayLine);
         this.player = player;
     }

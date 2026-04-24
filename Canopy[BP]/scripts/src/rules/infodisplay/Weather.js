@@ -2,7 +2,7 @@ import { InfoDisplayElement } from './InfoDisplayElement.js';
 
 class Weather extends InfoDisplayElement {
     constructor(player, displayLine) {
-        const ruleData = { identifier: 'weather', description: { translate: 'rules.infoDisplay.weather' } };
+        const ruleData = { identifier: 'weather', description: { translate: 'rules.infoDisplay.weather' }, wikiDescription: 'Shows the current weather in your dimension.' };
         super(ruleData, displayLine);
         this.player = player;
     }

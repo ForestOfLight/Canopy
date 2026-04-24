@@ -4,7 +4,7 @@ class Facing extends InfoDisplayElement {
     player;
 
     constructor(player, displayLine) {
-        const ruleData = { identifier: 'facing', description: { translate: 'rules.infoDisplay.facing' } };
+        const ruleData = { identifier: 'facing', description: { translate: 'rules.infoDisplay.facing' }, wikiDescription: 'Shows your exact facing direction using yaw and pitch values.' };
         super(ruleData, displayLine);
         this.player = player;
     }

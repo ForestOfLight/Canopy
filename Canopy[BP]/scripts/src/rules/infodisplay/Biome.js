@@ -4,9 +4,10 @@ class Biome extends InfoDisplayElement {
     player;
 
     constructor(player, displayLine) {
-        const ruleData = { 
-            identifier: 'biome', 
-            description: { translate: 'rules.infoDisplay.biome' }
+        const ruleData = {
+            identifier: 'biome',
+            description: { translate: 'rules.infoDisplay.biome' },
+            wikiDescription: 'Shows the biome at your current location.'
         };
         super(ruleData, displayLine);
         this.player = player;

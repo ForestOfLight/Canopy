@@ -4,9 +4,10 @@ class Light extends InfoDisplayElement {
     player;
 
     constructor(player, displayLine) {
-        const ruleData = { 
+        const ruleData = {
             identifier: 'light',
-            description: { translate: 'rules.infoDisplay.light' }
+            description: { translate: 'rules.infoDisplay.light' },
+            wikiDescription: 'Shows the light level at your feet, including the sky light contribution.'
         };
         super(ruleData, displayLine);
         this.player = player;

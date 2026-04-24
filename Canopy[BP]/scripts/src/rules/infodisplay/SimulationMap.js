@@ -6,7 +6,7 @@ class SimulationMap extends InfoDisplayElement {
     player;
 
     constructor(player, displayLine) {
-        const ruleData = { identifier: 'simulationMap', description: { translate: 'rules.infoDisplay.simulationMap' } };
+        const ruleData = { identifier: 'simulationMap', description: { translate: 'rules.infoDisplay.simulationMap' }, wikiDescription: 'Shows a map of loaded chunks around you or a configured location. Ticking chunks are green; non-ticking chunks are red. Configure with the `./simmap` command. **Warning:** This rule is performance-intensive.' };
         super(ruleData, displayLine);
         this.player = player;
     }

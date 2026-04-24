@@ -4,7 +4,7 @@ import { TicksPerSecond } from '@minecraft/server';
 
 class TPS extends InfoDisplayElement {
     constructor(displayLine) {
-        const ruleData = { identifier: 'tps', description: { translate: 'rules.infoDisplay.tps' } };
+        const ruleData = { identifier: 'tps', description: { translate: 'rules.infoDisplay.tps' }, wikiDescription: 'Shows the server\'s current ticks per second (TPS).' };
         super(ruleData, displayLine, true);
     }
 

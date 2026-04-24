@@ -4,7 +4,7 @@ class CardinalFacing extends InfoDisplayElement {
     player;
 
     constructor(player, displayLine) {
-        const ruleData = { identifier: 'cardinalFacing', description: { translate: 'rules.infoDisplay.cardinalFacing' } };
+        const ruleData = { identifier: 'cardinalFacing', description: { translate: 'rules.infoDisplay.cardinalFacing' }, wikiDescription: 'Shows which direction you are facing using cardinal directions (N, S, E, W) and the corresponding coordinate axis (e.g., N (-z)).' };
         super(ruleData, displayLine);
         this.player = player;
     }

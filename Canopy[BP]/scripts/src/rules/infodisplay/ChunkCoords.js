@@ -2,7 +2,7 @@ import { InfoDisplayElement } from './InfoDisplayElement.js';
 
 class ChunkCoords extends InfoDisplayElement {
     constructor(player, displayLine) {
-        const ruleData = { identifier: 'chunkCoords', description: { translate: 'rules.infoDisplay.chunkCoords' } };
+        const ruleData = { identifier: 'chunkCoords', description: { translate: 'rules.infoDisplay.chunkCoords' }, wikiDescription: 'Shows the coordinates of the chunk you are in and your relative position within that chunk.' };
         super(ruleData, displayLine);
         this.player = player;
     }

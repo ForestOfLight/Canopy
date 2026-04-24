@@ -8,7 +8,8 @@ export class Speed extends InfoDisplayElement {
     constructor(player, displayLine) {
         const ruleData = {
             identifier: 'speed',
-            description: { translate: 'rules.infoDisplay.speed' }
+            description: { translate: 'rules.infoDisplay.speed' },
+            wikiDescription: 'Shows your current movement speed in meters per second.'
         }
         super(ruleData, displayLine);
         this.player = player;

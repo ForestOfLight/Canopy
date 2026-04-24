@@ -3,7 +3,7 @@ import { getAllTrackerInfoString } from 'src/commands/trackevent';
 
 class EventTrackers extends InfoDisplayElement {
     constructor(displayLine) {
-        const ruleData = { identifier: 'eventTrackers', description: { translate: 'rules.infoDisplay.eventTrackers' } };
+        const ruleData = { identifier: 'eventTrackers', description: { translate: 'rules.infoDisplay.eventTrackers' }, wikiDescription: 'Shows the counts of currently tracked events. Tracking is controlled with `/trackevent`.' };
         super(ruleData, displayLine, true);
     }
 

@@ -6,7 +6,8 @@ export class Structures extends InfoDisplayElement {
     constructor(player, displayLine) {
         const ruleData = {
             identifier: 'structures',
-            description: { translate: 'rules.infoDisplay.structures' }
+            description: { translate: 'rules.infoDisplay.structures' },
+            wikiDescription: 'Shows naturally generated structures present at your current location.'
         }
         super(ruleData, displayLine);
         this.player = player;

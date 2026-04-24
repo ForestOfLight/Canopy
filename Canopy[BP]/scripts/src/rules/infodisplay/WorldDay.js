@@ -3,7 +3,7 @@ import { world } from '@minecraft/server';
 
 class WorldDay extends InfoDisplayElement {
     constructor(displayLine) {
-        const ruleData = { identifier: 'worldDay', description: { translate: 'rules.infoDisplay.worldDay' } };
+        const ruleData = { identifier: 'worldDay', description: { translate: 'rules.infoDisplay.worldDay' }, wikiDescription: 'Shows the count of Minecraft days elapsed since the world was created.' };
         super(ruleData, displayLine, true);
     }
 
