@@ -5,8 +5,6 @@ import { fileURLToPath } from 'node:url';
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const projectRoot = path.resolve(__dirname, '../../');
 
-// ── Lang Parser ───────────────────────────────────────────────────────────────
-
 function parseLangFile(langPath) {
     const content = fs.readFileSync(langPath, 'utf8');
     const map = {};
@@ -27,8 +25,6 @@ function resolveDescription(desc, lang) {
     if (desc.text) return desc.text;
     return '';
 }
-
-// ── Usage String Builder ──────────────────────────────────────────────────────
 
 const PARAM_TYPE_DISPLAY = {
     Boolean: 'bool',
@@ -143,7 +139,7 @@ function generateRulesPage(rules, lang) {
     const sorted = [...rules].sort((a, b) => a.getID().localeCompare(b.getID()));
     const toc = sorted.map(r => `- [${r.getID()}](#${r.getID().toLowerCase()})`).join('\n');
     const entries = sorted.map(r => buildRuleEntry(r, lang)).join('\n---\n\n');
-    return `**Table of Contents:**\n${toc}\n\n---\n\n${entries}`;
+    return `<p align="center">\n<img src="./logo.png" alt="pack_icon" width="150"/>\n</p>\n\n**Table of Contents:**\n${toc}\n\n---\n\n${entries}`;
 }
 
 // ── Commands.md Injector ──────────────────────────────────────────────────────
