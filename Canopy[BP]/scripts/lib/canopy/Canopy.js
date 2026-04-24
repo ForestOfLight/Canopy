@@ -1,6 +1,7 @@
 import { Commands } from "./commands/Commands";
 import { Command } from "./commands/Command";
 import { VanillaCommand } from "./commands/VanillaCommand";
+import { VanillaCommands } from "./commands/VanillaCommands";
 import { Rules } from "./rules/Rules";
 import { Rule } from "./rules/Rule";
 import { BooleanRule } from "./rules/BooleanRule";
@@ -22,6 +23,6 @@ import { EntityCommandOrigin } from "./commands/EntityCommandOrigin";
 import { PlayerCommandOrigin } from "./commands/PlayerCommandOrigin";
 import { ServerCommandOrigin } from "./commands/ServerCommandOrigin";
 
-export { Commands, Command, VanillaCommand, BlockCommandOrigin, EntityCommandOrigin, PlayerCommandOrigin, ServerCommandOrigin, 
-    Rules, Rule, BooleanRule, IntegerRule, FloatRule, GlobalRule, InfoDisplayRule, AbilityRule, 
+export { Commands, Command, VanillaCommand, VanillaCommands, BlockCommandOrigin, EntityCommandOrigin, PlayerCommandOrigin, ServerCommandOrigin,
+    Rules, Rule, BooleanRule, IntegerRule, FloatRule, GlobalRule, InfoDisplayRule, AbilityRule,
     RuleHelpEntry, CommandHelpEntry, InfoDisplayRuleHelpEntry, RuleHelpPage, CommandHelpPage, InfoDisplayRuleHelpPage, HelpBook, Extensions };

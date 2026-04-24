@@ -1,5 +1,6 @@
 import { CustomCommandSource, CustomCommandStatus, Player, system } from "@minecraft/server";
 import { Rules } from "../rules/Rules";
+import { VanillaCommands } from "./VanillaCommands";
 import { BlockCommandOrigin } from "./BlockCommandOrigin";
 import { EntityCommandOrigin } from "./EntityCommandOrigin";
 import { ServerCommandOrigin } from "./ServerCommandOrigin";
@@ -11,6 +12,7 @@ export class VanillaCommand {
     constructor(customCommand) {
         this.customCommand = customCommand;
         this.setDefaultArgs();
+        VanillaCommands.register(this);
         system.beforeEvents.startup.subscribe(this.setupForRegistry.bind(this));
     }
 
@@ -107,5 +109,13 @@ export class VanillaCommand {
         if (!this.customCommand.allowedSources)
             return false;
         return !this.customCommand.allowedSources.includes(source.constructor);
+    }
+
+    getName() {
+        return this.customCommand.name.replace(/^[^:]+:/, '');
+    }
+
+    getSubCommandWikiDescription() {
+        return this.customCommand.subCommandWikiDescription || {};
     }
 }
