@@ -47,19 +47,7 @@ Need help, want to discuss technical Minecraft, or follow future updates? [**Joi
 
 ## Contributing
 
-We welcome community contributions! If you’re passionate about improving the technical Bedrock Edition experience, here’s how you can help:
-
-### Reporting Bugs
-
-Found a bug? Let us know by opening an [issue](https://github.com/ForestOfLight/Canopy/issues) with clear steps to reproduce it.
-
-### Submitting Code
-
-Got a fix or a new feature? Submit a **pull request**! Just follow our coding standards and include tests where possible.
-
-### Adding Translations
-
-**Canopy** currently supports American English, German (thanks to [theonlytruemuck](https://www.github.com/theonlytruemuck)), Indonesian (thanks to [IdotIcom](https://www.github.com/IdotIcom)), Chinese (thanks to [TickPoints](https://www.github.com/TickPoints)), Welsh (thanks to [Firebee45](https://www.github.com/Firebee45)), and Japanese (thanks to [ru-in-1](https://www.github.com/ru-in-1)). If you would like to contribute a translation, please join our Discord and reach out!
+We welcome community contributions! If you’re passionate about improving the technical Bedrock Edition experience, see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on reporting bugs, submitting code, and adding translations.
 
 ## An Amelix Foundation Project
 
