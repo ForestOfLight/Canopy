@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 // allowing Canopy source files to be imported in Node.js context.
 
 describe('Wiki generator', () => {
-    it('generates wiki pages', async () => {
+    it('generates wiki pages', { timeout: 60000 }, async () => {
         const wikiPath = process.env.WIKI_PATH;
         if (!wikiPath) throw new Error('WIKI_PATH environment variable is required.\nUsage: WIKI_PATH=../Canopy.wiki npm run generate-wiki');
 
@@ -19,4 +19,4 @@ describe('Wiki generator', () => {
         const { main } = await import('./generate-wiki.js');
         await main(resolvedWikiPath);
     });
-}, { timeout: 60000 });
+});
