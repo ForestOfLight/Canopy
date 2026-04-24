@@ -39,15 +39,15 @@ new VanillaCommand({
     callback: cameraCommand,
     subCommandWikiDescription: {
         'place': {
-            description: 'Places a camera at your current location for later viewing.',
+            description: 'Places down a camera for you to view later on.',
             params: []
         },
         'view': {
-            description: 'Toggles viewing your placed camera. Your player can still move and interact while viewing.',
+            description: 'Toggles viewing your placed camera. Your player will still be able to move around and interact as normal while viewing your placed camera.',
             params: []
         },
         'spectate': {
-            description: 'Toggles a survival-friendly freecam. Switches you to spectator mode with night vision and conduit power. Run again to return to your original position.',
+            description: 'Toggles a survival-friendly freecam. It switches you to spectator mode with night vision and conduit power. When you are finished, just run the command again to return to your original position. Alias: **`/cs`**',
             params: []
         },
     },

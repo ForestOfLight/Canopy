@@ -18,7 +18,7 @@ commands.generic.blocked.survival=§cThis command cannot be used in survival mod
 commands.generic.invalidsource=§cThis command cannot be run from this source.
 commands.generic.invalidaction=§cInvalid action. Use /help <command> for more information.
 
-commands.help=Displays help pages.
+commands.help=Displays every command's usage and a short description. Default page names include "InfoDisplay", "Rules", and several numbered pages of commands. There is also a page for any loaded extensions. Specifying a search term will display any command or rule that includes that term.
 commands.help.search.noresult=§cNo results found for '%s'.
 commands.help.search.results=§l§aCanopy§r §2Help search results for '§r%1§2':%2
 commands.help.page.header=§l§aCanopy§r§2 Help Page: §f%1
@@ -35,14 +35,16 @@ commands.biomeedges.notfinding=§cThere are no biome edges regions.
 commands.biomeedges.missinglocations=§cPlease provide both from and to locations.
 commands.biomeedges.overcapacity=§cToo many blocks in the specified area. (%1 > %2)
 
-commands.butcher=Instantly remove selected entities or the one you are targeting.
+commands.butcher=Instantly removes entities without dropping their items. If the entity argument is unspecified, the entity you are looking at is assumed.
 commands.butcher.fail.player=§cCannot remove players.
 commands.butcher.fail.noneremoved=§cNo entities removed.
 commands.butcher.success=§7Removed %1.
 commands.butcher.success.many=§7Removed %1 entities: 
 
 commands.camera=Place a camera, toggle viewing your placed camera, or toggle a survival-friendly spectator mode.
-commands.camera.spectate=Toggle a survival-friendly spectator mode.
+commands.camera.spectate=Toggles a survival-friendly freecam. It switches you to spectator mode with night vision and conduit power. When you are finished, just run the command again to return to your original position. Alias: **`/cs`**
+commands.camera.place=Places down a camera for you to view later on.
+commands.camera.view=Toggles viewing your placed camera. Your player will still be able to move around and interact as normal while viewing your placed camera.
 commands.camera.place.viewing=§cYou cannot place a camera while viewing one.
 commands.camera.place.success=§7Camera placed at %s.
 commands.camera.view.spectating=§cYou cannot view a camera while spectating.
@@ -59,57 +61,57 @@ commands.camera.spectate.flying=§cYou must be on the ground to spectate.
 commands.camera.invalidaction=§cInvalid camera action.
 
 commands.canopy=Enable or disable a rule.
-commands.canopy.version=Displays the current version of Canopy and all loaded extensions.
+commands.canopy.version=Displays information about the active **Canopy** installation.
 commands.canopy.version.message=§7This server is running §l§aCanopy§r
 commands.canopy.version.extensions=§7Loaded extensions:
-commands.canopy.menu=Displays a menu to toggle rules.
+commands.canopy.menu=Displays a menu with toggles for every rule. Flip the switches for the ones you want and hit the submit button at the bottom to save your changes.
 commands.canopy.menu.busy=§8Close your chat window to access the form.
 commands.canopy.menu.timeout=§8Form timed out after %s ticks.
 commands.canopy.menu.canceled=§8Form canceled. Rules were not updated.
 commands.canopy.menu.submit=§aApply
-commands.canopy.single=Modifies the value of a single rule.
-commands.canopy.multiple=Modifies the value of multiple rules.
+commands.canopy.single=Sets the value of a Global Rule. You can also use list syntax to change multiple rules at once (ex. `./canopy [ruleOne,ruleTwo] true`).
+commands.canopy.multiple=Sets the value of multiple Global Rules at once using list syntax.
 commands.canopy.infodisplayRule=§cThe rule '%1' is part of the InfoDisplay, and must be toggled using %2info. Use %2help for more information.
 
-commands.changedimension=Teleports entities to the specified dimension.
+commands.changedimension=Teleports entities to the specified dimension. If you include coordinates, the victim will be teleported to those coordinates in the specified dimension, otherwise coordinates will keep your current coordinates in the new dimension. Coordinates are converted like a nether portal when changing between the nether and the overworld. When the victim argument is empty, the command sender is assumed.
 commands.changedimension.notfound=§cInvalid dimension.
 commands.changedimension.success.coords=§7Teleported to %1 in the %2§7.
 commands.changedimension.success=§7Changed to the %s§7.
 commands.changedimension.fail.coords=§cInvalid coordinates. Please provide all x, y, z numeric values or none.
 
-commands.claimprojectiles=Changes the owner of all projectiles within a radius.
+commands.claimprojectiles=Makes you (or another specified player) the owner of all projectiles within a certain block radius. If no radius is specified, the default is 25 blocks.
 commands.claimprojectiles.fail.sourcenotplayer=§cSpecify a player to use this command.
 commands.claimprojectiles.fail.nonefound=§7No projectiles found in range (%s blocks).
 commands.claimprojectiles.success.self=§7Successfully became the owner of %1 projectiles within %2 blocks of you.
 commands.claimprojectiles.success.other=§7Successfully changed the owner of %1 projectiles within %2 blocks of %3.
 
-commands.cleanup=Removes all items and experience orbs within a radius.
+commands.cleanup=Removes all items and xp orbs within 50 blocks, or at a specified distance. Alias: **`/k`**
 commands.cleanup.success=§7Cleaned up %1 entities (r%2).
 
 commands.counter=Manages hopper counters. (Alias: ct)
 commands.counter.channel.notfound=§cInvalid color: %s. Please use one of the wool block colors.
-commands.counter.query=Displays the count and rates of the hopper counter for the specified color.
+commands.counter.query=Displays information about the item counts in each channel. This includes metrics like the total items and items per hour, and the same divided up into individual item types. Alias: **`./ct`** and **`./ct <color>`** This command can also be triggered with the vanilla command `/scriptevent canopy:counter [color]` (ie. in a command block).
 commands.counter.query.empty=§7There are no hopper counters in use.
 commands.counter.query.channel=§7Items for %1§7 (%2%3 min.), total: §f%4§7, (§f%5§7):
-commands.counter.realtime=Displays count and rates, but uses real-world time instead of tick-based time.
-commands.counter.mode=Sets the mode of a hopper counter.
+commands.counter.realtime=Displays information about the item counts using real-world time instead of Minecraft tick-based time to do rate calculations. Alias: **`./ct realtime`**, **`./ct <color|all> realtime`**
+commands.counter.mode=Changes the mode of a channel while tracking hopper counters in the InfoDisplay. `count` displays a count of every item that passes through. `hr`, `min`, `sec` displays the number of items per hour, minute, and second respectively. Alias: **`./ct <color|all> <count|hr|min|sec>`**
 commands.counter.mode.notfound=§cInvalid mode: '%1'. Please use one of the following modes: %2
 commands.counter.mode.single=§7Hopper Counter %1§7 mode: %2
 commands.counter.mode.single.actionbar=[%1] Set %2 hopper counter mode to %3
 commands.counter.mode.all=§7All Hopper Counters mode: %s
 commands.counter.mode.all.actionbar=[%1] Set all hopper counters mode to %2
-commands.counter.reset=Resets all hopper counters and restarts the timer.
+commands.counter.reset=Resets the count of all channels to zero and restarts the timer. Alias: **`./ct [color|all] reset`** This command can also be triggered with the vanilla command `/scriptevent canopy:counter [color|all] reset` (ie. in a command block).
 commands.counter.reset.single=§7Reset and time restarted: %s
 commands.counter.reset.single.actionbar=[%1] Reset %2 hopper counter.
 commands.counter.reset.all=§7All channels have been reset and hopper counter timer started.
 commands.counter.reset.all.actionbar=[%s] Reset all hopper counters.
-commands.counter.remove=Removes all hoppers in the specified channel.
+commands.counter.remove=Removes all known hoppers in the specified channel or all channels. This will also reset the timer for that channel or all channels. Alias: **`./ct remove`**, **`./ct <color|all> remove`** This command can also be triggered with the vanilla command `/scriptevent canopy:counter [color|all] remove` (ie. in a command block).
 commands.counter.remove.single=§7Removed all hoppers in %s.
 commands.counter.remove.single.actionbar=[%1] Removed all hoppers in %2
 commands.counter.remove.all=§7Removed all hoppers in all channels.
 commands.counter.remove.all.actionbar=[%s] Removed all hoppers in all channels.
 
-commands.data=Displays information about a block or entity you are targeting or one you select.
+commands.data=Displays information about blocks or entities. If the entity argument is specified, it will display information about that entity. Otherwise, information about the block or entity you are looking at will be displayed. This includes the its name, location, dimension, properties, states, components, component data, tags, and other info.
 commands.data.notarget.id=§cNo entity found with id '%2'.
 commands.data.properties=§aProperties:§r %s
 commands.data.states=§aStates:§r %s
@@ -126,18 +128,18 @@ commands.debugentity.added=§7Added '%1' to the debug display for %2 entities:
 commands.debugentity.removed=§7Removed '%1' from the debug display for %2 entities: 
 
 commands.distance=Calculates the distance between two locations. (Alias: d)
-commands.distance.target=Calculates distance between you and the block or entity you are targeting.
-commands.distance.fromto=Calculates the distance between two locations.
-commands.distance.from=Saves a location to calculate distance from.
+commands.distance.target=Calculates the distance in blocks between your head and the block or entity you are looking at down to three decimal places. Note that entity positions are at their foot. Alias: **`./d target`**
+commands.distance.fromto=Calculates the distance in blocks between the two points. The `to` coordinates can be omitted to use your player's position. Alias: **`./d from <x y z> to [x y z]`**
+commands.distance.from=Saves a location to calculate distance to later. The coordinates can be omitted to use your player's position. Alias: **`./d from [x y z]`**
 commands.distance.from.success=§7Saved location: %s
-commands.distance.to=Calculates the distance from the saved location to the specified location.
+commands.distance.to=Calculates the distance in blocks between the saved location and the specified coordinates. The coordinates can be omitted to use your player's position. Alias: **`./d to [x y z]`**
 commands.distance.to.fail.nosave=§cNo saved location found. Save a location with: %sdistance from [x y z]
 commands.distance.target.notfound=§cNo block or entity found to calculate distance from.
 commands.distance.cartesian=§7Cartesian: §r§l%s§r
 commands.distance.cylindrical=§7Cartesian(XZ): §r§l%s§r
 commands.distance.manhattan=§7§7Manhattan: §r§l%s§r
 
-commands.entitydensity=Find entity-dense areas in a dimension.
+commands.entitydensity=Displays the entity count for each dimension and identifies dense areas of entities in the specified dimension. The dimension argument can be omitted to use your current dimension. Valid dimension names include `overworld`, `nether`, `end`, `the_end`, `o`, `n`, and `e`. Recommended grid sizes: 100-512 or more.
 commands.entitydensity.fail.noentities=§7No dense areas found in %s§r§7. No entities in the dimension?
 commands.entitydensity.fail.dimension=§cInvalid dimension. Please use one of these: %s
 commands.entitydensity.fail.gridsize=§cInvalid grid size. Please use a value between 1 and 2048. Recommended: 100-1024.
@@ -151,22 +153,22 @@ commands.gamemode.sp=Set your gamemode to spectator.
 
 commands.generator=Manages hopper generators. (Alias: gt)
 commands.generator.channel.notfound=§cInvalid color: %s. Please use one of the wool block colors.
-commands.generator.query=Displays the count and rates of the hopper generator for the specified color.
+commands.generator.query=Displays information about the item counts in each channel. This includes metrics like the total items and items per hour, and the same divided up into individual item types. Alias: **`./gt`** and **`./gt <color>`** This command can also be triggered with the vanilla command `/scriptevent canopy:generator [color]` (ie. in a command block).
 commands.generator.query.empty=§7There are no hopper generators in use.
 commands.generator.query.channel=§7Generated items for %1§7 (%2%3 min.), total: §f%4§7, (§f%5§7):
-commands.generator.realtime=Displays count and rates, but uses real-world time instead of tick-based time.
-commands.generator.reset=Resets all hopper generators and restarts the timer.
+commands.generator.realtime=Displays information about the item counts using real-world time instead of Minecraft tick-based time to do rate calculations. Alias: **`./gt realtime`**, **`./gt <color|all> realtime`**
+commands.generator.reset=Resets the count of all channels to zero and restarts the timer. Alias: **`./gt [color|all] reset`** This command can also be triggered with the vanilla command `/scriptevent canopy:generator [color|all] reset` (ie. in a command block).
 commands.generator.reset.single=§7Reset and time restarted: %s
 commands.generator.reset.single.actionbar=[%1] Reset %2 hopper generator.
 commands.generator.reset.all=§7All channels have been reset and hopper generator timer started.
 commands.generator.reset.all.actionbar=[%s] Reset all hopper generators.
-commands.generator.remove=Removes all hopper generators in the specified channel.
+commands.generator.remove=Removes all known hopper generators in the specified channel or all channels. This will also reset the timer for that channel or all channels. Alias: **`./gt remove`**, **`./gt <color|all> remove`** This command can also be triggered with the vanilla command `/scriptevent canopy:generator [color|all] remove` (ie. in a command block).
 commands.generator.remove.single=§7Removed all hopper generators in %s.
 commands.generator.remove.single.actionbar=[%1] Removed all hopper generators in %2
 commands.generator.remove.all=§7Removed all hopper generators in all channels.
 commands.generator.remove.all.actionbar=[%s] Removed all hopper generators in all channels.
 
-commands.health=Displays the server's current TPS, MSPT, and entity counts.
+commands.health=Profiles the server's tick speed for five seconds, displaying the average ticks per second (TPS) and the milliseconds per tick (MSPT). Also shows the lowest and highest values of each over that time. Additionally, this command also displays the entity count for each dimension.
 commands.health.startprofile=§7Profiling tick time...
 commands.health.fail.mspt=§cCould not compute MSPT. Please report this error.
 
@@ -182,31 +184,31 @@ commands.hss.alreadyrunning=§cYou are already finding fortress hardcoded spawn 
 commands.hss.notrunning=§cYou are not currently finding fortress hardcoded spawn spots.
 
 commands.info=Toggle InfoDisplay rules. (Alias: i)
-commands.info.menu=Displays a menu to toggle InfoDisplay rules.
-commands.info.single=Toggle a single InfoDisplay rule.
-commands.info.multiple=Toggle multiple InfoDisplay rules.
-commands.info.all=Toggle all InfoDisplay rules.
+commands.info.menu=Displays a menu with toggles for every InfoDisplay rule. Flip the switches for the ones you want and hit the submit button at the bottom to save your changes.
+commands.info.single=Enables/disables an InfoDisplay rule. You can also use list syntax to change multiple rules at once (ex. `./info [ruleOne,ruleTwo] true`). Alias: **`./i <rule|all> <true|false>`**
+commands.info.multiple=Enables/disables multiple InfoDisplay rules at once using list syntax.
+commands.info.all=Enables/disables all InfoDisplay rules at once.
 commands.info.allupdated=§7All InfoDisplay rules are now §l
 commands.info.canopyRule=§cThe rule '%1' is global rule, and must be toggled using %2canopy. Use %2help for more information.
 
-commands.jump=Teleport to the block you are targeting. (Alias: j)
+commands.jump=Teleports you to the block you are currently looking at with a maximum range of 64 chunks. Jumping is disabled in Survival mode unless the `commandJumpSurvival` rule is enabled. Alias: **`/j`**
 commands.jump.fail.noblock=§cNo block found to jump to.
 
-commands.log=Log tnt, projectile, and falling block movement.
+commands.log=Logs the location of the specified entity type in chat. The precision argument is optional and sets the number of decimal places to truncate the entity location at. There is a maximum of 15 and the default is 3.
 commands.log.precision=§7Log precision set to %s.
 commands.log.started=§7Started logging %s.
 commands.log.stopped=§7Stopped logging %s.
 commands.log.invalidtype=§cInvalid log type.
 
-commands.lifetime.tracking=Start and stop tracking entity lifetime and spawn/removal reasons.
+commands.lifetime.tracking=Starts, stops, or restarts lifetime tracking.
 commands.lifetime.tracking.unknownaction=§cUnknown tracking action.
 commands.lifetime.tracking.already=§cLifetimes are already being tracked.
 commands.lifetime.tracking.not=§cLifetimes are not currently being tracked.
 commands.lifetime.tracking.start=§aStarted entity lifetime tracking.
 commands.lifetime.tracking.stop=§aStopped entity lifetime tracking.
 commands.lifetime.tracking.restart=§aRestarted entity lifetime tracking.
-commands.lifetime.query=Query detailed entity lifetime and spawn/removal reasons statistics.
-commands.lifetime.query.item=Query detailed item entity lifetime and spawn/removal reasons statistics.
+commands.lifetime.query=Queries lifetime tracking data for the specified entity type. You can choose to see lifetime, spawning, removal statistics, or a summary of all three. Adding the `useRealtime` argument will calculate rates based on real-world time instead of tick-based time.
+commands.lifetime.query.item=The same as `/lifetimequery`, but for items instead of entities.
 commands.lifetime.query.invalidaction=§cPlease enter a valid query action.
 commands.lifetime.query.invalidentity=§cPlease enter a valid entity type.
 commands.lifetime.query.header=§lLifetime Statistics§r (tracked %s min of
@@ -228,26 +230,26 @@ commands.lifetime.query.realtime.unit= sec
 commands.lifetime.query.ticktime= ingame time)
 commands.lifetime.query.ticktime.unit= gt
 
-commands.loop=Run a vanilla command multiple times in a single tick.
+commands.loop=Runs the specified command a certain number of times in a single tick. Note that the looped command must be encased in quotes.
 
-commands.peek=Peek into a target's inventory and optionally highlight items that match a query.
+commands.peek=Show the inventory of the block or entity you're looking at up to 64 chunks away. Using the "search term" argument will highlight any items that include your search term in your InfoDisplay.
 commands.peek.fail.unloaded=§cTarget at %s is unloaded.
 commands.peek.fail.noinventory=§cNo inventory found in %1 at %2.
 commands.peek.fail.noitems=§cNo items found in %1 at %2.
 commands.peek.query.cleared=§7Peek query cleared.
 commands.peek.query.set=§7Peek query set to '%s'.
 
-commands.pos=Shows your current position, or the positions of other players.
+commands.pos=Displays your current position, or the position of another player. Shows dimension and relative nether/overworld position as well.
 commands.pos.self=§aYour position: §f%s
 commands.pos.other=§a%1's position: §f%2
 commands.pos.dimension=§7Dimension: §7%s
 commands.pos.relative.overworld=§7Relative Overworld position: §a%s
 commands.pos.relative.nether=§7Relative Nether position: §c%s
 
-commands.retest=Resets spawn tracking, hopper counters, and hopper generators.
+commands.retest=Resets spawn tracking, hopper counters, and hopper generators. This is great if you want to restart a test for a machine or farm!
 commands.retest.success=§7Reset spawn counters, hopper counters, and hopper generators.
 
-commands.simmap=Displays a map of the loaded chunks near you or the specified location.
+commands.simmap=Displays a map showing the simulation status of chunks in an area. Ticking chunks are displayed in green and non-ticking chunks are displayed in red. The dimension and x/z coordinates configure the center of the map. The distance argument sets the size of the area to display (in chunks away from the center). The display argument allows you to configure these settings for the simulation map in your InfoDisplay. Using "display here" will reset your display settings to follow your player.
 commands.simmap.help.distance=Displays the map with a radius of chunks equal to the specified distance.
 commands.simmap.help.location=Display the map around the specified location.
 commands.simmap.help.display.set=Sets the distance or location for the simulation map in your InfoDisplay.
@@ -262,29 +264,29 @@ commands.sit=Makes your player sit down.
 commands.sit.busy=§cYou are busy and cannot sit down.
 
 commands.spawn=Spawn command for tracking and mocking spawns.
-commands.spawn.entities=Displays a list of all entities & their positions in the world.
+commands.spawn.entities=Displays a list of all entities in the world and their locations.
 commands.spawn.recent=Displays all mob spawns from the last 30s. Specify a mob name to filter.
-commands.spawn.tracking.start=Starts tracking mob spawns. Specify coords to track within an area.
+commands.spawn.tracking.start=Starts spawn tracking. Specify coordinates to track a specific area.
 commands.spawn.tracking.start.success=§7Spawns are now being tracked.
 commands.spawn.tracking.start.mob=§7Spawns are now being tracked for: %s.
 commands.spawn.tracking.start.mob.actionbar=[%1] §aAdded %2 to spawn tracking and reset.
 commands.spawn.tracking.start.area= Area: %1 to %2.
 commands.spawn.tracking.start.mocking= Since spawn mocking is enabled, mobs will not spawn but they will be tracked.
 commands.spawn.tracking.start.actionbar=[%s] §7Started tracking spawns.
-commands.spawn.tracking.mob=Starts tracking a specific mob spawn. Specify coords to track within an area. Run again to add more mob types to track.
+commands.spawn.tracking.mob=Starts spawn tracking for a specific mob. Specify coordinates to track a specific area. Run this command again with a new mob name to track multiple mobs types at once.
 commands.spawn.tracking.mob.invalid=§cInvalid mob name: %s
-commands.spawn.tracking.query=Displays a summary of all spawns that have occurred since the start of your test.
+commands.spawn.tracking.query=Displays statistics about mob spawning since spawn tracking started. Mob categories are based on population control.
 commands.spawn.tracking.query.dimension=§7Dimension %s§r:
 commands.spawn.tracking.no=§cSpawns are not currently being tracked.
 commands.spawn.tracking.already=§cSpawns are already being tracked.
 commands.spawn.tracking.test=Resets all spawn counters.
 commands.spawn.tracking.test.success=§7Spawn counters reset.
 commands.spawn.tracking.test.success.actionbar=[%s] §7Reset spawn counters.
-commands.spawn.tracking.stop=Stops tracking mob spawns.
+commands.spawn.tracking.stop=Displays statistics about mob spawning since spawn tracking started and then stops spawn tracking.
 commands.spawn.tracking.stop.success=§7Spawns are no longer being tracked.
 commands.spawn.tracking.stop.actionbar=[%s] §7Stopped tracking spawns.
 commands.spawn.reset=Resets all spawn counters.
-commands.spawn.mocking=Enables/disables mob spawning while allowing the spawning algorithm to run.
+commands.spawn.mocking=Allows the spawning algorithm to continue running while no mobs spawn. Useful for getting an upper bound on your farm's rates while tracking spawns.
 commands.spawn.mocking.enable=§aSpawn mocking is now enabled. Mobs will no longer spawn, but the spawning algorithm will continue.
 commands.spawn.mocking.disable=§cSpawn mocking is now disabled. Mobs will spawn as normal.
 commands.spawn.mocking.enable.actionbar=[%s] §aSpawn mocking enabled.
@@ -295,16 +297,16 @@ commands.summontnt.fail.none=§cNo TNT summoned.
 commands.summontnt.success=§7Summoned §c%s TNT§7.
 
 commands.tick=Set and control the server tick speed.
-commands.tick.mspt=Slows down the server tick speed to the specified mspt.
+commands.tick.mspt=Sets the world's tick speed to the desired mspt. There will always be some extra.
 commands.tick.mspt.fail=§cMSPT cannot be less than 50.0.
 commands.tick.mspt.success=§7%1 set the tick speed to %2 mspt.
-commands.tick.step=Allows the server to run at normal speed for the specified amount of steps.
+commands.tick.step=Makes the world run at normal speed for the specified number of ticks. Leave the `[steps]` argument blank to step only one tick.
 commands.tick.step.fail=§cCannot step ticks without setting a tick speed.
 commands.tick.step.start=§7%1 stepping %2 tick(s)...
 commands.tick.step.done=§7Tick step complete.
-commands.tick.reset=Resets the server tick speed to normal.
+commands.tick.reset=Resets the world's tick speed to normal.
 commands.tick.reset.success=§7%s reset the tick speed.
-commands.tick.sleep=Pauses the server for the specified amount of milliseconds.
+commands.tick.sleep=Pauses the game for the specified number of milliseconds. Can be run through a command block using `/scriptevent canopy:tick sleep [milliseconds]`.
 commands.tick.sleep.fail=§cInvalid sleep time.
 commands.tick.sleep.success=§7%1 pausing the server for %2 ms.
 
@@ -313,21 +315,21 @@ commands.tntfuse.reset.success=§7Reset TNT fuse time to §a80§7 ticks.
 commands.tntfuse.set.fail=§cInvalid fuse time: %1 ticks. Must be between %2 and %3 ticks.
 commands.tntfuse.set.success=§7TNT fuse time set to §a%s§7 ticks.
 
-commands.trackevent=Count the number of times any event occurs. Displays the count in the InfoDisplay.
+commands.trackevent=Toggles tracking for the specified event. Each time the event occurs, the tracker will increment. You can view the trackers' count in realtime in the InfoDisplay by enabling the `eventTrackers` InfoDisplay rule. If you need to find the names of some events, use these links: [beforeEvents](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/worldbeforeevents?view=minecraft-bedrock-experimental), [afterEvents](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/worldafterevents?view=minecraft-bedrock-experimental). If the last argument is not specified, afterEvent is assumed.
 commands.trackevent.stop=§7Stopped tracking %s.
 commands.trackevent.start=§7Started tracking %s.
 commands.trackevent.invalid=§cEvent %1 not found in %2.
 
-commands.velocity=Affect the velocity of entities.
+commands.velocity=Queries or modifies the velocity of the specified entity.
 commands.velocity.missingvelocity=§cPlease enter x, y, and z velocities.
 commands.velocity.query=§7Entity velocities (m/gt):
 commands.velocity.add=§7Added velocity to entities (m/gt):
 commands.velocity.set=§7Set velocity for entities (m/gt):
 
 commands.warp=Teleport to and manage warps. (Alias: w)
-commands.warp.edit=Adds or removes a warp.
-commands.warp.tp=Teleports you to a warp.
-commands.warp.list=List all available warps.
+commands.warp.edit=Adds or removes a warp. Alias: **`./w <add|remove> <name>`**
+commands.warp.tp=Teleports you to a warp. Alias: **`./w <name>`**
+commands.warp.list=Lists all available warps in chat.
 commands.warp.exists=§cWarp '%s' already exists. Use ./warps to see the list of warps.
 commands.warp.noexist=§cWarp '%s' not found. Use ./warps to see the list of warps.
 commands.warp.add.success=§7Warp '%s' has been added.
