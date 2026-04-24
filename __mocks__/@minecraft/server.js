@@ -1,41 +1,42 @@
 /* eslint-disable max-classes-per-file */
-import { vi } from 'vitest';
+// Support both Vitest (vi.fn()) and plain Node.js (noOp) contexts
+let mockFn;
+try {
+    const vitest = await import('vitest');
+    mockFn = vitest.vi.fn;
+} catch {
+    mockFn = () => () => {};
+}
+
+const noOp = () => {};
+const fn = () => mockFn();
+const eventEmitter = () => ({ subscribe: fn(), unsubscribe: fn() });
+
+// Returns an event emitter for any property access, so unknown events don't throw
+const eventBus = () => new Proxy({}, { get: () => eventEmitter() });
 
 export const world = {
-    beforeEvents: {
-        chatSend: { subscribe: vi.fn() },
-        playerPlaceBlock: { subscribe: vi.fn(), unsubscribe: vi.fn() },
-        entityRemove: { subscribe: vi.fn() },
-        playerLeave: { subscribe: vi.fn() },
-    },
-    afterEvents: {
-        worldLoad: { subscribe: vi.fn() },
-        entitySpawn: { subscribe: vi.fn() },
-        playerInventoryItemChange: { subscribe: vi.fn(), unsubscribe: vi.fn() },
-        pistonActivate: { subscribe: vi.fn() },
-    },
-    getDimension: vi.fn(),
-    getDynamicProperty: vi.fn(),
-    setDynamicProperty: vi.fn(),
+    beforeEvents: eventBus(),
+    afterEvents: eventBus(),
+    getDimension: fn(),
+    getDynamicProperty: fn(),
+    setDynamicProperty: fn(),
+    getPlayers: () => [],
+    getAllPlayers: () => [],
     structureManager: {
-        place: vi.fn(),
+        place: fn(),
     },
 };
 
 export const system = {
     currentTick: 0,
-    beforeEvents: {
-        startup: { subscribe: vi.fn(), unsubscribe: vi.fn() },
-    },
-    afterEvents: {
-        scriptEventReceive: { subscribe: vi.fn(), unsubscribe: vi.fn() },
-        playerPlaceBlock: { subscribe: vi.fn() },
-    },
-    runJob: vi.fn(),
-    run: vi.fn(),
-    runInterval: vi.fn(),
-    runTimeout: vi.fn(),
-    clearRun: vi.fn(),
+    beforeEvents: eventBus(),
+    afterEvents: eventBus(),
+    runJob: fn(),
+    run: fn(),
+    runInterval: fn(),
+    runTimeout: fn(),
+    clearRun: fn(),
 };
 
 export const EntityComponentTypes = {
@@ -78,14 +79,32 @@ export const CommandPermissionLevel = {
     Internal: 'Internal',
 };
 
-export const DimensionTypes = {};
+export const DimensionTypes = { getAll: () => [], get: () => undefined };
 export const ScriptEventSource = {};
 export const InputButton = {};
 export const ButtonState = {};
+export const GameMode = { survival: 'survival', creative: 'creative', adventure: 'adventure', spectator: 'spectator' };
+export const Direction = { down: 'down', up: 'up', north: 'north', south: 'south', east: 'east', west: 'west' };
+export const LiquidType = {};
+export const FluidType = {};
+export const EquipmentSlot = {};
+export const BlockPistonState = {};
+export const BlockComponentTypes = {};
+export const StructureMirrorAxis = {};
+export const StructureRotation = {};
+export const StructureSaveMode = {};
+export const RawMessage = {};
+export const MolangVariableMap = {};
+export const EntityInitializationCause = {};
 export const TicksPerSecond = 20;
 export const ItemStack = {};
 export class Block {}
+export class BlockPermutation {}
+export class BlockVolume {}
+export class Container {}
+export class CommandError extends Error {}
 export class Entity {}
+export class EntityItemComponent {}
 export class Player {
-    sendMessage = vi.fn();
+    sendMessage = fn();
 }

@@ -1,5 +1,14 @@
 /* eslint-disable max-classes-per-file */
-import { vi } from 'vitest';
+// Support both Vitest (vi.fn()) and plain Node.js (noOp) contexts
+let mockFn;
+try {
+    const vitest = await import('vitest');
+    mockFn = vitest.vi.fn;
+} catch {
+    mockFn = () => () => {};
+}
+
+const fn = () => mockFn();
 
 export const FormCancelationReason = {
     UserBusy: 'UserBusy',
@@ -7,7 +16,7 @@ export const FormCancelationReason = {
 };
 
 export const uiManager = {
-    closeAllForms: vi.fn(),
+    closeAllForms: fn(),
 };
 
 export class ModalFormData {}
