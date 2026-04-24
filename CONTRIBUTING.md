@@ -2,17 +2,18 @@
 
 Thanks for your interest in contributing! There are several ways to help:
 
-- [Reporting Bugs](#reporting-bugs)
-- [Contributing Code](#contributing-code)
-- [Contributing Translations](docs/TRANSLATING.md)
-
----
+- [Contributing to Canopy](#contributing-to-canopy)
+  - [Reporting Bugs](#reporting-bugs)
+  - [Contributing Code](#contributing-code)
+    - [Setup](#setup)
+    - [Code Style](#code-style)
+    - [Tests](#tests)
+    - [Submitting a PR](#submitting-a-pr)
+  - [Contributing Translations](#contributing-translations)
 
 ## Reporting Bugs
 
 Found a bug? Open an [issue](https://github.com/ForestOfLight/Canopy/issues) with clear steps to reproduce it.
-
----
 
 ## Contributing Code
 
@@ -55,8 +56,6 @@ All tests must pass before submitting.
 - Target the **`dev` branch**
 - Keep PRs focused — one concern per PR
 - Describe what your changes do and why in the PR description
-
----
 
 ## Contributing Translations
 

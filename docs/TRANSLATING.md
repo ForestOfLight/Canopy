@@ -9,9 +9,9 @@ Canopy currently supports: American English, German, Indonesian, Chinese, Welsh,
 ### 1. Fork and clone the repository
 
 1. Go to [github.com/ForestOfLight/Canopy](https://github.com/ForestOfLight/Canopy) and click **Fork** (top right).
-2. Clone your fork:
+2. Clone your fork (use the `dev` branch):
    ```bash
-   git clone https://github.com/<your-username>/Canopy.git
+   git clone -b dev https://github.com/<your-username>/Canopy.git
    cd Canopy
    ```
 3. Create a new branch for your translation:
