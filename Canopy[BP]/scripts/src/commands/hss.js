@@ -22,6 +22,20 @@ export class HSS extends VanillaCommand {
             permissionLevel: CommandPermissionLevel.GameDirectors,
             allowedSources: [PlayerCommandOrigin, EntityCommandOrigin, BlockCommandOrigin],
             callback: (origin, ...args) => this.hssCommand(origin, ...args),
+            subCommandWikiDescription: {
+                'calculate': {
+                    description: 'Finds hardcoded spawn spots (HSSes) near your current position. Stand inside a structure and run this command.',
+                    params: []
+                },
+                'fortress': {
+                    description: 'Finds HSSes using the mob spawning algorithm. May take a few minutes. Spawns are mocked during the search so no mobs will spawn.',
+                    params: []
+                },
+                'stop': {
+                    description: 'Clears all HSS visualizations.',
+                    params: []
+                },
+            },
         });
     }
 

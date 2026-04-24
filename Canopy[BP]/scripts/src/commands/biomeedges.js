@@ -25,6 +25,20 @@ export class BiomeEdges extends VanillaCommand {
             permissionLevel: CommandPermissionLevel.GameDirectors,
             allowedSources: [PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin],
             callback: (origin, ...args) => this.biomeEdgesCommand(origin, ...args),
+            subCommandWikiDescription: {
+                'add': {
+                    description: 'Creates a visual representation of biome edges in the specified region.',
+                    params: ['from', 'to']
+                },
+                'removelast': {
+                    description: 'Removes the most recently created biome edge visualization.',
+                    params: []
+                },
+                'clear': {
+                    description: 'Removes all biome edge visualizations.',
+                    params: []
+                },
+            },
         });
         this.biomeEdgeFinders = [];
     }

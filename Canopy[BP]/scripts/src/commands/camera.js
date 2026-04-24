@@ -36,7 +36,21 @@ new VanillaCommand({
     permissionLevel: CommandPermissionLevel.Any,
     contingentRules: ['commandCamera'],
     allowedSources: [PlayerCommandOrigin],
-    callback: cameraCommand
+    callback: cameraCommand,
+    subCommandWikiDescription: {
+        'place': {
+            description: 'Places a camera at your current location for later viewing.',
+            params: []
+        },
+        'view': {
+            description: 'Toggles viewing your placed camera. Your player can still move and interact while viewing.',
+            params: []
+        },
+        'spectate': {
+            description: 'Toggles a survival-friendly freecam. Switches you to spectator mode with night vision and conduit power. Run again to return to your original position.',
+            params: []
+        },
+    },
 });
 
 new VanillaCommand({
