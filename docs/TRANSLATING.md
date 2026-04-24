@@ -2,8 +2,6 @@
 
 Canopy currently supports: American English, German, Indonesian, Chinese, Welsh, and Japanese. New translations are always welcome!
 
----
-
 ## Getting Started
 
 ### 1. Fork and clone the repository
@@ -18,8 +16,6 @@ Canopy currently supports: American English, German, Indonesian, Chinese, Welsh,
    ```bash
    git checkout -b translation/fr_FR
    ```
-
----
 
 ## Adding or Updating a Translation
 
@@ -69,8 +65,6 @@ Example — incorrect (key changed):
 befehle.hilfe=Zeigt Hilfeseiten an.
 ```
 
----
-
 ## Testing Your Translation
 
 1. Place the Canopy resource pack in your Minecraft `development_resource_packs` folder.
@@ -85,8 +79,6 @@ befehle.hilfe=Zeigt Hilfeseiten an.
 ```
 
 This only works when the pack is in `development_resource_packs`.
-
----
 
 ## Submitting a PR
 
@@ -106,8 +98,6 @@ This only works when the pack is in `development_resource_packs`.
    ```
 4. Open a pull request on GitHub targeting the **`dev` branch**.
    - Your PR should only contain changes to your `.lang` file (and `languages.json` if it's a new language). Any other changes belong in a separate PR.
-
----
 
 ## Questions?
 
