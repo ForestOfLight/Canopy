@@ -16,7 +16,7 @@
 		"@minecraft/server-ui": "^2.1.0-beta.1.21.130-stable"
 	},
 	"scripts": {
-		"test": "vitest run --coverage",
+		"test": "vitest run --config vitest.config.js --coverage",
 		"lint": "eslint . --fix",
 		"generate-wiki": "sh -c 'WIKI_PATH=${WIKI_PATH:-$1} npx vitest run --config vitest.wiki.config.js' --"
 	},

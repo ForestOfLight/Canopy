@@ -13,7 +13,6 @@ export default defineConfig({
     }
   },
   test: {
-    setupFiles: ['./vitest.setup.js'],
     env: {
       NODE_ENV: 'test'
     },

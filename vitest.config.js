@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   resolve: {
@@ -8,7 +8,6 @@ export default defineConfig({
     }
   },
   test: {
-    setupFiles: ['./vitest.setup.js'],
     env: {
       NODE_ENV: 'test'
     },
