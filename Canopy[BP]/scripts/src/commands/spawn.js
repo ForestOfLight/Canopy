@@ -23,10 +23,10 @@ const cmd = new Command({
         { usage: 'spawn entities', description: { translate: 'commands.spawn.entities' } },
         { usage: 'spawn recent [mobName]', description: { translate: 'commands.spawn.recent' } },
         { usage: 'spawn tracking start [x1 y1 z1] [x2 y2 z2]', description: { translate: 'commands.spawn.tracking.start' } },
-        { usage: 'spawn tracking <mobName> [x1 y1 z1] [x2 y2 z2]', description: { translate: 'commands.spawn.tracking.mob' } },
-        { usage: 'spawn tracking', description: { translate: 'commands.spawn.tracking.query' } },
-        { usage: 'spawn tracking stop', description: { translate: 'commands.spawn.tracking.stop' } },
-        { usage: 'spawn mocking <true/false>', description: { translate: 'commands.spawn.mocking' } }
+        { usage: 'spawn tracking <mobName> [x1 y1 z1] [x2 y2 z2]', description: { translate: 'commands.spawn.tracking.mob' }, wikiDescription: 'Starts spawn tracking for a specific mob. Specify coordinates to track a specific area. Run this command again with a new mob name to track multiple mobs types at once.' },
+        { usage: 'spawn tracking', description: { translate: 'commands.spawn.tracking.query' }, wikiDescription: 'Displays statistics about mob spawning since spawn tracking started. Mob categories are based on population control.' },
+        { usage: 'spawn tracking stop', description: { translate: 'commands.spawn.tracking.stop' }, wikiDescription: 'Displays statistics about mob spawning since spawn tracking started and then stops spawn tracking.' },
+        { usage: 'spawn mocking <true/false>', description: { translate: 'commands.spawn.mocking' }, wikiDescription: 'Allows the spawning algorithm to continue running while no mobs spawn. Useful for getting an upper bound on your farm\'s rates while tracking spawns. Requires OP.' }
     ]
 });
 

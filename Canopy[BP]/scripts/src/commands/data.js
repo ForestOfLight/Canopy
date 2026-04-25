@@ -10,7 +10,8 @@ new VanillaCommand({
     optionalParameters: [{ name: 'entity', type: CustomCommandParamType.EntitySelector }],
     permissionLevel: CommandPermissionLevel.Any,
     allowedSources: [PlayerCommandOrigin],
-    callback: dataCommand
+    callback: dataCommand,
+    wikiDescription: 'Displays information about blocks or entities. If the entity argument is specified, it will display information about that entity. Otherwise, information about the block or entity you are looking at will be displayed. This includes the its name, location, dimension, properties, states, components, component data, tags, and other info.'
 });
 
 function dataCommand(origin, entity) {

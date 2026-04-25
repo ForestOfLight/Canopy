@@ -22,6 +22,7 @@ new VanillaCommand({
     permissionLevel: CommandPermissionLevel.Any,
     allowedSources: [PlayerCommandOrigin],
     callback: logCommand,
+    wikiDescription: 'Logs the location of the specified entity type in chat. The precision argument is optional and sets the number of decimal places to truncate the entity location at. There is a maximum of 15 and the default is 3.'
 });
 
 export function logCommand(origin, type, precision) {

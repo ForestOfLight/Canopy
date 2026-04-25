@@ -13,7 +13,8 @@ new VanillaCommand({
     permissionLevel: CommandPermissionLevel.Any,
     allowedSources: [PlayerCommandOrigin],
     contingentRules: ['allowPeekInventory'],
-    callback: peekCommand
+    callback: peekCommand,
+    wikiDescription: 'Show the inventory of the block or entity you\'re looking at up to 64 chunks away. Using the "search term" argument will highlight any items that include your search term in your InfoDisplay.'
 });
 
 function peekCommand(origin, itemQuery) {

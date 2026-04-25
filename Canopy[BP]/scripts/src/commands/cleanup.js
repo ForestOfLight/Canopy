@@ -9,7 +9,8 @@ new VanillaCommand({
     allowedSources: [PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin],
     cheatsRequired: true,
     callback: cleanupCommand,
-    aliases: ['canopy:k']
+    aliases: ['canopy:k'],
+    wikiDescription: 'Removes all items and xp orbs within 50 blocks, or at a specified distance. Alias: **`/k`**'
 });
 
 const TRASH_ENTITY_TYPES = ['minecraft:item', 'minecraft:xp_orb'];

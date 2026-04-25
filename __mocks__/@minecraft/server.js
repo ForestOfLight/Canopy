@@ -1,6 +1,34 @@
 /* eslint-disable max-classes-per-file */
 import { vi } from 'vitest';
 
+let nextRunId = 1;
+const scheduled = new Map();
+let currentTick = 0;
+
+export function advanceTicks(n = 1) {
+    for (let i = 0; i < n; i++) {
+        currentTick++;
+        system.currentTick = currentTick;
+        for (const [id, entry] of [...scheduled.entries()]) {
+            if (!scheduled.has(id)) continue;
+            if (entry.nextTick <= currentTick) {
+                entry.callback();
+                if (entry.interval === null)
+                    scheduled.delete(id);
+                else if (scheduled.has(id))
+                    entry.nextTick = currentTick + entry.interval;
+            }
+        }
+    }
+}
+
+export function resetScheduler() {
+    nextRunId = 1;
+    scheduled.clear();
+    currentTick = 0;
+    system.currentTick = 0;
+}
+
 export const world = {
     beforeEvents: {
         chatSend: { subscribe: vi.fn(), unsubscribe: vi.fn() },
@@ -34,6 +62,7 @@ export const world = {
         pressurePlatePush: { subscribe: vi.fn(), unsubscribe: vi.fn() },
         projectileHitEntity: { subscribe: vi.fn(), unsubscribe: vi.fn() },
     },
+    getAllPlayers: vi.fn(() => []),
     getDimension: vi.fn(),
     getDynamicProperty: vi.fn(),
     setDynamicProperty: vi.fn(),
@@ -53,10 +82,25 @@ export const system = {
         playerPlaceBlock: { subscribe: vi.fn() },
     },
     runJob: vi.fn(),
-    run: vi.fn(),
-    runInterval: vi.fn(),
-    runTimeout: vi.fn(),
-    clearRun: vi.fn(),
+    run: vi.fn(callback => {
+        const id = nextRunId++;
+        scheduled.set(id, { callback, nextTick: currentTick + 1, interval: null });
+        return id;
+    }),
+    runInterval: vi.fn((callback, tickInterval = 0) => {
+        const id = nextRunId++;
+        const interval = Math.max(tickInterval, 1);
+        scheduled.set(id, { callback, nextTick: currentTick + interval, interval });
+        return id;
+    }),
+    runTimeout: vi.fn((callback, tickDelay = 0) => {
+        const id = nextRunId++;
+        scheduled.set(id, { callback, nextTick: currentTick + Math.max(tickDelay, 1), interval: null });
+        return id;
+    }),
+    clearRun: vi.fn(runId => {
+        scheduled.delete(runId);
+    }),
 };
 
 export const EntityComponentTypes = {

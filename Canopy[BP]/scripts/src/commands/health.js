@@ -7,7 +7,8 @@ new VanillaCommand({
     name: 'canopy:health',
     description: 'commands.health',
     permissionLevel: CommandPermissionLevel.Any,
-    callback: healthCommand
+    callback: healthCommand,
+    wikiDescription: 'Profiles the server\'s tick speed for five seconds, displaying the average ticks per second (TPS) and the milliseconds per tick (MSPT). Also shows the lowest and highest values of each over that time. Additionally, this command also displays the entity count for each dimension.'
 });
 
 export function healthCommand(origin) {

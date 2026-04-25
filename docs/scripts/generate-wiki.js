@@ -66,7 +66,7 @@ function buildVanillaCommandBlock(cmd, lang) {
             const label = p.name.replace(/^[^:]+:/, '');
             parts.push(`[${label}: ${display}]`);
         }
-        const desc = resolveDescription(cc.description, lang);
+        const desc = cc.wikiDescription ?? resolveDescription(cc.description, lang);
         return `**Usage: \`${parts.join(' ')}\`**  \n${desc}${opSuffix}`;
     }
 
@@ -102,19 +102,17 @@ function buildCommandBlock(cmd, lang) {
 
     if (entries.length === 0) {
         const usage = cmd.getUsage();
-        const desc = resolveDescription(cmd.getDescription(), lang);
+        const desc = cmd.getWikiDescription() ?? resolveDescription(cmd.getDescription(), lang);
         return `**Usage: \`${usage}\`**  \n${desc}${opSuffix}`;
     }
 
     return entries.map(e => {
         const prefix = cmd.getUsage().startsWith('/') ? '/' : './';
         const usage = `${prefix}${e.usage}`;
-        const desc = resolveDescription(e.description, lang);
+        const desc = e.wikiDescription ?? resolveDescription(e.description, lang);
         return `**Usage: \`${usage}\`**  \n${desc}${opSuffix}`;
     }).join('\n\n');
 }
-
-// ── Rules Page Generator ──────────────────────────────────────────────────────
 
 function buildRuleEntry(rule, lang) {
     const id = rule.getID();
@@ -138,11 +136,9 @@ function buildRuleEntry(rule, lang) {
 function generateRulesPage(rules, lang) {
     const sorted = [...rules].sort((a, b) => a.getID().localeCompare(b.getID()));
     const toc = sorted.map(r => `- [${r.getID()}](#${r.getID().toLowerCase()})`).join('\n');
-    const entries = sorted.map(r => buildRuleEntry(r, lang)).join('\n---\n\n');
+    const entries = sorted.map(r => buildRuleEntry(r, lang)).join('\n');
     return `<p align="center">\n<img src="./logo.png" alt="pack_icon" width="150"/>\n</p>\n\n**Table of Contents:**\n${toc}\n\n---\n\n${entries}`;
 }
-
-// ── Commands.md Injector ──────────────────────────────────────────────────────
 
 function injectCommandsPage(template, commandMap, lang) {
     const usedKeys = new Set();
@@ -175,42 +171,48 @@ function injectCommandsPage(template, commandMap, lang) {
     return result;
 }
 
-// ── Main ──────────────────────────────────────────────────────────────────────
-
 export async function main(wikiPath) {
-    // Import registries and main.js — main.js imports all rule and command files,
-    // populating Rules.rulesToRegister, Commands, and VanillaCommands.
-    const { Rules } = await import('../../Canopy[BP]/scripts/lib/canopy/rules/Rules.js');
-    const { VanillaCommands } = await import('../../Canopy[BP]/scripts/lib/canopy/commands/VanillaCommands.js');
-    const { Commands } = await import('../../Canopy[BP]/scripts/lib/canopy/commands/Commands.js');
     await import('../../Canopy[BP]/scripts/main.js');
-
     const lang = parseLangFile(path.join(projectRoot, 'Canopy[RP]/texts/en_US.lang'));
+    generateRulesPages(wikiPath, lang);
+    generateCommandsPage(wikiPath, lang);
+}
 
-    // Build command map: shortName -> { instance, isVanilla }
-    const commandMap = new Map();
-    for (const cmd of Commands.getAll()) {
-        if (cmd.getExtension()) continue; // skip extension commands
-        commandMap.set(cmd.getName(), { instance: cmd, isVanilla: false });
-    }
-    for (const cmd of VanillaCommands.getAll()) {
-        commandMap.set(cmd.getName(), { instance: cmd, isVanilla: true });
-    }
+async function generateRulesPages(wikiPath, lang) {
+    const { Rules } = await import('../../Canopy[BP]/scripts/lib/canopy/rules/Rules.js');
+    const { InfoDisplay } = await import('../../Canopy[BP]/scripts/src/rules/infodisplay/InfoDisplay.js');
+    new InfoDisplay({ id: 'wiki-gen-mock', setDynamicProperty: () => {} });
 
-    // Collect rules (worldLoad never fires, so rules stay in rulesToRegister)
     const allRules = Rules.rulesToRegister;
     const globalRules = allRules.filter(r => r.getCategory() === 'Rules');
     const infoDisplayRules = allRules.filter(r => r.getCategory() === 'InfoDisplay');
 
-    // Generate and write rules pages
     fs.writeFileSync(path.join(wikiPath, 'Global-Rules.md'), generateRulesPage(globalRules, lang), 'utf8');
     fs.writeFileSync(path.join(wikiPath, 'InfoDisplay-Rules.md'), generateRulesPage(infoDisplayRules, lang), 'utf8');
     console.log('✓ Generated Global-Rules.md and InfoDisplay-Rules.md');
+}
 
-    // Inject Commands.md
+async function generateCommandsPage(wikiPath, lang) {
+    const commandMap = await getCommandMap();
     const commandsTemplatePath = path.join(wikiPath, 'Commands.md');
     const template = fs.readFileSync(commandsTemplatePath, 'utf8');
     const injected = injectCommandsPage(template, commandMap, lang);
     fs.writeFileSync(commandsTemplatePath, injected, 'utf8');
     console.log('✓ Injected Commands.md');
+}
+
+async function getCommandMap() {
+    const { VanillaCommands } = await import('../../Canopy[BP]/scripts/lib/canopy/commands/VanillaCommands.js');
+    const { Commands } = await import('../../Canopy[BP]/scripts/lib/canopy/commands/Commands.js');
+
+    const commandMap = new Map();
+    for (const cmd of Commands.getAll()) {
+        if (cmd.getExtension()) continue;
+        if (cmd.isHelpHidden()) continue;
+        commandMap.set(cmd.getName(), { instance: cmd, isVanilla: false });
+    }
+    for (const cmd of VanillaCommands.getAll()) {
+        commandMap.set(cmd.getName(), { instance: cmd, isVanilla: true });
+    }
+    return commandMap;
 }

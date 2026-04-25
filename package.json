@@ -18,7 +18,7 @@
 	"scripts": {
 		"test": "vitest run --coverage",
 		"lint": "eslint . --fix",
-		"generate-wiki": "vitest run --config vitest.wiki.config.js"
+		"generate-wiki": "sh -c 'WIKI_PATH=${WIKI_PATH:-$1} npx vitest run --config vitest.wiki.config.js' --"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",

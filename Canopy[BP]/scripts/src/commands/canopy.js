@@ -13,7 +13,7 @@ const cmd = new Command({
     ],
     callback: canopyCommand,
     helpEntries: [
-        { usage: 'canopy menu', description: { translate: 'commands.canopy.menu' } },
+        { usage: 'canopy menu', description: { translate: 'commands.canopy.menu' }, wikiDescription: 'Displays a menu with toggles for every rule. Flip the switches for the ones you want a hit the submit button at the bottom to save your changes.' },
         { usage: 'canopy <rule> [true/false/integer/float]', description: { translate: 'commands.canopy.single' } },
         { usage: 'canopy <[rule1,rule2,...]> [true/false/integer/float]', description: { translate: 'commands.canopy.multiple' } },
         { usage: 'canopy version', description: { translate: 'commands.canopy.version' } }

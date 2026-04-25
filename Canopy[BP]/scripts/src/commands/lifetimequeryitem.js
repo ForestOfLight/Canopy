@@ -17,6 +17,7 @@ export class LifetimeQueryItem extends VanillaCommand {
             permissionLevel: CommandPermissionLevel.GameDirectors,
             allowedSources: [PlayerCommandOrigin, ServerCommandOrigin],
             callback: (origin, ...args) => this.lifetimeQueryItemCommand(origin, ...args),
+            wikiDescription: "Queries lifetime tracking data for the specified item entity type. You can choose to see lifetime, spawning, removal statistics, or a summary of all three. Adding the `useRealtime` argument will calculate rates based on real-world time instead of tick-based time."
         });
     }
 

@@ -12,8 +12,9 @@ class Command {
 	#helpEntries;
 	#helpHidden;
 	#extension;
+	#wikiDescription;
 
-	constructor({ name, description = { text: '' }, usage, callback, args = [], contingentRules = [], opOnly = false, helpEntries = [], helpHidden = false, extensionName = undefined }) {
+	constructor({ name, description = { text: '' }, usage, callback, args = [], contingentRules = [], opOnly = false, helpEntries = [], helpHidden = false, extensionName = undefined, wikiDescription = undefined }) {
 		this.#name = name;
         this.#description = description;
         this.#usage = usage;
@@ -24,6 +25,7 @@ class Command {
 		this.#helpEntries = helpEntries;
 		this.#helpHidden = helpHidden;
 		this.#extension = Extensions.getFromName(extensionName);
+		this.#wikiDescription = wikiDescription;
 		
 		this.#checkMembers(extensionName);
 		if (typeof this.#description === 'string')
@@ -80,6 +82,10 @@ class Command {
 
 	isHelpHidden() {
 		return this.#helpHidden;
+	}
+
+	getWikiDescription() {
+		return this.#wikiDescription;
 	}
 	
 	runCallback(sender, args) {

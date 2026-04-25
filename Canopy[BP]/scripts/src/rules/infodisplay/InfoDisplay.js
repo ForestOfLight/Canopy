@@ -167,3 +167,5 @@ world.beforeEvents.playerLeave.subscribe((event) => {
 	if (!event.player) return;
 	delete playerToInfoDisplayMap[event.player.id];
 });
+
+export { InfoDisplay };

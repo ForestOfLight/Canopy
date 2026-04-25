@@ -22,10 +22,11 @@ const cmd = new Command({
     callback: generatorCommand,
     contingentRules: ['hopperGenerators'],
     helpEntries: [
-        { usage: 'generator [color/all]', description: { translate: 'commands.generator.query' } },
-        { usage: 'generator [color/all] realtime', description: { translate: 'commands.generator.realtime' } },
-        { usage: 'generator [color/all] reset', description: { translate: 'commands.generator.reset' } },
-        { usage: 'generator [color/all remove', description: { translate: 'commands.counter.remove' } }
+        { usage: 'generator', description: { translate: 'commands.generator.query.all' }, wikiDescription: 'Displays information about the item counts in each channel. This includes metrics like the total items and items per hour, and the same divided up into individual item types. Alias: **`./gt`**' },
+        { usage: 'generator [color/all]', description: { translate: 'commands.generator.query' }, wikiDescription: 'Does the same as `./generator`, but displays info for only one channel. Using the `all` keyword has exactly the same behavior as `./generator`. Alias: **`./gt <color>`** This command can also be triggered with the vanilla command `/scriptevent canopy:generator [color]` (ie. in a command block).' },
+        { usage: 'generator [color/all] realtime', description: { translate: 'commands.generator.realtime' }, wikiDescription: 'Displays information about the item counts using real-world time instead of Minecraft tick-based time to do rate calculations. Alias: **`./gt realtime`**, **`./gt <color|all> realtime`**' },
+        { usage: 'generator [color/all] reset', description: { translate: 'commands.generator.reset' }, wikiDescription: 'Resets the count of all channels to zero and restarts the timer. Alias: **`./gt [color|all] reset`**. This command can also be triggered with the vanilla command `/scriptevent canopy:generator [color|all] reset` (ie. in a command block).' },
+        { usage: 'generator [color/all remove', description: { translate: 'commands.counter.remove' }, wikiDescription: 'Removes all known hoppers in the specified channel or all channels. This will also reset the timer for that channel or all channels. Alias: **`./gt remove`**, **`./gt <color|all> remove`** This command can also be triggered with the vanilla command `/scriptevent canopy:generator [color|all] remove` (ie. in a command block).' }
     ]
 });
 

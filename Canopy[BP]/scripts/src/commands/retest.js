@@ -8,7 +8,8 @@ new VanillaCommand({
     name: 'canopy:retest',
     description: 'commands.retest',
     permissionLevel: CommandPermissionLevel.Any,
-    callback: retestCommand
+    callback: retestCommand,
+    wikiDescription: 'Resets spawn tracking, hopper counters, and hopper generators. This is great if you want to restart a test for a machine or farm!'
 });
 
 function retestCommand() {

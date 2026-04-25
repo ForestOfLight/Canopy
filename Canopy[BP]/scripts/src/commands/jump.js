@@ -15,7 +15,8 @@ new VanillaCommand({
     allowedSources: [PlayerCommandOrigin, EntityCommandOrigin],
     cheatsRequired: true,
     callback: jumpCommand,
-    aliases: ['canopy:j']
+    aliases: ['canopy:j'],
+    wikiDescription: 'Teleports you to the block you are currently looking at with a maximum range of 64 chunks. Alias: **`/j`**'
 });
 
 function jumpCommand(origin) {

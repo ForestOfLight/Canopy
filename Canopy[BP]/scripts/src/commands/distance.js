@@ -20,10 +20,10 @@ const cmd = new Command({
     ],
     callback: distanceCommand,
     helpEntries: [
-        { usage: `distance target`, description: { translate: 'commands.distance.target' } },
-        { usage: `distance from <x y z> to [x y z]`, description: { translate: 'commands.distance.fromto' } },
-        { usage: `distance from [x y z]`, description: { translate: 'commands.distance.from' } },
-        { usage: `distance to [x y z]`, description: { translate: 'commands.distance.to' } }
+        { usage: `distance target`, description: { translate: 'commands.distance.target' }, wikiDescription: 'Calculates the distance in blocks between your head and the block or entity you are looking at down to three decimal places. Note that entity positions are at their foot. Alias: **`./d target`**' },
+        { usage: `distance from <x y z> to [x y z]`, description: { translate: 'commands.distance.fromto' }, wikiDescription: 'Calculates the distance in blocks between the two points. The `to` coordinates can be omitted to use your player\'s position. Alias: **`./d from <x y z> to [x y z]`**' },
+        { usage: `distance from [x y z]`, description: { translate: 'commands.distance.from' }, wikiDescription: 'Saves a location to calculate distance to later. The coordinates can be omitted to use your player\'s position. Alias: **`./d from [x y z]`**' },
+        { usage: `distance to [x y z]`, description: { translate: 'commands.distance.to' }, wikiDescription: 'Calculates the distance in blocks between the saved location and the specified coordinates. The coordinates can be omitted to use your player\'s position. Alias: **`./d to [x y z]`**' }
     ]
 });
 

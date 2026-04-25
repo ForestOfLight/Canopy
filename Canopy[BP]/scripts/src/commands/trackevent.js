@@ -27,7 +27,8 @@ new VanillaCommand({
     mandatoryParameters: [{ name: 'canopy:eventName', type: CustomCommandParamType.Enum }],
     optionalParameters: [{ name: 'canopy:eventType', type: CustomCommandParamType.Enum }],
     permissionLevel: CommandPermissionLevel.Any,
-    callback: trackCommand
+    callback: trackCommand,
+    wikiDescription: "Toggles tracking for the specified event. Each time the event occurs, the tracker will increment. You can view the trackers' count in realtime in the InfoDisplay by enabling the `eventTrackers` InfoDisplay rule. If you need to find the names of some events, use these links: [beforeEvents](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/worldbeforeevents?view=minecraft-bedrock-experimental), [afterEvents](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/worldafterevents?view=minecraft-bedrock-experimental). If the last argument is not specified, afterEvent is assumed."
 });
 
 const trackers = {

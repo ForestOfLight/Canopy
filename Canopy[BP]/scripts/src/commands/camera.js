@@ -61,6 +61,7 @@ new VanillaCommand({
     contingentRules: ['commandCamera'],
     allowedSources: [PlayerCommandOrigin],
     callback: (origin) => cameraCommand(origin, CAM_ACTIONS.Spectate),
+    wikiDescription: 'Alias for `/cam spectate`.'
 });
 
 class BeforeSpectatorPlayer {

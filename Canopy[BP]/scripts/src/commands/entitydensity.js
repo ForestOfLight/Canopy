@@ -21,7 +21,8 @@ new VanillaCommand({
     optionalParameters: [{name: 'canopy:dimension', type: CustomCommandParamType.Enum}],
     permissionLevel: CommandPermissionLevel.Any,
     allowedSources: [PlayerCommandOrigin],
-    callback: entityDensityCommand
+    callback: entityDensityCommand,
+    wikiDescription: 'Displays the entity count for each dimension and identifies dense areas of entities in the specified dimension. The dimension argument can be omitted to use your current dimension. Valid dimension names include `overworld`, `nether`, `end`, `the_end`, `o`, `n`, and, `e`. Recommended grid sizes: 100-512 or more.'
 });
 
 function entityDensityCommand(origin, gridSize, dimension) {

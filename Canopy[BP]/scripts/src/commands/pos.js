@@ -16,7 +16,8 @@ new VanillaCommand({
     description: 'commands.pos',
     optionalParameters: [{ name: 'player', type: CustomCommandParamType.PlayerSelector }],
     permissionLevel: CommandPermissionLevel.Any,
-    callback: posCommand
+    callback: posCommand,
+    wikiDescription: 'Displays your current position, or the position of another player. Shows dimension and relative nether/overworld position as well.'
 });
 
 function posCommand(origin, player) {

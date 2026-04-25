@@ -12,7 +12,7 @@ const cmd = new Command({
     ],
     callback: infoCommand,
     helpEntries: [
-        { usage: 'info menu', description: { translate: 'commands.info.menu' } },
+        { usage: 'info menu', description: { translate: 'commands.info.menu' }, wikiDescription: 'Displays a menu with toggles for every InfoDisplay rule. Flip the switches for the ones you want a hit the submit button at the bottom to save your changes.' },
         { usage: 'info <rule> [true/false]', description: { translate: 'commands.info.single' } },
         { usage: 'info <[rule1,rule2,...]> [true/false]', description: { translate: 'commands.info.multiple' } },
         { usage: 'info all [true/false]', description: { translate: 'commands.info.all' } }

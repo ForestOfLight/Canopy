@@ -9,7 +9,9 @@ new Command({
     args: [
         { type: 'string|integer', name: 'pageName' }
     ],
-    callback: helpCommand
+    callback: helpCommand,
+    wikiDescription: `Displays every command's and every rule's usage and a short description. Default page names include "InfoDisplay", "Rules", and several numbered pages of commands. There is also a page for any loaded extensions. Specifying a search term will display any command or rule that includes that term.`
+        + "\n\nThis only includes `./` commands. To see a list of `/` commands, use the vanilla `/help` command."
 });
 
 function helpCommand(sender, args) {

@@ -19,7 +19,8 @@ new VanillaCommand( {
     ],
     permissionLevel: CommandPermissionLevel.Any,
     contingentRules: ['commandClaimProjectiles'],
-    callback: claimProjectilesCommand
+    callback: claimProjectilesCommand,
+    wikiDescription: 'Makes you (or another specified player) the owner of all projectile within a certain block radius. If no radius is specified, the default is 25 blocks.'
 });
 
 function claimProjectilesCommand(origin, radius = CLAIM_RADIUS, player) {

@@ -23,7 +23,8 @@ new VanillaCommand({
     ],
     permissionLevel: CommandPermissionLevel.GameDirectors,
     cheatsRequired: true,
-    callback: changeDimensionCommand
+    callback: changeDimensionCommand,
+    wikiDescription: 'Teleports entities to the specified dimension. If you include coordinates, the victim will be teleported to those coordinates in the specified dimension, otherwise coordinates will keep your current coordinates in the new dimension. Coordinates are converted like a nether portal when changing between the nether and the overworld. When the victim argument is empty, the command sender is assumed.'
 });
 
 function changeDimensionCommand(origin, dimension, destination, victim) {

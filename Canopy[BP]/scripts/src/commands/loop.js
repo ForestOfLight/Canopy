@@ -9,7 +9,8 @@ new VanillaCommand({
         { name: 'command', type: CustomCommandParamType.String }
     ],
     permissionLevel: CommandPermissionLevel.GameDirectors,
-    callback: loopCommand
+    callback: loopCommand,
+    wikiDescription: 'Runs the specified command a certain number of times in a single tick. Note that the looped command must be encased in quotes.'
 });
 
 function loopCommand(origin, times, command) {

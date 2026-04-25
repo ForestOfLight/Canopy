@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 // This file is the entry point for wiki generation. Run via:
-//   WIKI_PATH=../Canopy.wiki npm run generate-wiki
+//   npm run generate-wiki ../Canopy.wiki
 //
 // Vitest's Vite aliases automatically resolve @minecraft/server to the mock,
 // allowing Canopy source files to be imported in Node.js context.

@@ -19,7 +19,7 @@ export class LifetimeTracking extends VanillaCommand {
             optionalParameters: [{ name: 'canopy:lifetimeTrackingActions', type: CustomCommandParamType.Enum }],
             permissionLevel: CommandPermissionLevel.GameDirectors,
             allowedSources: [PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin, ServerCommandOrigin],
-            callback: (origin, ...args) => this.lifetimeTrackingCommand(origin, ...args),
+            callback: (origin, ...args) => this.lifetimeTrackingCommand(origin, ...args)
         });
     }
 

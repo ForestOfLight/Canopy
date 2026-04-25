@@ -28,8 +28,8 @@ const cmd = new Command({
     callback: warpActionCommand,
     contingentRules: ['commandWarp'],
     helpEntries: [
-        { usage: 'warp <add/remove> <name>', description: { translate: 'commands.warp.edit' } },
-        { usage: 'warp <name>', description: { translate: 'commands.warp.tp' } }
+        { usage: 'warp <add/remove> <name>', description: { translate: 'commands.warp.edit' }, wikiDescription: 'Adds or removes a warp. Alias: **`./w <add|remove> <name>`**' },
+        { usage: 'warp <name>', description: { translate: 'commands.warp.tp' }, wikiDescription: 'Teleports you to a warp. Alias: **`./w <name>`**' }
     ]
 });
 

@@ -8,7 +8,8 @@ new VanillaCommand({
     optionalParameters: [{ name: 'entity', type: CustomCommandParamType.EntitySelector }],
     permissionLevel: CommandPermissionLevel.GameDirectors,
     cheatsRequired: true,
-    callback: butcherCommand
+    callback: butcherCommand,
+    wikiDescription: 'Instantly removes entities without dropping their items. If the entity argument is unspecified, the entity you are looking at is assumed.'
 });
 
 function butcherCommand(origin, entity) {

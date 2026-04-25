@@ -24,7 +24,7 @@ export class HSS extends VanillaCommand {
             callback: (origin, ...args) => this.hssCommand(origin, ...args),
             subCommandWikiDescription: {
                 'calculate': {
-                    description: 'Finds hardcoded spawn spots (HSSes) near your current position. Stand inside a structure and run this command.',
+                    description: 'Finds hardcoded spawn spots (HSSes) near your current position. Stand inside a structure and run this command. Does not work on fortresses.',
                     params: []
                 },
                 'fortress': {
@@ -34,8 +34,8 @@ export class HSS extends VanillaCommand {
                 'stop': {
                     description: 'Clears all HSS visualizations.',
                     params: []
-                },
-            },
+                }
+            }
         });
     }
 

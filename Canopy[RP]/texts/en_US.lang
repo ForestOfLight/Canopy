@@ -89,6 +89,7 @@ commands.cleanup.success=§7Cleaned up %1 entities (r%2).
 commands.counter=Manages hopper counters. (Alias: ct)
 commands.counter.channel.notfound=§cInvalid color: %s. Please use one of the wool block colors.
 commands.counter.query=Displays the count and rates of the hopper counter for the specified color.
+commands.counter.query.all=Displays the count and rates of all hopper counters.
 commands.counter.query.empty=§7There are no hopper counters in use.
 commands.counter.query.channel=§7Items for %1§7 (%2%3 min.), total: §f%4§7, (§f%5§7):
 commands.counter.realtime=Displays count and rates, but uses real-world time instead of tick-based time.
@@ -151,6 +152,7 @@ commands.gamemode.sp=Set your gamemode to spectator.
 
 commands.generator=Manages hopper generators. (Alias: gt)
 commands.generator.channel.notfound=§cInvalid color: %s. Please use one of the wool block colors.
+commands.generator.query.all=Displays the count and rates of all hopper generators.
 commands.generator.query=Displays the count and rates of the hopper generator for the specified color.
 commands.generator.query.empty=§7There are no hopper generators in use.
 commands.generator.query.channel=§7Generated items for %1§7 (%2%3 min.), total: §f%4§7, (§f%5§7):
