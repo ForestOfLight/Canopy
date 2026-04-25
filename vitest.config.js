@@ -3,9 +3,10 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   resolve: {
     alias: {
-      '@minecraft/server': `${__dirname}/__mocks__/@minecraft/server`,
-      '@minecraft/server-ui': `${__dirname}/__mocks__/@minecraft/server-ui`,
-    }
+      '@minecraft/server': `@forestoflight/minecraft-vitest-mocks/server`,
+      '@minecraft/server-ui': `@forestoflight/minecraft-vitest-mocks/server-ui`,
+    },
+    setupFiles: ['@forestoflight/minecraft-vitest-mocks/setup']
   },
   test: {
     env: {

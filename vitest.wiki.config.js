@@ -3,14 +3,15 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   resolve: {
     alias: {
-      '@minecraft/server': `${__dirname}/__mocks__/@minecraft/server`,
-      '@minecraft/server-ui': `${__dirname}/__mocks__/@minecraft/server-ui`,
-      '@minecraft/debug-utilities': `${__dirname}/__mocks__/@minecraft/debug-utilities`,
+      '@minecraft/server': `@forestoflight/minecraft-vitest-mocks/server`,
+      '@minecraft/server-ui': `@forestoflight/minecraft-vitest-mocks/server-ui`,
+      '@minecraft/debug-utilities': `@forestoflight/minecraft-vitest-mocks/debug-utilities`,
       'lib/canopy/Canopy': `${__dirname}/Canopy[BP]/scripts/lib/canopy/Canopy.js`,
       'src/commands/trackevent': `${__dirname}/Canopy[BP]/scripts/src/commands/trackevent.js`,
       'src/classes/Instaminable': `${__dirname}/Canopy[BP]/scripts/src/classes/Instaminable.js`,
       'src/rules/durabilityNotifier': `${__dirname}/Canopy[BP]/scripts/src/rules/durabilityNotifier.js`,
-    }
+    },
+    setupFiles: ['@forestoflight/minecraft-vitest-mocks/setup']
   },
   test: {
     env: {
