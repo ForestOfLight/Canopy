@@ -6,13 +6,14 @@ import { Vector } from '../../../lib/Vector';
 class RenderSignalStrength extends InfoDisplayShapeElement {
     player;
     playerId;
-    RENDER_DISTANCE = 10;
+    static RENDER_DISTANCE = 10;
     signalStrengthRenderers = {};
 
     constructor(player) {
         const ruleData = {
             identifier: 'renderSignalStrength',
             description: { translate: 'rules.infoDisplay.renderSignalStrength' },
+            wikiDescription: `Renders the signal strength of nearby redstone dust in the world. Only renders for redstone dust within ${RenderSignalStrength.RENDER_DISTANCE} blocks from the player to avoid excessive rendering.`,
             onEnableCallback: () => this.startRender(),
             onDisableCallback: () => this.stopRender()
         };
@@ -61,8 +62,8 @@ class RenderSignalStrength extends InfoDisplayShapeElement {
 
     getNearbyBlockLocationIterator(dimension, location) {
         const locationVector = Vector.from(location);
-        const min = locationVector.subtract(new Vector(this.RENDER_DISTANCE, this.RENDER_DISTANCE, this.RENDER_DISTANCE));
-        const max = locationVector.add(new Vector(this.RENDER_DISTANCE, 2, this.RENDER_DISTANCE));
+        const min = locationVector.subtract(new Vector(RenderSignalStrength.RENDER_DISTANCE, RenderSignalStrength.RENDER_DISTANCE, RenderSignalStrength.RENDER_DISTANCE));
+        const max = locationVector.add(new Vector(RenderSignalStrength.RENDER_DISTANCE, 2, RenderSignalStrength.RENDER_DISTANCE));
         const volume = new BlockVolume(min, max);
         const blockVolume = dimension.getBlocks(volume, { includeTypes: ["minecraft:redstone_wire"] }, true);
         return blockVolume.getBlockLocationIterator();

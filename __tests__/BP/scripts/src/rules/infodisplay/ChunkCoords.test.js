@@ -1,7 +1,7 @@
 import { ChunkCoords } from '../../../../../../Canopy[BP]/scripts/src/rules/infodisplay/ChunkCoords';
 import { describe, it, expect, beforeAll, vi } from 'vitest';
-import { InfoDisplayElement } from '../../../../../../Canopy[BP]/scripts/src/rules/infodisplay/InfoDisplayElement';
 import { Rules } from '../../../../../../Canopy[BP]/scripts/lib/canopy/rules/Rules';
+import { InfoDisplayTextElement } from '../../../../../../Canopy[BP]/scripts/src/rules/infodisplay/InfoDisplayTextElement';
 
 vi.mock('@minecraft/server', async (importOriginal) => {
     const original = await importOriginal();

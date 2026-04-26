@@ -1,38 +1,24 @@
-import { LocationInUnloadedChunkError, LocationOutOfWorldBoundariesError, system, world } from "@minecraft/server";
+import { LocationInUnloadedChunkError, LocationOutOfWorldBoundariesError, system } from "@minecraft/server";
 import { Vector } from "../../lib/Vector";
 import { EndGatewayExitRender } from "./EndGatewayExitRender";
 
 export class EndGatewayExitFinder {
     gatewayExits = [];
-    runner = void 0;
+
+    constructor(player) {
+        this.player = player;
+    }
 
     destroy() {
-        this.stop();
         for (const exit of this.gatewayExits)
             exit.render.destroy();
         this.gatewayExits.length = 0;
     }
 
-    start() {
-        if (this.runner !== void 0)
-            return;
-        this.runner = system.runInterval(this.onTick.bind(this));
-    }
-
-    stop() {
-        if (this.runner === void 0)
-            return;
-        system.clearRun(this.runner);
-        this.runner = void 0;
-    }
-
-    onTick() {
-        const players = world.getPlayers();
-        for (const player of players) {
-            const dimension = player.dimension;
-            if (this.isEndGateway(dimension, player.location))
-                system.runTimeout(() => this.addEndGatewayExit(dimension, player.location), 1);
-        }
+    onTickTryFind() {
+        const dimension = this.player.dimension;
+        if (this.isEndGateway(dimension, this.player.location))
+            system.runTimeout(() => this.addEndGatewayExit(dimension, this.player.location), 1);
     }
 
     isEndGateway(dimension, location) {
@@ -48,7 +34,7 @@ export class EndGatewayExitFinder {
     addEndGatewayExit(dimension, location) {
         if (this.exitIsKnown(location))
             return;
-        const render = new EndGatewayExitRender(dimension, location);
+        const render = new EndGatewayExitRender(this.player, dimension, location);
         this.gatewayExits.push({ location: Vector.from(location), dimension, render });
     }
 

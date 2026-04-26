@@ -4,7 +4,8 @@ export class EndGatewayExitRender {
     debugShapes = [];
     SEARCH_AREA_SIZE = 16;
 
-    constructor(dimension, location) {
+    constructor(player, dimension, location) {
+        this.player = player;
         this.dimension = dimension;
         this.location = location;
         this.render();
@@ -46,6 +47,7 @@ export class EndGatewayExitRender {
     }
 
     drawShape(shape) {
+        shape.visibleTo = [this.player];
         debugDrawer.addShape(shape, this.dimension);
         this.debugShapes.push(shape);
     }

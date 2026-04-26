@@ -1,9 +1,6 @@
 import { InfoDisplayElement } from './InfoDisplayElement';
 
 class InfoDisplayShapeElement extends InfoDisplayElement {
-    identifier;
-    isWorldwide;
-
     constructor(ruleData, isWorldwide = false) {
         const originalOnEnableCallback = ruleData.onEnableCallback;
         ruleData.onEnableCallback = () => {
@@ -20,10 +17,6 @@ class InfoDisplayShapeElement extends InfoDisplayElement {
         super(ruleData, isWorldwide);
         if (this.constructor === InfoDisplayShapeElement) 
             throw new TypeError("Abstract class 'InfoDisplayShapeElement' cannot be instantiated directly.");
-    }
-
-    setupCallbacks(ruleData) {
-        return ruleData;
     }
 
     startRender() {
