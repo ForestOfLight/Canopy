@@ -50,7 +50,7 @@ export class ChunkBorderRender {
             return;
         let color = void 0;
         if (y % this.CHUNK_SIZE === 0)
-            color = { red: 0, green: 0, blue: 1 };
+            color = { red: 0, green: 0, blue: 1, alpha: 1 };
         this.renderLine(new Vector(subChunkCoords.x, y, subChunkCoords.z), new Vector(subChunkCoords.x + this.CHUNK_SIZE, y, subChunkCoords.z), color);
         this.renderLine(new Vector(subChunkCoords.x, y, subChunkCoords.z + this.CHUNK_SIZE), new Vector(subChunkCoords.x + this.CHUNK_SIZE, y, subChunkCoords.z + this.CHUNK_SIZE), color);
         this.renderLine(new Vector(subChunkCoords.x, y, subChunkCoords.z), new Vector(subChunkCoords.x, y, subChunkCoords.z + this.CHUNK_SIZE), color);
@@ -70,7 +70,7 @@ export class ChunkBorderRender {
             let bottomY = subChunkCoords.y - this.CHUNK_SIZE;
             let topY = subChunkCoords.y + this.CHUNK_SIZE*2;
             if (coord % this.CHUNK_SIZE === 0) {
-                color = { red: 0, green: 0, blue: 1 };
+                color = { red: 0, green: 0, blue: 1, alpha: 1 };
                 bottomY = this.getLowerBound(subChunkCoords);
                 topY = this.getUpperBound(subChunkCoords);
             }
@@ -83,7 +83,7 @@ export class ChunkBorderRender {
 
     renderAdjacentChunkLinesAlongFace(subChunkCoords, iterableCoord, isX) {
         for (let coord = iterableCoord; coord <= iterableCoord + this.CHUNK_SIZE * 2; coord += this.CHUNK_SIZE) {
-            const color = { red: 1, green: 0, blue: 0 };
+            const color = { red: 1, green: 0, blue: 0, alpha: 1 };
             if (isX)
                 this.renderLine(new Vector(coord, this.getLowerBound(subChunkCoords), subChunkCoords.z), new Vector(coord, this.getUpperBound(subChunkCoords), subChunkCoords.z), color);
             else
@@ -91,7 +91,7 @@ export class ChunkBorderRender {
         }
     }
 
-    renderLine(start, end, color = { red: 1, green: 1, blue: 0 }) {
+    renderLine(start, end, color = { red: 1, green: 1, blue: 0, alpha: 1 }) {
         start.dimension = this.dimension;
         const line = new DebugLine(start, end);
         line.color = color;

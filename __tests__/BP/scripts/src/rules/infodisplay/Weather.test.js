@@ -29,8 +29,8 @@ describe('Weather', () => {
         weather = new Weather(mockPlayer, 0);
     });
 
-    it('should inherit from InfoDisplayElement', () => {
-        expect(weather).toBeInstanceOf(InfoDisplayElement);
+    it('should inherit from InfoDisplayTextElement', () => {
+        expect(weather).toBeInstanceOf(InfoDisplayTextElement);
     });
 
     it('should create a new InfoDisplay rule', () => {

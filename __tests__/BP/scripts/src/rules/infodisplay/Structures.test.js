@@ -29,8 +29,8 @@ describe('Structures', () => {
         structures = new Structures(mockPlayer, 0);
     });
 
-    it('should inherit from InfoDisplayElement', () => {
-        expect(structures).toBeInstanceOf(InfoDisplayElement);
+    it('should inherit from InfoDisplayTextElement', () => {
+        expect(structures).toBeInstanceOf(InfoDisplayTextElement);
     });
 
     it('should create a new InfoDisplay rule', () => {

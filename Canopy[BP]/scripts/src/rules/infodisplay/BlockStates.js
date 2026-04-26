@@ -1,8 +1,8 @@
-import { InfoDisplayElement } from './InfoDisplayElement.js';
+import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 import { getRaycastResults } from '../../../include/utils.js';
 import { LiquidType } from '@minecraft/server';
 
-export class BlockStates extends InfoDisplayElement {
+export class BlockStates extends InfoDisplayTextElement {
     player;
 
     constructor(player, displayLine) {

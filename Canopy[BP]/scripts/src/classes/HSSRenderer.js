@@ -27,7 +27,7 @@ export class HSSRenderer {
         dimensionLocation.dimension = this.dimension;
         const box = new DebugBox(dimensionLocation);
         box.bound = this.structureBounds.getSize();
-        box.color = { red: 1, green: 1, blue: 1 };
+        box.color = { red: 1, green: 1, blue: 1, alpha: 1 };
         this.renderShape(box);
     }
 
@@ -41,7 +41,7 @@ export class HSSRenderer {
         bottom.dimension = this.dimension;
         const box = new DebugBox(bottom);
         box.bound = new Vector(1, this.structureBounds.getSize().y, 1);
-        box.color = { red: 0, green: 1, blue: 0 };
+        box.color = { red: 0, green: 1, blue: 0, alpha: 1 };
         this.renderShape(box);
     }
 

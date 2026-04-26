@@ -10,7 +10,7 @@ export class CollisionBox extends DebugDisplayShapeElement {
         const dimensionLocation = { ...collisionBoxData.location, dimension: this.entity.dimension };
         const collisionBox = new DebugBox(dimensionLocation);
         collisionBox.bound = collisionBoxData.size;
-        collisionBox.color = { red: 1, green: 1, blue: 1 };
+        collisionBox.color = { red: 1, green: 1, blue: 1, alpha: 1 };
         this.drawShape(collisionBox);
     }
 

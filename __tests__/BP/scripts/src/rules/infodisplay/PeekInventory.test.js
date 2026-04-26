@@ -50,8 +50,8 @@ describe('BlockStates', () => {
         peekInventory = new PeekInventory(mockPlayer, 0);
     });
 
-    it('should inherit from InfoDisplayElement', () => {
-        expect(peekInventory).toBeInstanceOf(InfoDisplayElement);
+    it('should inherit from InfoDisplayTextElement', () => {
+        expect(peekInventory).toBeInstanceOf(InfoDisplayTextElement);
     });
 
     it('should create a new InfoDisplay rule', () => {

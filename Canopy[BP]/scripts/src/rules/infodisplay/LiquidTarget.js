@@ -1,7 +1,7 @@
-import { InfoDisplayElement } from "./InfoDisplayElement";
+import { InfoDisplayTextElement } from "./InfoDisplayTextElement";
 import { parseName, stringifyLocation } from "../../../include/utils";
 
-export class LiquidTarget extends InfoDisplayElement {
+export class LiquidTarget extends InfoDisplayTextElement {
     constructor(player, displayLine) {
         const ruleData = { identifier: 'liquidTarget', description: { translate: 'rules.infoDisplay.liquidTarget' }, wikiDescription: 'Shows the identifier of the liquid you are targeting.' };
         super(ruleData, displayLine);

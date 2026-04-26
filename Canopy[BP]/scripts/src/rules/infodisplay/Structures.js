@@ -1,6 +1,6 @@
-import { InfoDisplayElement } from "./InfoDisplayElement";
+import { InfoDisplayTextElement } from "./InfoDisplayTextElement";
 
-export class Structures extends InfoDisplayElement {
+export class Structures extends InfoDisplayTextElement {
     player;
 
     constructor(player, displayLine) {

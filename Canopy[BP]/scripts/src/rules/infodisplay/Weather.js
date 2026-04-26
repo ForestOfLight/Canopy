@@ -1,6 +1,6 @@
-import { InfoDisplayElement } from './InfoDisplayElement.js';
+import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 
-class Weather extends InfoDisplayElement {
+class Weather extends InfoDisplayTextElement {
     constructor(player, displayLine) {
         const ruleData = { identifier: 'weather', description: { translate: 'rules.infoDisplay.weather' }, wikiDescription: 'Shows the current weather in your dimension.' };
         super(ruleData, displayLine);

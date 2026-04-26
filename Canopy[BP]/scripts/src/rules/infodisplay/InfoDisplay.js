@@ -1,4 +1,6 @@
 import { system, world } from '@minecraft/server';
+import { InfoDisplayTextElement } from './InfoDisplayTextElement';
+import { InfoDisplayShapeElement } from './InfoDisplayShapeElement';
 
 import Coords from './Coords';
 import CardinalFacing from './CardinalFacing';
@@ -28,14 +30,15 @@ import { Weather } from './Weather';
 import { LiquidTarget } from './LiquidTarget';
 import { LiquidStates } from './LiquidStates';
 
-const playerToInfoDisplayMap = {};
-let currentTickWorldwideElementData = {};
+import { RenderSignalStrength } from './RenderSignalStrength';
 
 class InfoDisplay {
 	player;
 	elements = [];
 	infoMessage = { rawtext: [] };
 	clearedPreviousMessage = false;
+	static playerToInfoDisplayMap = {};
+	static currentTickWorldwideElementData = {};
 
 	constructor(player) {
 		this.player = player;
@@ -66,28 +69,37 @@ class InfoDisplay {
 			new BlockStates(player, 21),
 			new PeekInventory(player, 22),
 			new LiquidTarget(player, 23),
-			new LiquidStates(player, 24)
+			new LiquidStates(player, 24),
+
+			new RenderSignalStrength(player)
 		];
-		playerToInfoDisplayMap[player.id] = this;
+		InfoDisplay.playerToInfoDisplayMap[player.id] = this;
 	}
 
 	update() {
 		this.infoMessage = { rawtext: [] };
 		const enabledElements = this.getEnabledElements();
 		for (let i = 0; i < enabledElements.length; i++)
-			this.updateElementData(enabledElements, i);
+			this.updateElements(enabledElements, i);
 		this.sendInfoMessage();
 	}
 	
-	updateElementData(elements, currIndex) {
+	updateElements(elements, currIndex) {
 		const element = elements[currIndex];
-		if (element.isWorldwide && !currentTickWorldwideElementData[element.identifier])
-			currentTickWorldwideElementData[element.identifier] = { own: element.getFormattedDataOwnLine(), shared: element.getFormattedDataSharedLine() };
+		if (element instanceof InfoDisplayTextElement)
+			this.updateTextElement(element, elements, currIndex);
+		else if (element instanceof InfoDisplayShapeElement)
+			this.updateShapeElement(element, elements, currIndex);
+	}
+
+	updateTextElement(element, elements, currIndex) {
+		if (element.isWorldwide && !InfoDisplay.currentTickWorldwideElementData[element.identifier])
+			InfoDisplay.currentTickWorldwideElementData[element.identifier] = { own: element.getFormattedDataOwnLine(), shared: element.getFormattedDataSharedLine() };
 		let data;
 		if (this.getElementsOnLine(elements, element.lineNumber).length === 1)
-			data = currentTickWorldwideElementData[element.identifier]?.own || element.getFormattedDataOwnLine();
+			data = InfoDisplay.currentTickWorldwideElementData[element.identifier]?.own || element.getFormattedDataOwnLine();
 		else
-			data = currentTickWorldwideElementData[element.identifier]?.shared || element.getFormattedDataSharedLine();
+			data = InfoDisplay.currentTickWorldwideElementData[element.identifier]?.shared || element.getFormattedDataSharedLine();
 		if (this.infoMessage.rawtext.length !== 0 && this.isOnNewLine(elements, currIndex) && !this.dataIsWhitespace(data))
 			this.infoMessage.rawtext.push({ text: '\n§r' });
 		if (!this.isOnNewLine(elements, currIndex) && !this.dataIsWhitespace(data))
@@ -95,6 +107,17 @@ class InfoDisplay {
 		if (this.dataIsWhitespace(data))
 			return;
 		this.infoMessage.rawtext.push(data);
+	}
+
+	updateShapeElement(element) {
+		if (!element.shouldRender())
+			return;
+		if (element.isWorldwide && !InfoDisplay.currentTickWorldwideElementData[element.identifier]) {
+			InfoDisplay.currentTickWorldwideElementData[element.identifier] = true;
+			element.onTick();
+		} else if (!element.isWorldwide) {
+			element.onTick();
+		}
 	}
 
 	getEnabledElements() {
@@ -154,18 +177,20 @@ class InfoDisplay {
 }
 
 system.runInterval(() => {
-	currentTickWorldwideElementData = {};
+	InfoDisplay.currentTickWorldwideElementData = {};
 	const players = world.getAllPlayers();
 	for (const player of players) {
-		if (!player) continue;
-		const infoDisplay = playerToInfoDisplayMap[player.id] || new InfoDisplay(player);
+		if (!player)
+			continue;
+		const infoDisplay = InfoDisplay.playerToInfoDisplayMap[player.id] || new InfoDisplay(player);
 		infoDisplay.update();
 	}
 });
 
 world.beforeEvents.playerLeave.subscribe((event) => {
-	if (!event.player) return;
-	delete playerToInfoDisplayMap[event.player.id];
+	if (!event.player)
+		return;
+	delete InfoDisplay.playerToInfoDisplayMap[event.player.id];
 });
 
 export { InfoDisplay };

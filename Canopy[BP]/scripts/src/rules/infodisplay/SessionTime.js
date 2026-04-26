@@ -1,6 +1,6 @@
-import { InfoDisplayElement } from './InfoDisplayElement.js';
+import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 
-class SessionTime extends InfoDisplayElement {
+class SessionTime extends InfoDisplayTextElement {
     player;
 
     constructor(player, displayLine) {

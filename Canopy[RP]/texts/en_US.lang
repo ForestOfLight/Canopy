@@ -433,6 +433,7 @@ rules.infoDisplay.moonPhase.waxingCrescent=Waxing Crescent Moon
 rules.infoDisplay.moonPhase.waxingGibbous=Waxing Gibbous Moon
 rules.infoDisplay.peekInventory=Shows the inventory of the block or entity you are targeting.
 rules.infoDisplay.peekInventory.empty=Empty
+rules.infoDisplay.renderSignalStrength=Renders signal strength values on top of nearby redstone dust.
 rules.infoDisplay.sessionTime=Shows the time since you joined the world.
 rules.infoDisplay.sessionTime.display=Session: %s
 rules.infoDisplay.signalStrength=Shows the signal strength of the block you are targeting.

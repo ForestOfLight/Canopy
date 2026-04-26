@@ -1,7 +1,7 @@
-import { InfoDisplayElement } from "./InfoDisplayElement";
+import { InfoDisplayTextElement } from "./InfoDisplayTextElement";
 import { getRaycastResults, parseName, stringifyLocation } from "../../../include/utils";
 
-export class Target extends InfoDisplayElement {
+export class Target extends InfoDisplayTextElement {
     constructor(player, displayLine) {
         const ruleData = { identifier: 'target', description: { translate: 'rules.infoDisplay.target' }, wikiDescription: 'Shows the identifier of the block or entity you are targeting.' };
         super(ruleData, displayLine);
