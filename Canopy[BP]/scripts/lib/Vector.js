@@ -40,6 +40,7 @@ Vector.sort = function sort(vec1, vec2) {
     const [z1, z2] = vec1.z < vec2.z ? [vec1.z, vec2.z] : [vec2.z, vec1.z];
     return [{ x: x1, y: y1, z: z1, __proto__: Vector.prototype }, { x: x2, y: y2, z: z2, __proto__: Vector.prototype }];
 }
+Vector.equals = function equals(vec1, vec2) { return vec1.x === vec2.x && vec1.y === vec2.y && vec1.z === vec2.z; }
 Vector.up = { x: 0, y: 1, z: 0, __proto__: Vector.prototype };
 Vector.down = { x: 0, y: -1, z: 0, __proto__: Vector.prototype };
 Vector.right = { x: 1, y: 0, z: 0, __proto__: Vector.prototype };
@@ -59,6 +60,7 @@ Vector.prototype = {
     add(vec) { return Vector.add(this, vec); },
     subtract(vec) { return Vector.subtract(this, vec); },
     scale(num) { return Vector.scale(this, num); },
+    equals(vec) { return Vector.equals(this, vec); },
     get length() { return Vector.magnitude(this); },
     get normalized() { return Vector.normalize(this); },
     x: 0,
