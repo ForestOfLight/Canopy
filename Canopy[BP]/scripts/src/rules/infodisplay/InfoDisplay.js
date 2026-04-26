@@ -74,6 +74,7 @@ class InfoDisplay {
 			new RenderSignalStrength(player)
 		];
 		InfoDisplay.playerToInfoDisplayMap[player.id] = this;
+		this.enableEnabledRules();
 	}
 
 	update() {
@@ -173,6 +174,14 @@ class InfoDisplay {
 	setToClearMessage() {
 		this.infoMessage = '';
 		this.clearedPreviousMessage = true;
+	}
+
+	enableEnabledRules() {
+		for (const element of this.elements) {
+			const rule = element.rule;
+			if (rule.getValue(this.player))
+				rule.onEnable();
+		}
 	}
 }
 

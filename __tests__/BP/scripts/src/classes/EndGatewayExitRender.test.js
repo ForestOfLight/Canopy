@@ -1,35 +1,59 @@
-import { beforeAll, describe, expect, it, vi } from "vitest";
-import { EndGatewayExitRender } from "../../../../../Canopy[BP]/scripts/src/classes/EndGatewayExitRender";
-import { Player } from "@minecraft/server";
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { EndGatewayExitRender } from '../../../../../Canopy[BP]/scripts/src/classes/EndGatewayExitRender';
+import { debugDrawer } from '@minecraft/debug-utilities';
 
 describe('EndGatewayExitRender', () => {
-    let exitRender;
-    beforeAll(() => {
-        const player = new Player();
-        const dimension = { id: "minecraft:the_end" };
-        const location = { x: 0, y: 0, z: 0 };
-        exitRender = new EndGatewayExitRender(player, dimension, location);
+    const dimension = { id: 'minecraft:the_end' };
+    const location = { x: 5, y: 64, z: 5 };
+    let render;
+
+    beforeEach(() => {
+        render = new EndGatewayExitRender(dimension, location, 32);
+    });
+
+    afterEach(() => {
+        render.destroy();
     });
 
     describe('constructor', () => {
-        it('should initialize properties correctly', () => {
-            expect(exitRender.player).toBeDefined();
-            expect(exitRender.location).toEqual({ x: 0, y: 0, z: 0 });
-            expect(exitRender.dimension).toEqual({ id: "minecraft:the_end" });
+        it('sets dimension, location, and searchAreaSize', () => {
+            expect(render.dimension).toEqual(dimension);
+            expect(render.location).toEqual({ x: 5, y: 64, z: 5 });
+            expect(render.searchAreaSize).toBe(32);
         });
 
-        it('should render the gateway exit', () => {
-            expect(exitRender.debugShapes.length).toBeGreaterThan(0);
+        it('defaults searchAreaSize to 1 when omitted', () => {
+            const r = new EndGatewayExitRender(dimension, location);
+            expect(r.searchAreaSize).toBe(1);
+            r.destroy();
+        });
+
+        it('renders shapes on construction', () => {
+            expect(render.debugShapes.length).toBeGreaterThan(0);
+            expect(debugDrawer.addShape).toHaveBeenCalled();
         });
     });
 
     describe('destroy', () => {
-        it('should remove all debug shapes', () => {
+        it('calls remove on each debug shape', () => {
             const mockShape = { remove: vi.fn() };
-            exitRender.debugShapes.push(mockShape);
-            exitRender.destroy();
+            render.debugShapes.push(mockShape);
+            render.destroy();
             expect(mockShape.remove).toHaveBeenCalled();
-            expect(exitRender.debugShapes.length).toBe(0);
+        });
+
+        it('clears the debugShapes array', () => {
+            render.destroy();
+            expect(render.debugShapes).toHaveLength(0);
+        });
+    });
+
+    describe('drawShape', () => {
+        it('registers the shape with debugDrawer and tracks it in debugShapes', () => {
+            const shape = { remove: vi.fn() };
+            render.drawShape(shape);
+            expect(debugDrawer.addShape).toHaveBeenCalledWith(shape, dimension);
+            expect(render.debugShapes).toContain(shape);
         });
     });
 });

@@ -14,19 +14,19 @@ class RenderSignalStrength extends InfoDisplayShapeElement {
             identifier: 'renderSignalStrength',
             description: { translate: 'rules.infoDisplay.renderSignalStrength' },
             wikiDescription: `Renders the signal strength of nearby redstone dust in the world. Only renders for redstone dust within ${RenderSignalStrength.RENDER_DISTANCE} blocks from the player to avoid excessive rendering.`,
-            onEnableCallback: () => this.startRender(),
-            onDisableCallback: () => this.stopRender()
+            onEnableCallback: () => this.start(),
+            onDisableCallback: () => this.stop()
         };
         super(ruleData, 0);
         this.player = player;
         this.playerId = player.id;
     }
 
-    startRender() {
+    start() {
         this.signalStrengthRenderers = {};
     }
 
-    stopRender() {
+    stop() {
         for (const [key, renderer] of Object.entries(this.signalStrengthRenderers)) {
             renderer.destroy();
             delete this.signalStrengthRenderers[key];

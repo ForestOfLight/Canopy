@@ -1,6 +1,8 @@
 import { InfoDisplayElement } from './InfoDisplayElement';
 
 class InfoDisplayShapeElement extends InfoDisplayElement {
+    isRendering = false;
+    
     constructor(ruleData, isWorldwide = false) {
         const originalOnEnableCallback = ruleData.onEnableCallback;
         ruleData.onEnableCallback = () => {

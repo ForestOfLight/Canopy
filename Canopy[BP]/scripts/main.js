@@ -80,6 +80,7 @@ import './src/rules/potionBoostedBreeding'
 import './src/rules/serverSideCollisionBoxes'
 import './src/rules/entitySeparation'
 import './src/rules/enderPearlChunkLoading'
+import './src/rules/renderEndGatewayExits'
 
 // Load Time Processes
 import './src/onStart'
