@@ -29,6 +29,7 @@ import { Dimension } from './Dimension';
 import { Weather } from './Weather';
 import { LiquidTarget } from './LiquidTarget';
 import { LiquidStates } from './LiquidStates';
+import { HandDurability } from './HandDurability';
 
 import { RenderSignalStrength } from './RenderSignalStrength';
 
@@ -64,12 +65,13 @@ class InfoDisplay {
 			new EventTrackers(17),
 			new HopperCounterCounts(18),
 			new SimulationMap(player, 19),
-			new Target(player, 20),
-			new SignalStrength(player, 20),
-			new BlockStates(player, 21),
-			new PeekInventory(player, 22),
-			new LiquidTarget(player, 23),
-			new LiquidStates(player, 24),
+			new HandDurability(player, 20),
+			new Target(player, 21),
+			new SignalStrength(player, 21),
+			new BlockStates(player, 22),
+			new PeekInventory(player, 23),
+			new LiquidTarget(player, 24),
+			new LiquidStates(player, 25),
 
 			new RenderSignalStrength(player)
 		];
