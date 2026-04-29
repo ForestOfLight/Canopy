@@ -40,7 +40,13 @@ export class SignalStrengthRenderer {
             this.stopRender();
             return;
         }
-        this.textShape.setText(String(this.block.getRedstonePower()));
+        this.updateRedstonePower();
+    }
+
+    updateRedstonePower() {
+        const power = this.block.getRedstonePower();
+        if (this.textShape.text !== String(power))
+            this.textShape.setText(String(power));
     }
 
     createTextShape() {
@@ -51,6 +57,7 @@ export class SignalStrengthRenderer {
         this.textShape.rotation = { x: 90, y: 0, z: 0 };
         this.textShape.useRotation = true;
         this.textShape.depthTest = true;
+        this.textShape.backfaceVisible = false;
         this.drawShape();
     }
 
