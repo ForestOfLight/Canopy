@@ -1,4 +1,4 @@
-import { HandDurability } from '../../../../../../Canopy[BP]/scripts/src/rules/infodisplay/HandDurability';
+import { HeldItemDurability } from '../../../../../../Canopy[BP]/scripts/src/rules/infodisplay/HeldItemDurability';
 import { describe, it, expect, beforeAll, beforeEach, vi } from 'vitest';
 import { InfoDisplayTextElement } from '../../../../../../Canopy[BP]/scripts/src/rules/infodisplay/InfoDisplayTextElement';
 import { Rules } from '../../../../../../Canopy[BP]/scripts/lib/canopy/rules/Rules';
@@ -23,7 +23,7 @@ vi.spyOn(mockPlayer, 'getComponent').mockImplementation((type) => type === 'equi
 describe('HandDurability', () => {
     let handDurability;
     beforeAll(() => {
-        handDurability = new HandDurability(mockPlayer, 0);
+        handDurability = new HeldItemDurability(mockPlayer, 0);
     });
     beforeEach(() => {
         mockDurabilityComponent.damage = 0;

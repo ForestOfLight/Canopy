@@ -1,13 +1,13 @@
 import { EntityComponentTypes, EquipmentSlot, ItemComponentTypes } from '@minecraft/server';
 import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 
-export class HandDurability extends InfoDisplayTextElement {
+export class HeldItemDurability extends InfoDisplayTextElement {
     player;
 
     constructor(player, displayLine) {
         const ruleData = {
-            identifier: 'handDurability',
-            description: { translate: 'rules.infoDisplay.handDurability' }
+            identifier: 'heldItemDurability',
+            description: { translate: 'rules.infoDisplay.heldItemDurability' }
         };
         super(ruleData, displayLine);
         this.player = player;
@@ -17,7 +17,7 @@ export class HandDurability extends InfoDisplayTextElement {
         const durability = this.#tryGetDurabilityValues();
         if (!durability)
             return { text: '' };
-        return { translate: 'rules.infoDisplay.handDurability.display', with: [this.#getFormattedRatio(durability)] };
+        return { translate: 'rules.infoDisplay.heldItemDurability.display', with: [this.#getFormattedRatio(durability)] };
     }
 
     getFormattedDataSharedLine() {
