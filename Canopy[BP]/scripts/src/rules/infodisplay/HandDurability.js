@@ -14,32 +14,34 @@ export class HandDurability extends InfoDisplayTextElement {
     }
 
     getFormattedDataOwnLine() {
-        const durabilityComponent = this.tryGetDurabilityComponent();
-        if (!durabilityComponent)
+        const durability = this.#tryGetDurabilityValues();
+        if (!durability)
             return { text: '' };
-        return { translate: 'rules.infoDisplay.handDurability.display', with: [this.getFormattedRatio(durabilityComponent)] };
+        return { translate: 'rules.infoDisplay.handDurability.display', with: [this.#getFormattedRatio(durability)] };
     }
 
     getFormattedDataSharedLine() {
         return this.getFormattedDataOwnLine();
     }
 
-    tryGetDurabilityComponent() {
+    #tryGetDurabilityValues() {
         const equippable = this.player.getComponent(EntityComponentTypes.Equippable);
         const itemStack = equippable?.getEquipment(EquipmentSlot.Mainhand);
         if (!itemStack)
             return void 0;
-        return itemStack.getComponent(ItemComponentTypes.Durability) || void 0;
+        const durabilityComponent = itemStack.getComponent(ItemComponentTypes.Durability);
+        if (!durabilityComponent)
+            return void 0;
+        return { max: durabilityComponent.maxDurability, damage: durabilityComponent.damage };
     }
 
-    getFormattedRatio(durabilityComponent) {
-        const max = durabilityComponent.maxDurability;
-        const remaining = max - durabilityComponent.damage;
-        const color = this.getDurabilityColor(remaining / max);
+    #getFormattedRatio({ max, damage }) {
+        const remaining = max - damage;
+        const color = this.#getDurabilityColor(remaining / max);
         return `${color}${remaining}§7/§a${max}§r`;
     }
 
-    getDurabilityColor(ratio) {
+    #getDurabilityColor(ratio) {
         if (ratio >= 0.5) return '§a';
         if (ratio >= 0.1) return '§e';
         return '§c';
