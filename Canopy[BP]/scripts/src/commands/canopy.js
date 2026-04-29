@@ -131,7 +131,7 @@ async function openMenu(sender) {
             if (rule.getType() === 'boolean')
                 form.toggle(rule.getID(), { defaultValue: ruleValue, tooltip: rule.getDescription() });
             else
-                form.textField(rule.getID(), rule.getType(), { defaultValue: String(rule.getDefaultValue()), tooltip: rule.getDescription() });
+                form.textField(rule.getID(), rule.getType(), { defaultValue: String(ruleValue), tooltip: rule.getDescription() });
         } catch (error) {
             sender.sendMessage(`§cError: ${error.message} for rule ${rule.getID()}`);
         }
