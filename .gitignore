@@ -5,4 +5,3 @@ coverage/
 /.regolith
 /docs/superpowers/
 .claude/
-.env
