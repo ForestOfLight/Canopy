@@ -13,8 +13,8 @@ describe('Wiki generator', () => {
         const wikiPath = process.env.WIKI_PATH;
         if (!wikiPath) throw new Error('WIKI_PATH environment variable is required.\nUsage: WIKI_PATH=../Canopy.wiki npm run generate-wiki');
 
-        const __dirname = fileURLToPath(new URL('.', import.meta.url));
-        const resolvedWikiPath = path.resolve(__dirname, wikiPath);
+        const currPath = fileURLToPath(new URL('.', import.meta.url));
+        const resolvedWikiPath = path.resolve(currPath, wikiPath);
 
         const { main } = await import('./generate-wiki.js');
         await main(resolvedWikiPath);

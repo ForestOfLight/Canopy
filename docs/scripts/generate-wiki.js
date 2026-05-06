@@ -2,8 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
-const projectRoot = path.resolve(__dirname, '../../');
+const currPath = fileURLToPath(new URL('.', import.meta.url));
+const projectRoot = path.resolve(currPath, '../../');
 
 function parseLangFile(langPath) {
     const content = fs.readFileSync(langPath, 'utf8');
@@ -164,9 +164,9 @@ function injectCommandsPage(template, commandMap, lang) {
             return `### ${name}\n${block}`;
         });
 
-    if (unlisted.length > 0) {
+    if (unlisted.length > 0) 
         result += `\n\n## Unlisted Commands\n\n${unlisted.join('\n\n')}`;
-    }
+    
 
     return result;
 }
@@ -211,8 +211,8 @@ async function getCommandMap() {
         if (cmd.isHelpHidden()) continue;
         commandMap.set(cmd.getName(), { instance: cmd, isVanilla: false });
     }
-    for (const cmd of VanillaCommands.getAll()) {
+    for (const cmd of VanillaCommands.getAll()) 
         commandMap.set(cmd.getName(), { instance: cmd, isVanilla: true });
-    }
+    
     return commandMap;
 }
