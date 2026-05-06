@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(npm test *)",
-      "Bash(grep -v \"^$\")",
-      "Bash(npx vitest *)"
-    ]
-  }
-}
