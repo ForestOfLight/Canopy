@@ -1,18 +1,30 @@
 {
 	"format_version": 2,
 	"header": {
-		"name": "Canopy [BP] v1.5.5",
+		"name": "Canopy [BP] v1.5.6",
 		"description": "Technical informatics & features addon by §aForestOfLight§r.",
 		"uuid": "7f6b23df-a583-476b-b0e4-87457e65f7c0",
-		"version": [1, 5, 5],
-		"min_engine_version": [1, 26, 10]
+		"version": [
+			1,
+			5,
+			6
+		],
+		"min_engine_version": [
+			1,
+			26,
+			20
+		]
 	},
 	"modules": [
 		{
 			"description": "Behavior Pack Module",
 			"type": "data",
 			"uuid": "47787f93-ec3c-4b0c-95fb-55a70e029041",
-			"version": [1, 0, 0]
+			"version": [
+				1,
+				0,
+				0
+			]
 		},
 		{
 			"description": "Gametest Module",
@@ -20,7 +32,11 @@
 			"language": "javascript",
 			"entry": "scripts/main.js",
 			"uuid": "3d753132-e3c9-4305-a995-eae30b486093",
-			"version": [1, 0, 0]
+			"version": [
+				1,
+				0,
+				0
+			]
 		}
 	],
 	"dependencies": [
@@ -38,13 +54,19 @@
 		},
 		{
 			"uuid": "bcf34368-ed0c-4cf7-938e-582cccf9950d",
-			"version": [1, 5, 5]
+			"version": [
+				1,
+				5,
+				6
+			]
 		}
 	],
 	"metadata": {
-		"authors": [ "ForestOfLight" ],
+		"authors": [
+			"ForestOfLight"
+		],
 		"license": "MIT",
-    	"url": "https://github.com/ForestOfLight/Canopy",
+		"url": "https://github.com/ForestOfLight/Canopy",
 		"product_type": "addon"
 	}
 }
