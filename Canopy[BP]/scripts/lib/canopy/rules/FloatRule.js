@@ -26,6 +26,6 @@ export class FloatRule extends Rule {
     }
 
     isInRange(value) {
-        return this.valueRange.other?.includes(value) || (value >= this.valueRange.range?.min && value <= this.valueRange.range?.max);
+        return this.valueRange?.other?.includes(value) || (value >= this.valueRange?.range?.min && value <= this.valueRange.range?.max);
     }
 }

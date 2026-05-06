@@ -1,7 +1,13 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  server: {
+    fs: {
+      strict: false
+    }
+  },
   resolve: {
+    preserveSymlinks: true,
     alias: {
       '@minecraft/server': `@forestoflight/minecraft-vitest-mocks/server`,
       '@minecraft/server-ui': `@forestoflight/minecraft-vitest-mocks/server-ui`,
@@ -11,12 +17,17 @@ export default defineConfig({
       'src/classes/Instaminable': `${__dirname}/Canopy[BP]/scripts/src/classes/Instaminable.js`,
       'src/rules/durabilityNotifier': `${__dirname}/Canopy[BP]/scripts/src/rules/durabilityNotifier.js`,
     },
-    setupFiles: ['@forestoflight/minecraft-vitest-mocks/setup']
   },
   test: {
     env: {
       NODE_ENV: 'test'
     },
-    include: ['docs/scripts/generate-wiki.test.js']
+    include: ['docs/scripts/generate-wiki.test.js'],
+    setupFiles: ['@forestoflight/minecraft-vitest-mocks/setup'],
+    server: {
+      deps: {
+        inline: ['@forestoflight/minecraft-vitest-mocks']
+      }
+    },
   }
 });

@@ -174,16 +174,16 @@ function injectCommandsPage(template, commandMap, lang) {
 export async function main(wikiPath) {
     await import('../../Canopy[BP]/scripts/main.js');
     const lang = parseLangFile(path.join(projectRoot, 'Canopy[RP]/texts/en_US.lang'));
-    generateRulesPages(wikiPath, lang);
-    generateCommandsPage(wikiPath, lang);
+    await generateRulesPages(wikiPath, lang);
+    await generateCommandsPage(wikiPath, lang);
 }
 
 async function generateRulesPages(wikiPath, lang) {
     const { Rules } = await import('../../Canopy[BP]/scripts/lib/canopy/rules/Rules.js');
     const { InfoDisplay } = await import('../../Canopy[BP]/scripts/src/rules/infodisplay/InfoDisplay.js');
-    new InfoDisplay({ id: 'wiki-gen-mock', setDynamicProperty: () => {} });
+    new InfoDisplay({ id: 'wiki-gen-mock', setDynamicProperty: () => {}, getDynamicProperty: () => {} });
 
-    const allRules = Rules.rulesToRegister;
+    const allRules = Rules.getAll();
     const globalRules = allRules.filter(r => r.getCategory() === 'Rules');
     const infoDisplayRules = allRules.filter(r => r.getCategory() === 'InfoDisplay');
 

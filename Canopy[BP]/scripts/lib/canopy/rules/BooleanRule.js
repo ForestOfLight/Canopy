@@ -4,8 +4,11 @@ export class BooleanRule extends Rule {
     constructor(options) {
         options.suggestedOptions = options.suggestedOptions ?? [false, true];
         options.defaultValue = options.defaultValue ?? false;
-        options.onModifyCallback = (value) => this.onModifyBool(value);
+        /* eslint-disable prefer-const*/
+        let self;
+        options.onModifyCallback = (value) => self?.onModifyBool(value);
         super({ ...options });
+        self = this;
         this.onEnable = options.onEnableCallback || (() => {});
         this.onDisable = options.onDisableCallback || (() => {});
     }

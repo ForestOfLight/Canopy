@@ -1,7 +1,7 @@
 import { DebugDisplayShapeElement } from "./DebugDisplayShapeElement";
 import { Vector } from "../../../lib/Vector";
 import { DebugArrow } from "@minecraft/debug-utilities";
-import { serverSideCollisionBoxes } from "../../rules/serverSideCollisionBoxes";
+import { Rules } from "../../../lib/canopy/rules/Rules";
 
 export class ViewDirectionVector extends DebugDisplayShapeElement {
     createShapes() {
@@ -17,7 +17,7 @@ export class ViewDirectionVector extends DebugDisplayShapeElement {
     update() {
         const viewDirectionData = this.getViewDirectionBounds();
         let endLocation = viewDirectionData.endLocation;
-        if (serverSideCollisionBoxes.getNativeValue())
+        if (Rules.getNativeValue('serverSideCollisionBoxes'))
             endLocation = endLocation.add(this.entity.location);
         this.shapes[0].endLocation = endLocation;
     }

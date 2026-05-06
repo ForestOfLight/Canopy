@@ -11,6 +11,7 @@ class Rules {
                 throw new Error(`[Canopy] Rule with identifier '${rule.getID()}' already exists.`);
             this.#rules[rule.getID()] = rule;
             if (rule.getCategory() === "Rules") {
+                await Promise.resolve();
                 const value = await rule.getValue();
                 if (value === void 0)
                     rule.resetToDefaultValue();
