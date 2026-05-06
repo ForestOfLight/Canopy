@@ -7,7 +7,6 @@ export default defineConfig({
     }
   },
   resolve: {
-    preserveSymlinks: true,
     alias: {
       '@minecraft/server': `@forestoflight/minecraft-vitest-mocks/server`,
       '@minecraft/server-ui': `@forestoflight/minecraft-vitest-mocks/server-ui`,

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { tntFuseRule } from "../../../../../Canopy[BP]/scripts/src/rules/tntFuse";
+import { world } from "@minecraft/server";
 
 const tntEntity = {
     typeId: 'minecraft:tnt',
@@ -31,9 +32,7 @@ vi.mock('@minecraft/server', async (importOriginal) => {
             afterEvents: {
                 ...original.world.afterEvents,
                 entityLoad: { subscribe: vi.fn() }
-            },
-            setDynamicProperty: (identifier, ticks) => { tntFuseDP = ticks },
-            getDynamicProperty: () => tntFuseDP
+            }
         }
     };
 });
@@ -62,7 +61,7 @@ describe('tntFuseRule', () => {
     });
 
     it('should properly initialize the fuse ticks DP', () => {
-        tntFuseDP = void 0;
+        world.setDynamicProperty(tntFuseRule.getID(), void 0)
         expect(tntFuseRule.getGlobalFuseTicks()).toBe(80);
     });
 

@@ -113,8 +113,7 @@ describe('AbilityRule', () => {
         expect(abilityRule.isActionItemInActionSlot(player)).toBe(false);
     });
 
-    it('should enable players that have the action item in slot when refreshed', async () => {
-        const { world } = await import('@minecraft/server');
+    it('should enable players that have the action item in slot when refreshed', () => {
         const player = {
             id: 'player1',
             getComponent: vi.fn().mockReturnValue({
@@ -128,8 +127,7 @@ describe('AbilityRule', () => {
         expect(onPlayerEnableCallback).toHaveBeenCalledWith(player);
     });
 
-    it('should disable players that do not have the action item in slot when refreshed', async () => {
-        const { world } = await import('@minecraft/server');
+    it('should disable players that do not have the action item in slot when refreshed', () => {
         const player = {
             id: 'player1',
             getComponent: vi.fn().mockReturnValue({
@@ -142,22 +140,19 @@ describe('AbilityRule', () => {
         expect(onPlayerDisableCallback).toHaveBeenCalledWith(player);
     });
 
-    it('should skip null players during refresh', async () => {
-        const { world } = await import('@minecraft/server');
+    it('should skip null players during refresh', () => {
         world.getAllPlayers.mockReturnValue([null]);
         expect(() => abilityRule.refreshOnlinePlayers()).not.toThrow();
     });
 
-    it('should subscribe to events when onEnable is called', async () => {
-        const { world } = await import('@minecraft/server');
+    it('should subscribe to events when onEnable is called', () => {
         abilityRule.onEnable();
         expect(world.afterEvents.playerInventoryItemChange.subscribe).toHaveBeenCalled();
         expect(world.afterEvents.playerJoin.subscribe).toHaveBeenCalled();
         expect(world.beforeEvents.playerLeave.subscribe).toHaveBeenCalled();
     });
 
-    it('should unsubscribe from events when onDisable is called', async () => {
-        const { world } = await import('@minecraft/server');
+    it('should unsubscribe from events when onDisable is called', () => {
         abilityRule.onDisable();
         expect(world.afterEvents.playerInventoryItemChange.unsubscribe).toHaveBeenCalled();
         expect(world.afterEvents.playerJoin.unsubscribe).toHaveBeenCalled();

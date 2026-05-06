@@ -1,6 +1,11 @@
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
+  server: {
+    fs: {
+      strict: false
+    }
+  },
   resolve: {
     alias: {
       '@minecraft/server': `@forestoflight/minecraft-vitest-mocks/server`,
