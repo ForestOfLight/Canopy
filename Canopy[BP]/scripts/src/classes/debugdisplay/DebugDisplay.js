@@ -1,7 +1,7 @@
 import { system, world } from '@minecraft/server';
 import { DebugDisplayTextDrawer } from './DebugDisplayTextDrawer';
 import { DebugDisplayTextElement } from './DebugDisplayTextElement';
-import { DebugDisplayShapeElement } from './DebugDisplayShapeElement';
+// import { DebugDisplayShapeElement } from './DebugDisplayShapeElement';
 
 import { Location } from './Location';
 import { HeadLocation } from './HeadLocation';
@@ -50,11 +50,11 @@ import { Tame } from './Tame';
 import { Families } from './Families';
 import { TNT } from './TNT';
 import { WantsJockey } from './WantsJockey';
-import { CollisionBox } from './CollisionBox';
-import { HitBox } from './HitBox';
-import { EyeLevel } from './EyeLevel';
-import { ViewDirectionVector } from './ViewDirectionVector';
-import { AttackBox } from './AttackBox';
+// import { CollisionBox } from './CollisionBox';
+// import { HitBox } from './HitBox';
+// import { EyeLevel } from './EyeLevel';
+// import { ViewDirectionVector } from './ViewDirectionVector';
+// import { AttackBox } from './AttackBox';
 import { Movement } from './Movement';
 import { UnderwaterMovement } from './UnderwaterMovement';
 import { Horse } from './Horse';
@@ -112,11 +112,11 @@ const debugableProperties = Object.freeze({
     viewdirection: ViewDirection,
     wantsjockey: WantsJockey,
 
-    attackbox: AttackBox,
-    collisionbox: CollisionBox,
-    hitbox: HitBox,
-    eyelevel: EyeLevel,
-    viewdirectionvector: ViewDirectionVector
+    // attackbox: AttackBox,
+    // collisionbox: CollisionBox,
+    // hitbox: HitBox,
+    // eyelevel: EyeLevel,
+    // viewdirectionvector: ViewDirectionVector
 });
 
 export class DebugDisplay {
@@ -134,10 +134,10 @@ export class DebugDisplay {
     destroy() {
         this.textDrawer.destroy();
         this.textDrawer = void 0;
-        this.enabledElements.forEach(element => {
-            if (element instanceof DebugDisplayShapeElement)
-                element.destroy();
-        });
+        // this.enabledElements.forEach(element => {
+        //     if (element instanceof DebugDisplayShapeElement)
+        //         element.destroy();
+        // });
         delete entityToDebugDisplayMap[this.entity.id];
     }
 
@@ -148,11 +148,12 @@ export class DebugDisplay {
 
     removeElement(property) {
         const index = this.enabledElements.findIndex(e => e instanceof debugableProperties[property]);
-        let splicedElement;
+        // let splicedElement;
         if (index !== -1)
-            splicedElement = this.enabledElements.splice(index, 1)[0];
-        if (splicedElement instanceof DebugDisplayShapeElement)
-            splicedElement.destroy();
+            this.enabledElements.splice(index, 1)[0];
+            // splicedElement = this.enabledElements.splice(index, 1)[0];
+        // if (splicedElement instanceof DebugDisplayShapeElement)
+        //     splicedElement.destroy();
     }
 
     hasElement(property) {
