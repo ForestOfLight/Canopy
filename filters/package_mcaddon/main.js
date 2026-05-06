@@ -9,7 +9,7 @@ const buildDir = path.join(projectRoot, 'build');
 const projectName = JSON.parse(fs.readFileSync(path.join(projectRoot, 'config.json'), 'utf8')).name;
 
 function getPackVersion() {
-    const content = fs.readFileSync(path.join(projectRoot, `${projectName} [BP]`, 'scripts', 'constants.js'), 'utf8');
+    const content = fs.readFileSync(path.join(projectRoot, `${projectName}[BP]`, 'scripts', 'constants.js'), 'utf8');
     const match = content.match(/PACK_VERSION\s*=\s*['"]([^'"]+)['"]/);
     return match ? match[1] : 'unknown';
 }
