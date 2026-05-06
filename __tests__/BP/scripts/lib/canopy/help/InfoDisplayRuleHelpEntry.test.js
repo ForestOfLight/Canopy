@@ -1,30 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { InfoDisplayRuleHelpEntry } from '../../../../../../Canopy [BP]/scripts/lib/canopy/help/InfoDisplayRuleHelpEntry';
-import { InfoDisplayRule } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/InfoDisplayRule';
-import { Rules } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules';
-
-vi.mock('@minecraft/server', () => ({
-    world: { 
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: vi.fn()
-            }
-        }
-    },
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
-        },
-        runJob: vi.fn()
-    }
-}));
+import { InfoDisplayRuleHelpEntry } from '../../../../../../Canopy[BP]/scripts/lib/canopy/help/InfoDisplayRuleHelpEntry';
+import { InfoDisplayRule } from '../../../../../../Canopy[BP]/scripts/lib/canopy/rules/InfoDisplayRule';
+import { Rules } from '../../../../../../Canopy[BP]/scripts/lib/canopy/rules/Rules';
 
 describe('InfoDisplayRuleHelpEntry', () => {
     let entry;

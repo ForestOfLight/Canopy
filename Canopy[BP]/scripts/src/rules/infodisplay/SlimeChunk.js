@@ -1,0 +1,47 @@
+import { InfoDisplayTextElement } from './InfoDisplayTextElement.js'
+import { playerChangeSubChunkEvent } from '../../events/PlayerChangeSubChunkEvent.js'
+
+export class SlimeChunk extends InfoDisplayTextElement {
+    player;
+    infoMessage = { text: '' };
+
+    constructor(player, displayLine) {
+        const ruleData = { identifier: 'slimeChunk', description: { translate: 'rules.infoDisplay.slimeChunk' }, wikiDescription: 'Shows whether the chunk you are currently standing in is a slime chunk.' };
+        super(ruleData, displayLine);
+        this.player = player;
+        playerChangeSubChunkEvent.subscribe(this.onPlayerChangeSubChunk.bind(this));
+    }
+
+    getFormattedDataOwnLine() {
+        return this.infoMessage;
+    }
+
+    getFormattedDataSharedLine() {
+        return this.getFormattedDataOwnLine();
+    }
+
+    onPlayerChangeSubChunk(event) {
+        if (event.player?.id !== this.player?.id)
+            return;
+        this.infoMessage = { translate: 'rules.infoDisplay.slimeChunk.display', with: [this.isSlime() ? '§atrue' : '§cfalse'] };
+    }
+     
+    isSlime() {
+        if (this.player.dimension.id !== "minecraft:overworld") 
+            return false;
+        const chunkX = Math.floor(this.player.location.x / 16) >>> 0;
+        const chunkZ = Math.floor(this.player.location.z / 16) >>> 0;
+        // optimized by https://github.com/McbeEringi/mcbeeringi.github.io/blob/master/apps/mc/slime.html
+        let seed = Math.imul(chunkX, 0x1f1f1f1f) ^ chunkZ;
+        const nextSeed = (s, n) => Math.imul(s ^ s >>> 30, 0x6c078965) + n;
+        const initial = seed & 0x80000000 | (seed = nextSeed(seed, 1)) & 0x7fffffff;
+        for (let i = 2; i < 398; i++)
+            seed = nextSeed(seed, i);
+        seed ^= initial >>> 1 ^ [0, 0x9908b0df][initial & 1];
+        seed ^= seed >>> 11;
+        seed ^= seed << 7 & 0x9d2c5680;
+        seed ^= seed << 15 & 0xefc60000;
+        seed ^= seed >>> 18;
+        return !((seed >>> 0) % 10);
+    }
+}

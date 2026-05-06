@@ -1,36 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { Rules } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules.js";
-import { BooleanRule } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule.js";
-import { Rule } from "../../../../../../Canopy [BP]/scripts/lib/canopy/Canopy.js";
+import { Rules } from "../../../../../../Canopy[BP]/scripts/lib/canopy/rules/Rules.js";
+import { BooleanRule } from "../../../../../../Canopy[BP]/scripts/lib/canopy/rules/BooleanRule.js";
+import { Rule } from "../../../../../../Canopy[BP]/scripts/lib/canopy/Canopy.js";
 
-vi.mock('@minecraft/server', () => ({
-    world: { 
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: (callback) => {
-                    callback();
-                }
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        world: {
+            ...original.world,
+            afterEvents: {
+                ...original.world.afterEvents,
+                worldLoad: { subscribe: (callback) => callback() }
             }
         }
-    },
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
-        },
-        runJob: vi.fn()
-    }
-}));
-
-vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn()
-}));
+    };
+});
 
 describe('Rules', () => {
     let testRule;
@@ -246,6 +231,47 @@ describe('Rules', () => {
 
         it('should throw an error if the rule does not exist', () => {
             expect(() => Rules.getDependentRuleIDs('non_existent_rule')).toThrow();
+        });
+    });
+
+    describe('registerQueuedRules', () => {
+        it('should register all queued rules', async () => {
+            Rules.clear();
+            const mockRule = {
+                getID: () => 'queued_rule',
+                getCategory: () => 'test',
+            };
+            Rules.rulesToRegister = [mockRule];
+            await Rules.registerQueuedRules();
+            expect(Rules.get('queued_rule')).toBe(mockRule);
+            expect(Rules.rulesToRegister).toHaveLength(0);
+        });
+    });
+
+    describe('register with worldLoaded and Rules category', () => {
+        it('should call onModify when the rule has a defined value', async () => {
+            const onModify = vi.fn();
+            const mockRule = {
+                getID: () => 'rules_category_rule',
+                getCategory: () => 'Rules',
+                getValue: vi.fn().mockResolvedValue(true),
+                onModify
+            };
+            await Rules.register(mockRule);
+            expect(onModify).toHaveBeenCalledWith(true);
+        });
+
+        it('should call resetToDefaultValue when the rule value is undefined', async () => {
+            const resetToDefaultValue = vi.fn();
+            const mockRule = {
+                getID: () => 'rules_category_rule_2',
+                getCategory: () => 'Rules',
+                getValue: vi.fn().mockResolvedValue(undefined),
+                resetToDefaultValue,
+                onModify: vi.fn()
+            };
+            await Rules.register(mockRule);
+            expect(resetToDefaultValue).toHaveBeenCalled();
         });
     });
 

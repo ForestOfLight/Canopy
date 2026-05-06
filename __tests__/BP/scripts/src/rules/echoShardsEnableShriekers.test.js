@@ -1,58 +1,29 @@
 import { vi, it, describe, expect } from "vitest";
-import { echoShardsEnableShriekers } from "../../../../../Canopy [BP]/scripts/src/rules/echoShardsEnableShriekers";
+import { echoShardsEnableShriekers } from "../../../../../Canopy[BP]/scripts/src/rules/echoShardsEnableShriekers";
 
-vi.mock("@minecraft/server", () => ({
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        system: {
+            ...original.system,
+            run: vi.fn((callback) => callback())
+        },
+        world: {
+            ...original.world,
+            beforeEvents: {
+                ...original.world.beforeEvents,
+                playerInteractWithBlock: { subscribe: vi.fn(), unsubscribe: vi.fn() }
             }
         },
-        runJob: vi.fn(),
-        run: vi.fn((callback) => callback())
-    },
-    world: {
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            },
-            playerInteractWithBlock: {
-                subscribe: vi.fn(),
-                unsubscribe: vi.fn()
-            }
+        BlockPermutation: {
+            resolve: (typeId, states) => ({ typeId: typeId, getAllStates: () => states })
         },
-        afterEvents: {
-            worldLoad: {
-                subscribe: vi.fn()
-            }
-        },
-        getDynamicProperty: vi.fn(),
-        setDynamicProperty: vi.fn(),
-        structureManager: {
-            place: vi.fn()
-        }
-    },
-    BlockPermutation: {
-        resolve: (typeId, states) => ({
-            typeId: typeId,
-            getAllStates: () => states
-        })
-    },
-    EntityComponentTypes: {
-        Equippable: 'minecraft:equippable'
-    },
-    EquipmentSlot: {
-        Mainhand: 'mainhand'
-    },
-    GameMode: {
-        Creative: 'creative',
-        Survival: 'survival'
-    }
-}));
-
-vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn()
-}));
+        EntityComponentTypes: { ...original.EntityComponentTypes, Equippable: 'minecraft:equippable' },
+        EquipmentSlot: { Mainhand: 'mainhand' },
+        GameMode: { Creative: 'creative', Survival: 'survival' }
+    };
+});
 
 describe('echoShardsEnableShriekers', () => {
     it('should subscribe to player block placements when enabled', () => {

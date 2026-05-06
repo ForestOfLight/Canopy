@@ -1,43 +1,24 @@
 import { vi, it, describe, expect, beforeEach } from "vitest";
-import { entitySeparation } from "../../../../../Canopy [BP]/scripts/src/rules/entitySeparation";
-import { Vector } from "../../../../../Canopy [BP]/scripts/lib/Vector";
+import { entitySeparation } from "../../../../../Canopy[BP]/scripts/src/rules/entitySeparation";
+import { Vector } from "../../../../../Canopy[BP]/scripts/lib/Vector";
 
-vi.mock("@minecraft/server", () => ({
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        system: {
+            ...original.system,
+            run: vi.fn((callback) => callback())
         },
-        runJob: vi.fn(),
-        run: vi.fn((callback) => callback())
-    },
-    world: {
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
+        world: {
+            ...original.world,
+            afterEvents: {
+                ...original.world.afterEvents,
+                pressurePlatePush: { subscribe: vi.fn(), unsubscribe: vi.fn() }
             }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: vi.fn()
-            },
-            pressurePlatePush: {
-                subscribe: vi.fn(),
-                unsubscribe: vi.fn()
-            }
-        },
-        getDynamicProperty: vi.fn(),
-        setDynamicProperty: vi.fn(),
-        structureManager: {
-            place: vi.fn()
         }
-    }
-}));
-
-vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn()
-}));
+    };
+});
 
 describe('entitySeparation', () => {
     let successfulEvent = {};

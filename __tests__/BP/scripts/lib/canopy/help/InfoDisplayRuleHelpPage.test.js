@@ -1,35 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { InfoDisplayRuleHelpPage } from '../../../../../../Canopy [BP]/scripts/lib/canopy/help/InfoDisplayRuleHelpPage';
-import { InfoDisplayRule } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/InfoDisplayRule';
-import { InfoDisplayRuleHelpEntry } from '../../../../../../Canopy [BP]/scripts/lib/canopy/help/InfoDisplayRuleHelpEntry';
-import { Rules } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules';
-
-vi.mock("@minecraft/server", () => ({
-    world: { 
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: vi.fn()
-            }
-        },
-        getDynamicProperty: vi.fn()
-    },
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
-        },
-        runJob: vi.fn()
-    }
-}));
+import { InfoDisplayRuleHelpPage } from '../../../../../../Canopy[BP]/scripts/lib/canopy/help/InfoDisplayRuleHelpPage';
+import { InfoDisplayRule } from '../../../../../../Canopy[BP]/scripts/lib/canopy/rules/InfoDisplayRule';
+import { InfoDisplayRuleHelpEntry } from '../../../../../../Canopy[BP]/scripts/lib/canopy/help/InfoDisplayRuleHelpEntry';
+import { Rules } from '../../../../../../Canopy[BP]/scripts/lib/canopy/rules/Rules';
 
 // Terrible practice. This is a workaround for a Vitest rollup error that causes the Rule class to not be imported properly in BooleanRule.
-vi.mock('../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rule', () => ({
+vi.mock('../../../../../../Canopy[BP]/scripts/lib/canopy/rules/Rule', () => ({
     Rule: class Rule {
         #category;
         #identifier;

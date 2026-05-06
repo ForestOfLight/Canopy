@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { RuleHelpEntry } from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/RuleHelpEntry";
+import { RuleHelpEntry } from "../../../../../../Canopy[BP]/scripts/lib/canopy/help/RuleHelpEntry";
 
 describe('RuleHelpEntry', () => {
     describe('constructor', () => {
@@ -49,6 +49,42 @@ describe('RuleHelpEntry', () => {
                     { text: 'This is a test rule' }
                 ]
             });
+        });
+
+        it('should prefix the value with §u for integer type', async () => {
+            const mockRule = {
+                getID: () => 'testRule',
+                getDescription: () => 'An integer rule',
+                getValue: vi.fn().mockResolvedValue(42),
+                getType: () => 'integer'
+            };
+            const entry = new RuleHelpEntry(mockRule);
+            const coloredValue = await entry.fetchColoredValue();
+            expect(coloredValue).toBe('§u42');
+        });
+
+        it('should prefix the value with §d for float type', async () => {
+            const mockRule = {
+                getID: () => 'testRule',
+                getDescription: () => 'A float rule',
+                getValue: vi.fn().mockResolvedValue(1.5),
+                getType: () => 'float'
+            };
+            const entry = new RuleHelpEntry(mockRule);
+            const coloredValue = await entry.fetchColoredValue();
+            expect(coloredValue).toBe('§d1.5');
+        });
+
+        it('should return the raw value for unknown types', async () => {
+            const mockRule = {
+                getID: () => 'testRule',
+                getDescription: () => 'An unknown rule',
+                getValue: vi.fn().mockResolvedValue('someValue'),
+                getType: () => 'unknown'
+            };
+            const entry = new RuleHelpEntry(mockRule);
+            const coloredValue = await entry.fetchColoredValue();
+            expect(coloredValue).toBe('someValue');
         });
     });
 });

@@ -1,31 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { CommandHelpPage } from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/CommandHelpPage";
-import { CommandHelpEntry } from "../../../../../../Canopy [BP]/scripts/lib/canopy/help/CommandHelpEntry";
-import { Command } from "../../../../../../Canopy [BP]/scripts/lib/canopy/commands/Command";
-import { Commands } from "../../../../../../Canopy [BP]/scripts/lib/canopy/commands/Commands";
-
-vi.mock("@minecraft/server", () => ({
-    world: { 
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: vi.fn()
-            }
-        }
-    },
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
-        },
-        runJob: vi.fn()
-    }
-}));
+import { describe, it, expect, beforeEach } from "vitest";
+import { CommandHelpPage } from "../../../../../../Canopy[BP]/scripts/lib/canopy/help/CommandHelpPage";
+import { CommandHelpEntry } from "../../../../../../Canopy[BP]/scripts/lib/canopy/help/CommandHelpEntry";
+import { Command } from "../../../../../../Canopy[BP]/scripts/lib/canopy/commands/Command";
+import { Commands } from "../../../../../../Canopy[BP]/scripts/lib/canopy/commands/Commands";
 
 describe('CommandHelpPage', () => {
     describe('constructor', () => {

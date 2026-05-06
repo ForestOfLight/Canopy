@@ -1,6 +1,6 @@
-import { playerSit } from "../../../../../Canopy [BP]/scripts/src/rules/playerSit";
+import { playerSit } from "../../../../../Canopy[BP]/scripts/src/rules/playerSit";
 import { expect, test, describe, vi, beforeAll, afterAll, afterEach } from "vitest";
-import { playerStartSneakEvent } from "../../../../../Canopy [BP]/scripts/src/events/PlayerStartSneakEvent";
+import { playerStartSneakEvent } from "../../../../../Canopy[BP]/scripts/src/events/PlayerStartSneakEvent";
 
 const rideableEntity = {
     type: 'canopy:rideable',
@@ -12,65 +12,36 @@ const rideableEntity = {
     setRotation: vi.fn()
 };
 
-vi.mock("@minecraft/server", () => ({
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        system: {
+            ...original.system,
+            currentTick: (Date.now() / 50),
+            runInterval: vi.fn((callback, interval) => {
+                const intervalId = setInterval(callback, interval * 50);
+                return { clear: () => clearInterval(intervalId) };
+            }),
+            clearRun: vi.fn((runner) => { runner.clear(); })
         },
-        runJob: vi.fn(),
-        currentTick: (Date.now() / 50),
-        runInterval: vi.fn((callback, interval) => {
-            const intervalId = setInterval(callback, interval * 50);
-            return {
-                clear: () => clearInterval(intervalId)
-            };
-        }),
-        clearRun: vi.fn((runner) => {
-            runner.clear();
-        })
-    },
-    world: {
-        getAllPlayers: vi.fn(() => [
-            undefined,
-            { id: 'player1', inputInfo: { getButtonState: vi.fn(() => "Pressed" ) }, isOnGround: true, location: { x: 0, y: 0, z: 0 }, getRotation: vi.fn(() => ({ x: 0, y: 0 })) },
-            { id: 'player2', inputInfo: { getButtonState: vi.fn(() => "Released" ) }, isOnGround: true, location: { x: 1, y: 1, z: 1 }, getRotation: vi.fn(() => ({ x: 0, y: 0 })) }
-        ]),
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            }
+        world: {
+            ...original.world,
+            getAllPlayers: vi.fn(() => [
+                undefined,
+                { id: 'player1', inputInfo: { getButtonState: vi.fn(() => "Pressed") }, isOnGround: true, location: { x: 0, y: 0, z: 0 }, getRotation: vi.fn(() => ({ x: 0, y: 0 })) },
+                { id: 'player2', inputInfo: { getButtonState: vi.fn(() => "Released") }, isOnGround: true, location: { x: 1, y: 1, z: 1 }, getRotation: vi.fn(() => ({ x: 0, y: 0 })) }
+            ]),
+            getDimension: vi.fn(() => ({
+                getEntities: vi.fn(() => [rideableEntity])
+            }))
         },
-        afterEvents: {
-            worldLoad: {
-                subscribe: vi.fn()
-            }
-        },
-        getDynamicProperty: vi.fn(),
-        setDynamicProperty: vi.fn(),
-        getDimension: vi.fn(() => ({
-            getEntities: vi.fn(() => [rideableEntity])
-        }))
-    },
-    InputButton: {
-        Sneak: 'sneak'
-    },
-    ButtonState: {
-        Pressed: 'Pressed',
-        Released: 'Released'
-    },
-    EntityComponentTypes: {
-        Rideable: 'rideable'
-    },
-    DimensionTypes: {
-        getAll: vi.fn(() => [{ typeId: 'overworld' }])
-    }
-}));
-
-vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn()
-}));
+        InputButton: { Sneak: 'sneak' },
+        ButtonState: { Pressed: 'Pressed', Released: 'Released' },
+        EntityComponentTypes: { ...original.EntityComponentTypes, Rideable: 'rideable' },
+        DimensionTypes: { getAll: vi.fn(() => [{ typeId: 'overworld' }]) }
+    };
+});
 
 describe('playerSit', () => {
     beforeAll(() => {

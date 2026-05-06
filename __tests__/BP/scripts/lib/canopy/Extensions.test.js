@@ -1,31 +1,31 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { Extensions } from "../../../../../Canopy [BP]/scripts/lib/canopy/Extensions.js";
-import { Extension } from "../../../../../Canopy [BP]/scripts/lib/canopy/Extension.js";
+import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest";
 
-vi.mock("@minecraft/server", () => ({
-    world: {
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: vi.fn()
-            }
+vi.mock('../../../../../Canopy[BP]/scripts/lib/MCBE-IPC/ipc.js', async (importOriginal) => {
+    const actual = await importOriginal();
+    return {
+        ...actual,
+        default: {
+            ...actual.default,
+            on: vi.fn(),
+            send: vi.fn(),
+            invoke: vi.fn(),
+            handle: vi.fn(),
         }
-    },
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
-        },
-        runJob: vi.fn()
-    }
-}));
+    };
+});
+
+import { Extensions } from "../../../../../Canopy[BP]/scripts/lib/canopy/Extensions.js";
+import { Extension } from "../../../../../Canopy[BP]/scripts/lib/canopy/Extension.js";
+import IPC from "../../../../../Canopy[BP]/scripts/lib/MCBE-IPC/ipc.js";
 
 describe("Extensions", () => {
+    let registerCallback;
+
+    beforeAll(() => {
+        const registerCall = IPC.on.mock.calls.find(([channel]) => channel === 'canopyExtension:registerExtension');
+        registerCallback = registerCall?.[2];
+    });
+
     beforeEach(() => {
         Extensions.clear();
         Extensions.extensions["test_extension"] = new Extension({
@@ -101,7 +101,17 @@ describe("Extensions", () => {
         });
     });
 
-    describe.skip('setupExtensionRegistration()', () => {
-        // Gametest
+    describe('setupExtensionRegistration()', () => {
+        it('should register an extension and log when the IPC message is received', () => {
+            const callback = registerCallback;
+
+            Extensions.clear();
+            const consoleSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
+            callback({ name: 'Remote Ext', version: '2.0.0', author: 'Dev', description: 'Remote' });
+
+            expect(Extensions.get('remote_ext')).toBeDefined();
+            expect(consoleSpy).toHaveBeenCalledWith('[Canopy] Registered Remote Ext v2.0.0.');
+            consoleSpy.mockRestore();
+        });
     });
 });

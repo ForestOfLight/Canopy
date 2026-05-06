@@ -3,3 +3,6 @@ node_modules/
 coverage/
 /build
 /.regolith
+/docs/superpowers/
+.claude/
+.env

@@ -1,33 +1,30 @@
-import { PlayerStartSneakEvent, playerStartSneakEvent } from "../../../../../Canopy [BP]/scripts/src/events/PlayerStartSneakEvent";
+import { PlayerStartSneakEvent, playerStartSneakEvent } from "../../../../../Canopy[BP]/scripts/src/events/PlayerStartSneakEvent";
 import { expect, test, describe, vi } from "vitest";
 
 const mockPlayer1 = { id: 'player1', inputInfo: { getButtonState: vi.fn(() => "Pressed" ) }, isOnGround: true, location: { x: 0, y: 0, z: 0 }, getRotation: vi.fn(() => ({ x: 0, y: 0 })) };
 const mockPlayer2 = { id: 'player2', inputInfo: { getButtonState: vi.fn(() => "Released" ) }, isOnGround: true, location: { x: 1, y: 1, z: 1 }, getRotation: vi.fn(() => ({ x: 0, y: 0 })) };
 
-vi.mock("@minecraft/server", () => ({
-    system: {
-        currentTick: (Date.now() / 50),
-        runInterval: vi.fn((callback, interval) => {
-            const intervalId = setInterval(callback, interval * 50);
-            return {
-                clear: () => clearInterval(intervalId)
-            };
-        }),
-        clearRun: vi.fn((runner) => {
-            runner.clear();
-        })
-    },
-    InputButton: {
-        Sneak: 'sneak'
-    },
-    ButtonState: {
-        Pressed: 'Pressed',
-        Released: 'Released'
-    },
-    world: {
-        getAllPlayers: vi.fn(() => [undefined, mockPlayer1, mockPlayer2])
-    }
-}));
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        system: {
+            ...original.system,
+            currentTick: (Date.now() / 50),
+            runInterval: vi.fn((callback, interval) => {
+                const intervalId = setInterval(callback, interval * 50);
+                return { clear: () => clearInterval(intervalId) };
+            }),
+            clearRun: vi.fn((runner) => { runner.clear(); })
+        },
+        InputButton: { Sneak: 'sneak' },
+        ButtonState: { Pressed: 'Pressed', Released: 'Released' },
+        world: {
+            ...original.world,
+            getAllPlayers: vi.fn(() => [undefined, mockPlayer1, mockPlayer2])
+        }
+    };
+});
 
 describe('PlayerStartSneakEvent', () => {
     test('should initialize properties correctly', () => {

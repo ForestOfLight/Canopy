@@ -1,0 +1,44 @@
+import { BooleanRule, GlobalRule } from '../../lib/canopy/Canopy';
+import { world, EntityComponentTypes, system } from '@minecraft/server';
+import { InventoryUI } from '../classes/InventoryUI';
+
+class AllowPeekInventory extends BooleanRule {
+    peekItemId = 'minecraft:spyglass';
+
+    constructor() {
+        super(GlobalRule.morphOptions({
+            identifier: 'allowPeekInventory',
+            wikiDescription: 'Enables all peek inventory functionality. This rule must be enabled to use `peekInventory` in your InfoDisplay. It also enables the `/peek` command and the ability to peek inside containers by holding a spyglass.',
+            onEnableCallback: () => this.subscribeToEvents(),
+            onDisableCallback: () => this.unsubscribeFromEvents()
+        }));
+        this.onPlayerInteractionBound = this.onPlayerInteraction.bind(this);
+    }
+
+    subscribeToEvents() {
+        world.beforeEvents.playerInteractWithBlock.subscribe(this.onPlayerInteractionBound);
+        world.beforeEvents.playerInteractWithEntity.subscribe(this.onPlayerInteractionBound);
+    }
+
+    unsubscribeFromEvents() {
+        world.beforeEvents.playerInteractWithBlock.unsubscribe(this.onPlayerInteractionBound);
+        world.beforeEvents.playerInteractWithEntity.unsubscribe(this.onPlayerInteractionBound);
+    }
+
+    onPlayerInteraction(event) {
+        if (!event.player || event.itemStack?.typeId !== this.peekItemId) return;
+        const target = event.block || event.target;
+        if (!this.hasInventory(target)) return;
+        event.cancel = true;
+        const invUI = new InventoryUI(target);
+        system.run(() => {
+            invUI.show(event.player);
+        });
+    }
+
+    hasInventory(target) {
+        return target?.getComponent(EntityComponentTypes.Inventory) !== undefined;
+    }
+}
+
+export const allowPeekInventory = new AllowPeekInventory();

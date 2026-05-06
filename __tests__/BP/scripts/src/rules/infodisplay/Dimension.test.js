@@ -1,37 +1,21 @@
-import { Dimension } from '../../../../../../Canopy [BP]/scripts/src/rules/infodisplay/Dimension';
+import { Dimension } from '../../../../../../Canopy[BP]/scripts/src/rules/infodisplay/Dimension';
 import { describe, it, expect, beforeAll, vi } from 'vitest';
-import { InfoDisplayElement } from '../../../../../../Canopy [BP]/scripts/src/rules/infodisplay/InfoDisplayElement';
-import { Rules } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules';
+import { InfoDisplayTextElement } from '../../../../../../Canopy[BP]/scripts/src/rules/infodisplay/InfoDisplayTextElement';
+import { Rules } from '../../../../../../Canopy[BP]/scripts/lib/canopy/rules/Rules';
 
-vi.mock('@minecraft/server', () => ({
-    world: { 
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        world: {
+            ...original.world,
+            afterEvents: {
+                ...original.world.afterEvents,
+                worldLoad: { subscribe: (callback) => callback() }
             }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: (callback) => {
-                    callback();
-                }
-            }
-        },
-        setDynamicProperty: vi.fn()
-    },
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
-        },
-        runJob: vi.fn()
-    }
-}));
-
-vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn()
-}));
+        }
+    };
+});
 
 const mockPlayer = {
     dimension: {
@@ -46,8 +30,8 @@ describe('Dimension', () => {
         dimension = new Dimension(mockPlayer, 0);
     });
 
-    it('should inherit from InfoDisplayElement', () => {
-        expect(dimension).toBeInstanceOf(InfoDisplayElement);
+    it('should inherit from InfoDisplayTextElement', () => {
+        expect(dimension).toBeInstanceOf(InfoDisplayTextElement);
     });
 
     it('should create a new InfoDisplay rule', () => {

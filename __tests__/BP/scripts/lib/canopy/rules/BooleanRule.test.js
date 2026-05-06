@@ -1,41 +1,26 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { BooleanRule } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule.js';
-import { Rules } from '../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules.js';
-import IPC from '../../../../../../Canopy [BP]/scripts/lib/MCBE-IPC/ipc.js';
-import { Extensions } from '../../../../../../Canopy [BP]/scripts/lib/canopy/Extensions.js';
-import { Extension } from '../../../../../../Canopy [BP]/scripts/lib/canopy/Extension.js';
-import { RuleValueSet } from '../../../../../../Canopy [BP]/scripts/lib/canopy/extension.ipc.js';
+import { BooleanRule } from '../../../../../../Canopy[BP]/scripts/lib/canopy/rules/BooleanRule.js';
+import { Rules } from '../../../../../../Canopy[BP]/scripts/lib/canopy/rules/Rules.js';
+import IPC from '../../../../../../Canopy[BP]/scripts/lib/MCBE-IPC/ipc.js';
+import { Extensions } from '../../../../../../Canopy[BP]/scripts/lib/canopy/Extensions.js';
+import { Extension } from '../../../../../../Canopy[BP]/scripts/lib/canopy/Extension.js';
+import { RuleValueSet } from '../../../../../../Canopy[BP]/scripts/lib/canopy/extension.ipc.js';
+import { world } from '@minecraft/server';
 
-vi.mock('@minecraft/server', () => ({
-    world: { 
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: (callback) => {
-                    callback();
-                }
-            }
-        },
-        setDynamicProperty: vi.fn(),
-        getDynamicProperty: vi.fn(() => false)
-    },
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
-        },
-        runJob: vi.fn()
-    }
-}));
-
-vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn()
-}));
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        world: {
+            ...original.world,
+            afterEvents: {
+                ...original.world.afterEvents,
+                worldLoad: { subscribe: (callback) => callback() }
+            },
+            getDynamicProperty: vi.fn(() => false)
+        }
+    };
+});
 
 describe('BooleanRule', () => {
     const testExtension = new Extension({
@@ -169,14 +154,30 @@ describe('BooleanRule', () => {
             expect(value).toEqual(false);
         });
 
-        it.skip('should return the value from the world if it does not exist in the extension', async () => {
-            // Gametest DP
+        it('should return the value from the world if it does not exist in the extension', async () => {
+            const rule = new BooleanRule({
+                category: 'test_category',
+                identifier: 'native_rule',
+                description: 'test_description',
+                contingentRules: [],
+                independentRules: []
+            });
+            const value = await rule.getValue();
+            expect(value).toEqual(false);
         });
     });
 
     describe('getNativeValue', () => {
-        it.skip('should return the value from the world if it exists', () => {
-            // Gametest DP
+        it('should return the value from the world if it exists', () => {
+            const rule = new BooleanRule({
+                category: 'test_category',
+                identifier: 'native_rule',
+                description: 'test_description',
+                contingentRules: [],
+                independentRules: []
+            });
+            const value = rule.getNativeValue();
+            expect(value).toEqual(false);
         });
 
         it('should throw an error if the rule is from an extension', () => {
@@ -185,10 +186,19 @@ describe('BooleanRule', () => {
     });
 
     describe('setValue', () => {
-        it.skip('should set the value in the world', () => {
-            // Gametest DP
+        it('should set the value in the world', () => {
+            world.setDynamicProperty = vi.fn();
+            const rule = new BooleanRule({
+                category: 'test_category',
+                identifier: 'native_set_rule',
+                description: 'test_description',
+                contingentRules: [],
+                independentRules: []
+            });
+            rule.setValue(true);
+            expect(world.setDynamicProperty).toHaveBeenCalledWith('native_set_rule', true);
         });
-
+        
         it('should call onEnable if the value is true', () => {
             const onEnableCallback = vi.fn();
             const rule = new BooleanRule({

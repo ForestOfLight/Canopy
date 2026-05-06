@@ -1,71 +1,60 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { spawnedEntitiesThisTick, handleTntDuplication } from '../../../../../Canopy [BP]/scripts/src/rules/dupeTnt';
+import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
+import { spawnedEntitiesThisTick, handleTntDuplication } from '../../../../../Canopy[BP]/scripts/src/rules/dupeTnt';
 import { system, world } from '@minecraft/server';
-import { BooleanRule, Rules } from '../../../../../Canopy [BP]/scripts/lib/canopy/Canopy';
+import { BooleanRule, Rules } from '../../../../../Canopy[BP]/scripts/lib/canopy/Canopy';
 
-vi.mock("@minecraft/server", () => ({
-    system: {
-        runInterval: vi.fn((callback, interval) => {
-            const intervalId = setInterval(() => {
-                callback();
-            }, interval * 50);
-            return {
-                clear: () => clearInterval(intervalId)
-            };
-        }),
-        runTimeout: vi.fn((callback, timeout) => {
-            const timeoutId = setTimeout(() => {
-                callback();
-            }, timeout * 50);
-            return {
-                clear: () => clearTimeout(timeoutId)
-            };
-        }),
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn(),
-                unsubscribe: vi.fn()
-            }
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        system: {
+            ...original.system,
+            runInterval: vi.fn((callback, interval) => {
+                const intervalId = setInterval(() => { callback(); }, interval * 50);
+                return { clear: () => clearInterval(intervalId) };
+            }),
+            runTimeout: vi.fn((callback, timeout) => {
+                const timeoutId = setTimeout(() => { callback(); }, timeout * 50);
+                return { clear: () => clearTimeout(timeoutId) };
+            })
         }
-    },
-    world: {
-        afterEvents: {
-            entitySpawn: {
-                subscribe: vi.fn()
-            },
-            pistonActivate: {
-                subscribe: vi.fn()
-            }
-        }
-    }
-}));
+    };
+});
 
-vi.mock('../../../../../Canopy [BP]/scripts/lib/canopy/Canopy', () => ({
+vi.mock('../../../../../Canopy[BP]/scripts/lib/canopy/Canopy', () => ({
     BooleanRule: vi.fn(),
     Rules: {
         getNativeValue: vi.fn()
     }
 }));
 
-vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn()
-}));
-
 describe('dupeTnt Rule', () => {
+    let booleanRuleArgs;
+    let runIntervalCallback;
+    let entitySpawnCallback;
+    let pistonActivateCallback;
+
+    beforeAll(() => {
+        booleanRuleArgs = BooleanRule.mock.calls[0]?.[0];
+        runIntervalCallback = system.runInterval.mock.calls[0]?.[0];
+        entitySpawnCallback = world.afterEvents.entitySpawn.subscribe.mock.calls[0]?.[0];
+        pistonActivateCallback = world.afterEvents.pistonActivate.subscribe.mock.calls[0]?.[0];
+    });
+
     beforeEach(() => {
         spawnedEntitiesThisTick.length = 0;
     });
 
     it('should create a new rule', () => {
-        expect(BooleanRule).toHaveBeenCalledWith({
+        expect(booleanRuleArgs).toEqual({
             category: 'Rules',
             identifier: 'dupeTnt',
-            description: { translate: 'rules.dupeTnt' }
+            description: { translate: 'rules.dupeTnt' },
+            wikiDescription: 'Enables/disables TNT duping. To dupe a block of TNT, it must be moved by a piston while adjacent to a note block, then ignited.\n\nThe TNT will drop with normal priming momentum in the block below where it was ignited. Note that using this rule alongside `tntPrimeMomentum` will cause a 1-gametick slowdown before the TNT drops.\n\n![Dupe TNT Example](./exampleAssets/dupeTnt.png)'
         });
     });
 
     it('should clear spawnedEntitiesThisTick every tick', () => {
-        const runIntervalCallback = system.runInterval.mock.calls[0][0];
         const runTimeoutCallback = vi.fn();
         system.runTimeout.mockImplementation((callback) => {
             runTimeoutCallback.mockImplementation(callback);
@@ -78,15 +67,14 @@ describe('dupeTnt Rule', () => {
     });
 
     it('should subscribe to entitySpawn event', () => {
-        expect(world.afterEvents.entitySpawn.subscribe).toHaveBeenCalled();
+        expect(entitySpawnCallback).toBeDefined();
     });
 
     it('should subscribe to pistonActivate event', () => {
-        expect(world.afterEvents.pistonActivate.subscribe).toHaveBeenCalled();
+        expect(pistonActivateCallback).toBeDefined();
     });
 
     it('should handle entitySpawn event correctly', () => {
-        const entitySpawnCallback = world.afterEvents.entitySpawn.subscribe.mock.calls[0][0];
         const event = {
             entity: {
                 typeId: 'minecraft:tnt',
@@ -101,7 +89,6 @@ describe('dupeTnt Rule', () => {
     });
 
     it('should handle pistonActivate event correctly', () => {
-        const pistonActivateCallback = world.afterEvents.pistonActivate.subscribe.mock.calls[0][0];
         const event = {
             block: {
                 permutation: {
@@ -124,7 +111,6 @@ describe('dupeTnt Rule', () => {
     });
 
     it('should not throw an error if the piston is removed', () => {
-        const pistonActivateCallback = world.afterEvents.pistonActivate.subscribe.mock.calls[0][0];
         const event = {
             block: {
                 permutation: {

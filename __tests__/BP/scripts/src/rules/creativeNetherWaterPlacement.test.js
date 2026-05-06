@@ -1,60 +1,26 @@
-import { creativeNetherWaterPlacement } from "../../../../../Canopy [BP]/scripts/src/rules/creativeNetherWaterPlacement";
+import { creativeNetherWaterPlacement } from "../../../../../Canopy[BP]/scripts/src/rules/creativeNetherWaterPlacement";
 import { expect, test, describe, vi, afterEach } from "vitest";
 
-vi.mock("@minecraft/server", () => ({
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            },
-            playerInteractWithBlock: {
-                subscribe: vi.fn()
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        system: {
+            ...original.system,
+            run: vi.fn((callback) => callback())
+        },
+        world: {
+            ...original.world,
+            beforeEvents: {
+                ...original.world.beforeEvents,
+                playerInteractWithBlock: { subscribe: vi.fn(), unsubscribe: vi.fn() }
             }
         },
-        runJob: vi.fn(),
-        run: vi.fn((callback) => callback())
-    },
-    world: {
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
-            },
-            playerInteractWithBlock: {
-                subscribe: vi.fn(),
-                unsubscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: vi.fn()
-            }
-        },
-        getDynamicProperty: vi.fn(),
-        setDynamicProperty: vi.fn(),
-        structureManager: {
-            place: vi.fn()
-        }
-    },
-    GameMode: {
-        Creative: 'Creative',
-        Survival: 'Survival'
-    },
-    LiquidType: {
-        Water: 'Water'
-    },
-    Direction: {
-        Up: 'Up',
-        Down: 'Down',
-        North: 'North',
-        South: 'South',
-        West: 'West',
-        East: 'East'
-    }
-}));
-
-vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn()
-}));
+        GameMode: { Creative: 'Creative', Survival: 'Survival' },
+        LiquidType: { Water: 'Water' },
+        Direction: { Up: 'Up', Down: 'Down', North: 'North', South: 'South', West: 'West', East: 'East' }
+    };
+});
 
 describe('creativeNetherWaterPlacement', () => {
     afterEach(() => {

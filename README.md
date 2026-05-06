@@ -5,7 +5,7 @@
 
   [![GitHub Downloads](https://img.shields.io/github/downloads/ForestOfLight/Canopy/total?label=Github%20downloads&logo=github)](https://github.com/ForestOfLight/Canopy/releases/latest)
   [![Curseforge Downloads](https://cf.way2muchnoise.eu/full_1062078_downloads.svg)](https://www.curseforge.com/minecraft-bedrock/addons/canopy)
-  [![Minecraft - Version](https://img.shields.io/badge/Minecraft-v26.0_(Bedrock)-brightgreen)](https://feedback.minecraft.net/hc/en-us/sections/360001186971-Release-Changelogs)
+  [![Minecraft - Version](https://img.shields.io/badge/Minecraft-v26.20_(Bedrock)-brightgreen)](https://feedback.minecraft.net/hc/en-us/sections/360001186971-Release-Changelogs)
   [![Codacy Badge](https://app.codacy.com/project/badge/Grade/d674d2720001423a9590dcaa6e7edbaf)](https://app.codacy.com/gh/ForestOfLight/Canopy/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
   [![CI](https://github.com/ForestOfLight/Canopy/actions/workflows/ci.yml/badge.svg)](https://github.com/ForestOfLight/Canopy/actions/workflows/ci.yml)
   [![Discord](https://badgen.net/discord/members/9KGche8fxm?icon=discord&label=Discord&list=what)](https://discord.gg/9KGche8fxm)
@@ -47,19 +47,7 @@ Need help, want to discuss technical Minecraft, or follow future updates? [**Joi
 
 ## Contributing
 
-We welcome community contributions! If you’re passionate about improving the technical Bedrock Edition experience, here’s how you can help:
-
-### Reporting Bugs
-
-Found a bug? Let us know by opening an [issue](https://github.com/ForestOfLight/Canopy/issues) with clear steps to reproduce it.
-
-### Submitting Code
-
-Got a fix or a new feature? Submit a **pull request**! Just follow our coding standards and include tests where possible.
-
-### Adding Translations
-
-**Canopy** currently supports American English, German (thanks to [theonlytruemuck](https://www.github.com/theonlytruemuck)), Indonesian (thanks to [IdotIcom](https://www.github.com/IdotIcom)), Chinese (thanks to [TickPoints](https://www.github.com/TickPoints)), Welsh (thanks to [Firebee45](https://www.github.com/Firebee45)), and Japanese (thanks to [ru-in-1](https://www.github.com/ru-in-1)). If you would like to contribute a translation, please join our Discord and reach out!
+We welcome community contributions! If you’re passionate about improving the technical Bedrock Edition experience, see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on reporting bugs, submitting code, and adding translations.
 
 ## An Amelix Foundation Project
 

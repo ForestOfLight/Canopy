@@ -1,30 +1,24 @@
 import { describe, it, expect, vi } from "vitest";
-import { Profiler } from "../../../../../Canopy [BP]/scripts/src/classes/Profiler";
+import { Profiler } from "../../../../../Canopy[BP]/scripts/src/classes/Profiler";
 
-vi.mock("@minecraft/server", () => ({
-    system: {
-        runInterval: vi.fn((callback, interval) => {
-            const intervalId = setInterval(callback, interval * 50);
-            return {
-                clear: () => clearInterval(intervalId)
-            };
-        }),
-        runTimeout: vi.fn((callback, timeout) => {
-            const timeoutId = setTimeout(callback, timeout * 50);
-            return {
-                clear: () => clearTimeout(timeoutId)
-            };
-        }),
-        clearRun: vi.fn((runner) => {
-            runner.clear();
-        })
-    },
-    TicksPerSecond: 20.0
-}));
-
-vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn()
-}));
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        system: {
+            ...original.system,
+            runInterval: vi.fn((callback, interval) => {
+                const intervalId = setInterval(callback, interval * 50);
+                return { clear: () => clearInterval(intervalId) };
+            }),
+            runTimeout: vi.fn((callback, timeout) => {
+                const timeoutId = setTimeout(callback, timeout * 50);
+                return { clear: () => clearTimeout(timeoutId) };
+            }),
+            clearRun: vi.fn((runner) => { runner.clear(); })
+        }
+    };
+});
 
 describe('Profiler', () => {
     it('should have a getter for the instant MS', () => {

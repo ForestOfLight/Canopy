@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { tntFuseRule } from "../../../../../Canopy [BP]/scripts/src/rules/tntFuse";
+import { tntFuseRule } from "../../../../../Canopy[BP]/scripts/src/rules/tntFuse";
+import { world } from "@minecraft/server";
 
 const tntEntity = {
     typeId: 'minecraft:tnt',
@@ -13,50 +14,28 @@ const tntEntity = {
 };
 let tntFuseDP = false;
 
-vi.mock("@minecraft/server", () => ({
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        system: {
+            ...original.system,
+            currentTick: (Date.now() / 50),
+            runInterval: vi.fn((callback, interval) => {
+                const intervalId = setInterval(callback, interval * 50);
+                return { clear: () => clearInterval(intervalId) };
+            }),
+            clearRun: vi.fn((runner) => { runner.clear(); })
         },
-        runJob: vi.fn(),
-        currentTick: (Date.now() / 50),
-        runInterval: vi.fn((callback, interval) => {
-            const intervalId = setInterval(callback, interval * 50);
-            return {
-                clear: () => clearInterval(intervalId)
-            };
-        }),
-        clearRun: vi.fn((runner) => {
-            runner.clear();
-        })
-    },
-    world: {
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
+        world: {
+            ...original.world,
+            afterEvents: {
+                ...original.world.afterEvents,
+                entityLoad: { subscribe: vi.fn() }
             }
-        },
-        afterEvents: {
-            worldLoad: {
-                subscribe: vi.fn()
-            },
-            entitySpawn: {
-                subscribe: vi.fn()
-            },
-            entityLoad: {
-                subscribe: vi.fn()
-            }
-        },
-        setDynamicProperty: (identifier, ticks) => { tntFuseDP = ticks },
-        getDynamicProperty: () => tntFuseDP
-    }
-}));
-
-vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn()
-}));
+        }
+    };
+});
 
 describe('tntFuseRule', () => {
     afterEach(() => {
@@ -82,7 +61,7 @@ describe('tntFuseRule', () => {
     });
 
     it('should properly initialize the fuse ticks DP', () => {
-        tntFuseDP = void 0;
+        world.setDynamicProperty(tntFuseRule.getID(), void 0)
         expect(tntFuseRule.getGlobalFuseTicks()).toBe(80);
     });
 

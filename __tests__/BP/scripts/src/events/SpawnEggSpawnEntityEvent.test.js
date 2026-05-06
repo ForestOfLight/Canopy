@@ -1,36 +1,30 @@
-import { SpawnEggSpawnEntityEvent, spawnEggSpawnEntityEvent } from "../../../../../Canopy [BP]/scripts/src/events/SpawnEggSpawnEntityEvent";
+import { SpawnEggSpawnEntityEvent, spawnEggSpawnEntityEvent } from "../../../../../Canopy[BP]/scripts/src/events/SpawnEggSpawnEntityEvent";
 import { expect, test, describe, vi, beforeEach } from "vitest";
 
-vi.mock("@minecraft/server", () => ({
-    system: {
-        currentTick: (Date.now() / 50),
-        runInterval: vi.fn((callback, interval) => {
-            const intervalId = setInterval(callback, interval * 50);
-            return {
-                clear: () => clearInterval(intervalId)
-            };
-        }),
-        clearRun: vi.fn((runner) => {
-            runner.clear();
-        })
-    },
-    world: {
-        afterEvents: {
-            entitySpawn: {
-                subscribe: vi.fn(),
-                unsubscribe: vi.fn()
-            },
-            playerInteractWithBlock: {
-                subscribe: vi.fn(),
-                unsubscribe: vi.fn()
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        system: {
+            ...original.system,
+            currentTick: (Date.now() / 50),
+            runInterval: vi.fn((callback, interval) => {
+                const intervalId = setInterval(callback, interval * 50);
+                return { clear: () => clearInterval(intervalId) };
+            }),
+            clearRun: vi.fn((runner) => { runner.clear(); })
+        },
+        world: {
+            ...original.world,
+            afterEvents: {
+                ...original.world.afterEvents,
+                entitySpawn: { subscribe: vi.fn(), unsubscribe: vi.fn() },
+                playerInteractWithBlock: { subscribe: vi.fn(), unsubscribe: vi.fn() }
             }
-        }
-    },
-    EntityInitializationCause: {
-        Spawned: 'Spawned',
-        Loaded: 'Loaded'
-    }
-}));
+        },
+        EntityInitializationCause: { Spawned: 'Spawned', Loaded: 'Loaded' }
+    };
+});
 
 describe('SpawnEggSpawnEntityEvent', () => {
     let tracker;

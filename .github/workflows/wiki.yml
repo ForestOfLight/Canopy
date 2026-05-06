@@ -1,0 +1,51 @@
+name: Update Wiki
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-wiki:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Canopy repo
+        uses: actions/checkout@v4
+
+      - name: Checkout Wiki repo (master branch)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}.wiki
+          path: wiki
+          ref: master
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Use Commands.md template from template branch
+        working-directory: wiki
+        run: git fetch origin template && git show origin/template:Commands.md > Commands.md
+
+      - name: Use Node.js 20.14.0
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.14.0
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate wiki content
+        run: WIKI_PATH=./wiki npm run generate-wiki
+
+      - name: Commit and push wiki changes
+        working-directory: wiki
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No wiki changes to commit."
+          else
+            git commit -m "docs: auto-update wiki from source [skip ci]"
+            git push
+          fi

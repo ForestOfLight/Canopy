@@ -1,98 +1,48 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { logCommand } from "../../../../../Canopy [BP]/scripts/src/commands/log";
+import { logCommand } from "../../../../../Canopy[BP]/scripts/src/commands/log";
 import { Player } from "@minecraft/server";
-import { PlayerCommandOrigin } from "../../../../../Canopy [BP]/scripts/lib/canopy/commands/PlayerCommandOrigin";
+import { PlayerCommandOrigin } from "../../../../../Canopy[BP]/scripts/lib/canopy/commands/PlayerCommandOrigin";
 
-vi.mock("@minecraft/server", () => ({
-    system: {
-        runInterval: vi.fn((callback, interval) => {
-            const intervalId = setInterval(callback, interval * 50);
-            return {
-                clear: () => clearInterval(intervalId)
-            };
-        }),
-        runTimeout: vi.fn((callback, timeout) => {
-            const timeoutId = setTimeout(callback, timeout * 50);
-            return {
-                clear: () => clearTimeout(timeoutId)
-            };
-        }),
-        runJob: vi.fn(),
-        clearRun: vi.fn((runner) => {
-            runner.clear();
-        }),
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn(),
-                unsubscribe: vi.fn()
-            }
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        system: {
+            ...original.system,
+            runInterval: vi.fn((callback, interval) => {
+                const intervalId = setInterval(callback, interval * 50);
+                return { clear: () => clearInterval(intervalId) };
+            }),
+            runTimeout: vi.fn((callback, timeout) => {
+                const timeoutId = setTimeout(callback, timeout * 50);
+                return { clear: () => clearTimeout(timeoutId) };
+            }),
+            clearRun: vi.fn((runner) => { runner.clear(); })
         },
-        beforeEvents: {
-            startup: {
-                subscribe: vi.fn()
-            }
+        world: {
+            ...original.world,
+            getDimension: vi.fn(() => ({
+                id: 'overworld',
+                runCommand: vi.fn(),
+                getEntities: vi.fn(() => [
+                    { typeId: 'minecraft:falling_block', id: 'entity1', location: { x: 1, y: 2, z: 3 }, dimension: { id: 'overworld' },
+                        getComponent: vi.fn(() => ({})), isValid: vi.fn(() => true) },
+                    { typeId: 'minecraft:projectile', id: 'entity2', location: { x: 4, y: 5, z: 6 }, dimension: { id: 'overworld' },
+                        getComponent: vi.fn(() => ({ projectile: { isValid: true } })), isValid: vi.fn(() => true) },
+                    { typeId: 'minecraft:item', id: 'entity3', location: { x: 7, y: 8, z: 9 }, dimension: { id: 'overworld' },
+                        getComponent: vi.fn(() => ({})), isValid: vi.fn(() => false) }
+                ])
+            }))
+        },
+        CommandPermissionLevel: { Any: 'Any' },
+        CustomCommandParamType: { Enum: 'Enum', Integer: 'Integer' },
+        Player: class {
+            sendMessage = vi.fn();
+            getDynamicProperty = vi.fn();
+            setDynamicProperty = vi.fn();
         }
-    },
-    world: {
-        afterEvents: {
-            entitySpawn: {
-                subscribe: vi.fn()
-            },
-            worldLoad: {
-                subscribe: vi.fn()
-            }
-        },
-        beforeEvents: {
-            entityRemove: {
-                subscribe: vi.fn()
-            },
-            chatSend: {
-                subscribe: vi.fn()
-            },
-            playerLeave: {
-                subscribe: vi.fn()
-            }
-        },
-        getDimension: vi.fn(() => ({
-            id: 'overworld',
-            runCommand: vi.fn(),
-            getEntities: vi.fn(() => [
-                { typeId: 'minecraft:falling_block', id: 'entity1', location: { x: 1, y: 2, z: 3 }, dimension: { id: 'overworld' },
-                    getComponent: vi.fn(() => ({ })),
-                    isValid: vi.fn(() => true)
-                },
-                { typeId: 'minecraft:projectile', id: 'entity2', location: { x: 4, y: 5, z: 6 }, dimension: { id: 'overworld' },
-                    getComponent: vi.fn(() => ({ projectile: { isValid: true } })),
-                    isValid: vi.fn(() => true)
-                },
-                { typeId: 'minecraft:item', id: 'entity3', location: { x: 7, y: 8, z: 9 }, dimension: { id: 'overworld' },
-                    getComponent: vi.fn(() => ({ })),
-                    isValid: vi.fn(() => false)
-                }
-            ])
-        }))
-    },
-    CommandPermissionLevel: {
-        Any: 'Any',
-    },
-    CustomCommandParamType: {
-        Enum: 'Enum',
-        Integer: 'Integer',
-    },
-    CustomCommandStatus: {
-        Success: 'Success',
-        Failure: 'Failure',
-    },
-    Player: class {
-        sendMessage = vi.fn();
-        getDynamicProperty = vi.fn();
-        setDynamicProperty = vi.fn();
-    }
-}));
-
-vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn()
-}));
+    };
+});
 
 describe('logCommand', () => {
     let mockPlayer;

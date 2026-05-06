@@ -1,26 +1,28 @@
-import { PlayerChangeSubChunkEvent, playerChangeSubChunkEvent } from "../../../../../Canopy [BP]/scripts/src/events/PlayerChangeSubChunkEvent";
+import { PlayerChangeSubChunkEvent, playerChangeSubChunkEvent } from "../../../../../Canopy[BP]/scripts/src/events/PlayerChangeSubChunkEvent";
 import { expect, it, describe, vi, beforeEach } from "vitest";
 
 const mockPlayer1 = { id: 'player1' };
 const mockPlayer2 = { id: 'player2' };
 
-vi.mock("@minecraft/server", () => ({
-    system: {
-        currentTick: (Date.now() / 50),
-        runInterval: vi.fn((callback, interval) => {
-            const intervalId = setInterval(callback, interval * 50);
-            return {
-                clear: () => clearInterval(intervalId)
-            };
-        }),
-        clearRun: vi.fn((runner) => {
-            runner.clear();
-        })
-    },
-    world: {
-        getAllPlayers: vi.fn(() => [void 0, mockPlayer1, mockPlayer2])
-    }
-}));
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        system: {
+            ...original.system,
+            currentTick: (Date.now() / 50),
+            runInterval: vi.fn((callback, interval) => {
+                const intervalId = setInterval(callback, interval * 50);
+                return { clear: () => clearInterval(intervalId) };
+            }),
+            clearRun: vi.fn((runner) => { runner.clear(); })
+        },
+        world: {
+            ...original.world,
+            getAllPlayers: vi.fn(() => [void 0, mockPlayer1, mockPlayer2])
+        }
+    };
+});
 
 describe('PlayerChangeSubChunkEvent', () => {
     let tracker;

@@ -1,48 +1,33 @@
 import { describe, it, expect, vi, beforeAll } from "vitest";
-import { EntityMovementLog } from "../../../../../Canopy [BP]/scripts/src/classes/EntityMovementLog";
+import { EntityMovementLog } from "../../../../../Canopy[BP]/scripts/src/classes/EntityMovementLog";
 
-vi.mock("@minecraft/server", () => ({
-    system: {
-        runInterval: vi.fn((callback, interval) => {
-            const intervalId = setInterval(callback, interval * 50);
-            return {
-                clear: () => clearInterval(intervalId)
-            };
-        }),
-        runTimeout: vi.fn((callback, timeout) => {
-            const timeoutId = setTimeout(callback, timeout * 50);
-            return {
-                clear: () => clearTimeout(timeoutId)
-            };
-        }),
-        clearRun: vi.fn((runner) => {
-            runner.clear();
-        }),
-        currentTick: 0
-    },
-    world: {
-        afterEvents: {
-            entitySpawn: {
-                subscribe: vi.fn()
-            }
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        system: {
+            ...original.system,
+            runInterval: vi.fn((callback, interval) => {
+                const intervalId = setInterval(callback, interval * 50);
+                return { clear: () => clearInterval(intervalId) };
+            }),
+            runTimeout: vi.fn((callback, timeout) => {
+                const timeoutId = setTimeout(callback, timeout * 50);
+                return { clear: () => clearTimeout(timeoutId) };
+            }),
+            clearRun: vi.fn((runner) => { runner.clear(); })
         },
-        beforeEvents: {
-            entityRemove: {
-                subscribe: vi.fn()
-            },
-            playerLeave: {
-                subscribe: vi.fn()
-            }
-        },
-        getDimension: vi.fn(() => ({
-            getEntities: vi.fn(() => [
-                { typeId: 'minecraft:falling_block', id: 'entity1', location: { x: 1, y: 2, z: 3 }, dimension: { id: 'overworld' },
-                    getComponent: vi.fn(() => ({ })),
-                    isValid: vi.fn(() => true)
-                },
-                { typeId: 'minecraft:projectile', id: 'entity2', location: { x: 4, y: 5, z: 6 }, dimension: { id: 'overworld' },
-                    getComponent: vi.fn(() => ({ projectile: { isValid: true } })),
-                    isValid: vi.fn(() => true)
+        world: {
+            ...original.world,
+            getDimension: vi.fn(() => ({
+                getEntities: vi.fn(() => [
+                    { typeId: 'minecraft:falling_block', id: 'entity1', location: { x: 1, y: 2, z: 3 }, dimension: { id: 'overworld' },
+                        getComponent: vi.fn(() => ({ })),
+                        isValid: vi.fn(() => true)
+                    },
+                    { typeId: 'minecraft:projectile', id: 'entity2', location: { x: 4, y: 5, z: 6 }, dimension: { id: 'overworld' },
+                        getComponent: vi.fn(() => ({ projectile: { isValid: true } })),
+                        isValid: vi.fn(() => true)
                 },
                 { typeId: 'minecraft:item', id: 'entity3', location: { x: 7, y: 8, z: 9 }, dimension: { id: 'overworld' },
                     getComponent: vi.fn(() => ({ })),
@@ -51,7 +36,8 @@ vi.mock("@minecraft/server", () => ({
             ])
         }))
     }
-}));
+    };
+});
 
 describe('EntitMovementLog', () => {
     let entityLog;

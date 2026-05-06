@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { VanillaCommand } from "../../../../../../Canopy [BP]/scripts/lib/canopy/commands/VanillaCommand";
-import { BooleanRule } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/BooleanRule";
-import { Rules } from "../../../../../../Canopy [BP]/scripts/lib/canopy/rules/Rules";
-import { FeedbackMessageType } from "../../../../../../Canopy [BP]/scripts/lib/canopy/commands/FeedbackMessageType";
-import { BlockCommandOrigin } from "../../../../../../Canopy [BP]/scripts/lib/canopy/commands/BlockCommandOrigin";
-import { EntityCommandOrigin } from "../../../../../../Canopy [BP]/scripts/lib/canopy/commands/EntityCommandOrigin";
-import { ServerCommandOrigin } from "../../../../../../Canopy [BP]/scripts/lib/canopy/commands/ServerCommandOrigin";
-import { PlayerCommandOrigin } from "../../../../../../Canopy [BP]/scripts/lib/canopy/commands/PlayerCommandOrigin";
+import { VanillaCommand } from "../../../../../../Canopy[BP]/scripts/lib/canopy/commands/VanillaCommand";
+import { BooleanRule } from "../../../../../../Canopy[BP]/scripts/lib/canopy/rules/BooleanRule";
+import { Rules } from "../../../../../../Canopy[BP]/scripts/lib/canopy/rules/Rules";
+import { FeedbackMessageType } from "../../../../../../Canopy[BP]/scripts/lib/canopy/commands/FeedbackMessageType";
+import { BlockCommandOrigin } from "../../../../../../Canopy[BP]/scripts/lib/canopy/commands/BlockCommandOrigin";
+import { EntityCommandOrigin } from "../../../../../../Canopy[BP]/scripts/lib/canopy/commands/EntityCommandOrigin";
+import { ServerCommandOrigin } from "../../../../../../Canopy[BP]/scripts/lib/canopy/commands/ServerCommandOrigin";
+import { PlayerCommandOrigin } from "../../../../../../Canopy[BP]/scripts/lib/canopy/commands/PlayerCommandOrigin";
 import { Player } from "@minecraft/server";
 
 const mockCustomCommandRegistry = {
@@ -14,50 +14,28 @@ const mockCustomCommandRegistry = {
     registerEnum: vi.fn()
 };
 
-vi.mock("@minecraft/server", () => ({
-    world: { 
-        beforeEvents: {
-            chatSend: {
-                subscribe: vi.fn()
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        world: {
+            ...original.world,
+            afterEvents: {
+                ...original.world.afterEvents,
+                worldLoad: { subscribe: (callback) => callback() }
             }
         },
-        afterEvents: {
-            worldLoad: {
-                subscribe: (callback) => {
-                    callback();
+        system: {
+            ...original.system,
+            beforeEvents: {
+                startup: {
+                    subscribe: () => ({ customCommandRegistry: mockCustomCommandRegistry }),
+                    unsubscribe: vi.fn()
                 }
             }
-        },
-        setDynamicProperty: vi.fn(),
-        getDynamicProperty: vi.fn()
-    },
-    system: {
-        beforeEvents: {
-            startup: {
-                subscribe: () => ({ customCommandRegistry: mockCustomCommandRegistry }),
-                unsubscribe: vi.fn()
-            }
-        },
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
-        },
-        runJob: vi.fn()
-    },
-    CustomCommandSource: {
-        Block: "Block",
-        Entity: "Entity",
-        Server: "Server"
-    },
-    CustomCommandStatus: {
-        Failure: "Failure",
-        Success: "Success"
-    },
-    Block: class {},
-    Entity: class {},
-    Player: class { sendMessage = vi.fn() }
-}));
+        }
+    };
+});
 
 describe("VanillaCommand", () => {
     let mockCommand;

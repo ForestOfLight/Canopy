@@ -1,18 +1,8 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import axios from 'axios';
-import { MC_VERSION } from '../../../../Canopy [BP]/scripts/constants.js';
-import { categoryToMobMap, meleeMobs } from '../../../../Canopy [BP]/scripts/include/data.js';
+import { MC_VERSION } from '../../../../Canopy[BP]/scripts/constants.js';
+import { categoryToMobMap, meleeMobs } from '../../../../Canopy[BP]/scripts/include/data.js';
 import stripJsonComments from 'strip-json-comments';
-
-vi.mock('@minecraft/server', {
-    world: {},
-    ItemStack: {},
-    DimensionTypes: {}
-});
-
-vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn()
-}));
 
 const bedrockSamplesRawUrl = `https://raw.githubusercontent.com/Mojang/bedrock-samples/refs/tags/v${MC_VERSION}/`;
 

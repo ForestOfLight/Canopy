@@ -1,0 +1,101 @@
+import { ButtonState, InputButton, system, world } from "@minecraft/server";
+import { AbilityRule } from "../../lib/canopy/Canopy";
+
+class QuickFillContainer extends AbilityRule {
+    bannedContainers = ['minecraft:beacon', 'minecraft:jukebox', 'minecraft:lectern'];
+    
+    constructor() {
+        super({
+            identifier: 'quickFillContainer',
+            wikiDescription: 'With an arrow in the top left of your inventory (slot 9), using an item on a container moves all matching items from your inventory into the container. Hold sneak to reverse the flow.',
+            onEnableCallback: () => { world.beforeEvents.playerInteractWithBlock.subscribe(this.onPlayerInteractWithBlockBound); },
+            onDisableCallback: () => { world.beforeEvents.playerInteractWithBlock.unsubscribe(this.onPlayerInteractWithBlockBound); }
+        }, { slotNumber: 9 });
+        this.onPlayerInteractWithBlockBound = this.onPlayerInteractWithBlock.bind(this);
+    }
+
+    onPlayerInteractWithBlock(event) {
+        const player = event.player;
+        const block = event.block;
+        if (!player || !this.isEnabledForPlayer(player) || this.bannedContainers.includes(block?.typeId))
+            return;
+        const blockInv = block.getComponent('inventory')?.container;
+        const playerInv = player.getComponent('inventory')?.container;
+        if (!playerInv || !blockInv)
+            return;
+        const handItemStack = event.itemStack;
+        if (!handItemStack || (block.typeId.includes('shulker_box') && handItemStack.typeId.includes('shulker_box')))
+            return;
+        event.cancel = true;
+
+        const playerIsSneaking = player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed;
+        system.run(() => {
+            if (playerIsSneaking)
+                this.transferToPlayer(player, block, handItemStack);
+            else
+                this.transferToContainer(player, block, handItemStack);
+        });
+    }
+
+    transferToPlayer(player, block, itemStack) {
+        const blockInv = block.getComponent('inventory')?.container;
+        const playerInv = player.getComponent('inventory')?.container;
+        if (!blockInv || !playerInv)
+            return;
+        const successfulTransfers = this.transferAllItemType(blockInv, playerInv, itemStack.typeId);
+        if (successfulTransfers > 0)
+            this.sendFeedbackMessage(false, player, block, itemStack, playerInv);
+    }
+
+    transferToContainer(player, block, itemStack) {
+        const blockInv = block.getComponent('inventory')?.container;
+        const playerInv = player.getComponent('inventory')?.container;
+        if (!blockInv || !playerInv)
+            return;
+        const successfulTransfers = this.transferAllItemType(playerInv, blockInv, itemStack.typeId);
+        if (successfulTransfers > 0)
+            this.sendFeedbackMessage(true, player, block, itemStack, blockInv);
+    }
+
+    transferAllItemType(fromContainer, toContainer, itemTypeId) {
+        let successfulTransfers = 0;
+        for (let slotIndex = 0; slotIndex < fromContainer.size; slotIndex++) {
+            const currFromItem = fromContainer.getItem(slotIndex);
+            if (currFromItem?.typeId === itemTypeId) {
+                const untransferred = toContainer.addItem(currFromItem);
+                if (untransferred) {
+                    fromContainer.setItem(slotIndex, untransferred);
+                } else {
+                    fromContainer.setItem(slotIndex, null);
+                    successfulTransfers++;
+                }
+            }
+        }
+        return successfulTransfers;
+    }
+
+    sendFeedbackMessage(isFilling, player, block, itemStack, inventory) {
+        const feedback = { rawtext: [] };
+        if (isFilling) {
+            feedback.rawtext.push({
+                translate: 'rules.quickFillContainer.filled',
+                with: { rawtext: [
+                    { translate: block.localizationKey },
+                    { translate: itemStack.localizationKey }
+                ]}
+            });
+        } else {
+            feedback.rawtext.push({
+                translate: 'rules.quickFillContainer.taken',
+                with: { rawtext: [
+                    { translate: itemStack.localizationKey },
+                    { translate: block.localizationKey }
+                ]}
+            });
+        }
+        feedback.rawtext.push({ text: ` (§a${inventory.size - inventory.emptySlotsCount}§7/§a${inventory.size}§7)` });
+        player.onScreenDisplay.setActionBar(feedback);
+    }
+}
+
+export const quickFillContainer = new QuickFillContainer();

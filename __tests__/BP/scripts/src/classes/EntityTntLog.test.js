@@ -1,40 +1,24 @@
 import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest";
-import { EntityTntLog } from "../../../../../Canopy [BP]/scripts/src/classes/EntityTntLog";
+import { EntityTntLog } from "../../../../../Canopy[BP]/scripts/src/classes/EntityTntLog";
 
-vi.mock("@minecraft/server", () => ({
-    system: {
-        runInterval: vi.fn((callback, interval) => {
-            const intervalId = setInterval(callback, interval * 50);
-            return {
-                clear: () => clearInterval(intervalId)
-            };
-        }),
-        runTimeout: vi.fn((callback, timeout) => {
-            const timeoutId = setTimeout(callback, timeout * 50);
-            return {
-                clear: () => clearTimeout(timeoutId)
-            };
-        }),
-        clearRun: vi.fn((runner) => {
-            runner.clear();
-        })
-    },
-    world: {
-        afterEvents: {
-            entitySpawn: {
-                subscribe: vi.fn()
-            }
-        },
-        beforeEvents: {
-            entityRemove: {
-                subscribe: vi.fn()
-            },
-            playerLeave: {
-                subscribe: vi.fn()
-            }
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        system: {
+            ...original.system,
+            runInterval: vi.fn((callback, interval) => {
+                const intervalId = setInterval(callback, interval * 50);
+                return { clear: () => clearInterval(intervalId) };
+            }),
+            runTimeout: vi.fn((callback, timeout) => {
+                const timeoutId = setTimeout(callback, timeout * 50);
+                return { clear: () => clearTimeout(timeoutId) };
+            }),
+            clearRun: vi.fn((runner) => { runner.clear(); })
         }
-    }
-}));
+    };
+});
 
 vi.mock("@minecraft/server-ui", () => ({
     ModalFormData: vi.fn()

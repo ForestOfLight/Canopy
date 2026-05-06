@@ -10,18 +10,20 @@
 	},
 	"license": "MIT",
 	"dependencies": {
-		"@minecraft/debug-utilities": "^1.0.0-beta.1.26.10-preview.20",
-		"@minecraft/server": "^2.6.0-beta.1.26.0-stable",
-		"@minecraft/server-gametest": "^1.0.0-beta.1.21.130-stable",
-		"@minecraft/server-ui": "^2.1.0-beta.1.21.130-stable"
+		"@minecraft/debug-utilities": "^1.0.0-beta.1.26.20-stable",
+		"@minecraft/server": "^2.8.0-beta.1.26.20-stable",
+		"@minecraft/server-gametest": "^1.0.0-beta.1.26.20-stable",
+		"@minecraft/server-ui": "^2.1.0-beta.1.26.20-stable"
 	},
 	"scripts": {
-		"test": "vitest run --coverage",
-		"lint": "eslint . --fix"
+		"test": "vitest run --config vitest.config.js --coverage",
+		"lint": "eslint . --fix",
+		"generate-wiki": "sh -c 'WIKI_PATH=${WIKI_PATH:-$1} npx vitest run --config vitest.wiki.config.js' --"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",
 		"@eslint/js": "^9.19.0",
+		"@forestoflight/minecraft-vitest-mocks": "^1.0.5",
 		"@vitest/coverage-v8": "^3.0.4",
 		"axios": "^1.7.9",
 		"eslint": "^9.19.0",

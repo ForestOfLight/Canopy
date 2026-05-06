@@ -3,17 +3,8 @@ import {
 	calcDistance, isString, isNumeric, parseName, getClosestTarget, stringifyLocation, 
 	getColorCode, wait, getInventory, locationInArea, getColoredDimensionName, 
 	getScriptEventSourceName, getScriptEventSourceObject, recolor, titleCase, formatColorStr
-} from '../../../../Canopy [BP]/scripts/include/utils.js';
+} from '../../../../Canopy[BP]/scripts/include/utils.js';
 
-vi.mock('@minecraft/server', {
-    world: {},
-    ItemStack: {},
-    DimensionTypes: {}
-});
-
-vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn()
-}));
 
 describe('calcDistance()', () => {
 	it.each([

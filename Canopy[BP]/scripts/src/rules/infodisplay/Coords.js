@@ -1,0 +1,23 @@
+import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
+
+class Coords extends InfoDisplayTextElement {
+    player;
+
+    constructor(player, displayLine) {
+        const ruleData = { identifier: 'coords', description: { translate: 'rules.infoDisplay.coords' }, wikiDescription: 'Shows your coordinates truncated at 2 decimal places.' };
+        super(ruleData, displayLine);
+        this.player = player;
+    }
+
+    getFormattedDataOwnLine() {
+        const coords = this.player.location;
+        [coords.x, coords.y, coords.z] = [coords.x.toFixed(2), coords.y.toFixed(2), coords.z.toFixed(2)];
+        return { text: `§l${coords.x} ${coords.y} ${coords.z}§r` };
+    }
+
+    getFormattedDataSharedLine() {
+        return this.getFormattedDataOwnLine();
+    }
+}
+
+export default Coords;

@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import fs from "fs";
 import path from 'path';
-import { PACK_VERSION, MC_VERSION } from "../Canopy [BP]/scripts/constants";
+import { PACK_VERSION, MC_VERSION } from "../Canopy[BP]/scripts/constants";
 
-const manifestPathBP = path.resolve('Canopy [BP]/manifest.json');
-const manifestPathRP = path.resolve('Canopy [RP]/manifest.json');
+const manifestPathBP = path.resolve('Canopy[BP]/manifest.json');
+const manifestPathRP = path.resolve('Canopy[RP]/manifest.json');
 
 function getManifestObject(manifestPath) {
     const manifestContent = fs.readFileSync(manifestPath, 'utf-8');

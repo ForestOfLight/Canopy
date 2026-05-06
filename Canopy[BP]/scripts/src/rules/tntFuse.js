@@ -1,0 +1,43 @@
+import { world } from "@minecraft/server";
+import { GlobalRule, IntegerRule } from "../../lib/canopy/Canopy";
+import { TNTFuse } from "../classes/TNTFuse";
+
+class TNTFuseRule extends IntegerRule {
+    constructor() {
+        super(GlobalRule.morphOptions({
+            identifier: 'tntFuse',
+            wikiDescription: 'Sets the TNT fuse time (in ticks) for all TNT.',
+            suggestedOptions: [1, 10, 80, 200, 72000],
+            defaultValue: TNTFuse.VANILLA_FUSE_TICKS,
+            valueRange: { range: { min: 1, max: 72000 } }
+        }));
+        this.subscribeToEvents();
+    }
+
+    subscribeToEvents() {
+        world.afterEvents.entitySpawn.subscribe(this.onEntitySpawn.bind(this));
+        world.afterEvents.entityLoad.subscribe(this.onEntityLoad.bind(this));
+    }
+    
+    onEntitySpawn(event) {
+        if (event.entity?.typeId !== 'minecraft:tnt' || event.cause === 'Event')
+            return;
+        this.startFuse(event.entity, this.getGlobalFuseTicks());
+    }
+
+    onEntityLoad(event) {
+        if (event.entity?.typeId !== 'minecraft:tnt')
+            return;
+        this.startFuse(event.entity, this.getGlobalFuseTicks());
+    }
+
+    getGlobalFuseTicks() {
+        return this.getNativeValue() || this.getDefaultValue();
+    }
+
+    startFuse(entity, fuseTicks) {
+        new TNTFuse(entity, fuseTicks);
+    }
+}
+
+export const tntFuseRule = new TNTFuseRule();

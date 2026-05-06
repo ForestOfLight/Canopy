@@ -1,0 +1,86 @@
+import { BooleanRule, Rules, VanillaCommand } from "../../lib/canopy/Canopy";
+import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus } from "@minecraft/server";
+import { stringifyLocation, getColoredDimensionName } from "../../include/utils";
+
+const NETHER_SCALE_FACTOR = 8;
+
+new BooleanRule({
+    category: 'Rules',
+    identifier: 'commandPosOthers',
+    description: { translate: 'rules.commandPosOthers' },
+    wikiDescription: 'Determines whether non-operators can use `/pos` on players other than themselves.'
+});
+
+new VanillaCommand({
+    name: 'canopy:pos',
+    description: 'commands.pos',
+    optionalParameters: [{ name: 'player', type: CustomCommandParamType.PlayerSelector }],
+    permissionLevel: CommandPermissionLevel.Any,
+    callback: posCommand,
+    wikiDescription: 'Displays your current position, or the position of another player. Shows dimension and relative nether/overworld position as well.'
+});
+
+function posCommand(origin, player) {
+    if (player && !isOp(origin) && !Rules.getNativeValue('commandPosOthers')) {
+        origin.sendMessage({ translate: 'rules.generic.blocked', with: ['commandPosOthers'] });
+        return;
+    }
+    if (player?.length > 0) {
+        for (const currPlayer of player) {
+            if (!currPlayer)
+                continue;
+            sendPosMessage(origin, currPlayer);
+        }
+    } else if (origin.getType() === "Player") {
+        sendPosMessage(origin);
+    } else {
+        return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
+    }
+}
+
+function sendPosMessage(origin, target = void 0) {
+    target = target === void 0 ? origin.getSource() : target;
+    origin.sendMessage({
+        rawtext: [
+            getPositionText(origin, target), { text: '\n' },
+            getDimensionText(target), { text: '\n' },
+            getRelativeDimensionPositionText(target)
+        ]
+    });
+}
+
+function getPositionText(origin, target) {
+    if (origin.getSource() === target)
+        return { translate: 'commands.pos.self', with: [stringifyLocation(target.location, 2)] };
+    return { translate: 'commands.pos.other', with: [target.name, stringifyLocation(target.location, 2)] };
+}
+
+function getDimensionText(target) {
+    return { translate: 'commands.pos.dimension', with: [getColoredDimensionName(target.dimension.id)] };
+}
+
+function getRelativeDimensionPositionText(target) {
+    if (target.dimension.id === 'minecraft:nether')
+        return { translate: 'commands.pos.relative.overworld', with: [stringifyLocation(netherPosToOverworld(target.location), 2)] };
+    else if (target.dimension.id === 'minecraft:overworld')
+        return { translate: 'commands.pos.relative.nether', with: [stringifyLocation(overworldPosToNether(target.location), 2)] };
+}
+
+function netherPosToOverworld(pos) {
+    return { x: pos.x * NETHER_SCALE_FACTOR, y: pos.y, z: pos.z * NETHER_SCALE_FACTOR };
+}
+
+function overworldPosToNether(pos) {
+    return { x: pos.x / NETHER_SCALE_FACTOR, y: pos.y, z: pos.z / NETHER_SCALE_FACTOR };
+}
+
+function isOp(origin) {
+    switch(origin.getType()) {
+        case 'Server':
+            return true;
+        case 'Player':
+            return origin.getSource().commandPermissionLevel > CommandPermissionLevel.GameDirectors;
+        default:
+            return false;
+    }
+}

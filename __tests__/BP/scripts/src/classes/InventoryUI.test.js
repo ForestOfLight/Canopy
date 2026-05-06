@@ -1,41 +1,23 @@
-import { InventoryUI } from "../../../../../Canopy [BP]/scripts/src/classes/InventoryUI";
+import { InventoryUI } from "../../../../../Canopy[BP]/scripts/src/classes/InventoryUI";
 import { describe, it, expect, vi, afterEach } from "vitest";
-import * as Utils from "../../../../../Canopy [BP]/scripts/include/utils";
+import * as Utils from "../../../../../Canopy[BP]/scripts/include/utils";
 
-vi.mock("@minecraft/server", () => ({
-    EntityComponentTypes: {
-        Inventory: 'inventory'
-    },
-    ItemComponentTypes: {
-        Durability: 'durability',
-        Enchantable: 'enchantable'
-    },
-    system: {
-        afterEvents: {
-            scriptEventReceive: {
-                subscribe: vi.fn()
-            }
-        },
-        runJob: vi.fn(),
-        currentTick: (Date.now() / 50),
-        runInterval: vi.fn((callback, interval) => {
-            const intervalId = setInterval(callback, interval * 50);
-            return {
-                clear: () => clearInterval(intervalId)
-            };
-        }),
-        clearRun: vi.fn((runner) => {
-            runner.clear();
-        }),
-        run: vi.fn((callback) => {
-            callback();
-        })
-    }
-}));
-
-vi.mock("@minecraft/server-ui", () => ({
-    ModalFormData: vi.fn()
-}));
+vi.mock('@minecraft/server', async (importOriginal) => {
+    const original = await importOriginal();
+    return {
+        ...original,
+        system: {
+            ...original.system,
+            currentTick: (Date.now() / 50),
+            runInterval: vi.fn((callback, interval) => {
+                const intervalId = setInterval(callback, interval * 50);
+                return { clear: () => clearInterval(intervalId) };
+            }),
+            clearRun: vi.fn((runner) => { runner.clear(); }),
+            run: vi.fn((callback) => { callback(); })
+        }
+    };
+});
 
 describe('InventoryPeeker', () => {
     afterEach(() => {

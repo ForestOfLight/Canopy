@@ -1,0 +1,43 @@
+import { BooleanRule, Rules } from "../../lib/canopy/Canopy";
+import { system, world, GameMode } from "@minecraft/server";
+import { calcDistance } from "../../include/utils";
+
+const REMOVAL_DISTANCE = 2.5;
+
+new BooleanRule({
+    category: 'Rules',
+    identifier: 'creativeNoTileDrops',
+    description: { translate: 'rules.creativeNoTileDrops' },
+    wikiDescription: 'Enables/disables items dropping from blocks when breaking them in creative mode. Unlike the vanilla gamerule, this also suppresses drops from containers and only applies when you break them — not when they break in the world.'
+});
+
+let brokenBlockEventsThisTick = [];
+let brokenBlockEventsLastTick = [];
+
+system.runInterval(() => {
+    brokenBlockEventsLastTick = brokenBlockEventsThisTick;
+    brokenBlockEventsThisTick = [];
+});
+
+world.afterEvents.playerBreakBlock.subscribe((blockEvent) => {
+    if (blockEvent.player?.getGameMode() !== GameMode.Creative 
+        || !Rules.getNativeValue('creativeNoTileDrops')) 
+        return;
+    brokenBlockEventsThisTick.push(blockEvent);
+});
+
+world.afterEvents.entitySpawn.subscribe((entityEvent) => {
+    if (entityEvent.cause !== 'Spawned' || entityEvent.entity.typeId !== 'minecraft:item') return;
+    if (!Rules.getNativeValue('creativeNoTileDrops')) return;
+
+    const item = entityEvent.entity;
+    const brokenBlockEvents = brokenBlockEventsThisTick.concat(brokenBlockEventsLastTick);
+    const brokenBlockEvent = brokenBlockEvents.find(blockEvent => isItemWithinRemovalDistance(blockEvent.block.location, item));
+    if (!brokenBlockEvent) return;
+
+    item.remove();
+});
+
+function isItemWithinRemovalDistance(location, item) {
+    return calcDistance(location, item.location) < REMOVAL_DISTANCE;
+}
