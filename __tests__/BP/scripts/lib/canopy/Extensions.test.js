@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest";
 
 vi.mock('../../../../../Canopy[BP]/scripts/lib/MCBE-IPC/ipc.js', async (importOriginal) => {
     const actual = await importOriginal();
@@ -19,6 +19,13 @@ import { Extension } from "../../../../../Canopy[BP]/scripts/lib/canopy/Extensio
 import IPC from "../../../../../Canopy[BP]/scripts/lib/MCBE-IPC/ipc.js";
 
 describe("Extensions", () => {
+    let registerCallback;
+
+    beforeAll(() => {
+        const registerCall = IPC.on.mock.calls.find(([channel]) => channel === 'canopyExtension:registerExtension');
+        registerCallback = registerCall?.[2];
+    });
+
     beforeEach(() => {
         Extensions.clear();
         Extensions.extensions["test_extension"] = new Extension({
@@ -96,8 +103,7 @@ describe("Extensions", () => {
 
     describe('setupExtensionRegistration()', () => {
         it('should register an extension and log when the IPC message is received', () => {
-            const registerCall = IPC.on.mock.calls.find(([channel]) => channel === 'canopyExtension:registerExtension');
-            const callback = registerCall[2];
+            const callback = registerCallback;
 
             Extensions.clear();
             const consoleSpy = vi.spyOn(console, 'info').mockImplementation(() => {});

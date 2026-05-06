@@ -6,10 +6,15 @@ export default defineConfig({
       '@minecraft/server': `@forestoflight/minecraft-vitest-mocks/server`,
       '@minecraft/server-ui': `@forestoflight/minecraft-vitest-mocks/server-ui`,
       '@minecraft/debug-utilities': `@forestoflight/minecraft-vitest-mocks/debug-utilities`
-    },
-    setupFiles: ['@forestoflight/minecraft-vitest-mocks/setup']
+    }
   },
   test: {
+    setupFiles: ['@forestoflight/minecraft-vitest-mocks/setup'],
+    server: {
+      deps: {
+        inline: ['@forestoflight/minecraft-vitest-mocks']
+      }
+    },
     env: {
       NODE_ENV: 'test'
     },

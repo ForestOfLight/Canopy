@@ -52,7 +52,7 @@ describe('EndGatewayExitRender', () => {
         it('registers the shape with debugDrawer and tracks it in debugShapes', () => {
             const shape = { remove: vi.fn() };
             render.drawShape(shape);
-            expect(debugDrawer.addShape).toHaveBeenCalledWith(shape, dimension);
+            expect(debugDrawer.addShape).toHaveBeenCalledWith(shape);
             expect(render.debugShapes).toContain(shape);
         });
     });

@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { VanillaCommands } from '../../../../../../Canopy[BP]/scripts/lib/canopy/commands/VanillaCommands.js';
 import { VanillaCommand } from '../../../../../../Canopy[BP]/scripts/lib/canopy/commands/VanillaCommand.js';
-import { CustomCommandParamType } from '@minecraft/server';
 
 describe('VanillaCommands registry', () => {
     beforeEach(() => {

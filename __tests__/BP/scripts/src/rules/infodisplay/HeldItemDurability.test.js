@@ -20,10 +20,10 @@ const mockEquippableComponent = {
 const mockPlayer = new Player();
 vi.spyOn(mockPlayer, 'getComponent').mockImplementation((type) => type === 'equippable' ? mockEquippableComponent : undefined);
 
-describe('HandDurability', () => {
-    let handDurability;
+describe('HeldItemDurability', () => {
+    let heldItemDurability;
     beforeAll(() => {
-        handDurability = new HeldItemDurability(mockPlayer, 0);
+        heldItemDurability = new HeldItemDurability(mockPlayer, 0);
     });
     beforeEach(() => {
         mockDurabilityComponent.damage = 0;
@@ -36,50 +36,50 @@ describe('HandDurability', () => {
     });
 
     it('should inherit from InfoDisplayTextElement', () => {
-        expect(handDurability).toBeInstanceOf(InfoDisplayTextElement);
+        expect(heldItemDurability).toBeInstanceOf(InfoDisplayTextElement);
     });
 
     it('should create a new InfoDisplay rule', () => {
-        expect(Rules.get(handDurability.identifier)).toBeDefined();
+        expect(Rules.get(heldItemDurability.identifier)).toBeDefined();
     });
 
     it('should return empty text when no item is held', () => {
         mockEquippableComponent.getEquipment.mockReturnValueOnce(undefined);
-        expect(handDurability.getFormattedDataOwnLine()).toEqual({ text: '' });
+        expect(heldItemDurability.getFormattedDataOwnLine()).toEqual({ text: '' });
     });
 
     it('should return empty text when held item has no durability component', () => {
         mockItemStack.getComponent.mockReturnValueOnce(undefined);
-        expect(handDurability.getFormattedDataOwnLine()).toEqual({ text: '' });
+        expect(heldItemDurability.getFormattedDataOwnLine()).toEqual({ text: '' });
     });
 
     it('should show green remaining for high durability (>=50%)', () => {
         mockDurabilityComponent.damage = 0;
-        expect(handDurability.getFormattedDataOwnLine()).toEqual({
-            translate: 'rules.infoDisplay.handDurability.display',
+        expect(heldItemDurability.getFormattedDataOwnLine()).toEqual({
+            translate: 'rules.infoDisplay.heldItemDurability.display',
             with: ['§a250§7/§a250§r']
         });
     });
 
     it('should show yellow remaining for mid durability (10-49%)', () => {
         mockDurabilityComponent.damage = 175;
-        expect(handDurability.getFormattedDataOwnLine()).toEqual({
-            translate: 'rules.infoDisplay.handDurability.display',
+        expect(heldItemDurability.getFormattedDataOwnLine()).toEqual({
+            translate: 'rules.infoDisplay.heldItemDurability.display',
             with: ['§e75§7/§a250§r']
         });
     });
 
     it('should show red remaining for low durability (<10%)', () => {
         mockDurabilityComponent.damage = 232;
-        expect(handDurability.getFormattedDataOwnLine()).toEqual({
-            translate: 'rules.infoDisplay.handDurability.display',
+        expect(heldItemDurability.getFormattedDataOwnLine()).toEqual({
+            translate: 'rules.infoDisplay.heldItemDurability.display',
             with: ['§c18§7/§a250§r']
         });
     });
 
     it('should return same data for shared line as own line', () => {
-        expect(handDurability.getFormattedDataSharedLine()).toEqual(
-            handDurability.getFormattedDataOwnLine()
+        expect(heldItemDurability.getFormattedDataSharedLine()).toEqual(
+            heldItemDurability.getFormattedDataOwnLine()
         );
     });
 });

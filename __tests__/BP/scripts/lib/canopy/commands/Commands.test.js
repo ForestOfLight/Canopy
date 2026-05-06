@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest";
 import { Commands } from "../../../../../../Canopy[BP]/scripts/lib/canopy/commands/Commands";
 import { BooleanRule } from "../../../../../../Canopy[BP]/scripts/lib/canopy/rules/BooleanRule";
 import { Rules } from "../../../../../../Canopy[BP]/scripts/lib/canopy/rules/Rules";
@@ -24,6 +24,12 @@ vi.mock('@minecraft/server', async (importOriginal) => {
 });
 
 describe('Commands', () => {
+    let chatCallback;
+
+    beforeAll(() => {
+        chatCallback = world.beforeEvents.chatSend.subscribe.mock.calls[0][0];
+    });
+
     beforeEach(() => {
         Commands.clear();
     });
@@ -292,13 +298,11 @@ describe('Commands', () => {
     });
 
     describe('chatSend event handler', () => {
-        let chatCallback;
         let chatSender;
 
         beforeEach(() => {
             Commands.clear();
             Rules.clear();
-            chatCallback = world.beforeEvents.chatSend.subscribe.mock.calls[0][0];
             chatSender = { sendMessage: vi.fn(), commandPermissionLevel: 1 };
         });
 

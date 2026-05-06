@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { AbilityRule } from "../../../../../../Canopy[BP]/scripts/lib/canopy/rules/AbilityRule";
 import { Rules } from "../../../../../../Canopy[BP]/scripts/lib/canopy/rules/Rules";
+import { world } from "@minecraft/server";
 
 vi.mock('@minecraft/server', async (importOriginal) => {
     const original = await importOriginal();
@@ -41,6 +42,7 @@ describe('AbilityRule', () => {
     beforeEach(() => {
         Rules.clear();
         vi.clearAllMocks();
+        world.getAllPlayers.mockReturnValue([]);
         abilityRule = new AbilityRule(testRuleData, { slotNumber: 1, onPlayerEnableCallback, onPlayerDisableCallback });
     });
 
