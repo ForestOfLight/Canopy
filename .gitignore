@@ -5,3 +5,5 @@ coverage/
 /.regolith
 /docs/superpowers/
 .claude/
+.planning/
+CLAUDE.md

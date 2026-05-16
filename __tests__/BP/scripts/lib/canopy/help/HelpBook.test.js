@@ -40,7 +40,7 @@ vi.mock('../../../../../../Canopy[BP]/scripts/lib/canopy/rules/Rule', () => ({
             return this.#description;
         }
 
-        getContigentRuleIDs() {
+        getContingentRuleIDs() {
             return this.#contingentRules;
         }
 

@@ -47,7 +47,7 @@ class SpawnTracker {
         wasTrackingLastTick = false;
     }
 
-    recieveMob(entity) {
+    receiveMob(entity) {
         if (!world.getDynamicProperty('isTrackingSpawns') && wasTrackingLastTick) this.stopTracking();
         else if (!world.getDynamicProperty('isTrackingSpawns')) return;
         if (!entity.isValid) return;

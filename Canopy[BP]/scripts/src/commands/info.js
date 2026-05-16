@@ -76,7 +76,7 @@ async function handleRuleChange(sender, ruleID, enable) {
         return;
     }
     if (enable)
-        updateRules(sender, rule.getContigentRuleIDs(), enable);
+        updateRules(sender, rule.getContingentRuleIDs(), enable);
     else
         updateRules(sender, rule.getDependentRuleIDs(), enable);
     updateRules(sender, rule.getIndependentRuleIDs(), !enable);

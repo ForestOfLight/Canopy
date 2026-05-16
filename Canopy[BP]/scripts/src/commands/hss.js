@@ -9,7 +9,7 @@ export const HSS_ACTIONS = Object.freeze({
     STOP: 'stop'
 });
 
-export class HSS extends VanillaCommand {
+export class HSSCommand extends VanillaCommand {
     hssFinders = [];
     isFindingFortress = false;
 
@@ -91,4 +91,4 @@ export class HSS extends VanillaCommand {
     }
 }
 
-export const hssCommand = new HSS();
+export const hssCommand = new HSSCommand();
