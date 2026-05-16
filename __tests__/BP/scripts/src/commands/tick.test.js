@@ -123,4 +123,40 @@ describe('tickCommand', () => {
             });
         });
     });
+
+    describe('tryDecrementSteps', () => {
+        it('decrements shouldStep when above 0', () => {
+            tickCommand.shouldStep = 2;
+            tickCommand.tryDecrementSteps();
+            expect(tickCommand.shouldStep).toBe(1);
+        });
+
+        it('does not broadcast when shouldStep has not reached 0', () => {
+            tickCommand.shouldStep = 2;
+            tickCommand.tryDecrementSteps();
+            expect(world.sendMessage).not.toHaveBeenCalled();
+        });
+
+        it('broadcasts step done when shouldStep reaches 0', () => {
+            tickCommand.shouldStep = 1;
+            tickCommand.tryDecrementSteps();
+            expect(world.sendMessage).toHaveBeenCalledWith({
+                translate: 'commands.tick.step.done'
+            });
+        });
+
+        it('calls tickSpeed when shouldStep is 0 and tick is at normal speed', () => {
+            tickCommand.tryDecrementSteps();
+            expect(tickCommand.shouldStep).toBe(0);
+        });
+
+        it('busy-waits in tickSpeed when tick is slowed', () => {
+            let calls = 0;
+            const spy = vi.spyOn(Date, 'now').mockImplementation(() => calls++ === 0 ? 0 : 101);
+            tickCommand.targetMSPT = 100;
+            tickCommand.tryDecrementSteps();
+            spy.mockRestore();
+            expect(calls).toBeGreaterThan(1);
+        });
+    });
 });
