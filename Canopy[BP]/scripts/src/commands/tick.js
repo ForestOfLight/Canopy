@@ -38,13 +38,15 @@ export class TickCommand extends VanillaCommand {
     }
 
     tickCommand(origin, action, value) {
+        if (value === void 0)
+            value = 0;
         switch(action) {
             case TICK_ACTIONS.MSPT:
                 return this.tickSlow(origin, value);
             case TICK_ACTIONS.STEP:
                 return this.tickStep(origin, value);
             case TICK_ACTIONS.RESET:
-                return this.tickReset(origin, value);
+                return this.tickReset(origin);
             case TICK_ACTIONS.SLEEP:
                 return this.tickSleep(origin, value);
             default:
