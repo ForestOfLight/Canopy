@@ -38,7 +38,6 @@ import './src/commands/velocity'
 // Script Events
 import './src/commands/scriptevents/counter'
 import './src/commands/scriptevents/spawn'
-import './src/commands/scriptevents/tick'
 import './src/commands/scriptevents/generator'
 
 // Rules
