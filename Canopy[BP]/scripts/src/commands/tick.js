@@ -1,95 +1,113 @@
-import { VanillaCommand } from '../../lib/canopy/Canopy';
+import { BlockCommandOrigin, EntityCommandOrigin, PlayerCommandOrigin, ServerCommandOrigin, VanillaCommand } from '../../lib/canopy/Canopy';
 import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, system, world } from '@minecraft/server';
 import { Profiler } from '../classes/Profiler';
 
-new VanillaCommand({
-    name: 'canopy:tick',
-    description: 'commands.tick',
-    enums: [{ name: 'canopy:tickAction', values: ['mspt', 'step', 'reset', 'sleep'] }],
-    mandatoryParameters: [{ name: 'action', type: 'canopy:tickAction' }],
-    optionalParameters: [{ name: 'value', type: CustomCommandParamType.Integer }],
-    permissionLevel: CommandPermissionLevel.GameDirectors,
-    cheatsRequired: true,
-    callback: tickCommand,
-    wikiDescription: 'Controls the server tick speed. Subcommands: mspt, step, reset, sleep.',
-    subCommandWikiDescription: {
-        mspt: 'Slows the tick loop to the given milliseconds-per-tick value. Must be 50 or greater.',
-        step: 'Advances N ticks while the tick loop is slowed. Defaults to 1 step if omitted.',
-        reset: 'Restores tick speed to normal (50 MSPT).',
-        sleep: 'Busy-waits for the given number of milliseconds, blocking the tick thread.'
-    }
+export const TICK_ACTIONS = Object.freeze({
+    MSPT: 'mspt',
+    STEP: 'step',
+    RESET: 'reset',
+    SLEEP: 'sleep'
 });
 
-let targetMSPT = 50.0;
-let shouldStep = 0;
+export const VANILLA_MSPT = 50.0;
 
-system.runInterval(() => {
-    if (shouldStep > 0) {
-        shouldStep--;
-        if (shouldStep === 0)
-            world.sendMessage({ translate: 'commands.tick.step.done' });
-        return;
+export class TickCommand extends VanillaCommand {
+    targetMSPT = VANILLA_MSPT;
+    shouldStep = 0;
+
+    constructor() {
+        super({
+            name: 'canopy:tick',
+            description: 'commands.tick',
+            enums: [{ name: 'canopy:tickAction', values: Object.values(TICK_ACTIONS) }],
+            mandatoryParameters: [{ name: 'canopy:tickAction', type: CustomCommandParamType.Enum }],
+            optionalParameters: [{ name: 'value', type: CustomCommandParamType.Integer }],
+            permissionLevel: CommandPermissionLevel.GameDirectors,
+            allowedSources: [PlayerCommandOrigin, EntityCommandOrigin, BlockCommandOrigin, ServerCommandOrigin],
+            cheatsRequired: true,
+            callback: (origin, ...args) => this.tickCommand(origin, ...args),
+            wikiDescription: 'Controls the server tick speed. Subcommands: mspt, step, reset, sleep.',
+            subCommandWikiDescription: {
+                mspt: `Slows the tick loop to the given milliseconds-per-tick value. Must be ${VANILLA_MSPT} or greater.`,
+                step: 'Advances N ticks while the tick loop is slowed. Defaults to 1 step if omitted.',
+                reset: `Restores tick speed to normal (${VANILLA_MSPT} MSPT).`,
+                sleep: 'Busy-waits for the given number of milliseconds, blocking the tick thread.'
+            }
+        });
+        system.runInterval(() => this.tryDecrementSteps());
     }
-    tickSpeed(targetMSPT);
-});
 
-function tickCommand(origin, action, value) {
-    if (action === 'mspt')
-        return tickSlow(origin, value);
-    else if (action === 'step')
-        return tickStep(origin, value);
-    else if (action === 'reset')
-        return tickReset(origin);
-    else if (action === 'sleep')
-        return tickSleep(origin, value);
-}
+    tickCommand(origin, action, value) {
+        switch(action) {
+            case TICK_ACTIONS.MSPT:
+                return this.tickSlow(origin, value);
+            case TICK_ACTIONS.STEP:
+                return this.tickStep(origin, value);
+            case TICK_ACTIONS.RESET:
+                return this.tickReset(origin, value);
+            case TICK_ACTIONS.SLEEP:
+                return this.tickSleep(origin, value);
+            default:
+                return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidaction' };
+        }
+    }
 
-function tickSlow(origin, mspt) {
-    if (mspt < 50.0) {
-        origin.sendMessage({ translate: 'commands.tick.mspt.fail' });
+    tickSlow(origin, mspt) {
+        if (mspt < VANILLA_MSPT)
+            return { status: CustomCommandStatus.Failure, message: 'commands.tick.mspt.fail' };
+        this.targetMSPT = mspt;
+        world.sendMessage({ translate: 'commands.tick.mspt.success', with: [origin.getSource().name, String(mspt)] });
+        this.tickSpeed(mspt);
         return { status: CustomCommandStatus.Success };
     }
-    targetMSPT = mspt;
-    world.sendMessage({ translate: 'commands.tick.mspt.success', with: [origin.getSource().name, String(mspt)] });
-    tickSpeed(mspt);
-    return { status: CustomCommandStatus.Success };
-}
 
-function tickReset(origin) {
-    targetMSPT = 50.0;
-    world.sendMessage({ translate: 'commands.tick.reset.success', with: [origin.getSource().name] });
-    return { status: CustomCommandStatus.Success };
-}
-
-function tickStep(origin, steps) {
-    if (targetMSPT === 50.0) {
-        origin.sendMessage({ translate: 'commands.tick.step.fail' });
+    tickReset(origin) {
+        this.targetMSPT = VANILLA_MSPT;
+        world.sendMessage({ translate: 'commands.tick.reset.success', with: [origin.getSource().name] });
         return { status: CustomCommandStatus.Success };
     }
-    if (!steps || steps < 1)
-        shouldStep = 1;
-    else
-        shouldStep = steps;
-    world.sendMessage({ translate: 'commands.tick.step.start', with: [origin.getSource().name, String(shouldStep)] });
-    return { status: CustomCommandStatus.Success };
-}
 
-function tickSleep(origin, milliseconds) {
-    if (!milliseconds || milliseconds < 1) {
-        origin.sendMessage({ translate: 'commands.tick.sleep.fail' });
+    tickStep(origin, steps) {
+        if (this.targetMSPT === VANILLA_MSPT) {
+            origin.sendMessage({ translate: 'commands.tick.step.fail' });
+            return { status: CustomCommandStatus.Success };
+        }
+        if (!steps || steps < 1)
+            this.shouldStep = 1;
+        else
+            this.shouldStep = steps;
+        world.sendMessage({ translate: 'commands.tick.step.start', with: [origin.getSource().name, String(this.shouldStep)] });
         return { status: CustomCommandStatus.Success };
     }
-    world.sendMessage({ translate: 'commands.tick.sleep.success', with: [origin.getSource().name, String(milliseconds)] });
-    const startTime = Date.now();
-    let waitTime = 0;
-    while (waitTime < milliseconds)
-        waitTime = Date.now() - startTime;
-    return { status: CustomCommandStatus.Success };
+
+    tickSleep(origin, milliseconds) {
+        if (!milliseconds || milliseconds < 1)
+            return { status: CustomCommandStatus.Success, message: 'commands.tick.sleep.fail' };
+        world.sendMessage({ translate: 'commands.tick.sleep.success', with: [origin.getSource().name, String(milliseconds)] });
+        const startTime = Date.now();
+        let waitTime = 0;
+        while (waitTime < milliseconds)
+            waitTime = Date.now() - startTime;
+        return { status: CustomCommandStatus.Success };
+    }
+
+    tryDecrementSteps() {
+        if (this.shouldStep > 0) {
+            this.shouldStep--;
+            if (this.shouldStep === 0)
+                world.sendMessage({ translate: 'commands.tick.step.done' });
+            return;
+        }
+        this.tickSpeed(this.targetMSPT);
+    }
+
+    tickSpeed(desiredMspt) {
+        if (this.targetMSPT === VANILLA_MSPT)
+            return;
+        let currentMspt = Date.now() - Profiler.lastTickDate;
+        while (currentMspt <= desiredMspt)
+            currentMspt = Date.now() - Profiler.lastTickDate;
+    }
 }
 
-function tickSpeed(desiredMspt) {
-    if (targetMSPT === 50.0) return;
-    let currentMspt = Date.now() - Profiler.lastTickDate;
-    while (currentMspt <= desiredMspt)
-        currentMspt = Date.now() - Profiler.lastTickDate;
-}
+export const tickCommand = new TickCommand();
