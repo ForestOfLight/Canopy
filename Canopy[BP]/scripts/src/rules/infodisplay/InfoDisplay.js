@@ -32,6 +32,7 @@ import { LiquidStates } from './LiquidStates';
 import { HeldItemDurability } from './HeldItemDurability';
 
 import { RenderSignalStrength } from './RenderSignalStrength';
+import { NoFog } from './NoFog';
 
 class InfoDisplay {
 	player;
@@ -73,7 +74,8 @@ class InfoDisplay {
 			new LiquidTarget(player, 24),
 			new LiquidStates(player, 25),
 
-			new RenderSignalStrength(player)
+			new RenderSignalStrength(player),
+			new NoFog(player)
 		];
 		InfoDisplay.playerToInfoDisplayMap[player.id] = this;
 		this.enableEnabledRules();
