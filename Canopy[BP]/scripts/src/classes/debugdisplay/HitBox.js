@@ -11,7 +11,7 @@ export class HitBox extends DebugDisplayShapeElement {
         const dimensionLocation = { ...hitboxData.location, dimension: this.entity.dimension };
         const hitbox = new DebugBox(dimensionLocation);
         hitbox.bound = hitboxData.size;
-        hitbox.color = { red: 0, green: 1, blue: 0 };
+        hitbox.color = { red: 0, green: 1, blue: 0, alpha: 1 };
         this.drawShape(hitbox);
     }
 
