@@ -8,18 +8,18 @@ export class DebugPoint {
     this.Arrows = [];
   }
   createShapes() {
-    const UpArrow = this.genNewArrow(this.size);
-    const DownArrow = this.genNewArrow(-this.size);
-    this.setup(UpArrow);
-    this.setup(DownArrow);
-    this.Arrows = [UpArrow,DownArrow];
-    return this.Arrows;
+    const upArrow = this.genNewArrow(this.size);
+    const downArrow = this.genNewArrow(-this.size);
+    this.setup(upArrow);
+    this.setup(downArrow);
+    this.arrows = [upArrow,downArrow];
+    return this.arrows;
   }
   updateShapes(newPos) {
-    this.Arrows[0].location = newPos
-    this.Arrows[1].location = newPos
-    this.updateEnd(newPos, this.size, this.Arrows[0]);
-    this.updateEnd(newPos, -this.size, this.Arrows[1]);
+    this.arrows[0].location = newPos
+    this.arrows[1].location = newPos
+    this.updateEnd(newPos, this.size, this.arrows[0]);
+    this.updateEnd(newPos, -this.size, this.arrows[1]);
   }
   genNewArrow(offset) {
     return new DebugArrow(
@@ -31,10 +31,10 @@ export class DebugPoint {
       }
     );
   }
-  setup(Arrow) {
-    Arrow.headLength = this.size;
-    Arrow.headRadius = this.size;
-    Arrow.color = this.color;
+  setup(arrow) {
+    arrow.headLength = this.size;
+    arrow.headRadius = this.size;
+    arrow.color = this.color;
   }
   updateEnd(newPos, offset, arrow) {
     arrow.endLocation = {
