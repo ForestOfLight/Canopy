@@ -1,51 +1,45 @@
 import { DebugDisplayShapeElement } from "./DebugDisplayShapeElement";
-import { Vector } from "../../../lib/Vector";
 import { DebugPoint } from "./DebugPoint";
 import { Rules } from "../../../lib/canopy/rules/Rules";
 
-
 export class ExplosionRayOrigin extends DebugDisplayShapeElement {
-    ExplosionRayOrigin;
     
     createShapes() {
         this.points = [];
-        let ShapesToDraw;
-        const Origins = this.getExplosionRayOrigins();
-        if (this.entity.typeId == "minecraft:tnt") {
-            const ShapeArray1 = this.handleSetup(Origins[0], 0);
-            const ShapeArray2 = this.handleSetup(Origins[1], 255);
-            ShapesToDraw = [...ShapeArray1, ...ShapeArray2];
-        } else {
-            ShapesToDraw = this.handleSetup(Origins, 0);
-        }
-        ShapesToDraw.forEach(shape => {
+        let shapesToDraw = [];
+        const origins = this.getExplosionRayOrigins();
+        origins.forEach((origin, index) => {
+            shapesToDraw.push(...this.handleSetup(origin, index * 255))
+        });
+        shapesToDraw.forEach(shape => {
             this.drawShape(shape);
         });
     }
 
     update() {
-        if (Rules.getNativeValue('serverSideCollisionBoxes')) {
-            this.points[0].updateShapes(getExplosionRayOrigins()[0])
-            this.points[1].updateShapes(getExplosionRayOrigins()[1])
+        if (!Rules.getNativeValue("serverSideCollisionBoxes")) {
+            return;
         }
-        return;
+        this.getExplosionRayOrigins().forEach((origin, index) => {
+            this.points[index].updateShapes(origin);
+        });
     }
 
-    handleSetup(Origin, color) {
-        const Color = { red: color, green: 255, blue: 0, alpha: 1 }; 
-        const DimensionLocation = { ...Origin, dimension: this.entity.dimension };
-        const Point = new DebugPoint(DimensionLocation, 0.2, Color); //custom debug display
-        const ShapeArray = Point.createShapes();
-        this.points.push(Point);
-        return ShapeArray;
+    handleSetup(origin, secondColor) {
+        const color = { red: secondColor, green: 255, blue: 0, alpha: 1 }; 
+        const dimensionLocation = { ...origin, dimension: this.entity.dimension };
+        const point = new DebugPoint(dimensionLocation, 0.2, color); //custom debug display
+        this.points.push(point);
+        return point.createShapes();
     }
     
     getExplosionRayOrigins() {
       if (this.entity.typeId == "minecraft:tnt") {
-          const Origin1 = {x: 0, y: 0.06125, z: 0};
-          const Origin2 = {x: 0, y: 1.06125, z: 0};
-          return [Origin1,Origin2];
+          return [
+            {x: 0, y: 0.06125, z: 0},
+            {x: 0, y: 1.06125, z: 0}
+          ];
       }
-      return {x: 0, y: 0, z: 0};
+      return [{x: 0, y: 0, z: 0}];
     }
 }
