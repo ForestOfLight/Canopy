@@ -7,9 +7,11 @@ export class ExplosionRayOrigin extends DebugDisplayShapeElement {
     createShapes() {
         this.points = [];
         let shapesToDraw = [];
+        if (!this.isExplosive())
+            return;
         const origins = this.getExplosionRayOrigins();
         origins.forEach((origin, index) => {
-            shapesToDraw.push(...this.handleSetup(origin, index * 255))
+            shapesToDraw.push(...this.handleSetup(origin))
         });
         shapesToDraw.forEach(shape => {
             this.drawShape(shape);
@@ -25,19 +27,35 @@ export class ExplosionRayOrigin extends DebugDisplayShapeElement {
         });
     }
 
-    handleSetup(origin, secondColor) {
-        const color = { red: secondColor, green: 255, blue: 0, alpha: 1 }; 
+    handleSetup(origin) {
+        const color = { red: 0, green: 255, blue: 0, alpha: 1 }; 
         const dimensionLocation = { ...origin, dimension: this.entity.dimension };
         const point = new DebugPoint(dimensionLocation, 0.2, color); //custom debug display
         this.points.push(point);
         return point.createShapes();
     }
-    
+
+    isExplosive() {
+        const explosiveEntities = ['creeper','wither','fireball','tnt','wind','crystal'];
+        return explosiveEntities.some(pattern => this.entity.typeId.includes(pattern));
+    }
+
     getExplosionRayOrigins() {
       if (this.entity.typeId == "minecraft:tnt") {
           return [
-            {x: 0, y: 0.06125, z: 0},
-            {x: 0, y: 1.06125, z: 0}
+              {x: 0, y: 0.06125, z: 0},
+              {x: 0, y: 1.06125, z: 0}
+          ];
+      }
+      if (this.entity.typeId == "minecraft:tnt_minecart") {
+          return [
+              {x: 0, y: 0.04, z: 0},
+              {x: 0, y: 1, z: 0}
+          ]; 
+      }
+      if (this.entity.typeId == "minecraft:wither") {
+          return [
+              {x: 0, y: 2.7, z: 0}
           ];
       }
       return [{x: 0, y: 0, z: 0}];
