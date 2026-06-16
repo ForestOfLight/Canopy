@@ -12,7 +12,7 @@
 		"min_engine_version": [
 			1,
 			26,
-			20
+			30
 		]
 	},
 	"modules": [
@@ -42,11 +42,11 @@
 	"dependencies": [
 		{
 			"module_name": "@minecraft/server",
-			"version": "2.8.0-beta"
+			"version": "2.9.0-beta"
 		},
 		{
 			"module_name": "@minecraft/server-ui",
-			"version": "2.1.0-beta"
+			"version": "2.2.0-beta"
 		},
 		{
 			"module_name": "@minecraft/debug-utilities",
