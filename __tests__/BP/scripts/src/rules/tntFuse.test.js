@@ -12,7 +12,6 @@ const tntEntity = {
         isChunkLoaded: vi.fn(() => true)
     }
 };
-let tntFuseDP = false;
 
 vi.mock('@minecraft/server', async (importOriginal) => {
     const original = await importOriginal();
