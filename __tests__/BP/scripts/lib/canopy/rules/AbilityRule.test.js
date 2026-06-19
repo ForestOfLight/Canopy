@@ -67,7 +67,8 @@ describe('AbilityRule', () => {
     });
 
     it('should use a custom action item if provided', () => {
-        const customArrowAbility = new AbilityRule(testRuleData, { slotNumber: 1, actionItem: 'minecraft:other_item' });
+        const arrowAbilityTestRuleData = { ...testRuleData, identifier: 'arrowAbilityTestRule' };
+        const customArrowAbility = new AbilityRule(arrowAbilityTestRuleData, { slotNumber: 1, actionItem: 'minecraft:other_item' });
         expect(customArrowAbility.getActionItemId()).toBe('minecraft:other_item');
     });
 

@@ -32,6 +32,8 @@ import { LiquidStates } from './LiquidStates';
 import { HeldItemDurability } from './HeldItemDurability';
 
 import { RenderSignalStrength } from './RenderSignalStrength';
+import { NoFog } from './NoFog';
+import { Ping } from './Ping';
 
 class InfoDisplay {
 	player;
@@ -45,35 +47,37 @@ class InfoDisplay {
 		this.player = player;
 		this.elements = [
 			new TPS(1),
-			new Dimension(player, 2),
-			new Coords(player, 3),
-			new CardinalFacing(player, 3),
-			new ChunkCoords(player, 4),
-			new SlimeChunk(player, 5),
-			new Light(player, 6),
-			new Biome(player, 7),
-			new Structures(player, 8),
-			new Velocity(player, 9),
-			new Speed(player, 10),
-			new Facing(player, 11),
-			new Entities(player, 12),
-			new MoonPhase(13),
-			new Weather(player, 14),
-			new WorldDay(15),
-			new TimeOfDay(15),
-			new SessionTime(player, 16),
-			new EventTrackers(17),
-			new HopperCounterCounts(18),
-			new SimulationMap(player, 19),
-			new HeldItemDurability(player, 20),
-			new Target(player, 21),
-			new SignalStrength(player, 21),
-			new BlockStates(player, 22),
-			new PeekInventory(player, 23),
-			new LiquidTarget(player, 24),
-			new LiquidStates(player, 25),
+			new Ping(player, 2),
+			new Dimension(player, 3),
+			new Coords(player, 4),
+			new CardinalFacing(player, 4),
+			new ChunkCoords(player, 5),
+			new SlimeChunk(player, 6),
+			new Light(player, 7),
+			new Biome(player, 8),
+			new Structures(player, 9),
+			new Velocity(player, 10),
+			new Speed(player, 11),
+			new Facing(player, 12),
+			new Entities(player, 13),
+			new MoonPhase(14),
+			new Weather(player, 15),
+			new WorldDay(16),
+			new TimeOfDay(17),
+			new SessionTime(player, 17),
+			new EventTrackers(18),
+			new HopperCounterCounts(19),
+			new SimulationMap(player, 20),
+			new HeldItemDurability(player, 21),
+			new Target(player, 22),
+			new SignalStrength(player, 22),
+			new BlockStates(player, 23),
+			new PeekInventory(player, 24),
+			new LiquidTarget(player, 25),
+			new LiquidStates(player, 26),
 
-			new RenderSignalStrength(player)
+			new RenderSignalStrength(player),
+			new NoFog(player)
 		];
 		InfoDisplay.playerToInfoDisplayMap[player.id] = this;
 		this.enableEnabledRules();

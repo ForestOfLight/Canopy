@@ -29,7 +29,7 @@ class WorldSpawns {
     sendMobToTrackers(entity) {
         for (const dimensionId in this.trackers) {
             for (const category in this.trackers[dimensionId]) 
-                this.trackers[dimensionId][category].recieveMob(entity);
+                this.trackers[dimensionId][category].receiveMob(entity);
             
         }
     }

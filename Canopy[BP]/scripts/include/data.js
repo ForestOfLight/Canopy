@@ -33,6 +33,7 @@ export const categoryToMobMap = {
         'blaze',
         'bogged',
         'creeper',
+        'cave_spider',
         'drowned',
         'enderman',
         'ghast',
@@ -63,7 +64,6 @@ export const categoryToMobMap = {
     'none' : [
         'allay',
         'breeze',
-        'cave_spider',
         'copper_golem',
         'creaking',
         'elder_guardian',

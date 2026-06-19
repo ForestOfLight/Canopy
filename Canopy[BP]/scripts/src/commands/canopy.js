@@ -73,7 +73,7 @@ async function handleRuleChange(sender, ruleID, newValue) {
         return sender.sendMessage({ rawtext: [{ translate: 'rules.generic.nochange', with: [rule.getID()] }, getValueRawText(newValue, rule.getType()), { text: '§r§7.' }] });
 
     if (newValue)
-        await updateRules(sender, rule.getContigentRuleIDs(), newValue);
+        await updateRules(sender, rule.getContingentRuleIDs(), newValue);
     else
         await updateRules(sender, rule.getDependentRuleIDs(), newValue);
     await updateRules(sender, rule.getIndependentRuleIDs(), false);

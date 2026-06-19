@@ -58,7 +58,7 @@ describe('BooleanRule', () => {
             expect(rule.getCategory()).toBe(ruleData.category);
             expect(rule.getID()).toBe(ruleData.identifier);
             expect(rule.getDescription()).toEqual({ text: ruleData.description });
-            expect(rule.getContigentRuleIDs()).toEqual(ruleData.contingentRules);
+            expect(rule.getContingentRuleIDs()).toEqual(ruleData.contingentRules);
             expect(rule.getIndependentRuleIDs()).toEqual(ruleData.independentRules);
             expect(rule.getExtension()).toBe(ruleData.extension);
         });
@@ -80,7 +80,7 @@ describe('BooleanRule', () => {
             });
 
             expect(rule.getDescription()).toEqual({ text: '' });
-            expect(rule.getContigentRuleIDs()).toEqual([]);
+            expect(rule.getContingentRuleIDs()).toEqual([]);
             expect(rule.getIndependentRuleIDs()).toEqual([]);
             expect(rule.getExtension()).toBeFalsy();
         });
@@ -104,9 +104,9 @@ describe('BooleanRule', () => {
         });
     });
 
-    describe('getContigentRuleIDs', () => {
+    describe('getContingentRuleIDs', () => {
         it('should return the contingent rule IDs', () => {
-            expect(Rules.get('test_rule').getContigentRuleIDs()).toEqual(['test_rule_2']);
+            expect(Rules.get('test_rule').getContingentRuleIDs()).toEqual(['test_rule_2']);
         });
     });
 

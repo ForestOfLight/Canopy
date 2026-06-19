@@ -43,7 +43,7 @@ describe('InfoDisplayRule', () => {
             expect(rule.getCategory()).toBe("InfoDisplay");
             expect(rule.getID()).toBe(ruleData.identifier);
             expect(rule.getDescription()).toEqual({ text: ruleData.description });
-            expect(rule.getContigentRuleIDs()).toEqual(ruleData.contingentRules);
+            expect(rule.getContingentRuleIDs()).toEqual(ruleData.contingentRules);
             expect(rule.getIndependentRuleIDs()).toEqual(ruleData.independentRules);
             expect(rule.getExtension()).toBe(ruleData.extension);
         });

@@ -42,7 +42,7 @@ export class Rule {
         return this.#description;
     }
 
-    getContigentRuleIDs() {
+    getContingentRuleIDs() {
         return this.#contingentRules;
     }
 

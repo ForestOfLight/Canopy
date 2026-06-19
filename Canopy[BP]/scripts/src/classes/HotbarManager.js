@@ -4,7 +4,7 @@ import { EntityComponentTypes } from "@minecraft/server";
 export class HotbarManager {
     constructor(player) {
         this.player = player;
-        const tableName = 'bar' + player.id.toString().substr(0, 9);
+        const tableName = 'bar' + player.id.toString().slice(0, 9);
         this.itemDatabase = new SRCItemDatabase(tableName);
     }
 
