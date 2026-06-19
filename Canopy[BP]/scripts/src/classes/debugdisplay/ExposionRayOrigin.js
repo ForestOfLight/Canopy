@@ -36,6 +36,7 @@ export class ExplosionRayOrigin extends DebugDisplayShapeElement {
     }
 
     isExplosive() {
+        if (this.entity.typeId == "minecraft:wither_skelton") return;
         const explosiveEntities = ['creeper','wither','fireball','tnt','wind','crystal'];
         return explosiveEntities.some(pattern => this.entity.typeId.includes(pattern));
     }
