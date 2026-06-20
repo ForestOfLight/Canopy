@@ -1,3 +1,4 @@
+import { Player } from '@minecraft/server';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -181,7 +182,7 @@ export async function main(wikiPath) {
 async function generateRulesPages(wikiPath, lang) {
     const { Rules } = await import('../../Canopy[BP]/scripts/lib/canopy/rules/Rules.js');
     const { InfoDisplay } = await import('../../Canopy[BP]/scripts/src/rules/infodisplay/InfoDisplay.js');
-    new InfoDisplay({ id: 'wiki-gen-mock', setDynamicProperty: () => {}, getDynamicProperty: () => {} });
+    new InfoDisplay(new Player);
 
     const allRules = Rules.getAll();
     const globalRules = allRules.filter(r => r.getCategory() === 'Rules');
