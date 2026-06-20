@@ -23,15 +23,34 @@ function main() {
     if (fs.existsSync(outputPath))
         fs.unlinkSync(outputPath);
 
-    fs.renameSync('BP', `${projectName}[BP]`);
-    fs.renameSync('RP', `${projectName}[RP]`);
+    const bpInBuild = path.join(buildDir, 'BP');
+    const rpInBuild = path.join(buildDir, 'RP');
+    const renamedBPInBuild = path.join(buildDir, `${projectName}[BP]`);
+    const renamedRPInBuild = path.join(buildDir, `${projectName}[RP]`);
+
+    fs.rmSync(bpInBuild, { recursive: true, force: true });
+    fs.rmSync(rpInBuild, { recursive: true, force: true });
+    fs.rmSync(renamedBPInBuild, { recursive: true, force: true });
+    fs.rmSync(renamedRPInBuild, { recursive: true, force: true });
+
+    fs.renameSync('BP', bpInBuild);
+    fs.renameSync('RP', rpInBuild);
+    fs.renameSync(bpInBuild, renamedBPInBuild);
+    fs.renameSync(rpInBuild, renamedRPInBuild);
 
     const licenseSrc = path.join(projectRoot, 'LICENSE');
-    fs.copyFileSync(licenseSrc, path.join(`${projectName}[BP]`, 'LICENSE'));
-    fs.copyFileSync(licenseSrc, path.join(`${projectName}[RP]`, 'LICENSE'));
+    fs.copyFileSync(licenseSrc, path.join(renamedBPInBuild, 'LICENSE'));
+    fs.copyFileSync(licenseSrc, path.join(renamedRPInBuild, 'LICENSE'));
 
     console.log(`[package-mcaddon] Creating ${projectName}-v${version}.mcaddon...`);
-    execFileSync('zip', ['-r', outputPath, `${projectName}[BP]`, `${projectName}[RP]`], { stdio: 'inherit' });
+    execFileSync('zip', ['-r', outputPath, `${projectName}[BP]`, `${projectName}[RP]`], {
+        stdio: 'inherit',
+        cwd: buildDir
+    });
+
+    fs.rmSync(renamedBPInBuild, { recursive: true, force: true });
+    fs.rmSync(renamedRPInBuild, { recursive: true, force: true });
+
     console.log(`[package-mcaddon] Saved to: ${outputPath}`);
 }
 
