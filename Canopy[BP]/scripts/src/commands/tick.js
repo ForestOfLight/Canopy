@@ -26,12 +26,24 @@ export class TickCommand extends VanillaCommand {
             allowedSources: [PlayerCommandOrigin, EntityCommandOrigin, BlockCommandOrigin, ServerCommandOrigin],
             cheatsRequired: true,
             callback: (origin, ...args) => this.tickCommand(origin, ...args),
-            wikiDescription: 'Controls the server tick speed. Subcommands: mspt, step, reset, sleep.',
+            wikiDescription: 'Controls the server tick speed.',
             subCommandWikiDescription: {
-                mspt: `Slows the tick loop to the given milliseconds-per-tick value. Must be ${VANILLA_MSPT} or greater.`,
-                step: 'Advances N ticks while the tick loop is slowed. Defaults to 1 step if omitted.',
-                reset: `Restores tick speed to normal (${VANILLA_MSPT} MSPT).`,
-                sleep: 'Busy-waits for the given number of milliseconds, blocking the tick thread.'
+                mspt: {
+                    description: `Slows the tick loop to the given milliseconds-per-tick value. Must be ${VANILLA_MSPT} or greater.`,
+                    params: ['value']
+                },
+                step: {
+                    description: 'Advances N ticks while the tick loop is slowed. Defaults to 1 step if omitted.',
+                    params: ['value']
+                },
+                reset: {
+                    description: `Restores tick speed to normal (${VANILLA_MSPT} MSPT).`,
+                    params: []
+                },
+                sleep: {
+                    description: 'Busy-waits for the given number of milliseconds, blocking the tick thread.',
+                    params: ['value']
+                }
             }
         });
         system.runInterval(() => this.tryDecrementSteps());
