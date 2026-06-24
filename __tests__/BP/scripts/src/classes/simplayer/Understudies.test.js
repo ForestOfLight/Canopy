@@ -5,7 +5,7 @@ import { scheduler } from '@forestoflight/minecraft-vitest-mocks';
 vi.mock('@minecraft/server', async () => await import('@forestoflight/minecraft-vitest-mocks/server'));
 vi.mock('@minecraft/server-gametest', async () => await import('@forestoflight/minecraft-vitest-mocks/server-gametest'));
 vi.mock('../../../../../../Canopy[BP]/scripts/src/rules/simplayer/noSimplayerSaving', () => ({
-    noSimplayerSaving: { getValue: vi.fn(() => false), getID: vi.fn(() => 'noSimplayerSaving') }
+    noSimplayerSaving: { getNativeValue: vi.fn(() => false), getID: vi.fn(() => 'noSimplayerSaving') }
 }));
 
 let Understudies;
