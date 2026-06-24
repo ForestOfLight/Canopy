@@ -102,7 +102,7 @@ describe('playerlookCommand', () => {
 
     it('returns success for AT option', () => {
         vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
-        const result = playerlookCommand.playerlookCommand(mockEntityOrigin, 'TestBot', LOOK_OPTIONS.AT, { x: 0, y: 64, z: 0 });
+        const result = playerlookCommand.playerlookCommand(mockEntityOrigin, 'TestBot', LOOK_OPTIONS.AT, 0, 64, 0);
         expect(result.status).toBe(CustomCommandStatus.Success);
     });
 
@@ -114,7 +114,7 @@ describe('playerlookCommand', () => {
 
     it('returns success for ROTATION option', () => {
         vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
-        const result = playerlookCommand.playerlookCommand(mockEntityOrigin, 'TestBot', LOOK_OPTIONS.ROTATION, { x: 0, y: 0 });
+        const result = playerlookCommand.playerlookCommand(mockEntityOrigin, 'TestBot', LOOK_OPTIONS.ROTATION, 0, 0);
         expect(result.status).toBe(CustomCommandStatus.Success);
     });
 
