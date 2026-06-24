@@ -62,7 +62,7 @@ class Understudies {
     static addNametagPrefix(understudy) {
         const prefix = world.getDynamicProperty('nametagPrefix');
         if (prefix)
-            understudy.simulatedPlayer.nameTag = `[${prefix}§r] ${understudy.name}`;
+            understudy.simulatedPlayer.nameTag = Understudies.#formatNametagWithPrefix(understudy.name, prefix);
     }
 
     static get(name) {
@@ -98,13 +98,14 @@ class Understudies {
 
     static setNametagPrefix(prefix) {
         world.setDynamicProperty('nametagPrefix', prefix);
-        if (prefix === '') {
-            for (const understudy of Understudies.understudies)
-                understudy.simulatedPlayer.nameTag = understudy.name;
-        } else {
-            for (const understudy of Understudies.understudies)
-                understudy.simulatedPlayer.nameTag = `§r[${prefix}§r] ${understudy.name}`;
-        }
+        for (const understudy of Understudies.understudies)
+            understudy.simulatedPlayer.nameTag = Understudies.#formatNametagWithPrefix(understudy.name, prefix);
+    }
+
+    static #formatNametagWithPrefix(name, prefix) {
+        if (prefix === '')
+            return name;
+        return `§r[${prefix}§r] ${name}`;
     }
 
     static isOnline(name) {

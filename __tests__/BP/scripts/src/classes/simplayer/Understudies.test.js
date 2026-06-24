@@ -144,7 +144,7 @@ describe('setNametagPrefix', () => {
 
     it('sets nameTag to [prefix] name format when prefix is non-empty', () => {
         Understudies.setNametagPrefix('Bot');
-        expect(u.simulatedPlayer.nameTag).toBe('[Bot§r] Alice');
+        expect(u.simulatedPlayer.nameTag).toBe('§r[Bot§r] Alice');
     });
 
     it('resets nameTag to just the name when prefix is empty string', () => {
@@ -171,7 +171,7 @@ describe('addNametagPrefix', () => {
     it('sets nameTag when a prefix is stored in world properties', () => {
         world.getDynamicProperty.mockReturnValueOnce('Bot');
         Understudies.addNametagPrefix(u);
-        expect(u.simulatedPlayer.nameTag).toBe('[Bot§r] Alice');
+        expect(u.simulatedPlayer.nameTag).toBe('§r[Bot§r] Alice');
     });
 
     it('does not change nameTag when no prefix is stored', () => {
