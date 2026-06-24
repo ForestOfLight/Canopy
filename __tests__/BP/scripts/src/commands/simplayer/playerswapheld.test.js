@@ -6,7 +6,7 @@ import { playerswapheldCommand } from '../../../../../../Canopy[BP]/scripts/src/
 vi.mock('../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies', () => ({
     default: {
         get: vi.fn(),
-        getNotOnlineMessage: vi.fn(name => `§cSimplayer '${name}' is not online.`),
+        getNotOnlineMessage: vi.fn(name => ({ translate: 'simplayer.notonline', with: [name] })),
     }
 }));
 
@@ -22,13 +22,14 @@ describe('playerswapheldCommand', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         mockUnderstudy = { swapHeldItemWithPlayer: vi.fn(), name: 'TestBot' };
-        mockOrigin = { getSource: vi.fn(() => ({ name: 'Player1', selectedSlotIndex: 0 })) };
+        mockOrigin = { getSource: vi.fn(() => ({ name: 'Player1', selectedSlotIndex: 0 })), sendMessage: vi.fn() };
     });
 
     it('returns failure when the simplayer is not online', () => {
         vi.mocked(Understudies.get).mockReturnValue(undefined);
         const result = playerswapheldCommand.playerswapheldCommand(mockOrigin, 'TestBot');
         expect(result.status).toBe(CustomCommandStatus.Failure);
+        expect(mockOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.notonline', with: ['TestBot'] });
     });
 
     it('returns success and queues swap when online', () => {

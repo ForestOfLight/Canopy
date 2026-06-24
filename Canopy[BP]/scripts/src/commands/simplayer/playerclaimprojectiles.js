@@ -15,10 +15,12 @@ export class PlayerClaimProjectilesCommand extends VanillaCommand {
         });
     }
 
-    playerclaimprojectilesCommand(_origin, playername, radius = 25) {
+    playerclaimprojectilesCommand(origin, playername, radius = 25) {
         const understudy = Understudies.get(playername);
-        if (!understudy)
-            return { status: CustomCommandStatus.Failure, message: Understudies.getNotOnlineMessage(playername) };
+        if (!understudy) {
+            origin.sendMessage(Understudies.getNotOnlineMessage(playername));
+            return { status: CustomCommandStatus.Failure };
+        }
         system.run(() => understudy.claimProjectiles(radius));
         return { status: CustomCommandStatus.Success };
     }

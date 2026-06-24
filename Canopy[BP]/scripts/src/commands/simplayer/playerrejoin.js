@@ -16,8 +16,10 @@ export class PlayerRejoinCommand extends VanillaCommand {
     }
 
     playerrejoinCommand(origin, playername) {
-        if (Understudies.isOnline(playername))
-            return { status: CustomCommandStatus.Failure, message: Understudies.getAlreadyOnlineMessage(playername) };
+        if (Understudies.isOnline(playername)) {
+            origin.sendMessage(Understudies.getAlreadyOnlineMessage(playername));
+            return { status: CustomCommandStatus.Failure };
+        }
         system.run(() => this.#tryRejoin(origin, playername));
         return { status: CustomCommandStatus.Success };
     }

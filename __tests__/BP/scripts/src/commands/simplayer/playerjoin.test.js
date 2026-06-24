@@ -11,7 +11,7 @@ vi.mock('../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies
         remove: vi.fn(),
         addNametagPrefix: vi.fn(),
         getNotOnlineMessage: vi.fn(name => `§cSimplayer '${name}' is not online.`),
-        getAlreadyOnlineMessage: vi.fn(name => `§cSimplayer '${name}' is already online.`),
+        getAlreadyOnlineMessage: vi.fn(name => ({ translate: 'simplayer.alreadyonline', with: [name] })),
     }
 }));
 
@@ -29,14 +29,14 @@ describe('playerjoinCommand', () => {
         mockUnderstudy = { join: vi.fn(), name: 'TestBot' };
         vi.mocked(Understudies.create).mockReturnValue(mockUnderstudy);
         vi.mocked(Understudies.isOnline).mockReturnValue(false);
-        mockOrigin = { getSource: vi.fn(() => ({ location: { x: 0, y: 64, z: 0 }, dimension: {}, getRotation: vi.fn(() => ({ x: 0, y: 0 })), getGameMode: vi.fn(() => 'Survival') })) };
+        mockOrigin = { getSource: vi.fn(() => ({ location: { x: 0, y: 64, z: 0 }, dimension: {}, getRotation: vi.fn(() => ({ x: 0, y: 0 })), getGameMode: vi.fn(() => 'Survival') })), sendMessage: vi.fn() };
     });
 
     it('returns failure when the simplayer is already online', () => {
         vi.mocked(Understudies.isOnline).mockReturnValue(true);
         const result = playerjoinCommand.playerjoinCommand(mockOrigin, 'TestBot');
         expect(result.status).toBe(CustomCommandStatus.Failure);
-        expect(result.message).toContain('TestBot');
+        expect(mockOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.alreadyonline', with: ['TestBot'] });
     });
 
     it('queues a system.run when the simplayer is not online', () => {

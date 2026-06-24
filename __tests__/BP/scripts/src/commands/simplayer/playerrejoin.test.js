@@ -10,7 +10,7 @@ vi.mock('../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies
         create: vi.fn(),
         addNametagPrefix: vi.fn(),
         getNotOnlineMessage: vi.fn(name => `§cSimplayer '${name}' is not online.`),
-        getAlreadyOnlineMessage: vi.fn(name => `§cSimplayer '${name}' is already online.`),
+        getAlreadyOnlineMessage: vi.fn(name => ({ translate: 'simplayer.alreadyonline', with: [name] })),
     }
 }));
 
@@ -34,7 +34,8 @@ describe('playerrejoinCommand', () => {
                 dimension: {},
                 getRotation: vi.fn(() => ({ x: 0, y: 0 })),
                 getGameMode: vi.fn(() => 'Survival')
-            }))
+            })),
+            sendMessage: vi.fn()
         };
     });
 
@@ -42,7 +43,7 @@ describe('playerrejoinCommand', () => {
         vi.mocked(Understudies.isOnline).mockReturnValue(true);
         const result = playerrejoinCommand.playerrejoinCommand(mockOrigin, 'TestBot');
         expect(result.status).toBe(CustomCommandStatus.Failure);
-        expect(result.message).toContain('TestBot');
+        expect(mockOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.alreadyonline', with: ['TestBot'] });
     });
 
     it('returns success and queues rejoin when the simplayer is offline', () => {
