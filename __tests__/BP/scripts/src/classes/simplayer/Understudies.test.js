@@ -184,10 +184,10 @@ describe('addNametagPrefix', () => {
 
 describe('message helpers', () => {
     it('returns the correct not-online message', () => {
-        expect(Understudies.getNotOnlineMessage('Alice')).toBe(`§cSimplayer 'Alice' is not online.`);
+        expect(Understudies.getNotOnlineMessage('TestBot')).toEqual({ translate: 'simplayer.notonline', with: ['TestBot'] });
     });
 
     it('returns the correct already-online message', () => {
-        expect(Understudies.getAlreadyOnlineMessage('Alice')).toBe(`§cSimplayer 'Alice' is already online.`);
+        expect(Understudies.getAlreadyOnlineMessage('TestBot')).toEqual({ translate: 'simplayer.alreadyonline', with: ['TestBot'] });
     });
 });

@@ -112,7 +112,7 @@ class Understudy {
         this.#simulatedPlayer = void 0;
         this.clearLookTarget();
         this.#isConnected = false;
-        world.sendMessage(`§e${this.name} left the game`);
+        world.sendMessage({ translate: 'simplayer.leave.broadcast', with: [this.name] });
     }
 
     rejoin() {
@@ -209,8 +209,8 @@ class Understudy {
         const projectileComponents = this.#getProjectileComponentsInRange(simulatedPlayer, radius);
         const numChanged = this.#changeProjectileOwner(projectileComponents, simulatedPlayer);
         if (numChanged === 0)
-            return world.sendMessage(`<${simulatedPlayer.name}> §7No claimable projectiles found within ${radius} blocks.`);
-        world.sendMessage(`<${simulatedPlayer.name}> §7Successfully became the owner of ${numChanged} projectiles.`);
+            return world.sendMessage({ translate: 'simplayer.claimprojectiles.none', with: [simulatedPlayer.name, String(radius)] });
+        world.sendMessage({ translate: 'simplayer.claimprojectiles.success', with: [simulatedPlayer.name, String(numChanged)] });
         this.savePlayerInfo();
     }
 
@@ -264,7 +264,7 @@ class Understudy {
         try {
             playerInvContainer.swapItems(this.#simulatedPlayer.selectedSlotIndex, targetPlayer.selectedSlotIndex, targetInvContainer);
         } catch (error) {
-            targetPlayer.sendMessage(`§cError while swapping items: ${error.name}`);
+            targetPlayer.sendMessage({ translate: 'simplayer.swapheld.error', with: [error.name] });
             console.warn(error);
         }
         this.refreshHeldItem();

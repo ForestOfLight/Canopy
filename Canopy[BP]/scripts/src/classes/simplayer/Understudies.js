@@ -116,11 +116,11 @@ class Understudies {
     }
 
     static getNotOnlineMessage(name) {
-        return `§cSimplayer '${name}' is not online.`;
+        return { translate: 'simplayer.notonline', with: [name] };
     }
 
     static getAlreadyOnlineMessage(name) {
-        return `§cSimplayer '${name}' is already online.`;
+        return { translate: 'simplayer.alreadyonline', with: [name] };
     }
 }
 

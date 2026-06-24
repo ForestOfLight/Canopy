@@ -307,7 +307,7 @@ describe('Understudy', () => {
 
             it('broadcasts a leave message', () => {
                 understudy.leave();
-                expect(world.sendMessage).toHaveBeenCalledWith(expect.stringContaining('TestBot'));
+                expect(world.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.leave.broadcast', with: ['TestBot'] });
             });
 
             it('throws when understudy is not connected', () => {
@@ -540,14 +540,14 @@ describe('Understudy', () => {
                 understudy.simulatedPlayer.name = 'TestBot';
                 understudy.claimProjectiles(10);
                 expect(mockComponent.owner).toBe(understudy.simulatedPlayer);
-                expect(world.sendMessage).toHaveBeenCalledWith(expect.stringContaining('Successfully became the owner of 1 projectiles'));
+                expect(world.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.claimprojectiles.success', with: ['TestBot', String(1)] });
             });
 
             it('sends a message when no projectiles are found', () => {
                 understudy.simulatedPlayer.dimension = { getEntities: vi.fn(() => []) };
                 understudy.simulatedPlayer.name = 'TestBot';
                 understudy.claimProjectiles(10);
-                expect(world.sendMessage).toHaveBeenCalledWith(expect.stringContaining('No claimable projectiles found within 10 blocks'));
+                expect(world.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.claimprojectiles.none', with: ['TestBot', String(10)] });
             });
 
             it('ignores invalid projectile components', () => {
@@ -555,8 +555,9 @@ describe('Understudy', () => {
                 const mockEntity = { getComponent: vi.fn(() => mockComponent) };
                 const mockDimension = { getEntities: vi.fn(() => [mockEntity]) };
                 understudy.simulatedPlayer.dimension = mockDimension;
+                understudy.simulatedPlayer.name = 'TestBot';
                 understudy.claimProjectiles(10);
-                expect(world.sendMessage).toHaveBeenCalledWith(expect.stringContaining('No claimable projectiles found within 10 blocks'));
+                expect(world.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.claimprojectiles.none', with: ['TestBot', String(10)] });
             });
 
             it('throws when understudy is not connected', () => {
@@ -643,7 +644,7 @@ describe('Understudy', () => {
             it('sends an error message when swapItems throws', () => {
                 vi.spyOn(understudy.getInventory(), 'swapItems').mockImplementation(() => { throw new Error('swap failed'); });
                 understudy.swapHeldItemWithPlayer(targetPlayer);
-                expect(targetPlayer.sendMessage).toHaveBeenCalledWith(expect.stringContaining('Error'));
+                expect(targetPlayer.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.swapheld.error', with: ['Error'] });
             });
 
             it('throws when understudy is not connected', () => {
