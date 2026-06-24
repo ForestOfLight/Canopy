@@ -17,12 +17,16 @@ export class PlayerSelectCommand extends VanillaCommand {
         });
     }
 
-    playerselectCommand(_origin, playername, slotNumber) {
+    playerselectCommand(origin, playername, slotNumber) {
         const understudy = Understudies.get(playername);
-        if (!understudy)
-            return { status: CustomCommandStatus.Failure, message: Understudies.getNotOnlineMessage(playername) };
-        if (slotNumber < 0 || slotNumber > 8)
-            return { status: CustomCommandStatus.Failure, message: `§cInvalid slot number: ${slotNumber}. Expected a number from 0 to 8.` };
+        if (!understudy) {
+            origin.sendMessage(Understudies.getNotOnlineMessage(playername));
+            return { status: CustomCommandStatus.Failure };
+        }
+        if (slotNumber < 0 || slotNumber > 8) {
+            origin.sendMessage({ translate: 'commands.playerselect.invalidslot', with: [String(slotNumber)] });
+            return { status: CustomCommandStatus.Failure };
+        }
         system.run(() => understudy.selectSlot(slotNumber));
         return { status: CustomCommandStatus.Success };
     }
