@@ -78,13 +78,18 @@ export class UnderstudyInventorySaver {
         if (itemsWithoutNBTStr === '{}' || itemsWithoutNBTStr === void 0)
             return;
         const itemsWithoutNBT = JSON.parse(itemsWithoutNBTStr);
-        const itemsWithNBT = this.itemDatabase.getItems(this.inventoryDBKey);
+        const itemsWithNBT = this.itemDatabase.getItems(this.inventoryDBKey) ?? [];
         for (let i = 0; i < inventoryContainer.size; i++) {
             const itemWithoutNBT = itemsWithoutNBT[i];
             let itemStack = void 0;
             if (itemWithoutNBT !== void 0) {
-                itemStack = itemsWithNBT.find(item => item.typeId === itemWithoutNBT.typeId && item.amount === itemWithoutNBT.amount);
-                itemsWithNBT.splice(itemsWithNBT.indexOf(itemStack), 1);
+                const foundIndex = itemsWithNBT.findIndex(item => item?.typeId === itemWithoutNBT?.typeId && item?.amount === itemWithoutNBT?.amount);
+                if (foundIndex >= 0) {
+                    itemStack = itemsWithNBT[foundIndex];
+                    itemsWithNBT.splice(foundIndex, 1);
+                } else if (itemWithoutNBT && typeof itemWithoutNBT.typeId === 'string' && Number.isInteger(itemWithoutNBT.amount) && itemWithoutNBT.amount > 0) {
+                    itemStack = { typeId: itemWithoutNBT.typeId, amount: itemWithoutNBT.amount };
+                }
             }
             inventoryContainer.setItem(i, itemStack);
         }
@@ -98,12 +103,15 @@ export class UnderstudyInventorySaver {
         if (itemsWithoutNBTStr === '{}' || itemsWithoutNBTStr === void 0)
             return;
         const itemsWithoutNBT = JSON.parse(itemsWithoutNBTStr);
-        const itemsWithNBT = this.itemDatabase.getItems(this.equippableDBKey);
+        const itemsWithNBT = this.itemDatabase.getItems(this.equippableDBKey) ?? [];
         for (const equipmentSlot in EquipmentSlot) {
             const itemWithoutNBT = itemsWithoutNBT[equipmentSlot];
             let itemStack = void 0;
-            if (itemWithoutNBT !== void 0)
-                itemStack = itemsWithNBT.find(item => item.typeId === itemWithoutNBT.typeId && item.amount === itemWithoutNBT.amount);
+            if (itemWithoutNBT !== void 0) {
+                itemStack = itemsWithNBT.find(item => item?.typeId === itemWithoutNBT?.typeId && item?.amount === itemWithoutNBT?.amount);
+                if (itemStack === void 0 && itemWithoutNBT && typeof itemWithoutNBT.typeId === 'string' && Number.isInteger(itemWithoutNBT.amount) && itemWithoutNBT.amount > 0)
+                    itemStack = { typeId: itemWithoutNBT.typeId, amount: itemWithoutNBT.amount };
+            }
             equippable.setEquipment(equipmentSlot, itemStack);
         }
     }

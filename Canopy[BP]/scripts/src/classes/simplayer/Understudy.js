@@ -92,17 +92,20 @@ class Understudy {
         const updatedGameMode = portOldGameModeToNewUpdate(gameMode);
         this.#simulatedPlayer = spawnSimulatedPlayer({ ...location, dimension }, this.name, updatedGameMode);
         this.#isConnected = true;
-        this.teleport({ location, rotation, dimension });
-        system.run(() => {
-            try {
-                this.#playerInfoSaver.loadInventoryAndProjectileOwnership();
-            } catch (error) {
-                if (error instanceof UnderstudySaveInfoError)
-                    console.warn(`[Canopy] Failed to load player info for ${this.name}:`, error);
-                else
-                    throw error;
-            }
-        });
+        const teleportOptions = {
+            dimension,
+            facingLocation: getLookAtLocation(location, rotation),
+            rotation
+        };
+        this.#simulatedPlayer.teleport(location, teleportOptions);
+        try {
+            this.#playerInfoSaver.loadInventoryAndProjectileOwnership();
+        } catch (error) {
+            if (error instanceof UnderstudySaveInfoError)
+                console.warn(`[Canopy] Failed to load player info for ${this.name}:`, error);
+            else
+                throw error;
+        }
     }
 
     leave() {

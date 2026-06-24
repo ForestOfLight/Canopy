@@ -13,10 +13,21 @@ class AsyncQueue {
         this.processing = false;
     }
     enqueue(callback) {
-        this.queue.push(callback);
-        if (!this.processing) {
-            this.dequeue();
-        }
+        return new Promise((resolve, reject) => {
+            this.queue.push(async () => {
+                try {
+                    const result = await callback();
+                    resolve(result);
+                    return result;
+                } catch (error) {
+                    reject(error);
+                    throw error;
+                }
+            });
+            if (!this.processing) {
+                this.dequeue();
+            }
+        });
     }
     async dequeue() {
         if (this.processing || this.queue.length === 0) return;
@@ -78,8 +89,7 @@ class SRCItemDatabase {
     async set(key, itemStack) {
         if (key.length > 12)
             throw new Error(`The provided key "${key}" exceeds the maximum allowed length of 12 characters (actual length: ${key.length}).`);
-        let success = false;
-        this.asyncQueue.enqueue(() => {
+        return this.asyncQueue.enqueue(() => {
             const newId = this.table + key, existingStructure = world.structureManager.get(newId), location = SRCItemDatabase.location;
             if (existingStructure) {
                 world.structureManager.delete(newId);
@@ -98,9 +108,8 @@ class SRCItemDatabase {
             const structureIds = Array.from(Databases.structureIds.get(this.table) ?? []);
             structureIds.push(newId);
             Databases.structureIds.set(this.table, structureIds);
-            success = true;
+            return true;
         });
-        return success;
     };
     setMany(items) { return items.map(item => this.set(item.key, item.item)) };
     getAsync(key) {
@@ -139,7 +148,6 @@ class SRCItemDatabase {
     setItems(key, items) {
         if (key.length > 12)
             throw new Error(`The provided key "${key}" exceeds the maximum allowed length of 12 characters (actual length: ${key.length}).`);
-        let success = false;
         return this.asyncQueue.enqueue(() => {
             const newId = this.table + key, existingStructure = world.structureManager.get(newId);
             if (existingStructure) {
@@ -157,21 +165,21 @@ class SRCItemDatabase {
                 saveMode: this.saveMode
             });
             itemMemory.set(newId, items);
-            Databases.structureIds.set(this.table, Array.from(Databases.structureIds.get(this.table) ?? []).push(newId));
-            success = true;
-            return success;
+            const structureIds = Array.from(Databases.structureIds.get(this.table) ?? []).filter(id => id !== newId);
+            structureIds.push(newId);
+            Databases.structureIds.set(this.table, structureIds);
+            return true;
         });
     }
     getItems(key) {
         if (key.length > 12)
             throw new Error(`The provided key "${key}" exceeds the maximum allowed length of 12 characters (actual length: ${key.length}).`);
         const newId = this.table + key, location = SRCItemDatabase.location;
-        if (!itemMemory.get(newId)) return [];
         if (!world.structureManager.get(newId)) return [];
         SRCItemDatabase.dimension.getEntities({ type: 'minecraft:item', location, maxDistance: 3 }).forEach(item => item.remove())
         world.structureManager.place(newId, SRCItemDatabase.dimension, location, { includeBlocks: false, includeEntities: true });
         const items = SRCItemDatabase.dimension.getEntities({ type: 'minecraft:item', location: location, maxDistance: 3 });
-        if (items.length === 0) return undefined;
+        if (items.length === 0) return [];
         const itemStacksArray = [];
         for (const item of items) {
             itemStacksArray.push(item.getComponent(EntityItemComponent.componentId).itemStack);

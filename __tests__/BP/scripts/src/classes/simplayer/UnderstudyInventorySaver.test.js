@@ -125,7 +125,7 @@ describe('UnderstudyInventorySaver', () => {
                 expect(understudy.getInventory().setItem).toHaveBeenCalled();
             });
 
-            it('sets item to undefined when absent from the NBT database', () => {
+            it('falls back to non-NBT item data when absent from the NBT database', () => {
                 world.getDynamicProperty.mockImplementation(key =>
                     key === 'bot_TestBot_inventory'
                         ? JSON.stringify({ 0: { typeId: 'minecraft:stone', amount: 1 } })
@@ -133,7 +133,21 @@ describe('UnderstudyInventorySaver', () => {
                 );
                 vi.spyOn(inventorySaver.itemDatabase, 'getItems').mockReturnValue([]);
                 inventorySaver.load();
-                expect(understudy.getInventory().setItem).toHaveBeenCalledWith(0, undefined);
+                expect(understudy.getInventory().setItem).toHaveBeenCalledWith(
+                    0,
+                    expect.objectContaining({ typeId: 'minecraft:stone', amount: 1 })
+                );
+            });
+
+            it('sets undefined for slots with no saved item data', () => {
+                world.getDynamicProperty.mockImplementation(key =>
+                    key === 'bot_TestBot_inventory'
+                        ? JSON.stringify({ 0: { typeId: 'minecraft:stone', amount: 1 } })
+                        : undefined
+                );
+                vi.spyOn(inventorySaver.itemDatabase, 'getItems').mockReturnValue([]);
+                inventorySaver.load();
+                expect(understudy.getInventory().setItem).toHaveBeenCalledWith(1, undefined);
             });
         });
 
