@@ -30,6 +30,8 @@ export class PlayerActionCommand extends VanillaCommand {
         const understudy = Understudies.get(playername);
         if (!understudy)
             return { status: CustomCommandStatus.Failure, message: Understudies.getNotOnlineMessage(playername) };
+        if (!Object.values(REPEATABLE_ACTIONS).includes(action))
+            return { status: CustomCommandStatus.Failure, message: `commands.generic.invalidaction` };
         const actions = understudy.actions;
         switch (timingOption) {
             case TIMING_OPTIONS.ONCE:
