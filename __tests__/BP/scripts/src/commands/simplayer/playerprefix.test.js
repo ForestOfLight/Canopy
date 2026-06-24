@@ -15,21 +15,24 @@ vi.mock('../../../../../../Canopy[BP]/scripts/lib/canopy/Canopy', async (importO
 });
 
 describe('playerprefixCommand', () => {
+    let mockOrigin;
+
     beforeEach(() => {
         vi.clearAllMocks();
+        mockOrigin = { sendMessage: vi.fn() };
     });
 
     it('clears the prefix and returns success message when "-none" is passed', () => {
-        const result = playerprefixCommand.playerprefixCommand(undefined, '-none');
+        const result = playerprefixCommand.playerprefixCommand(mockOrigin, '-none');
         expect(result.status).toBe(CustomCommandStatus.Success);
-        expect(result.message).toContain('removed');
+        expect(result.message).toBe('commands.playerprefix.removed');
         expect(system.run).toHaveBeenCalled();
     });
 
     it('sets the prefix and returns success message with the new prefix', () => {
-        const result = playerprefixCommand.playerprefixCommand(undefined, 'Bot');
+        const result = playerprefixCommand.playerprefixCommand(mockOrigin, 'Bot');
         expect(result.status).toBe(CustomCommandStatus.Success);
-        expect(result.message).toContain('Bot');
+        expect(mockOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'commands.playerprefix.set', with: ['Bot'] });
         expect(system.run).toHaveBeenCalled();
     });
 });

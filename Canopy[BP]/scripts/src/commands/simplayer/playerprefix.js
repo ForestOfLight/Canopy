@@ -14,13 +14,14 @@ export class PlayerPrefixCommand extends VanillaCommand {
         });
     }
 
-    playerprefixCommand(_origin, prefix) {
+    playerprefixCommand(origin, prefix) {
         if (prefix === '-none') {
             system.run(() => Understudies.setNametagPrefix(''));
-            return { status: CustomCommandStatus.Success, message: '§7Simplayer prefix removed.' };
+            return { status: CustomCommandStatus.Success, message: 'commands.playerprefix.removed' };
         }
         system.run(() => Understudies.setNametagPrefix(prefix));
-        return { status: CustomCommandStatus.Success, message: `§7Simplayer prefix set to "§r${prefix}§r§7".` };
+        origin.sendMessage({ translate: 'commands.playerprefix.set', with: [prefix] });
+        return { status: CustomCommandStatus.Success };
     }
 }
 
