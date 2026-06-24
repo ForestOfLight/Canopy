@@ -1,7 +1,13 @@
-import { Rule } from '../../lib/canopy/Rule.js';
+import { BooleanRule } from "../../lib/canopy/Canopy";
 
-export const noSimplayerSaving = new Rule({
-    category: 'Rules',
-    identifier: 'noSimplayerSaving',
-    description: { text: 'Disables saving/loading of simulated player data.' }
-});
+class NoSimplayerSaving extends BooleanRule {
+    constructor() {
+        super({
+            identifier: 'noSimplayerSaving',
+            description: 'Disables saving playerdata for simplayers. Improves performance but causes simplayers to lose their inventory and location when they leave and rejoin.',
+            defaultValue: false
+        });
+    }
+}
+
+export const noSimplayerSaving = new NoSimplayerSaving();
