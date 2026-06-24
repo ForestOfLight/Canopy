@@ -8,7 +8,7 @@ class SimplayerRejoining extends BooleanRule {
     constructor() {
         super({
             identifier: 'simplayerRejoining',
-            description: 'Makes online simplayers rejoin when the world reloads.',
+            description: { translate: 'rules.simplayerRejoining' },
             defaultValue: false,
             onEnableCallback: () => this.subscribeToEvent(),
             onDisableCallback: () => this.unsubscribeFromEvent()

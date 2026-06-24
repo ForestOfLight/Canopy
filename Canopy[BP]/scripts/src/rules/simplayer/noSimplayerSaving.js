@@ -4,7 +4,7 @@ class NoSimplayerSaving extends BooleanRule {
     constructor() {
         super({
             identifier: 'noSimplayerSaving',
-            description: 'Disables saving playerdata for simplayers. Improves performance but causes simplayers to lose their inventory and location when they leave and rejoin.',
+            description: { translate: 'rules.noSimplayerSaving' },
             defaultValue: false
         });
     }
