@@ -1,5 +1,5 @@
 import { EntityComponentTypes, EquipmentSlot, world } from "@minecraft/server";
-import SRCItemDatabase from "../../lib/SRCItemDatabase/ItemDatabase.js";
+import SRCItemDatabase from "../../../lib/SRCItemDatabase/ItemDatabase.js";
 
 export class UnderstudyInventorySaver {
     constructor(understudy) {

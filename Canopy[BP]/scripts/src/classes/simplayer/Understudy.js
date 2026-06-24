@@ -1,7 +1,7 @@
 import { Block, Entity, Player, world, system, GameMode, EntityComponentTypes } from "@minecraft/server";
 import { spawnSimulatedPlayer } from "@minecraft/server-gametest";
 import { getLookAtLocation, getLookAtRotation, portOldGameModeToNewUpdate } from "./utils";
-import { Vector } from "../../lib/Vector";
+import { Vector } from "../../../lib/Vector";
 import { PlayerInfoSaver } from "./PlayerInfoSaver";
 import { Actions } from "./Actions";
 import { UnderstudyNotConnectedError } from "../errors/UnderstudyNotConnectedError";
