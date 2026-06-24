@@ -36,8 +36,10 @@ export class PlayerLookCommand extends VanillaCommand {
     playerlookCommand(origin, playername, lookOption, x, y, z) {
         const location = { x, y, z };
         const understudy = Understudies.get(playername);
-        if (!understudy)
-            return { status: CustomCommandStatus.Failure, message: Understudies.getNotOnlineMessage(playername) };
+        if (!understudy) {
+            origin.sendMessage(Understudies.getNotOnlineMessage(playername));
+            return { status: CustomCommandStatus.Failure };
+        }
         switch (lookOption) {
             case LOOK_OPTIONS.UP: case LOOK_OPTIONS.DOWN: case LOOK_OPTIONS.NORTH:
             case LOOK_OPTIONS.SOUTH: case LOOK_OPTIONS.EAST: case LOOK_OPTIONS.WEST:
@@ -51,19 +53,20 @@ export class PlayerLookCommand extends VanillaCommand {
                 return this.#lookAtMe(origin, understudy);
             case LOOK_OPTIONS.AT:
                 if (x === void 0 || y === void 0 || z === void 0)
-                    return { status: CustomCommandStatus.Failure, message: '§cMissing coordinates for look at location.' };
+                    return { status: CustomCommandStatus.Failure, message: 'commands.playerlook.at.missing' };
                 this.#lookAtLocation(understudy, location);
                 break;
             case LOOK_OPTIONS.ROTATION:
                 if (x === void 0 || y === void 0)
-                    return { status: CustomCommandStatus.Failure, message: '§cMissing yaw or pitch for look rotation.' };
+                    return { status: CustomCommandStatus.Failure, message: 'commands.playerlook.rotation.missing' };
                 this.#lookRotation(understudy, { x: location.x, y: location.y });
                 break;
             case LOOK_OPTIONS.STOP:
                 this.#stopLooking(understudy);
                 break;
             default:
-                return { status: CustomCommandStatus.Failure, message: `§cInvalid look option: '${lookOption}'` };
+                origin.sendMessage({ translate: 'commands.playerlook.invalidoption', with: [lookOption] });
+                return { status: CustomCommandStatus.Failure };
         }
         return { status: CustomCommandStatus.Success };
     }
@@ -75,10 +78,10 @@ export class PlayerLookCommand extends VanillaCommand {
     #lookAtBlock(origin, understudy) {
         const source = origin.getSource();
         if (source instanceof Entity === false)
-            return { status: CustomCommandStatus.Failure, message: '§cBlock targeting may only be used by entities.' };
+            return { status: CustomCommandStatus.Failure, message: 'commands.playerlook.block.entityonly' };
         const block = source.getBlockFromViewDirection({ maxDistance: 16*64 })?.block;
         if (block === void 0)
-            return { status: CustomCommandStatus.Failure, message: '§cNo block in view.' };
+            return { status: CustomCommandStatus.Failure, message: 'commands.playerlook.block.noblock' };
         system.run(() => understudy.look(block));
         return { status: CustomCommandStatus.Success };
     }
@@ -86,17 +89,17 @@ export class PlayerLookCommand extends VanillaCommand {
     #lookAtEntity(origin, understudy) {
         const source = origin.getSource();
         if (source instanceof Entity === false)
-            return { status: CustomCommandStatus.Failure, message: '§cEntity targeting may only be used by entities.' };
+            return { status: CustomCommandStatus.Failure, message: 'commands.playerlook.entity.entityonly' };
         const entity = source.getEntitiesFromViewDirection({ maxDistance: 16*64 })[0]?.entity;
         if (entity === void 0)
-            return { status: CustomCommandStatus.Failure, message: '§cNo entity in view.' };
+            return { status: CustomCommandStatus.Failure, message: 'commands.playerlook.entity.noentity' };
         system.run(() => understudy.look(entity));
         return { status: CustomCommandStatus.Success };
     }
 
     #lookAtMe(origin, understudy) {
         if (origin instanceof ServerCommandOrigin)
-            return { status: CustomCommandStatus.Failure, message: '§cSelf-targeting cannot be used by the server.' };
+            return { status: CustomCommandStatus.Failure, message: 'commands.playerlook.me.noserver' };
         system.run(() => understudy.look(origin.getSource()));
         return { status: CustomCommandStatus.Success };
     }

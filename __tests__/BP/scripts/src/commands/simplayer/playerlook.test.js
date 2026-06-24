@@ -7,7 +7,7 @@ import { ServerCommandOrigin } from '../../../../../../Canopy[BP]/scripts/lib/ca
 vi.mock('../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies', () => ({
     default: {
         get: vi.fn(),
-        getNotOnlineMessage: vi.fn(name => `§cSimplayer '${name}' is not online.`),
+        getNotOnlineMessage: vi.fn(name => ({ translate: 'simplayer.notonline', with: [name] })),
     }
 }));
 
@@ -26,13 +26,14 @@ describe('playerlookCommand', () => {
         const mockEntity = new Entity();
         mockEntity.getBlockFromViewDirection = vi.fn(() => ({ block: { location: { x: 0, y: 64, z: 0 } } }));
         mockEntity.getEntitiesFromViewDirection = vi.fn(() => [{ entity: new Entity() }]);
-        mockEntityOrigin = { getSource: vi.fn(() => mockEntity) };
+        mockEntityOrigin = { getSource: vi.fn(() => mockEntity), sendMessage: vi.fn() };
     });
 
     it('returns failure when the simplayer is not online', () => {
         vi.mocked(Understudies.get).mockReturnValue(undefined);
         const result = playerlookCommand.playerlookCommand(mockEntityOrigin, 'TestBot', LOOK_OPTIONS.UP);
         expect(result.status).toBe(CustomCommandStatus.Failure);
+        expect(mockEntityOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.notonline', with: ['TestBot'] });
     });
 
     it.each([LOOK_OPTIONS.UP, LOOK_OPTIONS.DOWN, LOOK_OPTIONS.NORTH, LOOK_OPTIONS.SOUTH, LOOK_OPTIONS.EAST, LOOK_OPTIONS.WEST])(
@@ -50,7 +51,7 @@ describe('playerlookCommand', () => {
         const serverOrigin = new ServerCommandOrigin({ sourceType: 'Server' });
         const result = playerlookCommand.playerlookCommand(serverOrigin, 'TestBot', LOOK_OPTIONS.BLOCK);
         expect(result.status).toBe(CustomCommandStatus.Failure);
-        expect(result.message).toContain('entities');
+        expect(result.message).toBe('commands.playerlook.block.entityonly');
     });
 
     it('returns failure for BLOCK option when no block is in view', () => {
@@ -105,6 +106,24 @@ describe('playerlookCommand', () => {
         expect(result.status).toBe(CustomCommandStatus.Success);
     });
 
+    it('returns failure for AT option when no position is provided', () => {
+        vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
+        const result = playerlookCommand.playerlookCommand(mockEntityOrigin, 'TestBot', LOOK_OPTIONS.AT);
+        expect(result.status).toBe(CustomCommandStatus.Failure);
+    });
+
+    it('returns success for ROTATION option', () => {
+        vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
+        const result = playerlookCommand.playerlookCommand(mockEntityOrigin, 'TestBot', LOOK_OPTIONS.ROTATION, { x: 0, y: 0 });
+        expect(result.status).toBe(CustomCommandStatus.Success);
+    });
+
+    it('returns failure for ROTATION option when no rotation is provided', () => {
+        vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
+        const result = playerlookCommand.playerlookCommand(mockEntityOrigin, 'TestBot', LOOK_OPTIONS.ROTATION);
+        expect(result.status).toBe(CustomCommandStatus.Failure);
+    });
+
     it('returns success for STOP option', () => {
         vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
         const result = playerlookCommand.playerlookCommand(mockEntityOrigin, 'TestBot', LOOK_OPTIONS.STOP);
@@ -115,5 +134,6 @@ describe('playerlookCommand', () => {
         vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
         const result = playerlookCommand.playerlookCommand(mockEntityOrigin, 'TestBot', 'invalid');
         expect(result.status).toBe(CustomCommandStatus.Failure);
+        expect(mockEntityOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'commands.playerlook.invalidoption', with: ['invalid'] });
     });
 });
