@@ -103,7 +103,7 @@ class Understudies {
                 understudy.simulatedPlayer.nameTag = understudy.name;
         } else {
             for (const understudy of Understudies.understudies)
-                understudy.simulatedPlayer.nameTag = `[${prefix}§r] ${understudy.name}`;
+                understudy.simulatedPlayer.nameTag = `§r[${prefix}§r] ${understudy.name}`;
         }
     }
 
