@@ -20,7 +20,7 @@ commands.generic.invalidaction=§cInvalid action. Use /help <command> for more i
 
 commands.help=Displays help pages.
 commands.help.search.noresult=§cNo results found for '%s'.
-commands.help.search.results=§l§aCanopy§r §2Help search results for '§r%1§2':%2
+commands.help.search.results=§l§aCanopy§r §2Help search results for '§r%1§2':
 commands.help.page.header=§l§aCanopy§r§2 Help Page: §f%1
 commands.help.infodisplay=Togglable rules for your InfoDisplay.
 commands.help.rules=Togglable global rules.
