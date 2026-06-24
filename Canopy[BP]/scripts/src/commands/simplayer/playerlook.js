@@ -6,7 +6,7 @@ import { Vector } from "../../../lib/Vector";
 export const LOOK_OPTIONS = Object.freeze({
     UP: 'up', DOWN: 'down', NORTH: 'north', SOUTH: 'south',
     EAST: 'east', WEST: 'west', BLOCK: 'block', ENTITY: 'entity',
-    ME: 'me', AT: 'at', STOP: 'stop'
+    ME: 'me', AT: 'at', ROTATION: 'rotation', STOP: 'stop'
 });
 
 export const CARDINAL_ROTATIONS = {
@@ -23,7 +23,9 @@ export class PlayerLookCommand extends VanillaCommand {
             mandatoryParameters: [{ name: 'playername', type: CustomCommandParamType.String }],
             optionalParameters: [
                 { name: 'canopy:simplayerLookOption', type: CustomCommandParamType.Enum },
-                { name: 'location', type: CustomCommandParamType.Location }
+                { name: 'x', type: CustomCommandParamType.Float },
+                { name: 'y', type: CustomCommandParamType.Float },
+                { name: 'z', type: CustomCommandParamType.Float }
             ],
             permissionLevel: CommandPermissionLevel.Any,
             allowedSources: [PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin, ServerCommandOrigin],
@@ -31,7 +33,8 @@ export class PlayerLookCommand extends VanillaCommand {
         });
     }
 
-    playerlookCommand(origin, playername, lookOption, location) {
+    playerlookCommand(origin, playername, lookOption, x, y, z) {
+        const location = { x, y, z };
         const understudy = Understudies.get(playername);
         if (!understudy)
             return { status: CustomCommandStatus.Failure, message: Understudies.getNotOnlineMessage(playername) };
@@ -47,7 +50,14 @@ export class PlayerLookCommand extends VanillaCommand {
             case LOOK_OPTIONS.ME:
                 return this.#lookAtMe(origin, understudy);
             case LOOK_OPTIONS.AT:
+                if (x === void 0 || y === void 0 || z === void 0)
+                    return { status: CustomCommandStatus.Failure, message: '§cMissing coordinates for look at location.' };
                 this.#lookAtLocation(understudy, location);
+                break;
+            case LOOK_OPTIONS.ROTATION:
+                if (x === void 0 || y === void 0)
+                    return { status: CustomCommandStatus.Failure, message: '§cMissing yaw or pitch for look rotation.' };
+                this.#lookRotation(understudy, { x: location.x, y: location.y });
                 break;
             case LOOK_OPTIONS.STOP:
                 this.#stopLooking(understudy);
@@ -93,6 +103,10 @@ export class PlayerLookCommand extends VanillaCommand {
 
     #lookAtLocation(understudy, location) {
         system.run(() => understudy.look(Vector.from(location)));
+    }
+
+    #lookRotation(understudy, rotation) {
+        system.run(() => understudy.look(rotation));
     }
 
     #stopLooking(understudy) {
