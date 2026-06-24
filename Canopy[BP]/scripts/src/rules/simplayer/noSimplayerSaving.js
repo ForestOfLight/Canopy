@@ -1,4 +1,4 @@
-import { BooleanRule } from "../../lib/canopy/Canopy";
+import { BooleanRule } from "../../../lib/canopy/Canopy";
 
 class NoSimplayerSaving extends BooleanRule {
     constructor() {

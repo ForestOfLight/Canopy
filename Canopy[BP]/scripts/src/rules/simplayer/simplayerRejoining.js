@@ -1,4 +1,4 @@
-import { BooleanRule } from "../../lib/canopy/Canopy";
+import { BooleanRule } from "../../../lib/canopy/Canopy";
 import { system, world } from "@minecraft/server";
 import Understudies from "../../classes/simplayer/Understudies";
 
@@ -25,7 +25,7 @@ class SimplayerRejoining extends BooleanRule {
     }
 
     onStartup() {
-        if (!this.getValue())
+        if (!this.getNativeValue())
             return;
         const simplayersToRejoinStr = world.getDynamicProperty(this.simplayersToRejoinDP);
         let playersToRejoin;
@@ -52,7 +52,7 @@ class SimplayerRejoining extends BooleanRule {
     }
 
     onShutdown() {
-        if (this.getValue())
+        if (this.getNativeValue())
             world.setDynamicProperty(this.simplayersToRejoinDP, JSON.stringify(Understudies.understudies.map(player => player.name)));
         else
             world.setDynamicProperty(this.simplayersToRejoinDP, JSON.stringify([]));

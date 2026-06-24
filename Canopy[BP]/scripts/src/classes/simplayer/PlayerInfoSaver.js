@@ -19,7 +19,7 @@ export class PlayerInfoSaver {
     }
 
     #saveOnInterval() {
-        if (noSimplayerSaving.getValue())
+        if (noSimplayerSaving.getNativeValue())
             return;
         if ((system.currentTick - this.#understudy.createdTick) % this.saveInterval === 0) {
             this.save();
@@ -34,7 +34,7 @@ export class PlayerInfoSaver {
     }
 
     get() {
-        if (noSimplayerSaving.getValue())
+        if (noSimplayerSaving.getNativeValue())
             throw new UnderstudySaveInfoError(`Player ${this.#understudy.name} has no player info saved due to '${noSimplayerSaving.getID()}' rule being enabled`);
         let playerInfo;
         try {
@@ -48,7 +48,7 @@ export class PlayerInfoSaver {
     }
 
     save() {
-        if (noSimplayerSaving.getValue())
+        if (noSimplayerSaving.getNativeValue())
             return;
         if (!this.#understudy.isConnected())
             throw new UnderstudyNotConnectedError();
