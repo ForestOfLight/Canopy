@@ -7,7 +7,7 @@ import { ServerCommandOrigin } from '../../../../../../Canopy[BP]/scripts/lib/ca
 vi.mock('../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies', () => ({
     default: {
         get: vi.fn(),
-        getNotOnlineMessage: vi.fn(name => `§cSimplayer '${name}' is not online.`),
+        getNotOnlineMessage: vi.fn(name => ({ translate: 'simplayer.notonline', with: [name] })),
     }
 }));
 
@@ -26,13 +26,14 @@ describe('playermoveCommand', () => {
         const mockEntity = new Entity();
         mockEntity.getBlockFromViewDirection = vi.fn(() => ({ block: { location: { x: 0, y: 64, z: 0 } } }));
         mockEntity.getEntitiesFromViewDirection = vi.fn(() => [{ entity: new Entity() }]);
-        mockEntityOrigin = { getSource: vi.fn(() => mockEntity) };
+        mockEntityOrigin = { getSource: vi.fn(() => mockEntity), sendMessage: vi.fn() };
     });
 
     it('returns failure when the simplayer is not online', () => {
         vi.mocked(Understudies.get).mockReturnValue(undefined);
         const result = playermoveCommand.playermoveCommand(mockEntityOrigin, 'TestBot', MOVE_OPTIONS.FORWARD);
         expect(result.status).toBe(CustomCommandStatus.Failure);
+        expect(mockEntityOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.notonline', with: ['TestBot'] });
     });
 
     it.each([MOVE_OPTIONS.FORWARD, MOVE_OPTIONS.BACKWARD, MOVE_OPTIONS.LEFT, MOVE_OPTIONS.RIGHT])(
@@ -114,5 +115,6 @@ describe('playermoveCommand', () => {
         vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
         const result = playermoveCommand.playermoveCommand(mockEntityOrigin, 'TestBot', 'invalid');
         expect(result.status).toBe(CustomCommandStatus.Failure);
+        expect(mockEntityOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'commands.playermove.invalidoption', with: ['invalid'] });
     });
 });

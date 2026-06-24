@@ -27,8 +27,10 @@ export class PlayerMoveCommand extends VanillaCommand {
 
     playermoveCommand(origin, playername, moveOption, location) {
         const understudy = Understudies.get(playername);
-        if (!understudy)
-            return { status: CustomCommandStatus.Failure, message: Understudies.getNotOnlineMessage(playername) };
+        if (!understudy) {
+            origin.sendMessage(Understudies.getNotOnlineMessage(playername));
+            return { status: CustomCommandStatus.Failure };
+        }
         switch (moveOption) {
             case MOVE_OPTIONS.FORWARD: case MOVE_OPTIONS.BACKWARD:
             case MOVE_OPTIONS.LEFT: case MOVE_OPTIONS.RIGHT:
@@ -47,7 +49,8 @@ export class PlayerMoveCommand extends VanillaCommand {
                 this.#stopMoving(understudy);
                 break;
             default:
-                return { status: CustomCommandStatus.Failure, message: `§cInvalid move option: '${moveOption}'` };
+                origin.sendMessage({ translate: 'commands.playermove.invalidoption', with: [moveOption] });
+                return { status: CustomCommandStatus.Failure };
         }
         return { status: CustomCommandStatus.Success };
     }
@@ -59,10 +62,10 @@ export class PlayerMoveCommand extends VanillaCommand {
     #moveToBlock(origin, understudy) {
         const source = origin.getSource();
         if (source instanceof Entity === false)
-            return { status: CustomCommandStatus.Failure, message: '§cMoving to a block may only be used by entities.' };
+            return { status: CustomCommandStatus.Failure, message: 'commands.playermove.block.entityonly' };
         const block = source.getBlockFromViewDirection({ maxDistance: 16*64 })?.block;
         if (block === void 0)
-            return { status: CustomCommandStatus.Failure, message: '§cNo block in view.' };
+            return { status: CustomCommandStatus.Failure, message: 'commands.playermove.block.noblock' };
         system.run(() => understudy.moveLocation(block));
         return { status: CustomCommandStatus.Success };
     }
@@ -70,17 +73,17 @@ export class PlayerMoveCommand extends VanillaCommand {
     #moveToEntity(origin, understudy) {
         const source = origin.getSource();
         if (source instanceof Entity === false)
-            return { status: CustomCommandStatus.Failure, message: '§cMoving to an entity may only be used by entities.' };
+            return { status: CustomCommandStatus.Failure, message: 'commands.playermove.entity.entityonly' };
         const entity = source.getEntitiesFromViewDirection({ maxDistance: 16*64 })[0]?.entity;
         if (entity === void 0)
-            return { status: CustomCommandStatus.Failure, message: '§cNo entity in view.' };
+            return { status: CustomCommandStatus.Failure, message: 'commands.playermove.entity.noentity' };
         system.run(() => understudy.moveLocation(entity));
         return { status: CustomCommandStatus.Success };
     }
 
     #moveToMe(origin, understudy) {
         if (origin instanceof ServerCommandOrigin)
-            return { status: CustomCommandStatus.Failure, message: '§cMoving to yourself cannot be used by the server.' };
+            return { status: CustomCommandStatus.Failure, message: 'commands.playermove.me.noserver' };
         system.run(() => understudy.moveLocation(origin.getSource()));
         return { status: CustomCommandStatus.Success };
     }
