@@ -4,8 +4,8 @@ import { scheduler, worldDynamicPropertyStore } from '@forestoflight/minecraft-v
 import Understudy from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudy';
 import { MOVE_OPTIONS } from '../../../../../../Canopy[BP]/scripts/src/commands/simplayer/playermove';
 
-vi.mock('../../../../../../Canopy[BP]/scripts/src/rules/simplayer/noSimplayerSaving', () => ({
-    noSimplayerSaving: { getNativeValue: vi.fn(() => false), getID: vi.fn(() => 'noSimplayerSaving') }
+vi.mock('../../../../../../Canopy[BP]/scripts/src/rules/simplayer/simplayerSaving', () => ({
+    simplayerSaving: { getNativeValue: vi.fn(() => true), getID: vi.fn(() => 'simplayerSaving') }
 }));
 vi.mock('../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies', () => ({
     default: { onConnect: vi.fn() }

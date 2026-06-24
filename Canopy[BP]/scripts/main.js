@@ -99,7 +99,7 @@ import './src/rules/enderPearlChunkLoading'
 import './src/rules/renderEndGatewayExits'
 
 // Simulated Player Rules
-import './src/rules/simplayer/noSimplayerSaving'
+import './src/rules/simplayer/simplayerSaving'
 import './src/rules/simplayer/simplayerRejoining'
 
 // Load Time Processes

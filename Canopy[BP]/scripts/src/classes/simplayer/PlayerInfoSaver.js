@@ -1,6 +1,6 @@
 import { world, system, DimensionTypes, TicksPerSecond, EntityComponentTypes } from "@minecraft/server";
 import { UnderstudyInventorySaver } from "./UnderstudyInventorySaver";
-import { noSimplayerSaving } from "../../rules/simplayer/noSimplayerSaving";
+import { simplayerSaving } from "../../rules/simplayer/simplayerSaving";
 import { UnderstudySaveInfoError } from "../errors/UnderstudySaveInfoError";
 import { UnderstudyNotConnectedError } from "../errors/UnderstudyNotConnectedError";
 
@@ -19,7 +19,7 @@ export class PlayerInfoSaver {
     }
 
     #saveOnInterval() {
-        if (noSimplayerSaving.getNativeValue())
+        if (!simplayerSaving.getNativeValue())
             return;
         if ((system.currentTick - this.#understudy.createdTick) % this.saveInterval === 0) {
             this.save();
@@ -34,8 +34,8 @@ export class PlayerInfoSaver {
     }
 
     get() {
-        if (noSimplayerSaving.getNativeValue())
-            throw new UnderstudySaveInfoError(`Player ${this.#understudy.name} has no player info saved due to '${noSimplayerSaving.getID()}' rule being enabled`);
+        if (!simplayerSaving.getNativeValue())
+            throw new UnderstudySaveInfoError(`Player ${this.#understudy.name} has no player info saved due to '${simplayerSaving.getID()}' rule being disabled.`);
         let playerInfo;
         try {
             playerInfo = JSON.parse(world.getDynamicProperty(`${this.#understudy.name}:playerinfo`));
@@ -48,7 +48,7 @@ export class PlayerInfoSaver {
     }
 
     save() {
-        if (noSimplayerSaving.getNativeValue())
+        if (!simplayerSaving.getNativeValue())
             return;
         if (!this.#understudy.isConnected())
             throw new UnderstudyNotConnectedError();

@@ -3,12 +3,12 @@ import { world, system, EntityComponentTypes, TicksPerSecond } from '@minecraft/
 import { worldDynamicPropertyStore } from '@forestoflight/minecraft-vitest-mocks';
 import { PlayerInfoSaver } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/PlayerInfoSaver';
 import Understudy from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudy';
-import { noSimplayerSaving } from '../../../../../../Canopy[BP]/scripts/src/rules/simplayer/noSimplayerSaving';
+import { simplayerSaving } from '../../../../../../Canopy[BP]/scripts/src/rules/simplayer/simplayerSaving';
 import { UnderstudySaveInfoError } from '../../../../../../Canopy[BP]/scripts/src/classes/errors/UnderstudySaveInfoError';
 import { UnderstudyNotConnectedError } from '../../../../../../Canopy[BP]/scripts/src/classes/errors/UnderstudyNotConnectedError';
 
-vi.mock('../../../../../../Canopy[BP]/scripts/src/rules/simplayer/noSimplayerSaving', () => ({
-    noSimplayerSaving: { getNativeValue: vi.fn(() => false), getID: vi.fn(() => 'noSimplayerSaving') }
+vi.mock('../../../../../../Canopy[BP]/scripts/src/rules/simplayer/simplayerSaving', () => ({
+    simplayerSaving: { getNativeValue: vi.fn(() => true), getID: vi.fn(() => 'simplayerSaving') }
 }));
 vi.mock('../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies', () => ({
     default: { onConnect: vi.fn() }
@@ -24,7 +24,7 @@ describe('PlayerInfoSaver', () => {
         understudy = new Understudy('TestBot');
         understudy.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension('minecraft:overworld') });
         infoSaver = new PlayerInfoSaver(understudy);
-        worldDynamicPropertyStore.set('noSimplayerSaving', false);
+        worldDynamicPropertyStore.set('simplayerSaving', true);
     });
 
     describe('get', () => {
@@ -32,8 +32,8 @@ describe('PlayerInfoSaver', () => {
             vi.clearAllMocks();
         });
 
-        it('throws when noSimplayerSaving is enabled', () => {
-            vi.mocked(noSimplayerSaving.getNativeValue).mockReturnValue(true);
+        it('throws when simplayerSaving is disabled', () => {
+            vi.mocked(simplayerSaving.getNativeValue).mockReturnValue(false);
             expect(() => infoSaver.get()).toThrow(UnderstudySaveInfoError);
         });
 
@@ -78,8 +78,8 @@ describe('PlayerInfoSaver', () => {
             expect(() => infoSaver.save()).toThrow(UnderstudyNotConnectedError);
         });
 
-        it('does not save when noSimplayerSaving is enabled', () => {
-            vi.mocked(noSimplayerSaving.getNativeValue).mockReturnValue(true);
+        it('does not save when simplayerSaving is disabled', () => {
+            vi.mocked(simplayerSaving.getNativeValue).mockReturnValue(false);
             infoSaver.save();
             expect(world.setDynamicProperty).not.toHaveBeenCalledWith('TestBot:playerinfo', expect.any(String));
         });
@@ -109,8 +109,8 @@ describe('PlayerInfoSaver', () => {
     });
 
     describe('loadInventoryAndProjectileOwnership', () => {
-        it('throws when noSimplayerSaving is enabled', () => {
-            vi.mocked(noSimplayerSaving.getNativeValue).mockReturnValue(true);
+        it('throws when simplayerSaving is disabled', () => {
+            vi.mocked(simplayerSaving.getNativeValue).mockReturnValue(false);
             expect(() => infoSaver.loadInventoryAndProjectileOwnership()).toThrow(UnderstudySaveInfoError);
         });
 
@@ -144,8 +144,8 @@ describe('PlayerInfoSaver', () => {
             system.currentTick = 0;
         });
 
-        it('does nothing when noSimplayerSaving is enabled', () => {
-            vi.mocked(noSimplayerSaving.getNativeValue).mockReturnValue(true);
+        it('does nothing when simplayerSaving is disabled', () => {
+            vi.mocked(simplayerSaving.getNativeValue).mockReturnValue(false);
             infoSaver.onConnectedTick();
             expect(world.setDynamicProperty).not.toHaveBeenCalledWith('TestBot:playerinfo', expect.any(String));
         });
