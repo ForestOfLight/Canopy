@@ -3,17 +3,25 @@ import { VanillaCommand, PlayerCommandOrigin, BlockCommandOrigin, EntityCommandO
 import Understudies from "../../classes/simplayer/Understudies";
 import { getLocationInfoFromSource } from "../../classes/simplayer/utils";
 
-new VanillaCommand({
-    name: 'canopy:playertp',
-    description: 'commands.playertp',
-    mandatoryParameters: [{ name: 'playername', type: CustomCommandParamType.String }],
-    permissionLevel: CommandPermissionLevel.Any,
-    allowedSources: [PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin],
-    callback: (origin, playername) => {
+export class PlayerTpCommand extends VanillaCommand {
+    constructor() {
+        super({
+            name: 'canopy:playertp',
+            description: 'commands.playertp',
+            mandatoryParameters: [{ name: 'playername', type: CustomCommandParamType.String }],
+            permissionLevel: CommandPermissionLevel.Any,
+            allowedSources: [PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin],
+            callback: (origin, ...args) => this.playertpCommand(origin, ...args)
+        });
+    }
+
+    playertpCommand(origin, playername) {
         const understudy = Understudies.get(playername);
         if (!understudy)
             return { status: CustomCommandStatus.Failure, message: Understudies.getNotOnlineMessage(playername) };
         system.run(() => understudy.teleport(getLocationInfoFromSource(origin.getSource())));
         return { status: CustomCommandStatus.Success };
     }
-});
+}
+
+export const playertpCommand = new PlayerTpCommand();

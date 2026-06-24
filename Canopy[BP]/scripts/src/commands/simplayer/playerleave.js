@@ -2,13 +2,19 @@ import { CustomCommandParamType, CommandPermissionLevel, CustomCommandStatus, sy
 import { VanillaCommand, PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin, ServerCommandOrigin } from "../../../lib/canopy/Canopy";
 import Understudies from "../../classes/simplayer/Understudies";
 
-new VanillaCommand({
-    name: 'canopy:playerleave',
-    description: 'commands.playerleave',
-    mandatoryParameters: [{ name: 'playername', type: CustomCommandParamType.String }],
-    permissionLevel: CommandPermissionLevel.Any,
-    allowedSources: [PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin, ServerCommandOrigin],
-    callback: (_origin, playername) => {
+export class PlayerLeaveCommand extends VanillaCommand {
+    constructor() {
+        super({
+            name: 'canopy:playerleave',
+            description: 'commands.playerleave',
+            mandatoryParameters: [{ name: 'playername', type: CustomCommandParamType.String }],
+            permissionLevel: CommandPermissionLevel.Any,
+            allowedSources: [PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin, ServerCommandOrigin],
+            callback: (origin, ...args) => this.playerleaveCommand(origin, ...args)
+        });
+    }
+
+    playerleaveCommand(_origin, playername) {
         const understudy = Understudies.get(playername);
         if (!understudy)
             return { status: CustomCommandStatus.Failure, message: Understudies.getNotOnlineMessage(playername) };
@@ -17,4 +23,6 @@ new VanillaCommand({
             Understudies.remove(understudy);
         });
     }
-});
+}
+
+export const playerleaveCommand = new PlayerLeaveCommand();

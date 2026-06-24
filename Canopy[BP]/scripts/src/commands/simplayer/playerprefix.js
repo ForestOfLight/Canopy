@@ -2,13 +2,19 @@ import { CustomCommandParamType, CommandPermissionLevel, CustomCommandStatus, sy
 import { VanillaCommand, PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin, ServerCommandOrigin } from "../../../lib/canopy/Canopy";
 import Understudies from "../../classes/simplayer/Understudies";
 
-new VanillaCommand({
-    name: 'canopy:playerprefix',
-    description: 'commands.playerprefix',
-    mandatoryParameters: [{ name: 'prefix', type: CustomCommandParamType.String }],
-    permissionLevel: CommandPermissionLevel.Any,
-    allowedSources: [PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin, ServerCommandOrigin],
-    callback: (_origin, prefix) => {
+export class PlayerPrefixCommand extends VanillaCommand {
+    constructor() {
+        super({
+            name: 'canopy:playerprefix',
+            description: 'commands.playerprefix',
+            mandatoryParameters: [{ name: 'prefix', type: CustomCommandParamType.String }],
+            permissionLevel: CommandPermissionLevel.Any,
+            allowedSources: [PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin, ServerCommandOrigin],
+            callback: (origin, ...args) => this.playerprefixCommand(origin, ...args)
+        });
+    }
+
+    playerprefixCommand(_origin, prefix) {
         if (prefix === '-none') {
             system.run(() => Understudies.setNametagPrefix(''));
             return { status: CustomCommandStatus.Success, message: '§7Simplayer prefix removed.' };
@@ -16,4 +22,6 @@ new VanillaCommand({
         system.run(() => Understudies.setNametagPrefix(prefix));
         return { status: CustomCommandStatus.Success, message: `§7Simplayer prefix set to "§r${prefix}§r§7".` };
     }
-});
+}
+
+export const playerprefixCommand = new PlayerPrefixCommand();

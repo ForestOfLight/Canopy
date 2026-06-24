@@ -69,3 +69,125 @@ describe('create and get', () => {
         expect(() => Understudies.create('Dave')).toThrow();
     });
 });
+
+describe('onEntityDie', () => {
+    it('does nothing when the dead entity is not a player', () => {
+        const u = Understudies.create('Alice');
+        Understudies.onConnect();
+        u.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
+        Understudies.onEntityDie({ deadEntity: { typeId: 'minecraft:zombie', name: 'Alice' } });
+        expect(u.isConnected()).toBe(true);
+    });
+
+    it('disconnects and removes an understudy when their player entity dies', () => {
+        const u = Understudies.create('Alice');
+        Understudies.onConnect();
+        u.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
+        Understudies.onEntityDie({ deadEntity: { typeId: 'minecraft:player', name: 'Alice' } });
+        expect(u.isConnected()).toBe(false);
+    });
+});
+
+describe('onPlayerGameModeChange', () => {
+    it('saves player info when an understudy changes game mode', () => {
+        const u = Understudies.create('Alice');
+        Understudies.onConnect();
+        u.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
+        const saveSpy = vi.spyOn(u, 'savePlayerInfo');
+        Understudies.onPlayerGameModeChange({ player: { name: 'Alice' } });
+        expect(saveSpy).toHaveBeenCalled();
+    });
+});
+
+describe('remove', () => {
+    it('disconnects the understudy immediately', () => {
+        const u = Understudies.create('Alice');
+        Understudies.onConnect();
+        u.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
+        Understudies.remove(u);
+        expect(u.isConnected()).toBe(false);
+    });
+
+    it('removes the understudy from the list after the disconnect is processed', () => {
+        const u = Understudies.create('Alice');
+        Understudies.onConnect();
+        u.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
+        scheduler.advanceTicks(1); // drain join's system.run before disconnecting
+        Understudies.remove(u);
+        scheduler.advanceTicks(1); // let remove's runInterval fire
+        expect(Understudies.length()).toBe(0);
+    });
+});
+
+describe('removeAll', () => {
+    it('removes all online understudies', () => {
+        const a = Understudies.create('Alice');
+        const b = Understudies.create('Bob');
+        Understudies.onConnect();
+        a.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
+        b.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
+        scheduler.advanceTicks(1); // drain join callbacks before disconnecting
+        Understudies.removeAll();
+        scheduler.advanceTicks(1); // let remove intervals fire
+        expect(Understudies.length()).toBe(0);
+    });
+});
+
+describe('setNametagPrefix', () => {
+    let u;
+
+    beforeEach(() => {
+        u = Understudies.create('Alice');
+        Understudies.onConnect();
+        u.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
+    });
+
+    it('sets nameTag to [prefix] name format when prefix is non-empty', () => {
+        Understudies.setNametagPrefix('Bot');
+        expect(u.simulatedPlayer.nameTag).toBe('[Bot§r] Alice');
+    });
+
+    it('resets nameTag to just the name when prefix is empty string', () => {
+        Understudies.setNametagPrefix('Bot');
+        Understudies.setNametagPrefix('');
+        expect(u.simulatedPlayer.nameTag).toBe('Alice');
+    });
+
+    it('stores the prefix in world dynamic property', () => {
+        Understudies.setNametagPrefix('Bot');
+        expect(world.setDynamicProperty).toHaveBeenCalledWith('nametagPrefix', 'Bot');
+    });
+});
+
+describe('addNametagPrefix', () => {
+    let u;
+
+    beforeEach(() => {
+        u = Understudies.create('Alice');
+        Understudies.onConnect();
+        u.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
+    });
+
+    it('sets nameTag when a prefix is stored in world properties', () => {
+        world.getDynamicProperty.mockReturnValueOnce('Bot');
+        Understudies.addNametagPrefix(u);
+        expect(u.simulatedPlayer.nameTag).toBe('[Bot§r] Alice');
+    });
+
+    it('does not change nameTag when no prefix is stored', () => {
+        world.getDynamicProperty.mockReturnValueOnce(undefined);
+        const before = u.simulatedPlayer.nameTag;
+        Understudies.addNametagPrefix(u);
+        expect(u.simulatedPlayer.nameTag).toBe(before);
+    });
+});
+
+describe('message helpers', () => {
+    it('returns the correct not-online message', () => {
+        expect(Understudies.getNotOnlineMessage('Alice')).toBe(`§cSimplayer 'Alice' is not online.`);
+    });
+
+    it('returns the correct already-online message', () => {
+        expect(Understudies.getAlreadyOnlineMessage('Alice')).toBe(`§cSimplayer 'Alice' is already online.`);
+    });
+});

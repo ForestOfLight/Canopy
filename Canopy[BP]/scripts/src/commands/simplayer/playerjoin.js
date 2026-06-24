@@ -3,13 +3,19 @@ import { VanillaCommand, PlayerCommandOrigin, BlockCommandOrigin, EntityCommandO
 import Understudies from "../../classes/simplayer/Understudies";
 import { getLocationInfoFromSource } from "../../classes/simplayer/utils";
 
-new VanillaCommand({
-    name: 'canopy:playerjoin',
-    description: 'commands.playerjoin',
-    mandatoryParameters: [{ name: 'playername', type: CustomCommandParamType.String }],
-    permissionLevel: CommandPermissionLevel.Any,
-    allowedSources: [PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin],
-    callback: (origin, playername) => {
+export class PlayerJoinCommand extends VanillaCommand {
+    constructor() {
+        super({
+            name: 'canopy:playerjoin',
+            description: 'commands.playerjoin',
+            mandatoryParameters: [{ name: 'playername', type: CustomCommandParamType.String }],
+            permissionLevel: CommandPermissionLevel.Any,
+            allowedSources: [PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin],
+            callback: (origin, ...args) => this.playerjoinCommand(origin, ...args)
+        });
+    }
+
+    playerjoinCommand(origin, playername) {
         if (Understudies.isOnline(playername))
             return { status: CustomCommandStatus.Failure, message: Understudies.getAlreadyOnlineMessage(playername) };
         system.run(() => {
@@ -18,4 +24,6 @@ new VanillaCommand({
             Understudies.addNametagPrefix(understudy);
         });
     }
-});
+}
+
+export const playerjoinCommand = new PlayerJoinCommand();

@@ -2,16 +2,22 @@ import { CustomCommandParamType, CommandPermissionLevel, CustomCommandStatus, sy
 import { VanillaCommand, PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin, ServerCommandOrigin } from "../../../lib/canopy/Canopy";
 import Understudies from "../../classes/simplayer/Understudies";
 
-new VanillaCommand({
-    name: 'canopy:playerselect',
-    description: 'commands.playerselect',
-    mandatoryParameters: [
-        { name: 'playername', type: CustomCommandParamType.String },
-        { name: 'slotNumber', type: CustomCommandParamType.Integer }
-    ],
-    permissionLevel: CommandPermissionLevel.Any,
-    allowedSources: [PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin, ServerCommandOrigin],
-    callback: (_origin, playername, slotNumber) => {
+export class PlayerSelectCommand extends VanillaCommand {
+    constructor() {
+        super({
+            name: 'canopy:playerselect',
+            description: 'commands.playerselect',
+            mandatoryParameters: [
+                { name: 'playername', type: CustomCommandParamType.String },
+                { name: 'slotNumber', type: CustomCommandParamType.Integer }
+            ],
+            permissionLevel: CommandPermissionLevel.Any,
+            allowedSources: [PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin, ServerCommandOrigin],
+            callback: (origin, ...args) => this.playerselectCommand(origin, ...args)
+        });
+    }
+
+    playerselectCommand(_origin, playername, slotNumber) {
         const understudy = Understudies.get(playername);
         if (!understudy)
             return { status: CustomCommandStatus.Failure, message: Understudies.getNotOnlineMessage(playername) };
@@ -20,4 +26,6 @@ new VanillaCommand({
         system.run(() => understudy.selectSlot(slotNumber));
         return { status: CustomCommandStatus.Success };
     }
-});
+}
+
+export const playerselectCommand = new PlayerSelectCommand();
