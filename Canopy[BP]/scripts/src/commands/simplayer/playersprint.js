@@ -17,10 +17,12 @@ export class PlayerSprintCommand extends VanillaCommand {
         });
     }
 
-    playersprintCommand(_origin, playername, shouldSprint) {
+    playersprintCommand(origin, playername, shouldSprint) {
         const understudy = Understudies.get(playername);
-        if (!understudy)
-            return { status: CustomCommandStatus.Failure, message: Understudies.getNotOnlineMessage(playername) };
+        if (!understudy) {
+            origin.sendMessage(Understudies.getNotOnlineMessage(playername));
+            return { status: CustomCommandStatus.Failure };
+        }
         system.run(() => understudy.sprint(shouldSprint));
         return { status: CustomCommandStatus.Success };
     }

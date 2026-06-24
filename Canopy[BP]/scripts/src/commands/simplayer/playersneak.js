@@ -17,10 +17,12 @@ export class PlayerSneakCommand extends VanillaCommand {
         });
     }
 
-    playersneakCommand(_origin, playername, shouldSneak) {
+    playersneakCommand(origin, playername, shouldSneak) {
         const understudy = Understudies.get(playername);
-        if (!understudy)
-            return { status: CustomCommandStatus.Failure, message: Understudies.getNotOnlineMessage(playername) };
+        if (!understudy) {
+            origin.sendMessage(Understudies.getNotOnlineMessage(playername));
+            return { status: CustomCommandStatus.Failure };
+        }
         system.run(() => understudy.sneak(shouldSneak));
         return { status: CustomCommandStatus.Success };
     }

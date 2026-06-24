@@ -6,7 +6,7 @@ import { playerstopCommand } from '../../../../../../Canopy[BP]/scripts/src/comm
 vi.mock('../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies', () => ({
     default: {
         get: vi.fn(),
-        getNotOnlineMessage: vi.fn(name => `§cSimplayer '${name}' is not online.`),
+        getNotOnlineMessage: vi.fn(name => ({ translate: 'simplayer.notonline', with: [name] })),
     }
 }));
 
@@ -17,16 +17,19 @@ vi.mock('../../../../../../Canopy[BP]/scripts/lib/canopy/Canopy', async (importO
 
 describe('playerstopCommand', () => {
     let mockUnderstudy;
+    let mockOrigin;
 
     beforeEach(() => {
         vi.clearAllMocks();
         mockUnderstudy = { stopAll: vi.fn(), name: 'TestBot' };
+        mockOrigin = { sendMessage: vi.fn() };
     });
 
     it('returns failure when the simplayer is not online', () => {
         vi.mocked(Understudies.get).mockReturnValue(undefined);
-        const result = playerstopCommand.playerstopCommand(undefined, 'TestBot');
+        const result = playerstopCommand.playerstopCommand(mockOrigin, 'TestBot');
         expect(result.status).toBe(CustomCommandStatus.Failure);
+        expect(mockOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.notonline', with: ['TestBot'] });
     });
 
     it('returns success and queues stopAll when online', () => {

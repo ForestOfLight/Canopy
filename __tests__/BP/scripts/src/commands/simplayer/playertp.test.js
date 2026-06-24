@@ -6,7 +6,7 @@ import { playertpCommand } from '../../../../../../Canopy[BP]/scripts/src/comman
 vi.mock('../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies', () => ({
     default: {
         get: vi.fn(),
-        getNotOnlineMessage: vi.fn(name => `§cSimplayer '${name}' is not online.`),
+        getNotOnlineMessage: vi.fn(name => ({ translate: 'simplayer.notonline', with: [name] })),
     }
 }));
 
@@ -22,13 +22,14 @@ describe('playertpCommand', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         mockUnderstudy = { teleport: vi.fn(), name: 'TestBot' };
-        mockOrigin = { getSource: vi.fn(() => ({ location: { x: 0, y: 64, z: 0 }, dimension: {}, getRotation: vi.fn(() => ({ x: 0, y: 0 })), getGameMode: vi.fn(() => 'Survival') })) };
+        mockOrigin = { getSource: vi.fn(() => ({ location: { x: 0, y: 64, z: 0 }, dimension: {}, getRotation: vi.fn(() => ({ x: 0, y: 0 })), getGameMode: vi.fn(() => 'Survival') })), sendMessage: vi.fn() };
     });
 
     it('returns failure when the simplayer is not online', () => {
         vi.mocked(Understudies.get).mockReturnValue(undefined);
         const result = playertpCommand.playertpCommand(mockOrigin, 'TestBot');
         expect(result.status).toBe(CustomCommandStatus.Failure);
+        expect(mockOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.notonline', with: ['TestBot'] });
     });
 
     it('returns success when the simplayer is online', () => {
