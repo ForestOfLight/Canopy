@@ -95,7 +95,7 @@ describe('Rule', () => {
 
     describe('getSuggestedOptions', () => {
         it('should return suggestedOptions when provided', () => {
-            const rule = new IntegerRule({ category: 'Rules', identifier: 'opts_rule', suggestedOptions: [1, 10, 80], valueRange: { range: { min: 1, max: 80 } } });
+            const rule = new IntegerRule({ category: 'Rules', identifier: 'opts_rule', suggestedOptions: [1, 10, 80], valueRange: { range: { min: 0, max: 80 } } });
             expect(rule.getSuggestedOptions()).toEqual([1, 10, 80]);
         });
 
