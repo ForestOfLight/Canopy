@@ -14,33 +14,36 @@ export class PlayerInventoryCommand extends VanillaCommand {
         });
     }
 
-    playerinventoryCommand(_origin, playername) {
+    playerinventoryCommand(origin, playername) {
         const understudy = Understudies.get(playername);
-        if (!understudy)
-            return { status: CustomCommandStatus.Failure, message: Understudies.getNotOnlineMessage(playername) };
+        if (!understudy) {
+            origin.sendMessage(Understudies.getNotOnlineMessage(playername));
+            return { status: CustomCommandStatus.Failure };
+        }
         const playerInventory = understudy.getInventory();
         if (!playerInventory)
-            return { status: CustomCommandStatus.Success, message: '§cNo inventory found' };
-        return { status: CustomCommandStatus.Success, message: this.#getInventoryMessage(understudy, playerInventory) };
+            return { status: CustomCommandStatus.Success, message: 'commands.playerinventory.noinventory' };
+        origin.sendMessage(this.#getInventoryMessage(understudy, playerInventory));
+        return { status: CustomCommandStatus.Success };
     }
 
     #getInventoryMessage(understudy, playerInventory) {
         if (playerInventory.size === playerInventory.emptySlotsCount)
-            return `§7${understudy.name}'s inventory is empty.`;
+            return { translate: 'commands.playerinventory.empty', with: [understudy.name] };
         return this.#getFormattedInventoryMessage(understudy, playerInventory);
     }
 
     #getFormattedInventoryMessage(understudy, playerInventory) {
-        let message = `${understudy.name}'s inventory:`;
+        const rawtext = [{ translate: 'commands.playerinventory.header', with: [understudy.name] }];
         for (let i = 0; i < playerInventory.size; i++) {
             const itemStack = playerInventory.getItem(i);
             if (itemStack !== void 0) {
                 const colorCode = i < 10 ? '§a' : '';
-                message += `
-§7- ${colorCode}${i}§7: ${itemStack.typeId} x${itemStack.amount}`;
+                rawtext.push({ text: '\n' });
+                rawtext.push({ translate: 'commands.playerinventory.item', with: [colorCode, String(i), itemStack.typeId, String(itemStack.amount)] });
             }
         }
-        return message;
+        return { rawtext };
     }
 }
 
