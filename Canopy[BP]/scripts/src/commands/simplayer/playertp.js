@@ -19,7 +19,7 @@ export class PlayerTpCommand extends VanillaCommand {
         const understudy = Understudies.get(playername);
         if (!understudy) {
             origin.sendMessage(Understudies.getNotOnlineMessage(playername));
-            return { status: CustomCommandStatus.Failure };
+            return;
         }
         system.run(() => understudy.teleport(getLocationInfoFromSource(origin.getSource())));
         return { status: CustomCommandStatus.Success };

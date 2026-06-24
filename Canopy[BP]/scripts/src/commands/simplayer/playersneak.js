@@ -21,7 +21,7 @@ export class PlayerSneakCommand extends VanillaCommand {
         const understudy = Understudies.get(playername);
         if (!understudy) {
             origin.sendMessage(Understudies.getNotOnlineMessage(playername));
-            return { status: CustomCommandStatus.Failure };
+            return;
         }
         system.run(() => understudy.sneak(shouldSneak));
         return { status: CustomCommandStatus.Success };

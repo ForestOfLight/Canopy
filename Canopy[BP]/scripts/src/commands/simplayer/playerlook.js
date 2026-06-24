@@ -38,7 +38,7 @@ export class PlayerLookCommand extends VanillaCommand {
         const understudy = Understudies.get(playername);
         if (!understudy) {
             origin.sendMessage(Understudies.getNotOnlineMessage(playername));
-            return { status: CustomCommandStatus.Failure };
+            return;
         }
         switch (lookOption) {
             case LOOK_OPTIONS.UP: case LOOK_OPTIONS.DOWN: case LOOK_OPTIONS.NORTH:
@@ -66,7 +66,7 @@ export class PlayerLookCommand extends VanillaCommand {
                 break;
             default:
                 origin.sendMessage({ translate: 'commands.playerlook.invalidoption', with: [lookOption] });
-                return { status: CustomCommandStatus.Failure };
+                return;
         }
         return { status: CustomCommandStatus.Success };
     }

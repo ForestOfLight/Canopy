@@ -1,4 +1,4 @@
-import { CustomCommandParamType, CommandPermissionLevel, CustomCommandStatus, system } from "@minecraft/server";
+import { CustomCommandParamType, CommandPermissionLevel, system } from "@minecraft/server";
 import { VanillaCommand, PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin, ServerCommandOrigin } from "../../../lib/canopy/Canopy";
 import Understudies from "../../classes/simplayer/Understudies";
 
@@ -18,7 +18,7 @@ export class PlayerLeaveCommand extends VanillaCommand {
         const understudy = Understudies.get(playername);
         if (!understudy) {
             origin.sendMessage(Understudies.getNotOnlineMessage(playername));
-            return { status: CustomCommandStatus.Failure };
+            return;
         }
         system.run(() => {
             understudy.leave();

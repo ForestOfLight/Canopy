@@ -21,7 +21,7 @@ export class PlayerSprintCommand extends VanillaCommand {
         const understudy = Understudies.get(playername);
         if (!understudy) {
             origin.sendMessage(Understudies.getNotOnlineMessage(playername));
-            return { status: CustomCommandStatus.Failure };
+            return;
         }
         system.run(() => understudy.sprint(shouldSprint));
         return { status: CustomCommandStatus.Success };

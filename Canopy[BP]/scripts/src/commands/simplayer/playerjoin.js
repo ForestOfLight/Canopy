@@ -18,7 +18,7 @@ export class PlayerJoinCommand extends VanillaCommand {
     playerjoinCommand(origin, playername) {
         if (Understudies.isOnline(playername)) {
             origin.sendMessage(Understudies.getAlreadyOnlineMessage(playername));
-            return { status: CustomCommandStatus.Failure };
+            return;
         }
         system.run(() => {
             const understudy = Understudies.create(playername);

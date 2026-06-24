@@ -30,7 +30,7 @@ export class PlayerActionCommand extends VanillaCommand {
         const understudy = Understudies.get(playername);
         if (!understudy) {
             origin.sendMessage(Understudies.getNotOnlineMessage(playername));
-            return { status: CustomCommandStatus.Failure };
+            return;
         }
         if (!Object.values(REPEATABLE_ACTIONS).includes(action))
             return { status: CustomCommandStatus.Failure, message: `commands.generic.invalidaction` };
@@ -51,7 +51,7 @@ export class PlayerActionCommand extends VanillaCommand {
                 break;
             default:
                 origin.sendMessage({ translate: 'commands.playeraction.invalidtiming', with: [action, timingOption] });
-                return { status: CustomCommandStatus.Failure };
+                return;
         }
         return { status: CustomCommandStatus.Success };
     }
@@ -59,7 +59,7 @@ export class PlayerActionCommand extends VanillaCommand {
     #singleAfterAction(origin, actions, action, timingOption, ticks) {
         if (ticks === void 0) {
             origin.sendMessage({ translate: 'commands.playeraction.invalidticks', with: [timingOption, String(ticks)] });
-            return { status: CustomCommandStatus.Failure };
+            return;
         }
         actions.once(action, ticks);
         return { status: CustomCommandStatus.Success };
@@ -68,7 +68,7 @@ export class PlayerActionCommand extends VanillaCommand {
     #intervalAction(origin, actions, action, timingOption, ticks) {
         if (ticks === void 0) {
             origin.sendMessage({ translate: 'commands.playeraction.invalidticks', with: [timingOption, String(ticks)] });
-            return { status: CustomCommandStatus.Failure };
+            return;
         }
         actions.repeat(action, ticks);
         return { status: CustomCommandStatus.Success };

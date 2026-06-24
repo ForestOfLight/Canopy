@@ -21,11 +21,11 @@ export class PlayerSelectCommand extends VanillaCommand {
         const understudy = Understudies.get(playername);
         if (!understudy) {
             origin.sendMessage(Understudies.getNotOnlineMessage(playername));
-            return { status: CustomCommandStatus.Failure };
+            return;
         }
         if (slotNumber < 0 || slotNumber > 8) {
             origin.sendMessage({ translate: 'commands.playerselect.invalidslot', with: [String(slotNumber)] });
-            return { status: CustomCommandStatus.Failure };
+            return;
         }
         system.run(() => understudy.selectSlot(slotNumber));
         return { status: CustomCommandStatus.Success };

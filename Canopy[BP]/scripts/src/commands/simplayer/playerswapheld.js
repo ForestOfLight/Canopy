@@ -18,7 +18,7 @@ export class PlayerSwapHeldCommand extends VanillaCommand {
         const understudy = Understudies.get(playername);
         if (!understudy) {
             origin.sendMessage(Understudies.getNotOnlineMessage(playername));
-            return { status: CustomCommandStatus.Failure };
+            return;
         }
         system.run(() => understudy.swapHeldItemWithPlayer(origin.getSource()));
         return { status: CustomCommandStatus.Success };

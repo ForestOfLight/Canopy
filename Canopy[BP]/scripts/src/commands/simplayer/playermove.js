@@ -29,7 +29,7 @@ export class PlayerMoveCommand extends VanillaCommand {
         const understudy = Understudies.get(playername);
         if (!understudy) {
             origin.sendMessage(Understudies.getNotOnlineMessage(playername));
-            return { status: CustomCommandStatus.Failure };
+            return;
         }
         switch (moveOption) {
             case MOVE_OPTIONS.FORWARD: case MOVE_OPTIONS.BACKWARD:
@@ -50,7 +50,7 @@ export class PlayerMoveCommand extends VanillaCommand {
                 break;
             default:
                 origin.sendMessage({ translate: 'commands.playermove.invalidoption', with: [moveOption] });
-                return { status: CustomCommandStatus.Failure };
+                return;
         }
         return { status: CustomCommandStatus.Success };
     }

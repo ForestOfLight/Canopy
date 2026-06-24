@@ -18,7 +18,7 @@ export class PlayerInventoryCommand extends VanillaCommand {
         const understudy = Understudies.get(playername);
         if (!understudy) {
             origin.sendMessage(Understudies.getNotOnlineMessage(playername));
-            return { status: CustomCommandStatus.Failure };
+            return;
         }
         const playerInventory = understudy.getInventory();
         if (!playerInventory)
