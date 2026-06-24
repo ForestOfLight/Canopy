@@ -26,10 +26,12 @@ export class PlayerActionCommand extends VanillaCommand {
         });
     }
 
-    playeractionCommand(_origin, playername, action, timingOption = TIMING_OPTIONS.ONCE, ticks) {
+    playeractionCommand(origin, playername, action, timingOption = TIMING_OPTIONS.ONCE, ticks) {
         const understudy = Understudies.get(playername);
-        if (!understudy)
-            return { status: CustomCommandStatus.Failure, message: Understudies.getNotOnlineMessage(playername) };
+        if (!understudy) {
+            origin.sendMessage(Understudies.getNotOnlineMessage(playername));
+            return { status: CustomCommandStatus.Failure };
+        }
         if (!Object.values(REPEATABLE_ACTIONS).includes(action))
             return { status: CustomCommandStatus.Failure, message: `commands.generic.invalidaction` };
         const actions = understudy.actions;
@@ -38,31 +40,36 @@ export class PlayerActionCommand extends VanillaCommand {
                 actions.once(action);
                 break;
             case TIMING_OPTIONS.AFTER:
-                return this.#singleAfterAction(actions, action, timingOption, ticks);
+                return this.#singleAfterAction(origin, actions, action, timingOption, ticks);
             case TIMING_OPTIONS.CONTINUOUS:
                 actions.repeat(action);
                 break;
             case TIMING_OPTIONS.INTERVAL:
-                return this.#intervalAction(actions, action, timingOption, ticks);
+                return this.#intervalAction(origin, actions, action, timingOption, ticks);
             case TIMING_OPTIONS.STOP:
                 actions.remove(action);
                 break;
             default:
-                return { status: CustomCommandStatus.Failure, message: `§cInvalid ${action} timing: ${timingOption}.` };
+                origin.sendMessage({ translate: 'commands.playeraction.invalidtiming', with: [action, timingOption] });
+                return { status: CustomCommandStatus.Failure };
         }
         return { status: CustomCommandStatus.Success };
     }
 
-    #singleAfterAction(actions, action, timingOption, ticks) {
-        if (ticks === void 0)
-            return { status: CustomCommandStatus.Failure, message: `§cInvalid '${timingOption}' tick duration: ${ticks}. Expected an integer.` };
+    #singleAfterAction(origin, actions, action, timingOption, ticks) {
+        if (ticks === void 0) {
+            origin.sendMessage({ translate: 'commands.playeraction.invalidticks', with: [timingOption, String(ticks)] });
+            return { status: CustomCommandStatus.Failure };
+        }
         actions.once(action, ticks);
         return { status: CustomCommandStatus.Success };
     }
 
-    #intervalAction(actions, action, timingOption, ticks) {
-        if (ticks === void 0)
-            return { status: CustomCommandStatus.Failure, message: `§cInvalid '${timingOption}' tick duration: ${ticks}. Expected an integer.` };
+    #intervalAction(origin, actions, action, timingOption, ticks) {
+        if (ticks === void 0) {
+            origin.sendMessage({ translate: 'commands.playeraction.invalidticks', with: [timingOption, String(ticks)] });
+            return { status: CustomCommandStatus.Failure };
+        }
         actions.repeat(action, ticks);
         return { status: CustomCommandStatus.Success };
     }
