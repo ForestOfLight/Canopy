@@ -20,7 +20,7 @@ commands.generic.invalidaction=§cAksi tidak valid. Gunakan /help <perintah> unt
 
 commands.help=Menampilkan halaman bantuan.
 commands.help.search.noresult=§cTidak ditemukan hasil untuk '%s'.
-commands.help.search.results=§l§aCanopy§r §2Hasil pencarian untuk '§r%1§2':%2
+commands.help.search.results=§l§aCanopy§r §2Hasil pencarian untuk '§r%1§2':
 commands.help.page.header=§l§aCanopy§r§2 Halaman Bantuan: §f%1
 commands.help.infodisplay=Aturan yang bisa diubah² untuk InfoDisplay Anda.
 commands.help.rules=Aturan global yang bisa diubah².
@@ -54,6 +54,8 @@ commands.camera.spectate.viewing=§cAnda tidak bisa masuk ke mode penonton saat 
 commands.camera.spectate.gamemode=§cAnda tidak bisa mengubah mode permainan saat di mode penonton.
 commands.camera.spectate.started=§aMenonton
 commands.camera.spectate.ended=§7Menonton berakhir
+commands.camera.spectate.hardcore=§cMencegah Anda untuk menonton. Fitur menonton dalam mode hardcore memiliki bug yang menyebabkan layar terkunci sementara. Ini adalah masalah dari Mojang.
+commands.camera.spectate.flying=§cAnda harus berada di lokasi untuk menonton.
 commands.camera.invalidaction=§cAksi kamera tidak valid.
 
 commands.canopy=Mengaktifkan atau menonaktifkan aturan.
@@ -87,6 +89,7 @@ commands.cleanup.success=§7Membersihkan %s entitas (r%2).
 commands.counter=Mengelola penghitung penampung. (Alias: ct)
 commands.counter.channel.notfound=§cWarna tidak valid: %s. Silakan gunakan salah satu warna blok wol.
 commands.counter.query=Menampilkan hitungan dan kecepatan penghitung penampung untuk warna yang ditentukan.
+commands.counter.query.all=Menampilkan hitungan dan kecepatan semua penghitung penampung.
 commands.counter.query.empty=§7Tidak ada penghitung penampung yang digunakan.
 commands.counter.query.channel=§7Item untuk %1§7 (%2%3 min.), total: §f%4§7, (§f%5§7):
 commands.counter.realtime=Menampilkan hitungan dan kecepatan, tetapi menggunakan waktu dunia nyata, bukan waktu berbasis tick.
@@ -149,6 +152,7 @@ commands.gamemode.sp=Atur mode permainan ke mode penonton.
 
 commands.generator=Mengelola generator penampung. (Alias: gt)
 commands.generator.channel.notfound=§cWarna tidak valid: %s. Silakan gunakan salah satu warna blok wol.
+commands.generator.query.all=Menampilkan hitungan dan kecepatan semua generator penampung.
 commands.generator.query=Menampilkan hitungan dan kecepatan generator penampung untuk warna yang ditentukan.
 commands.generator.query.empty=§7Tidak ada generator penampung yang digunakan.
 commands.generator.query.channel=§7Item yang dihasilkan untuk %1§7 (%2%3 min.), total: §f%4§7, (§f%5§7):
@@ -187,10 +191,10 @@ commands.info.all=Mengaktifkan atau menonaktifkan semua aturan InfoDisplay.
 commands.info.allupdated=§7Semua aturan InfoDisplay sekarang §l
 commands.info.canopyRule=§cAturan '%1' adalah aturan global, dan harus diubah menggunakan %2canopy. Ketik %2help untuk informasi lebih lanjut.
 
-commands.jump=Teleportasi ke blok yang sedang Anda targetkan. (Alias: j)
+commands.jump=Teleportasi ke blok yang sedang Anda lihat. (Alias: j)
 commands.jump.fail.noblock=§cTidak ada blok yang ditemukan untuk melompat ke.
 
-commands.log=Mencatat gerakan tnt, proyektil, dan blok jatuh.
+commands.log=Mencatat gerakan tnt, proyektil, dan gerakan blok jatuh.
 commands.log.precision=§7Presisi mencatat diatur ke %s.
 commands.log.started=§7Mulai mencatat %s.
 commands.log.stopped=§7Berhenti mencatat %s.
@@ -235,6 +239,57 @@ commands.peek.fail.noitems=§cTidak ada item di dalam %1 di %2.
 commands.peek.query.cleared=§7Mengintip kueri dihapus.
 commands.peek.query.set=§7Mengintip kueri diatur ke '%s'.
 
+commands.playeraction=Membuat SimPlayer melakukan tindakan dengan waktu yang bervariasi.
+commands.playeraction.invalidtiming=§cTidak valid %1 waktu: %2.
+commands.playeraction.invalidticks=§cTidak valid '%1' durasi tick: %2. Diharapkan bilangan bulat.
+
+commands.playerinventory=Cetak daftar inventaris simplayer.
+commands.playerinventory.noinventory=§cTidak ditemukan inventaris.
+commands.playerinventory.empty=Inventaris §7%s's kosong.
+commands.playerinventory.header=Inventaris %s's:
+commands.playerinventory.item=§7- %1%2§7: %3 x%4
+
+commands.playerjoin=Buat simplayer baru, bergabung di lokasi Anda.
+
+commands.playerleave=Buat simplayer keluar dari permainan.
+
+commands.playerlook=Buat simplayer melihat ke arah yang ditentukan.
+commands.playerlook.at.missing=§cKoordinat lokasi yang akan dilihat tidak tersedia.
+commands.playerlook.rotation.missing=§cNilai yaw atau pitch tidak tersedia untuk rotasi pandangan.
+commands.playerlook.invalidoption=§cOpsi melihat tidak valid: '%s'
+commands.playerlook.block.entityonly=§cPenargetan blok hanya dapat digunakan oleh entitas.
+commands.playerlook.block.noblock=§cTidak ada blok dalam pandangan.
+commands.playerlook.entity.entityonly=§cPenargetan entitas hanya dapat digunakan oleh entitas.
+commands.playerlook.entity.noentity=§cTidak ada entitas dalam pandangan.
+commands.playerlook.me.noserver=§cFitur "Self-targeting" tidak dapat digunakan oleh server.
+
+commands.playermove=Buat simplayer bergerak ke arah yang ditentukan.
+commands.playermove.invalidoption=§cOpsi gerakan tidak valid: '%s'
+commands.playermove.block.entityonly=§cPindah ke sebuah blok hanya dapat digunakan oleh entitas.
+commands.playermove.block.noblock=§cTidak ada blok dalam pandangan.
+commands.playermove.entity.entityonly=§cPindah ke entitas hanya dapat digunakan oleh entitas.
+commands.playermove.entity.noentity=§cTidak ada entitas dalam pandangan.
+commands.playermove.me.noserver=§cFitur "Moving to yourself" tidak dapat digunakan oleh server.
+
+commands.playerprefix=Tentukan awalan untuk nama simplayer. Gunakan ‘-none’ untuk menghapusnya.
+commands.playerprefix.removed=§7Awalan “Simplayer” telah dihapus.
+commands.playerprefix.set=§7Awalan Simplayer diatur ke "§r%s§r§7".
+
+commands.playerrejoin=Buat simplayer bergabung kembali di lokasi terakhirnya.
+
+commands.playerselect=Buat simplayer memilih slot hotbar.
+commands.playerselect.invalidslot=§cNomor slot tidak valid: %s. Harusnya angka antara 0 hingga 8.
+
+commands.playersneak=Buat simplayer mulai atau berhenti menyelinap.
+
+commands.playersprint=Buat simplayer mulai atau berhenti berlari.
+
+commands.playerstop=Buat simplayer berhenti melakukan semua tindakan.
+
+commands.playerswapheld=Tukar item yang dipegang simplayer dengan item yang Anda pegang.
+
+commands.playertp=Buat simplayer berteleportasi ke lokasi Anda.
+
 commands.pos=Menunjukkan posisi Anda saat ini, atau posisi pemain lain.
 commands.pos.self=§aPosisi Anda: §f%s
 commands.pos.other=§aPosisi %1's: §f%2
@@ -253,11 +308,11 @@ commands.simmap.help.display.reset=Mengatur lokasi untuk peta simulasi di InfoDi
 commands.simmap.header=§7Chunk yang termuat di %1§7 sekitar §2%2§7
 commands.simmap.invalidDistance=§cJarak ‘%1’ tidak valid. Silakan gunakan nilai antara 1 dan %2.
 commands.simmap.config.distance=§7Jarak Peta Simulasi di InfoDisplay diperbarui ke %s.
-commands.simmap.config.location=§7Lokasi Peta Simulasi di InfoDisplay diperbarui ke %1 di %2.
+commands.simmap.config.location=§7Lokasi Peta Simulasi di InfoDisplay diperbarui ke %1 di %2§7.
 commands.simmap.config.reset=§7Lokasi Peta Simulasi di InfoDisplay diperbarui untuk mengikuti lokasi Anda saat ini.
 
 commands.sit=Membuat karakter Anda duduk.
-commands.sit.busy=§cAnda "sibuk" dan tidak bisa duduk.
+commands.sit.busy=§cAnda “sibuk“ dan tidak bisa duduk.
 
 commands.spawn=Perintah spawn untuk melacak dan mocking spawn.
 commands.spawn.entities=Menampilkan daftar semua entitas & posisi mereka di dunia.
@@ -316,6 +371,12 @@ commands.trackevent.stop=§7Berhenti melacak %s.
 commands.trackevent.start=§7Mulai melacak %s.
 commands.trackevent.invalid=§cPeristiwa %1 tidak ditemukan di %2.
 
+commands.velocity=Mempengaruhi kecepatan entitas.
+commands.velocity.missingvelocity=§cSilakan masukkan kecepatan x, y, dan z.
+commands.velocity.query=§7Kecepatan entitas (m/gt):
+commands.velocity.add=§7Menambahkan kecepatan pada entitas (m/gt):
+commands.velocity.set=§7Atur kecepatan untuk entitas (m/gt):
+
 commands.warp=Teleportasi dan kelola warps. (Alias: w)
 commands.warp.edit=Menambahkan atau menghapus warp.
 commands.warp.tp=Menteleportasi Anda ke sebuah warp.
@@ -359,36 +420,43 @@ rules.carefulBreak=Secara otomatis mengambil item saat menghancurkan blok dan me
 rules.cauldronConcreteConversion=Item serbuk beton di dalam kawah yang berisi air akan berubah menjadi item beton.
 rules.chunkBorders=Mengaktifkan chunk border saat panah berada di slot inventaris 13 (tengah atas).
 rules.collisionBoxes=Mengaktifkan collision box entitas saat panah berada di slot inventaris 14 (di sebelah tengah atas).
+rules.creativeHotbarSwitching=Memungkinkan peralihan cepat antara beberapa hotbar. Letakkan panah di slot inventaris 17 (kanan atas), lalu menyelinap dan scroll untuk beralih.
 rules.creativeInstantTame=Menjinakkan hewan secara instan dengan makanannya masing-masing di mode kreatif.
 rules.creativeNetherWaterPlacement=Memungkinkan untuk menaruh air di Nether di mode kreatif.
 rules.creativeNoTileDrops=Mencegah item jatuh dari blok yang di hancurkan di mode kreatif.
-rules.creativeOneHitKill=Memungkinkan pemain di mode kreatif untuk membunuh entitas apa pun dengan satu hit. Jika menyelinap, itu juga akan membunuh entitas terdekat.
+rules.creativeOneHitKill=Memungkinkan pemain di mode kreatif untuk membunuh entitas apa pun dengan satu pukulan. Jika menyelinap, itu juga akan membunuh entitas terdekat.
 rules.dupeTnt=TNT dapat diduplikasi ketika digerakkan oleh piston dan diberi daya di sebelah blok not.
 rules.durabilityNotifier=Mengaktifkan suara denting dan tip akan muncul saat alat Anda memiliki %s durability tersisa.
 rules.durabilityNotifier.alert=§cDurability tersisa: %s
 rules.durabilitySwap=Menukar alat dengan 0 durability dari tangan Anda.
-rules.echoShardsEnableShriekers=Menggunakan Serpihan Gema pada Penjerit Sculk memungkinkannya memanggil  wardens.
+rules.echoShardsEnableShriekers=Menggunakan Serpihan Gema pada Penjerit Sculk memungkinkannya memanggil warden.
+rules.enderPearlChunkLoading=Memungkinkan mutiara ender untuk men-tick radius chunk yang ditentukan (persegi) di sekitarnya.
 rules.entityInstantDeath=Menghapus animasi kematian 20gt. Entitas juga tidak akan menjatuhkan xp.
+rules.entitySeparation=Ketika entitas yang ditumpuk memicu pelat tekanan, satu entitas akan terlepas dari tumpukan ke arah yang dihadapi oleh dropper terdekat.
 rules.explosionChainReactionOnly=Membuat ledakan hanya mempengaruhi blok TNT.
 rules.explosionNoBlockDamage=Membuat ledakan tidak mempengaruhi blok.
 rules.explosionOff=Menonaktifkan ledakan sepenuhnya.
 rules.flippinArrows=Menggunakan panah pada blok akan membalik, memutar, atau membukanya. Menaruhnya di offhand akan membalik blok saat diletakkan.
-rules.hotbarSwitching=Memungkinkan peralihan cepat antara beberapa hotbar. Letakkan panah di slot inventaris 17 (kanan atas), lalu menyelinap dan scroll untuk beralih.
 rules.instaminableDeepslate=Membuat batu tulis dasar bisa di intsa-mine saat menggunakan netherite, efisiensi 5, dan semangat (haste) 2.
 rules.instaminableEndstone=Membuat batu end bisa di intsa-mine saat menggunakan netherite, efisiensi 5, dan semangat (haste) 2.
+rules.minecartChunkLoading=Memungkinkan kereta tambang untuk men-tick radius chunk yang ditentukan (persegi) di sekitar mereka selama 10 detik setelah mereka dimunculkan.
 rules.noWelcomeMessage=Menonaktifkan pesan selamat datang §lCanopy§r§8.
 rules.pistonBedrockBreaking=Memungkinkan piston menghancurkan batuan dasar saat membelakangi blok batuan dasar dan mengembang.
 rules.playerSit=Memungkinkan pemain untuk duduk setelah %s kali menyelinap dengan cepat.
+rules.potionBoostedBreeding=Mengembalikan fitur yang memungkinkan ramuan kecepatan memengaruhi atribut perkawinan.
 rules.quickFillContainer=Menggunakan item pada kontainer dengan panah di slot inventaris 9 (kiri atas), akan menyimpan semua item tersebut ke dalam kontainer.
 rules.quickFillContainer.filled=§7Mengisi %1 dengan semua %2
 rules.quickFillContainer.taken=§7Mengambil semua %1 dari %2
-rules.refillHand=Mengisi ulang tangan Anda dengan item dari inventaris saat Anda kehabisan. Letakkan panah di slot inventaris 10 (di sebelah kiri atas) untuk digunakan.
+rules.refillHand=Mengisi ulang tangan Anda dengan item dari inventaris saat Anda kehabisan. Letakkan panah di slot inventaris 10 (di sebelah dari kiri atas) untuk digunakan.
+rules.renderEndGatewayExits=Menampilkan lokasi keluar dari gerbang akhir setelah melewatinya.
 rules.renewableElytraDropChance=Hantu memiliki peluang untuk menjatuhkan elytra ketika terbunuh oleh peluru shulker.
 rules.renewableSponge=Guardians berubah menjadi elder guardians saat tersambar oleh petir.
+rules.serverSideCollisionBoxes=Menampilkan kotak tabrakan berdasarkan posisi entitas di server, bukan posisi entitas di klien.
+rules.simplayerSaving=Menonaktifkan penyimpanan data pemain untuk simplayer. Meningkatkan kinerja, tetapi menyebabkan simplayer kehilangan inventaris dan lokasinya saat mereka keluar dan masuk dari permainan.
+rules.simplayerRejoining=Membuat simplayer yang online bergabung kembali ketika dunia memuat ulang.
 rules.spawnEggSpawnWithMinecart=Saat menggunakan telur kemunculan di rel, entitas yang dihasilkan akan ditempatkan di kereta tambang di rel tersebut.
 rules.tntFuse=Waktu pembakaran sumbu TNT dalam tick.
 rules.tntPrimeMomentum=Hardcodes momentum prima TNT.
-rules.universalChunkLoading=Membuat kereta tambang men-tick 5x5 area chunk di sekitarnya selama 10 detik setelah mereka muncul.
 
 rules.infoDisplay.biome=Menampilkan bioma tempat Anda berada.
 rules.infoDisplay.blockStates=Menampilkan status blok yang Anda targetkan.
@@ -403,6 +471,8 @@ rules.infoDisplay.entities.display=§rEntitas: %s
 rules.infoDisplay.eventTrackers=Menampilkan jumlah peristiwa yang dilacak.
 rules.infoDisplay.facing=Menampilkan arah menghadap Anda menggunakan yaw dan pitch.
 rules.infoDisplay.facing.display=Menghadap: %1 %2
+rules.infoDisplay.heldItemDurability=Menampilkan durability item yang ada di tangan utama Anda.
+rules.infoDisplay.heldItemDurability.display=Durability %s
 rules.infoDisplay.hopperCounterCounts=Menampilkan semua penghitung penampung yang aktif dalam warnanya masing-masing. Mode penghitung penampung mengontrol info ini.
 rules.infoDisplay.light=Menampilkan level cahaya di blok tempat kaki Anda berada.
 rules.infoDisplay.light.display=Cahaya: %1 §r(%2 langit§r)
@@ -417,8 +487,12 @@ rules.infoDisplay.moonPhase.waningCrescent=Bulan Sabit Menurun
 rules.infoDisplay.moonPhase.waningGibbous=Bulan Sabit Menurun
 rules.infoDisplay.moonPhase.waxingCrescent=Bulan Sabit Menjamur
 rules.infoDisplay.moonPhase.waxingGibbous=Bulan Sabit Menjamur
+rules.infoDisplay.noFog=Menghilangkan kabut. Air dan lava tidak terpengaruh.
 rules.infoDisplay.peekInventory=Menampilkan inventaris blok atau entitas yang Anda targetkan.
 rules.infoDisplay.peekInventory.empty=Kosong
+rules.infoDisplay.ping=Menampilkan latensi jaringan Anda saat ini ke server.
+rules.infoDisplay.ping.display=Ping: %s
+rules.infoDisplay.renderSignalStrength=Menampilkan nilai kekuatan sinyal di atas debu batu merah.
 rules.infoDisplay.sessionTime=Menunjukkan waktu sejak Anda bergabung dengan dunia.
 rules.infoDisplay.sessionTime.display=§rSesi: %s
 rules.infoDisplay.signalStrength=Menampilkan kekuatan sinyal dari blok yang anda targetkan.
@@ -439,3 +513,9 @@ rules.infoDisplay.weather=Menampilkan cuaca di dimensi Anda saat ini.
 rules.infoDisplay.weather.display=Cuaca: %s
 rules.infoDisplay.worldDay=Menampilkan jumlah hari Minecraft sejak dunia dibuat.
 rules.infoDisplay.worldDay.display=§rHari ke: %s
+
+## simplayer
+simplayer.notonline=§cSimplayer ‘%s’ sedang tidak online.
+simplayer.alreadyonline=§cSimplayer ‘%s’ sudah online.
+simplayer.leave.broadcast=§e%s meninggalkan permainan
+simplayer.swapheld.error=§cError saat menukar item: %s
