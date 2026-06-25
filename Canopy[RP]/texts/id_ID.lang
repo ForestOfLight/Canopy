@@ -312,7 +312,7 @@ commands.simmap.config.location=§7Lokasi Peta Simulasi di InfoDisplay diperbaru
 commands.simmap.config.reset=§7Lokasi Peta Simulasi di InfoDisplay diperbarui untuk mengikuti lokasi Anda saat ini.
 
 commands.sit=Membuat karakter Anda duduk.
-commands.sit.busy=§cAnda “sibuk“ dan tidak bisa duduk.
+commands.sit.busy=§cAnda "sibuk" dan tidak bisa duduk.
 
 commands.spawn=Perintah spawn untuk melacak dan mocking spawn.
 commands.spawn.entities=Menampilkan daftar semua entitas & posisi mereka di dunia.
