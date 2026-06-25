@@ -32,7 +32,7 @@ describe('playerlookCommand', () => {
     it('returns failure when the simplayer is not online', () => {
         vi.mocked(Understudies.get).mockReturnValue(undefined);
         const result = playerlookCommand.playerlookCommand(mockEntityOrigin, 'TestBot', LOOK_OPTIONS.UP);
-        expect(result.status).toBe(CustomCommandStatus.Failure);
+        expect(result).toBeUndefined();
         expect(mockEntityOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.notonline', with: ['TestBot'] });
     });
 
@@ -133,7 +133,7 @@ describe('playerlookCommand', () => {
     it('returns failure for invalid look option', () => {
         vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
         const result = playerlookCommand.playerlookCommand(mockEntityOrigin, 'TestBot', 'invalid');
-        expect(result.status).toBe(CustomCommandStatus.Failure);
+        expect(result).toBeUndefined();
         expect(mockEntityOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'commands.playerlook.invalidoption', with: ['invalid'] });
     });
 });

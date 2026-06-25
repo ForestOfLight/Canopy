@@ -32,7 +32,7 @@ describe('playermoveCommand', () => {
     it('returns failure when the simplayer is not online', () => {
         vi.mocked(Understudies.get).mockReturnValue(undefined);
         const result = playermoveCommand.playermoveCommand(mockEntityOrigin, 'TestBot', MOVE_OPTIONS.FORWARD);
-        expect(result.status).toBe(CustomCommandStatus.Failure);
+        expect(result).toBeUndefined();
         expect(mockEntityOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.notonline', with: ['TestBot'] });
     });
 
@@ -114,7 +114,7 @@ describe('playermoveCommand', () => {
     it('returns failure for invalid move option', () => {
         vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
         const result = playermoveCommand.playermoveCommand(mockEntityOrigin, 'TestBot', 'invalid');
-        expect(result.status).toBe(CustomCommandStatus.Failure);
+        expect(result).toBeUndefined();
         expect(mockEntityOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'commands.playermove.invalidoption', with: ['invalid'] });
     });
 });

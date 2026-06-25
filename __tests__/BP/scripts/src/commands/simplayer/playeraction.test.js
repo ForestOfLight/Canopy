@@ -35,7 +35,7 @@ describe('playeractionCommand', () => {
     it('returns failure when the simplayer is not online', () => {
         vi.mocked(Understudies.get).mockReturnValue(undefined);
         const result = playeractionCommand.playeractionCommand(mockOrigin, 'TestBot', REPEATABLE_ACTIONS.ATTACK);
-        expect(result.status).toBe(CustomCommandStatus.Failure);
+        expect(result).toBeUndefined();
         expect(mockOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.notonline', with: ['TestBot'] });
     });
 
@@ -49,7 +49,7 @@ describe('playeractionCommand', () => {
     it('returns failure for AFTER timing without ticks', () => {
         vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
         const result = playeractionCommand.playeractionCommand(mockOrigin, 'TestBot', REPEATABLE_ACTIONS.ATTACK, TIMING_OPTIONS.AFTER, undefined);
-        expect(result.status).toBe(CustomCommandStatus.Failure);
+        expect(result).toBeUndefined();
         expect(mockOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'commands.playeraction.invalidticks', with: [TIMING_OPTIONS.AFTER, 'undefined'] });
     });
 
@@ -70,7 +70,7 @@ describe('playeractionCommand', () => {
     it('returns failure for INTERVAL timing without ticks', () => {
         vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
         const result = playeractionCommand.playeractionCommand(mockOrigin, 'TestBot', REPEATABLE_ACTIONS.ATTACK, TIMING_OPTIONS.INTERVAL, undefined);
-        expect(result.status).toBe(CustomCommandStatus.Failure);
+        expect(result).toBeUndefined();
         expect(mockOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'commands.playeraction.invalidticks', with: [TIMING_OPTIONS.INTERVAL, 'undefined'] });
     });
 
@@ -91,7 +91,7 @@ describe('playeractionCommand', () => {
     it('returns failure for invalid timing option', () => {
         vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
         const result = playeractionCommand.playeractionCommand(mockOrigin, 'TestBot', REPEATABLE_ACTIONS.ATTACK, 'invalid');
-        expect(result.status).toBe(CustomCommandStatus.Failure);
+        expect(result).toBeUndefined();
         expect(mockOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'commands.playeraction.invalidtiming', with: [REPEATABLE_ACTIONS.ATTACK, 'invalid'] });
     });
 

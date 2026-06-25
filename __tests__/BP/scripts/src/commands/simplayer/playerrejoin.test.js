@@ -42,7 +42,7 @@ describe('playerrejoinCommand', () => {
     it('returns failure when the simplayer is already online', () => {
         vi.mocked(Understudies.isOnline).mockReturnValue(true);
         const result = playerrejoinCommand.playerrejoinCommand(mockOrigin, 'TestBot');
-        expect(result.status).toBe(CustomCommandStatus.Failure);
+        expect(result).toBeUndefined();
         expect(mockOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.alreadyonline', with: ['TestBot'] });
     });
 

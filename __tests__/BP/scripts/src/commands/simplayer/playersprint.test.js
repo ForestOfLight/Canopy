@@ -28,7 +28,7 @@ describe('playersprintCommand', () => {
     it('returns failure when the simplayer is not online', () => {
         vi.mocked(Understudies.get).mockReturnValue(undefined);
         const result = playersprintCommand.playersprintCommand(mockOrigin, 'TestBot', true);
-        expect(result.status).toBe(CustomCommandStatus.Failure);
+        expect(result).toBeUndefined();
         expect(mockOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.notonline', with: ['TestBot'] });
     });
 
