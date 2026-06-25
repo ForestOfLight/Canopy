@@ -75,7 +75,7 @@ describe('playerinventoryCommand', () => {
         };
         mockUnderstudy.getInventory.mockReturnValue(mockInventory);
         vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
-        const result = playerinventoryCommand.playerinventoryCommand(mockOrigin, 'TestBot');
+        playerinventoryCommand.playerinventoryCommand(mockOrigin, 'TestBot');
         expect(mockOrigin.sendMessage).toHaveBeenCalledWith({
             rawtext: [
                 { translate: 'commands.playerinventory.header', with: ['TestBot'] },

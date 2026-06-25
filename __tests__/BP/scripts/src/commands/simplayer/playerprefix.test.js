@@ -1,6 +1,5 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { system, CustomCommandStatus } from '@minecraft/server';
-import Understudies from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies';
 import { playerprefixCommand } from '../../../../../../Canopy[BP]/scripts/src/commands/simplayer/playerprefix';
 
 vi.mock('../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies', () => ({

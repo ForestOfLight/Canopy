@@ -1,4 +1,4 @@
-import { CustomCommandParamType, CommandPermissionLevel, CustomCommandStatus, system } from "@minecraft/server";
+import { CustomCommandParamType, CommandPermissionLevel, system } from "@minecraft/server";
 import { VanillaCommand, PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin } from "../../../lib/canopy/Canopy";
 import Understudies from "../../classes/simplayer/Understudies";
 import { getLocationInfoFromSource } from "../../classes/simplayer/utils";
