@@ -5,6 +5,7 @@ export default defineConfig({
     alias: {
       '@minecraft/server': `${__dirname}/__mocks__/@minecraft/server`,
       '@minecraft/server-ui': `${__dirname}/__mocks__/@minecraft/server-ui`,
+      '@minecraft/server-gametest': `${__dirname}/__mocks__/@minecraft/server-gametest`,
     }
   },
   test: {

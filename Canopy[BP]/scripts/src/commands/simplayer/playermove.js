@@ -21,7 +21,14 @@ export class PlayerMoveCommand extends VanillaCommand {
             ],
             permissionLevel: CommandPermissionLevel.Any,
             allowedSources: [PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin, ServerCommandOrigin],
-            callback: (origin, ...args) => this.playermoveCommand(origin, ...args)
+            callback: (origin, ...args) => this.playermoveCommand(origin, ...args),
+            wikiDescription: "Make the simulated player with the given name move in the specified direction or (navigate) to the specified location. This command uses Minecraft's normal pathfinding system, so the simulated player won't be able to navigate very far very far at once.\n\n" +
+                "Move Options:  \n" +
+                "- `forward`, `backward`, `left`, `right` will make the simulated player move continuously relative to the direction they are facing.\n" +
+                "- `block` and `entity` will make the simulated player move towards the block or entity you are looking at.\n" +
+                "- `me` will make the simulated player move towards you.\n" +
+                "- `to <location: x y z>` will make the simulated player move towards the specified coordinates.\n" +
+                "- `stop` will make the simulated player stop moving."
         });
     }
 

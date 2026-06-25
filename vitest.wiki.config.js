@@ -11,6 +11,7 @@ export default defineConfig({
       '@minecraft/server': `@forestoflight/minecraft-vitest-mocks/server`,
       '@minecraft/server-ui': `@forestoflight/minecraft-vitest-mocks/server-ui`,
       '@minecraft/debug-utilities': `@forestoflight/minecraft-vitest-mocks/debug-utilities`,
+      '@minecraft/server-gametest': `@forestoflight/minecraft-vitest-mocks/server-gametest`,
       'lib/canopy/Canopy': `${__dirname}/Canopy[BP]/scripts/lib/canopy/Canopy.js`,
       'src/commands/trackevent': `${__dirname}/Canopy[BP]/scripts/src/commands/trackevent.js`,
       'src/classes/Instaminable': `${__dirname}/Canopy[BP]/scripts/src/classes/Instaminable.js`,

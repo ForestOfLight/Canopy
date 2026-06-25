@@ -1,12 +1,11 @@
-import { BooleanRule } from "../../../lib/canopy/Canopy";
+import { BooleanRule, GlobalRule } from "../../../lib/canopy/Canopy";
 
 class SimplayerSaving extends BooleanRule {
     constructor() {
-        super({
+        super(GlobalRule.morphOptions({
             identifier: 'simplayerSaving',
-            description: { translate: 'rules.simplayerSaving' },
             defaultValue: true
-        });
+        }));
     }
 }
 

@@ -29,7 +29,15 @@ export class PlayerLookCommand extends VanillaCommand {
             ],
             permissionLevel: CommandPermissionLevel.Any,
             allowedSources: [PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin, ServerCommandOrigin],
-            callback: (origin, ...args) => this.playerlookCommand(origin, ...args)
+            callback: (origin, ...args) => this.playerlookCommand(origin, ...args),
+            wikiDescription: "Make the simulated player with the given name look at the specified target.\n\n" +
+                "Look Options:  \n" +
+                "- `up`, `down`, `north`, `south`, `east`, `west` will make the simulated player look in different cardinal directions.\n" +
+                "- `block` and `entity` will make the simulated player look at the block or entity you are looking at.\n" +
+                "- `me` will make the simulated player look at you.\n" +
+                "- `at <x y z>` will make the simulated player look at the specified coordinates. This does not support relative coordinates.\n" +
+                "- `rotation <x y>` will make the simulated player look in the specified rotation.\n" +
+                "- `stop` will make the simulated player stop looking at anything."
         });
     }
 

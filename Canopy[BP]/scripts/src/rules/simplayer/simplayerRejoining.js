@@ -1,4 +1,4 @@
-import { BooleanRule } from "../../../lib/canopy/Canopy";
+import { BooleanRule, GlobalRule } from "../../../lib/canopy/Canopy";
 import { system, world } from "@minecraft/server";
 import Understudies from "../../classes/simplayer/Understudies";
 
@@ -6,13 +6,12 @@ class SimplayerRejoining extends BooleanRule {
     simplayersToRejoinDP = 'simplayersToRejoin';
 
     constructor() {
-        super({
+        super(GlobalRule.morphOptions({
             identifier: 'simplayerRejoining',
-            description: { translate: 'rules.simplayerRejoining' },
             defaultValue: false,
             onEnableCallback: () => this.subscribeToEvent(),
             onDisableCallback: () => this.unsubscribeFromEvent()
-        });
+        }));
         this.onShutdownBound = this.onShutdown.bind(this);
     }
 
