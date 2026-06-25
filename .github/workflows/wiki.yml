@@ -19,7 +19,7 @@ jobs:
           repository: ${{ github.repository }}.wiki
           path: wiki
           ref: master
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.WIKI_PUSH_TOKEN }}
 
       - name: Use Commands.md template from template branch
         working-directory: wiki

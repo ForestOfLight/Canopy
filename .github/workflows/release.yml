@@ -23,9 +23,9 @@ jobs:
 
       - name: Install Regolith
         run: |
-          DOWNLOAD_URL=$(curl -sSL https://api.github.com/repos/Bedrock-OSS/regolith/releases/latest \
-            | jq -r '.assets[] | select(.name | test("linux_386\\.tar\\.gz")) | .browser_download_url')
-          curl -sSLf "$DOWNLOAD_URL" | tar -xz -C /usr/local/bin regolith
+          REGOLITH_VERSION=1.7.0
+          curl -sSLf "https://github.com/Bedrock-OSS/regolith/releases/download/${REGOLITH_VERSION}/regolith_${REGOLITH_VERSION}_linux_386.tar.gz" \
+            | tar -xz -C /usr/local/bin regolith
 
       - name: Run release profile
         run: regolith run release
