@@ -26,16 +26,17 @@ export class NoFog extends InfoDisplayShapeElement {
     }
 
     removeFog() {
+        this.clearFogSettings();
         this.playerFogComponent.push(this.getCurrentFogId(), NoFog.FOG_TAG);
         world.afterEvents.playerDimensionChange.subscribe(this.onDimensionChangeBound);
     }
 
     resetFog() {
         world.afterEvents.playerDimensionChange.unsubscribe(this.onDimensionChangeBound);
-        this.clearFog();
+        this.clearFogSettings();
     }
 
-    clearFog() {
+    clearFogSettings() {
         this.playerFogComponent.remove(NoFog.FOG_TAG);
     }
 
@@ -49,7 +50,7 @@ export class NoFog extends InfoDisplayShapeElement {
     }
 
     onDimensionChange() {
-        this.clearFog();
+        this.clearFogSettings();
         const fogRemovalId = this.getCurrentFogId();
         this.playerFogComponent.push(fogRemovalId, NoFog.FOG_TAG);
     }

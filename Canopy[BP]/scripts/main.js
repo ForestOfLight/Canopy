@@ -35,6 +35,22 @@ import './src/commands/lifetimequery'
 import './src/commands/lifetimequeryitem'
 import './src/commands/velocity'
 
+// Simulated Player Commands
+import './src/commands/simplayer/playerjoin'
+import './src/commands/simplayer/playerleave'
+import './src/commands/simplayer/playerrejoin'
+import './src/commands/simplayer/playertp'
+import './src/commands/simplayer/playerlook'
+import './src/commands/simplayer/playermove'
+import './src/commands/simplayer/playerselect'
+import './src/commands/simplayer/playersprint'
+import './src/commands/simplayer/playersneak'
+import './src/commands/simplayer/playerstop'
+import './src/commands/simplayer/playerswapheld'
+import './src/commands/simplayer/playerinventory'
+import './src/commands/simplayer/playerprefix'
+import './src/commands/simplayer/playeraction'
+
 // Script Events
 import './src/commands/scriptevents/counter'
 import './src/commands/scriptevents/spawn'
@@ -80,6 +96,10 @@ import './src/rules/serverSideCollisionBoxes'
 import './src/rules/entitySeparation'
 import './src/rules/enderPearlChunkLoading'
 import './src/rules/renderEndGatewayExits'
+
+// Simulated Player Rules
+import './src/rules/simplayer/simplayerSaving'
+import './src/rules/simplayer/simplayerRejoining'
 
 // Load Time Processes
 import './src/onStart'
