@@ -1,5 +1,5 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { system, CustomCommandStatus } from '@minecraft/server';
+import { system } from '@minecraft/server';
 import Understudies from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies';
 import { playerleaveCommand } from '../../../../../../Canopy[BP]/scripts/src/commands/simplayer/playerleave';
 
