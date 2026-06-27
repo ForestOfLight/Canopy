@@ -1,7 +1,15 @@
 import { CustomCommandParamType, CommandPermissionLevel, CustomCommandStatus } from "@minecraft/server";
 import { VanillaCommand, PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin, ServerCommandOrigin } from "../../../lib/canopy/Canopy";
 import Understudies from "../../classes/simplayer/Understudies";
-import { REPEATABLE_ACTIONS, TIMING_OPTIONS } from "../../classes/simplayer/RepeatableAction";
+import { REPEATABLE_ACTIONS } from "../../classes/simplayer/RepeatableAction";
+
+export const TIMING_OPTIONS = Object.freeze({
+    ONCE: 'once',
+    CONTINUOUS: 'continuous',
+    INTERVAL: 'interval',
+    AFTER: 'after',
+    STOP: 'stop'
+});
 
 export class PlayerActionCommand extends VanillaCommand {
     constructor() {
@@ -9,7 +17,7 @@ export class PlayerActionCommand extends VanillaCommand {
             name: 'canopy:playeraction',
             description: 'commands.playeraction',
             enums: [
-                { name: 'canopy:simplayerAction', values: Object.values(REPEATABLE_ACTIONS) },
+                { name: 'canopy:simplayerAction', values: [ ...Object.values(REPEATABLE_ACTIONS), "stop" ] },
                 { name: 'canopy:simplayerTimingOption', values: Object.values(TIMING_OPTIONS) }
             ],
             mandatoryParameters: [

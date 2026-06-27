@@ -1,8 +1,8 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { CustomCommandStatus } from '@minecraft/server';
 import Understudies from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies';
-import { playeractionCommand } from '../../../../../../Canopy[BP]/scripts/src/commands/simplayer/playeraction';
-import { REPEATABLE_ACTIONS, TIMING_OPTIONS } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/RepeatableAction';
+import { playeractionCommand, TIMING_OPTIONS } from '../../../../../../Canopy[BP]/scripts/src/commands/simplayer/playeraction';
+import { REPEATABLE_ACTIONS } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/RepeatableAction';
 
 vi.mock('../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies', () => ({
     default: {

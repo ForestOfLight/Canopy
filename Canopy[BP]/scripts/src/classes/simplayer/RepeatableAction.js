@@ -14,14 +14,6 @@ export const REPEATABLE_ACTIONS = Object.freeze({
     JUMP: 'jump'
 });
 
-export const TIMING_OPTIONS = Object.freeze({
-    ONCE: 'once',
-    CONTINUOUS: 'continuous',
-    INTERVAL: 'interval',
-    AFTER: 'after',
-    STOP: 'stop'
-});
-
 export class RepeatableAction {
     understudy;
     type;
