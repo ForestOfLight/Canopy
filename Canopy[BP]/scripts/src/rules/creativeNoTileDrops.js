@@ -29,8 +29,10 @@ export class CreativeNoTileDrops extends BooleanRule {
     }
 
     unsubscribeFromEvents() {
-        system.clearRun(this.#runner);
-        this.#runner = void 0;
+        if (this.#runner !== void 0) {
+            system.clearRun(this.#runner);
+            this.#runner = void 0;
+        }
         world.afterEvents.playerBreakBlock.unsubscribe(this.#onPlayerBreakBlockBound);
         world.afterEvents.entitySpawn.unsubscribe(this.#onEntitySpawnBound);
     }
