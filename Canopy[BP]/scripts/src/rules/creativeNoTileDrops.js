@@ -1,43 +1,66 @@
-import { BooleanRule, Rules } from "../../lib/canopy/Canopy";
-import { system, world, GameMode } from "@minecraft/server";
+import { BooleanRule, GlobalRule } from "../../lib/canopy/Canopy";
+import { system, world, GameMode, EntityInitializationCause } from "@minecraft/server";
 import { calcDistance } from "../../include/utils";
 
-const REMOVAL_DISTANCE = 2.5;
-
-new BooleanRule({
-    category: 'Rules',
-    identifier: 'creativeNoTileDrops',
-    description: { translate: 'rules.creativeNoTileDrops' },
-    wikiDescription: 'Enables/disables items dropping from blocks when breaking them in creative mode. Unlike the vanilla gamerule, this also suppresses drops from containers and only applies when you break them — not when they break in the world.'
-});
-
-let brokenBlockEventsThisTick = [];
-let brokenBlockEventsLastTick = [];
-
-system.runInterval(() => {
-    brokenBlockEventsLastTick = brokenBlockEventsThisTick;
+export class CreativeNoTileDrops extends BooleanRule {
+    REMOVAL_DISTANCE = 2.5;
+    
     brokenBlockEventsThisTick = [];
-});
+    brokenBlockEventsLastTick = [];
+    #runner = void 0;
+    #onPlayerBreakBlockBound;
+    #onEntitySpawnBound;
 
-world.afterEvents.playerBreakBlock.subscribe((blockEvent) => {
-    if (blockEvent.player?.getGameMode() !== GameMode.Creative 
-        || !Rules.getNativeValue('creativeNoTileDrops')) 
-        return;
-    brokenBlockEventsThisTick.push(blockEvent);
-});
+    constructor() {
+        super(GlobalRule.morphOptions({
+            identifier: 'creativeNoTileDrops',
+            wikiDescription: 'Removes items dropping from blocks and entities when removing them in creative mode. Unlike the vanilla gamerule, this also suppresses drops from containers and only applies when *you* break them - not when they break in the world.',
+            onEnableCallback: () => this.subscribeToEvents(),
+            onDisableCallback: () => this.unsubscribeFromEvents()
+        }));
+        this.#onPlayerBreakBlockBound = this.onPlayerBreakBlock.bind(this);
+        this.#onEntitySpawnBound = this.onEntitySpawn.bind(this);
+    }
 
-world.afterEvents.entitySpawn.subscribe((entityEvent) => {
-    if (entityEvent.cause !== 'Spawned' || entityEvent.entity.typeId !== 'minecraft:item') return;
-    if (!Rules.getNativeValue('creativeNoTileDrops')) return;
+    subscribeToEvents() {
+        this.#runner = system.runInterval(this.onTick.bind(this));
+        world.afterEvents.playerBreakBlock.subscribe(this.#onPlayerBreakBlockBound);
+        world.afterEvents.entitySpawn.subscribe(this.#onEntitySpawnBound);
+    }
 
-    const item = entityEvent.entity;
-    const brokenBlockEvents = brokenBlockEventsThisTick.concat(brokenBlockEventsLastTick);
-    const brokenBlockEvent = brokenBlockEvents.find(blockEvent => isItemWithinRemovalDistance(blockEvent.block.location, item));
-    if (!brokenBlockEvent) return;
+    unsubscribeFromEvents() {
+        system.clearRun(this.#runner);
+        this.#runner = void 0;
+        world.afterEvents.playerBreakBlock.unsubscribe(this.#onPlayerBreakBlockBound);
+        world.afterEvents.entitySpawn.unsubscribe(this.#onEntitySpawnBound);
+    }
+        
+    onTick() {
+        this.brokenBlockEventsLastTick = this.brokenBlockEventsThisTick;
+        this.brokenBlockEventsThisTick = [];
+    }
+    
+    onPlayerBreakBlock(blockEvent) {
+        if (blockEvent.player?.getGameMode() !== GameMode.Creative) 
+            return;
+        this.brokenBlockEventsThisTick.push(blockEvent);
+    }
+    
+    onEntitySpawn(entityEvent) {
+        if (entityEvent.entity.typeId !== 'minecraft:item', entityEvent.cause !== EntityInitializationCause.Spawned)
+            return;
+        const item = entityEvent.entity;
+        const brokenBlockEvents = this.brokenBlockEventsThisTick.concat(this.brokenBlockEventsLastTick);
+        const brokenBlockEvent = brokenBlockEvents.find(blockEvent => this.isItemWithinRemovalDistance(blockEvent.block.location, item));
+        if (!brokenBlockEvent)
+            return;
 
-    item.remove();
-});
-
-function isItemWithinRemovalDistance(location, item) {
-    return calcDistance(location, item.location) < REMOVAL_DISTANCE;
+        item.remove();
+    }
+    
+    isItemWithinRemovalDistance(location, item) {
+        return calcDistance(location, item.location) < this.REMOVAL_DISTANCE;
+    }
 }
+
+export const creativeNoTileDrops = new CreativeNoTileDrops();
