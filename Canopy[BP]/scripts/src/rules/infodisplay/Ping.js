@@ -11,7 +11,8 @@ export class Ping extends InfoDisplayTextElement {
     }
 
     getFormattedDataOwnLine() {
-        return { translate: 'rules.infoDisplay.ping.display', with: ['§a' + this.getPing()] };
+        const ping = this.getPing();
+        return { translate: 'rules.infoDisplay.ping.display', with: [this.getPingColor(ping) + ping] };
     }
 
     getFormattedDataSharedLine() {
@@ -20,5 +21,12 @@ export class Ping extends InfoDisplayTextElement {
 
     getPing() {
         return this.player.getPing();
+    }
+
+    getPingColor(ping) {
+        if (ping < 100) return '§a';
+        else if (ping < 300) return '§e';
+        else if (ping < 1000) return '§c';
+        return '§5';
     }
 }

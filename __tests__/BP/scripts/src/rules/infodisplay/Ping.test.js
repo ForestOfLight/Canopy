@@ -22,4 +22,23 @@ describe('Ping', () => {
     it('should have a method to return formatted ping', () => {
         expect(ping.getFormattedDataOwnLine()).toEqual({ translate: 'rules.infoDisplay.ping.display', with: ['§a' + mockPlayer.getPing()] });
     });
+
+    it('should color the ping value green when it is below 100ms', () => {
+        expect(ping.getFormattedDataOwnLine().with[0]).toContain('§a');
+    });
+
+    it('should color the ping value yellow when it is between 100ms and 300ms', () => {
+        mockPlayer.getPing.mockReturnValue(150);
+        expect(ping.getFormattedDataOwnLine().with[0]).toContain('§e');
+    });
+
+    it('should color the ping value red when it is above 300ms', () => {
+        mockPlayer.getPing.mockReturnValue(350);
+        expect(ping.getFormattedDataOwnLine().with[0]).toContain('§c');
+    });
+
+    it('should color the ping purple when it is above 1000ms', () => {
+        mockPlayer.getPing.mockReturnValue(1500);
+        expect(ping.getFormattedDataOwnLine().with[0]).toContain('§5');
+    });
 });
