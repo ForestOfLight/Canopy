@@ -118,7 +118,7 @@ commands.data.components=§aComponents:§r %s
 commands.data.tags=§aTags:§r %s
 commands.data.dynamicProperties=§aDynamicProperties:§r %1 total byte count: %2
 commands.data.effects=§aEffects:§r %s
-commands.data.other=§aOther:§r head location: %1, rotation: [%2, %3], velocity: %4, view direction: %5
+commands.data.other=§aOther:§r head location: %1, rotation: [%2, %3], velocity: %4, view direction: %5, AABB: %6
 
 commands.debugentity=Displays debug information about entities.
 commands.debugentity.invalidProperty=§cInvalid debug property.

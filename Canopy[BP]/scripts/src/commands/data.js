@@ -75,6 +75,7 @@ function formatEntityOutput(entity) {
     const rotation = entity.getRotation();
     const velocityStr = entity.getVelocity() ? stringifyLocation(entity.getVelocity(), 3) : 'none';
     const viewDirectionStr = entity.getViewDirection() ? stringifyLocation(entity.getViewDirection(), 2) : 'none';
+    const AABBStr = entity.getAABB() ? formatObject(entity, entity.getAABB(), true) : 'none';
     
     const message = {
         rawtext: [
@@ -85,7 +86,7 @@ function formatEntityOutput(entity) {
                 { translate: 'commands.data.dynamicProperties', with: [dynamicProperties, entity.getDynamicPropertyTotalByteCount().toString()] }, { text: '\n' },
                 { translate: 'commands.data.effects', with: [effects] }, { text: '\n' },
                 { translate: 'commands.data.tags', with: [tags] }, { text: '\n' },
-                { translate: 'commands.data.other', with: [headLocationStr, rotation.x.toFixed(2), rotation.y.toFixed(2), velocityStr, viewDirectionStr] }, { text: '\n' }
+                { translate: 'commands.data.other', with: [headLocationStr, rotation.x.toFixed(2), rotation.y.toFixed(2), velocityStr, viewDirectionStr, AABBStr] }, { text: '\n' }
             ]}
         ]
     }
@@ -157,22 +158,28 @@ function formatComponent(target, component) {
     return `\n  §7>§f ${component.typeId}§7 - {${output}}`;
 }
 
-function formatObject(target, object) {
+function formatObject(target, object, shouldColorTopLevel = false) {
     let output = '';
     for (const key in object) {
         try {
-            if (typeof object[key] === 'function') continue;
+            if (typeof object[key] === 'function')
+                continue;
             let value = object[key];
             if (target === value)
                 value = 'this';
             else if (typeof value === 'object')
-                formatObject(target, value);
+                value = formatObject(target, value, false);
             
-            output += `${key}=${JSON.stringify(value)}, `;
+            if (shouldColorTopLevel)
+                output += `§7${key}=§b${JSON.stringify(value)}§7, `;
+            else
+                output += `${key}=${JSON.stringify(value)}, `;
         } catch(error) {
             console.warn(error);
         }
     }
     output = output.slice(0, -2);
+    if (shouldColorTopLevel)
+        return `§7{${output}}§r`;
     return `{${output}}`;
 }
