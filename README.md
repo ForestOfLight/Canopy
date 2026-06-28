@@ -19,15 +19,12 @@ Whether you're optimizing farm rates, digging into game mechanics, or building u
 
 - **Live InfoDisplay** – Get real-time stats on TPS, light levels, biome info, block/entity details, and more.
 - **Farm & Spawn Tracking** – Optimize efficiency with hopper counters and precise spawn monitoring.
-- **Tick Speed Control** – Slow down ticks for in-depth technical analysis.
-- **Modular & Expandable** – Add functionality with extensions and community add-ons.
+- **Tick Speed Control** – Slow down ticks to see what's going on in your builds.
+- **Modular & Expandable** – Add functionality with community-built extensions.
+- **Simulated Players** - Spawn and control simulated players. 
 - **Built for Power and Performance** – Designed to run effectively and efficiently.
 
 **Explore all the features in the [Canopy Wiki](https://github.com/ForestOfLight/Canopy/wiki)!**
-
-## Looking for Simulated Players?
-
-Check out **[Understudy](https://github.com/ForestOfLight/Understudy)** – a **Canopy** extension that gives you complete control over simulated players in your world.
 
 ## Getting Started
 
