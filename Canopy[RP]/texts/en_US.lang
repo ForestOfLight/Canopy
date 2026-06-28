@@ -492,6 +492,7 @@ rules.infoDisplay.peekInventory=Shows the inventory of the block or entity you a
 rules.infoDisplay.peekInventory.empty=Empty
 rules.infoDisplay.ping=Shows your current network latency to the server.
 rules.infoDisplay.ping.display=Ping: %s
+rules.infoDisplay.renderLightLevel=Renders light level values on top of nearby blocks. Warning: This is a very laggy rule.
 rules.infoDisplay.renderSignalStrength=Renders signal strength values on top of nearby redstone dust.
 rules.infoDisplay.sessionTime=Shows the time since you joined the world.
 rules.infoDisplay.sessionTime.display=Session: %s

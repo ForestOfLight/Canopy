@@ -34,6 +34,7 @@ import { HeldItemDurability } from './HeldItemDurability';
 import { RenderSignalStrength } from './RenderSignalStrength';
 import { NoFog } from './NoFog';
 import { Ping } from './Ping';
+import { RenderLightLevel } from './RenderLightLevel';
 
 class InfoDisplay {
 	player;
@@ -77,6 +78,7 @@ class InfoDisplay {
 			new LiquidStates(player, 26),
 
 			new RenderSignalStrength(player),
+			new RenderLightLevel(player),
 			new NoFog(player)
 		];
 		InfoDisplay.playerToInfoDisplayMap[player.id] = this;
