@@ -19,7 +19,7 @@ export class CanopyCommand extends VanillaCommand {
             wikiDescription: 'Enable, disable, or set the value of a rule, open the rules menu, or display the Canopy version.',
             subCommandWikiDescription: {
                 '<rule: String>': {
-                    description: "Enable, disable, or set a rule's value. Omit the value to query the current setting.",
+                    description: "Enable, disable, or set a rule's value. Omit the value to query the current setting. Numeric values must be wrapped in quotes (e.g. `\"16\"`), as the vanilla command parser will not accept an unquoted number for this argument.",
                     params: ['value']
                 },
                 menu: {
