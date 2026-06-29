@@ -68,7 +68,6 @@ commands.canopy.menu.timeout=§8Menu habis masa berlakunya setelah %s tick.
 commands.canopy.menu.canceled=§8Menu dibatalkan. Aturan tidak diperbarui.
 commands.canopy.menu.submit=§aMenerapkan
 commands.canopy.single=Mengaktifkan atau menonaktifkan satu aturan.
-commands.canopy.multiple=Mengaktifkan atau menonaktifkan beberapa aturan.
 commands.canopy.infodisplayRule=§cAturan '%1' adalah bagian dari InfoDisplay, dan harus diubah menggunakan %2info. Ketik %2help untuk informasi lebih lanjut.
 
 commands.changedimension=Menteleportasi entitas ke dimensi yang ditentukan.

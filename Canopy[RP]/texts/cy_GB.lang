@@ -67,7 +67,6 @@ commands.canopy.menu.timeout=§8Daeth amser y ffurflen allan ar ôl %s ticiau.
 commands.canopy.menu.canceled=§8Ffurflen wedi'i chanslo. Ni ddiweddarwyd y rheolau.
 commands.canopy.menu.submit=§aYmgeisiwch
 commands.canopy.single=Yn addasu gwerth rheol sengl.
-commands.canopy.multiple=Yn addasu gwerth rheolau lluosog.
 commands.canopy.infodisplayRule=§cMae'r rheol '%1' yn rhan o'r GwybodaethArddangos, a rhaid ei newid gan ddefnyddio %2info. Defnyddiwch %2help am ragor o wybodaeth.
 
 commands.changedimension=Yn teleportio endidau i'r dimensiwn penodedig.
