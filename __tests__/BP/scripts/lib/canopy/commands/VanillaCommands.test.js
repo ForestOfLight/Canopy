@@ -48,3 +48,29 @@ describe('VanillaCommand.getSubCommandWikiDescription', () => {
         expect(cmd.getSubCommandWikiDescription()).toEqual({});
     });
 });
+
+describe('VanillaCommand.registerEnums', () => {
+    beforeEach(() => { VanillaCommands.clear(); });
+
+    it('registers array-valued enums as-is', () => {
+        const registry = { registerEnum: vi.fn() };
+        const cmd = new VanillaCommand({
+            name: 'canopy:arr', description: 'x', callback: vi.fn(),
+            enums: [{ name: 'canopy:arr', values: ['a', 'b'] }]
+        });
+        cmd.registerEnums(registry);
+        expect(registry.registerEnum).toHaveBeenCalledWith('canopy:arr', ['a', 'b']);
+    });
+
+    it('invokes function-valued enums at registration time', () => {
+        const registry = { registerEnum: vi.fn() };
+        const valuesFn = vi.fn(() => ['x', 'y', 'z']);
+        const cmd = new VanillaCommand({
+            name: 'canopy:fn', description: 'x', callback: vi.fn(),
+            enums: [{ name: 'canopy:fn', values: valuesFn }]
+        });
+        cmd.registerEnums(registry);
+        expect(valuesFn).toHaveBeenCalledTimes(1);
+        expect(registry.registerEnum).toHaveBeenCalledWith('canopy:fn', ['x', 'y', 'z']);
+    });
+});

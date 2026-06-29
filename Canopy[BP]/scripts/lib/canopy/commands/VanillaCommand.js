@@ -48,8 +48,12 @@ export class VanillaCommand {
 
     registerEnums(customCommandRegistry) {
         if (this.customCommand.enums) {
-            for (const customEnum of this.customCommand.enums)
-                customCommandRegistry.registerEnum(customEnum.name, customEnum.values);
+            for (const customEnum of this.customCommand.enums) {
+                const values = typeof customEnum.values === 'function'
+                    ? customEnum.values()
+                    : customEnum.values;
+                customCommandRegistry.registerEnum(customEnum.name, values);
+            }
         }
     }
 
