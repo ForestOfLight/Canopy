@@ -83,6 +83,13 @@ class Rules {
         return this.getAll().filter(rule => rule.getCategory() === category);
     }
 
+    static getSettableRuleIDs() {
+        const registered = this.getByCategory("Rules");
+        const queued = this.rulesToRegister.filter(rule => rule.getCategory() === "Rules");
+        const ids = new Set([...registered, ...queued].map(rule => rule.getID()));
+        return [...ids];
+    }
+
     static registerQueuedRules() {
         for (const rule of this.rulesToRegister)
             this.register(rule);

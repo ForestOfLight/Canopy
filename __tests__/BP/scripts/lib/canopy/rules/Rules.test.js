@@ -332,4 +332,24 @@ describe('Rules', () => {
             expect(testRules.length).toBe(0);
         });
     });
+
+    describe('Rules.getSettableRuleIDs', () => {
+        beforeEach(() => {
+            Rules.clear();
+            Rules.rulesToRegister = [];
+            Rules.worldLoaded = false;
+        });
+
+        it('returns IDs of queued "Rules"-category rules', () => {
+            new BooleanRule({ category: 'Rules', identifier: 'queuedRuleA', defaultValue: false });
+            new BooleanRule({ category: 'Rules', identifier: 'queuedRuleB', defaultValue: false });
+            expect(Rules.getSettableRuleIDs().sort()).toEqual(['queuedRuleA', 'queuedRuleB']);
+        });
+
+        it('excludes rules outside the "Rules" category', () => {
+            new BooleanRule({ category: 'Rules', identifier: 'settable', defaultValue: false });
+            new BooleanRule({ category: 'InfoDisplay', identifier: 'displayOnly', defaultValue: false });
+            expect(Rules.getSettableRuleIDs()).toEqual(['settable']);
+        });
+    });
 });
