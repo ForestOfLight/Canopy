@@ -6,10 +6,11 @@ class Rules {
     static worldLoaded = false;
 
     static async register(rule) {
+        const ruleID = rule.getID();
         if (this.worldLoaded) {
-            if (this.exists(rule.getID())) 
-                throw new Error(`[Canopy] Rule with identifier '${rule.getID()}' already exists.`);
-            this.#rules[rule.getID()] = rule;
+            if (this.exists(ruleID)) 
+                throw new Error(`[Canopy] Rule with identifier '${ruleID}' already exists.`);
+            this.#rules[ruleID] = rule;
             if (rule.getCategory() === "Rules") {
                 await Promise.resolve();
                 const value = await rule.getValue();
@@ -19,6 +20,9 @@ class Rules {
                     rule.onModify(value);
             }
         } else {
+            const alreadyQueued = this.rulesToRegister.some(queuedRule => queuedRule.getID() === ruleID);
+            if (alreadyQueued || this.exists(ruleID))
+                return;
             this.rulesToRegister.push(rule);
         }
     }

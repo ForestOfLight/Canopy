@@ -246,6 +246,23 @@ describe('Rules', () => {
             expect(Rules.get('queued_rule')).toBe(mockRule);
             expect(Rules.rulesToRegister).toHaveLength(0);
         });
+
+        it('should not queue duplicate rule identifiers before world load', async () => {
+            Rules.clear();
+            Rules.worldLoaded = false;
+            const firstRule = { getID: () => 'queued_rule', getCategory: () => 'test' };
+            const duplicateRule = { getID: () => 'queued_rule', getCategory: () => 'test' };
+
+            await Rules.register(firstRule);
+            await Rules.register(duplicateRule);
+
+            expect(Rules.rulesToRegister).toHaveLength(1);
+            expect(Rules.rulesToRegister[0]).toBe(firstRule);
+
+            Rules.worldLoaded = true;
+            await Rules.registerQueuedRules();
+            expect(Rules.get('queued_rule')).toBe(firstRule);
+        });
     });
 
     describe('register with worldLoaded and Rules category', () => {

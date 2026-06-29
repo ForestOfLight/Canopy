@@ -1,4 +1,4 @@
-import { InfoDisplayRule, Rules } from '../../../lib/canopy/Canopy';
+import { InfoDisplayRule } from '../../../lib/canopy/Canopy';
 
 class InfoDisplayElement {
     identifier;
@@ -11,7 +11,7 @@ class InfoDisplayElement {
         if (!ruleData.identifier || !ruleData.description) 
             throw new Error("ruleData must have 'identifier' and 'description' properties.");
         this.identifier = ruleData.identifier;
-        this.rule = Rules.get(this.identifier) || new InfoDisplayRule({ identifier: this.identifier, ...ruleData });
+        this.rule = InfoDisplayRule.get(this.identifier) || new InfoDisplayRule({ identifier: this.identifier, ...ruleData });
         this.isWorldwide = isWorldwide;
     }
 }
