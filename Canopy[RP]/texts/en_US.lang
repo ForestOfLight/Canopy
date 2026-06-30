@@ -58,11 +58,11 @@ commands.camera.spectate.hardcore=§cPrevented you from spectating. Spectating i
 commands.camera.spectate.flying=§cYou must be on the ground to spectate.
 commands.camera.invalidaction=§cInvalid camera action.
 
-commands.canopy=Enable, disable, or set a rule. Wrap numeric values in quotes, e.g. "16".
+commands.canopy=Set a rule value. Wrap numeric values in quotes, e.g. "16".
 commands.canopy.version=Displays the current version of Canopy and all loaded extensions.
 commands.canopy.version.message=§7This server is running §l§aCanopy§r
 commands.canopy.version.extensions=§7Loaded extensions:
-commands.canopy.menu=Displays a menu to toggle rules.
+commands.canopy.menu=Displays a menu to set rule values.
 commands.canopy.menu.busy=§8Close your chat window to access the form.
 commands.canopy.menu.timeout=§8Form timed out after %s ticks.
 commands.canopy.menu.canceled=§8Form canceled. Rules were not updated.
