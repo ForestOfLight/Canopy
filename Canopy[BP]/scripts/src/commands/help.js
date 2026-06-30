@@ -45,13 +45,13 @@ function populateNativeCommandPages(helpBook) {
 }
 
 function populateNativeRulePages(helpBook, player) {
-    const infoDisplayPage = new InfoDisplayRuleHelpPage({ title: 'InfoDisplay', description: { translate: 'commands.help.infodisplay' }, usage: Commands.getPrefix() + 'info <rule/all> <true/false>' });
+    const infoDisplayPage = new InfoDisplayRuleHelpPage({ title: 'InfoDisplay', description: { translate: 'commands.help.infodisplay' }, usage: '/info <rule> <true/false>' });
     const infoDisplayRules = InfoDisplayRule.getAll();
     helpBook.newPage(infoDisplayPage);
     for (const infoDisplayRule of infoDisplayRules)
         helpBook.addEntry(infoDisplayRule.getCategory(), infoDisplayRule, player);
 
-    const rulesPage = new RuleHelpPage({ title: 'Rules', description: { translate: 'commands.help.rules' }, usage: Commands.getPrefix() + 'canopy <rule> <true/false>' });
+    const rulesPage = new RuleHelpPage({ title: 'Rules', description: { translate: 'commands.help.rules' }, usage: '/canopy <rule> <true/false>' });
     const globalRules = Rules.getByCategory('Rules').sort((a, b) => a.getID().localeCompare(b.getID())).filter(rule => !rule.getExtension());
     helpBook.newPage(rulesPage);
     for (const rule of globalRules)
@@ -68,7 +68,7 @@ function populateExtensionRulePages(helpBook) {
     for (const extension of extensions) {
         const rules = extension.getRules();
         if (rules.length > 0) {
-            const rulePage = new RuleHelpPage({ title: `Rules`, description: { translate: 'commands.help.extension.rules', with: [extension.getName()] }, usage: Commands.getPrefix() + `canopy <rule> <true/false>` }, extension.getName());
+            const rulePage = new RuleHelpPage({ title: `Rules`, description: { translate: 'commands.help.extension.rules', with: [extension.getName()] }, usage: '/canopy <rule> <true/false>' }, extension.getName());
             helpBook.newPage(rulePage);
             for (const rule of rules) 
                 helpBook.addEntry(rulePage.title, rule);
