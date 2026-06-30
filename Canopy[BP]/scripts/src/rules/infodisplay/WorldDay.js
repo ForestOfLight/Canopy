@@ -1,9 +1,11 @@
 import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 import { world } from '@minecraft/server';
 
+export const WORLD_DAY_IDENTIFIER = 'worldDay';
+
 class WorldDay extends InfoDisplayTextElement {
     constructor(displayLine) {
-        const ruleData = { identifier: 'worldDay', description: { translate: 'rules.infoDisplay.worldDay' }, wikiDescription: 'Shows the count of Minecraft days elapsed since the world was created.' };
+        const ruleData = { identifier: WORLD_DAY_IDENTIFIER, description: { translate: 'rules.infoDisplay.worldDay' }, wikiDescription: 'Shows the count of Minecraft days elapsed since the world was created.' };
         super(ruleData, displayLine, true);
     }
 

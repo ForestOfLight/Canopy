@@ -1,12 +1,14 @@
 import { InfoDisplayTextElement } from './InfoDisplayTextElement.js'
 import { playerChangeSubChunkEvent } from '../../events/PlayerChangeSubChunkEvent.js'
 
+export const SLIME_CHUNK_IDENTIFIER = 'slimeChunk';
+
 export class SlimeChunk extends InfoDisplayTextElement {
     player;
     infoMessage = { text: '' };
 
     constructor(player, displayLine) {
-        const ruleData = { identifier: 'slimeChunk', description: { translate: 'rules.infoDisplay.slimeChunk' }, wikiDescription: 'Shows whether the chunk you are currently standing in is a slime chunk.' };
+        const ruleData = { identifier: SLIME_CHUNK_IDENTIFIER, description: { translate: 'rules.infoDisplay.slimeChunk' }, wikiDescription: 'Shows whether the chunk you are currently standing in is a slime chunk.' };
         super(ruleData, displayLine);
         this.player = player;
         playerChangeSubChunkEvent.subscribe(this.onPlayerChangeSubChunk.bind(this));

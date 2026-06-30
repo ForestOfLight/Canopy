@@ -2,11 +2,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Player } from '@minecraft/server';
 import { PlayerCommandOrigin, Rules, InfoDisplayRule } from '../../../../../Canopy[BP]/scripts/lib/canopy/Canopy';
 import { InfoDisplayCommand, infoCommand } from '../../../../../Canopy[BP]/scripts/src/commands/info';
+import { INFODISPLAY_RULE_IDENTIFIERS } from '../../../../../Canopy[BP]/scripts/src/rules/infodisplay/infoDisplayIdentifiers';
 
 describe('InfoDisplayCommand.getRuleEnumValues', () => {
-    it('appends menu to the InfoDisplay rule IDs', () => {
-        vi.spyOn(Rules, 'getRuleIDsByCategory').mockReturnValue(['showCoords', 'showBiome']);
-        expect(InfoDisplayCommand.getRuleEnumValues()).toEqual(['showCoords', 'showBiome', 'menu']);
+    it('returns every InfoDisplay rule identifier followed by menu', () => {
+        expect(InfoDisplayCommand.getRuleEnumValues()).toEqual([...INFODISPLAY_RULE_IDENTIFIERS, 'menu']);
     });
 });
 

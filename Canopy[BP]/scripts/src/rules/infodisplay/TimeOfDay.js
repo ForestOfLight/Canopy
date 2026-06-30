@@ -1,9 +1,11 @@
 import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 import { world } from '@minecraft/server';
 
+export const TIME_OF_DAY_IDENTIFIER = 'timeOfDay';
+
 class TimeOfDay extends InfoDisplayTextElement {
     constructor(displayLine) {
-		const ruleData = { identifier: 'timeOfDay', description: { translate: 'rules.infoDisplay.timeOfDay' }, wikiDescription: 'Shows the Minecraft day-cycle time displayed as a 12-hour digital clock.' };
+		const ruleData = { identifier: TIME_OF_DAY_IDENTIFIER, description: { translate: 'rules.infoDisplay.timeOfDay' }, wikiDescription: 'Shows the Minecraft day-cycle time displayed as a 12-hour digital clock.' };
         super(ruleData, displayLine, true);
     }
 

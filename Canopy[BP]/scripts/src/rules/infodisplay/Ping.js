@@ -1,10 +1,12 @@
 import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 
+export const PING_IDENTIFIER = 'ping';
+
 export class Ping extends InfoDisplayTextElement {
     player;
 
     constructor(player, displayLine) {
-        const ruleData = { identifier: 'ping', description: { translate: 'rules.infoDisplay.ping' }, wikiDescription: 'Shows your current network latency to the server.' };
+        const ruleData = { identifier: PING_IDENTIFIER, description: { translate: 'rules.infoDisplay.ping' }, wikiDescription: 'Shows your current network latency to the server.' };
         super(ruleData, displayLine);
         this.player = player;
         player.setDynamicProperty('joinDate', Date.now());

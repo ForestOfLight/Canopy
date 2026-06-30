@@ -1,11 +1,13 @@
 import { InfoDisplayTextElement } from "./InfoDisplayTextElement.js";
 import { Vector } from "../../../lib/Vector.js";
 
+export const ENTITIES_IDENTIFIER = 'entities';
+
 class Entities extends InfoDisplayTextElement {
     player;
 
     constructor(player, displayLine) {
-        const ruleData = { identifier: 'entities', description: { translate: 'rules.infoDisplay.entities' }, wikiDescription: 'Shows the number of entities in front of your player. If there are many entities in the world, having this enabled may cause lag.' };
+        const ruleData = { identifier: ENTITIES_IDENTIFIER, description: { translate: 'rules.infoDisplay.entities' }, wikiDescription: 'Shows the number of entities in front of your player. If there are many entities in the world, having this enabled may cause lag.' };
         super(ruleData, displayLine);
         this.player = player;
     }

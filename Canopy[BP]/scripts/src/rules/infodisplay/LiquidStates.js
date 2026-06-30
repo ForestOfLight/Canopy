@@ -1,12 +1,14 @@
 import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 import { LiquidType } from '@minecraft/server';
 
+export const LIQUID_STATES_IDENTIFIER = 'liquidStates';
+
 export class LiquidStates extends InfoDisplayTextElement {
     player;
 
     constructor(player, displayLine) {
         const ruleData = {
-            identifier: 'liquidStates',
+            identifier: LIQUID_STATES_IDENTIFIER,
             description: { translate: 'rules.infoDisplay.liquidStates' },
             wikiDescription: 'Shows the states of the liquid you are targeting.'
         }

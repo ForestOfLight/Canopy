@@ -1,6 +1,8 @@
 import { EntityComponentTypes, world } from "@minecraft/server";
 import { InfoDisplayShapeElement } from "./InfoDisplayShapeElement";
 
+export const NO_FOG_IDENTIFIER = 'noFog';
+
 export class NoFog extends InfoDisplayShapeElement {
     static FOG_REMOVAL_IDS = {
         "minecraft:overworld": "canopy:overworld_no_fog",
@@ -13,7 +15,7 @@ export class NoFog extends InfoDisplayShapeElement {
 
     constructor(player) {
         const ruleData = {
-            identifier: 'noFog',
+            identifier: NO_FOG_IDENTIFIER,
             description: { translate: 'rules.infoDisplay.noFog' },
             wikiDescription: `Disables the fog effect for the player. Water and lava are unaffected.`,
             onEnableCallback: () => this.removeFog(),

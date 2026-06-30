@@ -1,10 +1,12 @@
 import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 
+export const CARDINAL_FACING_IDENTIFIER = 'cardinalFacing';
+
 class CardinalFacing extends InfoDisplayTextElement {
     player;
 
     constructor(player, displayLine) {
-        const ruleData = { identifier: 'cardinalFacing', description: { translate: 'rules.infoDisplay.cardinalFacing' }, wikiDescription: 'Shows which direction you are facing using cardinal directions (N, S, E, W) and the corresponding coordinate axis (e.g., N (-z)).' };
+        const ruleData = { identifier: CARDINAL_FACING_IDENTIFIER, description: { translate: 'rules.infoDisplay.cardinalFacing' }, wikiDescription: 'Shows which direction you are facing using cardinal directions (N, S, E, W) and the corresponding coordinate axis (e.g., N (-z)).' };
         super(ruleData, displayLine);
         this.player = player;
     }

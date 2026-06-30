@@ -1,9 +1,11 @@
 import { InfoDisplayTextElement } from "./InfoDisplayTextElement";
 import { getRaycastResults, parseName, stringifyLocation } from "../../../include/utils";
 
+export const TARGET_IDENTIFIER = 'target';
+
 export class Target extends InfoDisplayTextElement {
     constructor(player, displayLine) {
-        const ruleData = { identifier: 'target', description: { translate: 'rules.infoDisplay.target' }, wikiDescription: 'Shows the identifier of the block or entity you are targeting.' };
+        const ruleData = { identifier: TARGET_IDENTIFIER, description: { translate: 'rules.infoDisplay.target' }, wikiDescription: 'Shows the identifier of the block or entity you are targeting.' };
         super(ruleData, displayLine);
         this.player = player;
     }

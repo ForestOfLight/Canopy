@@ -1,9 +1,11 @@
 import { getColorByDimension } from '../../../include/utils.js';
 import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 
+export const DIMENSION_IDENTIFIER = 'dimension';
+
 class Dimension extends InfoDisplayTextElement {
     constructor(player, displayLine) {
-        const ruleData = { identifier: 'dimension', description: { translate: 'rules.infoDisplay.dimension' }, wikiDescription: 'Shows your current dimension\'s identifier.' };
+        const ruleData = { identifier: DIMENSION_IDENTIFIER, description: { translate: 'rules.infoDisplay.dimension' }, wikiDescription: 'Shows your current dimension\'s identifier.' };
         super(ruleData, displayLine);
         this.player = player;
     }

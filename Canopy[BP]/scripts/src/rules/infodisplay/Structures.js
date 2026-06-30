@@ -1,11 +1,13 @@
 import { InfoDisplayTextElement } from "./InfoDisplayTextElement";
 
+export const STRUCTURES_IDENTIFIER = 'structures';
+
 export class Structures extends InfoDisplayTextElement {
     player;
 
     constructor(player, displayLine) {
         const ruleData = {
-            identifier: 'structures',
+            identifier: STRUCTURES_IDENTIFIER,
             description: { translate: 'rules.infoDisplay.structures' },
             wikiDescription: 'Shows naturally generated structures present at your current location.'
         }

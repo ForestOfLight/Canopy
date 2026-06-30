@@ -3,6 +3,8 @@ import { BlockVolume } from '@minecraft/server';
 import { SignalStrengthRenderer } from '../../classes/SignalStrengthRenderer';
 import { Vector } from '../../../lib/Vector';
 
+export const RENDER_SIGNAL_STRENGTH_IDENTIFIER = 'renderSignalStrength';
+
 class RenderSignalStrength extends InfoDisplayShapeElement {
     player;
     playerId;
@@ -11,7 +13,7 @@ class RenderSignalStrength extends InfoDisplayShapeElement {
 
     constructor(player) {
         const ruleData = {
-            identifier: 'renderSignalStrength',
+            identifier: RENDER_SIGNAL_STRENGTH_IDENTIFIER,
             description: { translate: 'rules.infoDisplay.renderSignalStrength' },
             wikiDescription: `Renders the signal strength of nearby redstone dust in the world. Only renders for redstone dust within ${RenderSignalStrength.RENDER_DISTANCE} blocks from the player to avoid excessive rendering.`,
             onEnableCallback: () => this.start(),

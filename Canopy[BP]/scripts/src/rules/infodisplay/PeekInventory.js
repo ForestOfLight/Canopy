@@ -3,11 +3,13 @@ import { getRaycastResults, getClosestTarget } from "../../../include/utils";
 import { currentQuery } from "../../commands/peek";
 import { ItemStack } from "@minecraft/server";
 
+export const PEEK_INVENTORY_IDENTIFIER = 'peekInventory';
+
 class PeekInventory extends InfoDisplayTextElement {
     player;
 
     constructor(player, displayLine) {
-		const ruleData = { identifier: 'peekInventory',
+		const ruleData = { identifier: PEEK_INVENTORY_IDENTIFIER,
 			description: { translate: 'rules.infoDisplay.peekInventory' },
 			contingentRules: ['target'],
 			globalContingentRules: ['allowPeekInventory'],

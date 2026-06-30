@@ -2,12 +2,14 @@ import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 import { Vector } from '../../../lib/Vector.js';
 import { TicksPerSecond } from '@minecraft/server';
 
+export const SPEED_IDENTIFIER = 'speed';
+
 export class Speed extends InfoDisplayTextElement {
     player;
 
     constructor(player, displayLine) {
         const ruleData = {
-            identifier: 'speed',
+            identifier: SPEED_IDENTIFIER,
             description: { translate: 'rules.infoDisplay.speed' },
             wikiDescription: 'Shows your current movement speed in meters per second.'
         }

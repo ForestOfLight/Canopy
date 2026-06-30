@@ -1,10 +1,12 @@
 import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 
+export const COORDS_IDENTIFIER = 'coords';
+
 class Coords extends InfoDisplayTextElement {
     player;
 
     constructor(player, displayLine) {
-        const ruleData = { identifier: 'coords', description: { translate: 'rules.infoDisplay.coords' }, wikiDescription: 'Shows your coordinates truncated at 2 decimal places.' };
+        const ruleData = { identifier: COORDS_IDENTIFIER, description: { translate: 'rules.infoDisplay.coords' }, wikiDescription: 'Shows your coordinates truncated at 2 decimal places.' };
         super(ruleData, displayLine);
         this.player = player;
     }
