@@ -352,4 +352,45 @@ describe('Rules', () => {
             expect(Rules.getSettableRuleIDs()).toEqual(['settable']);
         });
     });
+
+    describe('Rules.getRuleIDsByCategory', () => {
+        beforeEach(() => {
+            Rules.clear();
+            Rules.rulesToRegister = [];
+            Rules.worldLoaded = false;
+        });
+
+        it('returns IDs of queued rules in the given category', () => {
+            new BooleanRule({ category: 'InfoDisplay', identifier: 'showCoords', defaultValue: false });
+            new BooleanRule({ category: 'InfoDisplay', identifier: 'showBiome', defaultValue: false });
+            expect(Rules.getRuleIDsByCategory('InfoDisplay').sort()).toEqual(['showBiome', 'showCoords']);
+        });
+
+        it('excludes rules outside the requested category', () => {
+            new BooleanRule({ category: 'InfoDisplay', identifier: 'showCoords', defaultValue: false });
+            new BooleanRule({ category: 'Rules', identifier: 'settable', defaultValue: false });
+            expect(Rules.getRuleIDsByCategory('InfoDisplay')).toEqual(['showCoords']);
+        });
+
+        it('deduplicates IDs that appear in both registered and queued sources', () => {
+            Rules.worldLoaded = true;
+            new BooleanRule({ category: 'InfoDisplay', identifier: 'showCoords', defaultValue: false });
+            Rules.rulesToRegister = [{ getID: () => 'showCoords', getCategory: () => 'InfoDisplay' }];
+            expect(Rules.getRuleIDsByCategory('InfoDisplay')).toEqual(['showCoords']);
+        });
+    });
+
+    describe('Rules.getSettableRuleIDs delegation', () => {
+        beforeEach(() => {
+            Rules.clear();
+            Rules.rulesToRegister = [];
+            Rules.worldLoaded = false;
+        });
+
+        it('returns only "Rules"-category IDs via getRuleIDsByCategory', () => {
+            new BooleanRule({ category: 'Rules', identifier: 'settable', defaultValue: false });
+            new BooleanRule({ category: 'InfoDisplay', identifier: 'showCoords', defaultValue: false });
+            expect(Rules.getSettableRuleIDs()).toEqual(['settable']);
+        });
+    });
 });

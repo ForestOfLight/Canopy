@@ -83,11 +83,15 @@ class Rules {
         return this.getAll().filter(rule => rule.getCategory() === category);
     }
 
-    static getSettableRuleIDs() {
-        const registered = this.getByCategory("Rules");
-        const queued = this.rulesToRegister.filter(rule => rule.getCategory() === "Rules");
+    static getRuleIDsByCategory(category) {
+        const registered = this.getByCategory(category);
+        const queued = this.rulesToRegister.filter(rule => rule.getCategory() === category);
         const ids = new Set([...registered, ...queued].map(rule => rule.getID()));
         return [...ids];
+    }
+
+    static getSettableRuleIDs() {
+        return this.getRuleIDsByCategory("Rules");
     }
 
     static registerQueuedRules() {
