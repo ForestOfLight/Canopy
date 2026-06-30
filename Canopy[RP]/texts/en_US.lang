@@ -182,12 +182,9 @@ commands.hss.stopped=§7Stopped displaying hardcoded spawn spots.
 commands.hss.alreadyrunning=§cYou are already finding fortress hardcoded spawn spots.
 commands.hss.notrunning=§cYou are not currently finding fortress hardcoded spawn spots.
 
-commands.info=Toggle InfoDisplay rules. (Alias: i)
+commands.info=Toggle InfoDisplay rules.
 commands.info.menu=Displays a menu to toggle InfoDisplay rules.
 commands.info.single=Toggle a single InfoDisplay rule.
-commands.info.multiple=Toggle multiple InfoDisplay rules.
-commands.info.all=Toggle all InfoDisplay rules.
-commands.info.allupdated=§7All InfoDisplay rules are now §l
 commands.info.canopyRule=§cThe rule '%1' is global rule, and must be toggled using %2canopy. Use %2help for more information.
 
 commands.jump=Teleport to the block you are targeting. (Alias: j)
