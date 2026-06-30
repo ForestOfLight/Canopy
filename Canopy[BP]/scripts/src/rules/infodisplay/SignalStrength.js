@@ -1,13 +1,15 @@
 import { InfoDisplayTextElement } from "./InfoDisplayTextElement";
 import { getRaycastResults } from "../../../include/utils";
 
-export const SIGNAL_STRENGTH_IDENTIFIER = 'signalStrength';
-
 class SignalStrength extends InfoDisplayTextElement {
+    static getRuleIdentifier() {
+        return 'signalStrength';
+    }
+
     player;
 
     constructor(player, displayLine) {
-        const ruleData = { identifier: SIGNAL_STRENGTH_IDENTIFIER, description: { translate: 'rules.infoDisplay.signalStrength' }, contingentRules: ['target'], wikiDescription: 'Shows the redstone signal strength of the block you are targeting.' };
+        const ruleData = { description: { translate: 'rules.infoDisplay.signalStrength' }, contingentRules: ['target'], wikiDescription: 'Shows the redstone signal strength of the block you are targeting.' };
         super(ruleData, displayLine, false);
         this.player = player;
     }

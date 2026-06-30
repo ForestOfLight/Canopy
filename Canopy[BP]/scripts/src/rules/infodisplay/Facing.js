@@ -1,12 +1,14 @@
 import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 
-export const FACING_IDENTIFIER = 'facing';
-
 class Facing extends InfoDisplayTextElement {
+    static getRuleIdentifier() {
+        return 'facing';
+    }
+
     player;
 
     constructor(player, displayLine) {
-        const ruleData = { identifier: FACING_IDENTIFIER, description: { translate: 'rules.infoDisplay.facing' }, wikiDescription: 'Shows your exact facing direction using yaw and pitch values.' };
+        const ruleData = { description: { translate: 'rules.infoDisplay.facing' }, wikiDescription: 'Shows your exact facing direction using yaw and pitch values.' };
         super(ruleData, displayLine);
         this.player = player;
     }

@@ -3,14 +3,15 @@ import { getRaycastResults, getClosestTarget } from "../../../include/utils";
 import { currentQuery } from "../../commands/peek";
 import { ItemStack } from "@minecraft/server";
 
-export const PEEK_INVENTORY_IDENTIFIER = 'peekInventory';
-
 class PeekInventory extends InfoDisplayTextElement {
+    static getRuleIdentifier() {
+        return 'peekInventory';
+    }
+
     player;
 
     constructor(player, displayLine) {
-		const ruleData = { identifier: PEEK_INVENTORY_IDENTIFIER,
-			description: { translate: 'rules.infoDisplay.peekInventory' },
+		const ruleData = {			description: { translate: 'rules.infoDisplay.peekInventory' },
 			contingentRules: ['target'],
 			globalContingentRules: ['allowPeekInventory'],
 			wikiDescription: 'Shows the inventory of the block or entity you are targeting in your InfoDisplay. Requires the `allowPeekInventory` global rule to be enabled.'

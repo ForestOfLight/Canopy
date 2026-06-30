@@ -2,11 +2,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Player } from '@minecraft/server';
 import { PlayerCommandOrigin, Rules, InfoDisplayRule } from '../../../../../Canopy[BP]/scripts/lib/canopy/Canopy';
 import { InfoDisplayCommand, infoCommand } from '../../../../../Canopy[BP]/scripts/src/commands/info';
-import { INFODISPLAY_RULE_IDENTIFIERS } from '../../../../../Canopy[BP]/scripts/src/rules/infodisplay/infoDisplayIdentifiers';
+import { InfoDisplay } from '../../../../../Canopy[BP]/scripts/src/rules/infodisplay/InfoDisplay';
 
 describe('InfoDisplayCommand.getRuleEnumValues', () => {
     it('returns every InfoDisplay rule identifier followed by menu', () => {
-        expect(InfoDisplayCommand.getRuleEnumValues()).toEqual([...INFODISPLAY_RULE_IDENTIFIERS, 'menu']);
+        expect(InfoDisplayCommand.getRuleEnumValues()).toEqual([...InfoDisplay.getRuleIdentifiers(), 'menu']);
     });
 });
 

@@ -1,10 +1,12 @@
 import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 
-export const CHUNK_COORDS_IDENTIFIER = 'chunkCoords';
-
 class ChunkCoords extends InfoDisplayTextElement {
+    static getRuleIdentifier() {
+        return 'chunkCoords';
+    }
+
     constructor(player, displayLine) {
-        const ruleData = { identifier: CHUNK_COORDS_IDENTIFIER, description: { translate: 'rules.infoDisplay.chunkCoords' }, wikiDescription: 'Shows the coordinates of the chunk you are in and your relative position within that chunk.' };
+        const ruleData = { description: { translate: 'rules.infoDisplay.chunkCoords' }, wikiDescription: 'Shows the coordinates of the chunk you are in and your relative position within that chunk.' };
         super(ruleData, displayLine);
         this.player = player;
     }

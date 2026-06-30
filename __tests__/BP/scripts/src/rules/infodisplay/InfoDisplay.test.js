@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Rules } from '../../../../../../Canopy[BP]/scripts/lib/canopy/rules/Rules';
-import { INFODISPLAY_RULE_IDENTIFIERS } from '../../../../../../Canopy[BP]/scripts/src/rules/infodisplay/infoDisplayIdentifiers';
 import { InfoDisplay } from '../../../../../../Canopy[BP]/scripts/src/rules/infodisplay/InfoDisplay';
+import { InfoDisplayElement } from '../../../../../../Canopy[BP]/scripts/src/rules/infodisplay/InfoDisplayElement';
 
 vi.mock('@minecraft/server', async (importOriginal) => {
     const original = await importOriginal();
@@ -19,29 +19,38 @@ vi.mock('@minecraft/server', async (importOriginal) => {
 
 function createMockPlayer() {
     return {
-        id: 'drift-test-player',
+        id: 'info-display-test-player',
         getComponent: vi.fn(() => ({ push: vi.fn(), remove: vi.fn() })),
         getDynamicProperty: vi.fn(() => undefined),
         setDynamicProperty: vi.fn()
     };
 }
 
-describe('INFODISPLAY_RULE_IDENTIFIERS registry', () => {
+describe('InfoDisplayElement.getRuleIdentifier enforcement', () => {
+    it('throws when a subclass does not implement getRuleIdentifier', () => {
+        class Unidentified extends InfoDisplayElement {}
+        expect(() => Unidentified.getRuleIdentifier()).toThrow(/getRuleIdentifier/);
+        expect(() => new Unidentified({ description: { text: '' } })).toThrow(/getRuleIdentifier/);
+    });
+});
+
+describe('InfoDisplay.getRuleIdentifiers', () => {
     beforeEach(() => {
         Rules.clear();
         Rules.rulesToRegister = [];
     });
 
-    it('contains no duplicate identifiers', () => {
-        expect(new Set(INFODISPLAY_RULE_IDENTIFIERS).size).toBe(INFODISPLAY_RULE_IDENTIFIERS.length);
+    it('returns the identifiers with no duplicates', () => {
+        const identifiers = InfoDisplay.getRuleIdentifiers();
+        expect(new Set(identifiers).size).toBe(identifiers.length);
     });
 
     it('matches the InfoDisplay rules actually registered when an InfoDisplay is built', () => {
         new InfoDisplay(createMockPlayer());
         const registered = Rules.getByCategory('InfoDisplay').map(rule => rule.getID());
 
-        // Both directions: every registered rule is in the list, and every list entry is registered.
-        expect(new Set(registered)).toEqual(new Set(INFODISPLAY_RULE_IDENTIFIERS));
-        expect(registered).toHaveLength(INFODISPLAY_RULE_IDENTIFIERS.length);
+        // Single source (InfoDisplay.elementSpecs) drives both, so these can never diverge.
+        expect(new Set(registered)).toEqual(new Set(InfoDisplay.getRuleIdentifiers()));
+        expect(registered).toHaveLength(InfoDisplay.getRuleIdentifiers().length);
     });
 });

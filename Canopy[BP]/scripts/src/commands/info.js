@@ -2,7 +2,7 @@ import { VanillaCommand, PlayerCommandOrigin, InfoDisplayRule, Commands, Rules }
 import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, system } from "@minecraft/server";
 import { ModalFormData } from "@minecraft/server-ui";
 import { forceShow } from "../../include/utils";
-import { INFODISPLAY_RULE_IDENTIFIERS } from "../rules/infodisplay/infoDisplayIdentifiers";
+import { InfoDisplay } from "../rules/infodisplay/InfoDisplay";
 
 export class InfoDisplayCommand extends VanillaCommand {
     constructor() {
@@ -30,7 +30,7 @@ export class InfoDisplayCommand extends VanillaCommand {
     }
 
     static getRuleEnumValues() {
-        return [...INFODISPLAY_RULE_IDENTIFIERS, 'menu'];
+        return [...InfoDisplay.getRuleIdentifiers(), 'menu'];
     }
 
     infoCommand(origin, rule, value) {

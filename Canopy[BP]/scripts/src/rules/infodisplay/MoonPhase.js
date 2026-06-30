@@ -1,11 +1,13 @@
 import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 import { world } from '@minecraft/server';
 
-export const MOON_PHASE_IDENTIFIER = 'moonPhase';
-
 class MoonPhase extends InfoDisplayTextElement {
+    static getRuleIdentifier() {
+        return 'moonPhase';
+    }
+
     constructor(displayLine) {
-        const ruleData = { identifier: MOON_PHASE_IDENTIFIER, description: { translate: 'rules.infoDisplay.moonPhase' }, wikiDescription: 'Shows the current phase of the moon.' };
+        const ruleData = { description: { translate: 'rules.infoDisplay.moonPhase' }, wikiDescription: 'Shows the current phase of the moon.' };
         super(ruleData, displayLine, true);
     }
 

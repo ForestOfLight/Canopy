@@ -1,14 +1,15 @@
 import { EntityComponentTypes, EquipmentSlot, ItemComponentTypes } from '@minecraft/server';
 import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 
-export const HELD_ITEM_DURABILITY_IDENTIFIER = 'heldItemDurability';
-
 export class HeldItemDurability extends InfoDisplayTextElement {
+    static getRuleIdentifier() {
+        return 'heldItemDurability';
+    }
+
     player;
 
     constructor(player, displayLine) {
         const ruleData = {
-            identifier: HELD_ITEM_DURABILITY_IDENTIFIER,
             description: { translate: 'rules.infoDisplay.heldItemDurability' }
         };
         super(ruleData, displayLine);

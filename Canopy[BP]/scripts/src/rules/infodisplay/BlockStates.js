@@ -2,14 +2,15 @@ import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 import { getRaycastResults } from '../../../include/utils.js';
 import { LiquidType } from '@minecraft/server';
 
-export const BLOCK_STATES_IDENTIFIER = 'blockStates';
-
 export class BlockStates extends InfoDisplayTextElement {
+    static getRuleIdentifier() {
+        return 'blockStates';
+    }
+
     player;
 
     constructor(player, displayLine) {
         const ruleData = {
-            identifier: BLOCK_STATES_IDENTIFIER,
             description: { translate: 'rules.infoDisplay.blockStates' },
             wikiDescription: 'Shows the block states of the block you are targeting. Especially useful with [Construct](https://github.com/ForestOfLight/Construct), which shows desired block states as you build. Includes waterlogged status.'
         }

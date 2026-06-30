@@ -1,12 +1,14 @@
 import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 
-export const SESSION_TIME_IDENTIFIER = 'sessionTime';
-
 class SessionTime extends InfoDisplayTextElement {
+    static getRuleIdentifier() {
+        return 'sessionTime';
+    }
+
     player;
 
     constructor(player, displayLine) {
-        const ruleData = { identifier: SESSION_TIME_IDENTIFIER, description: { translate: 'rules.infoDisplay.sessionTime' }, wikiDescription: 'Shows the elapsed time since you joined the world in this session.' };
+        const ruleData = { description: { translate: 'rules.infoDisplay.sessionTime' }, wikiDescription: 'Shows the elapsed time since you joined the world in this session.' };
         super(ruleData, displayLine);
         this.player = player;
         player.setDynamicProperty('joinDate', Date.now());

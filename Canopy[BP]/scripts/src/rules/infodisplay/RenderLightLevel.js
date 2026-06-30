@@ -3,9 +3,11 @@ import { BlockVolume, LiquidType } from '@minecraft/server';
 import { LightLevelRenderer } from '../../classes/LightLevelRenderer';
 import { Vector } from '../../../lib/Vector';
 
-export const RENDER_LIGHT_LEVEL_IDENTIFIER = 'renderLightLevel';
-
 class RenderLightLevel extends InfoDisplayShapeElement {
+    static getRuleIdentifier() {
+        return 'renderLightLevel';
+    }
+
     player;
     playerId;
     static RENDER_DISTANCE = 4;
@@ -13,7 +15,6 @@ class RenderLightLevel extends InfoDisplayShapeElement {
 
     constructor(player) {
         const ruleData = {
-            identifier: RENDER_LIGHT_LEVEL_IDENTIFIER,
             description: { translate: 'rules.infoDisplay.renderLightLevel' },
             wikiDescription: `Renders the light level of nearby blocks in the world. Only renders for blocks within ${RenderLightLevel.RENDER_DISTANCE} blocks from the player to avoid excessive rendering. Warning: This rule can be very laggy.`,
             onEnableCallback: () => this.start(),

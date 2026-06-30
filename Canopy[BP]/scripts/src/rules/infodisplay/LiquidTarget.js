@@ -1,11 +1,13 @@
 import { InfoDisplayTextElement } from "./InfoDisplayTextElement";
 import { parseName, stringifyLocation } from "../../../include/utils";
 
-export const LIQUID_TARGET_IDENTIFIER = 'liquidTarget';
-
 export class LiquidTarget extends InfoDisplayTextElement {
+    static getRuleIdentifier() {
+        return 'liquidTarget';
+    }
+
     constructor(player, displayLine) {
-        const ruleData = { identifier: LIQUID_TARGET_IDENTIFIER, description: { translate: 'rules.infoDisplay.liquidTarget' }, wikiDescription: 'Shows the identifier of the liquid you are targeting.' };
+        const ruleData = { description: { translate: 'rules.infoDisplay.liquidTarget' }, wikiDescription: 'Shows the identifier of the liquid you are targeting.' };
         super(ruleData, displayLine);
         this.player = player;
     }
