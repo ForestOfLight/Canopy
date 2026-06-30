@@ -44,9 +44,6 @@ class InfoDisplay {
 	static playerToInfoDisplayMap = {};
 	static currentTickWorldwideElementData = {};
 
-	// Single source of truth for the InfoDisplay rules: each entry pairs an element class
-	// with a function producing its per-player constructor arguments. The constructor maps
-	// this to instances; getRuleIdentifiers() maps it to identifiers (no player needed).
 	static elementSpecs = [
 		[TPS, () => [1]],
 		[Ping, (player) => [player, 2]],
