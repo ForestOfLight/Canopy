@@ -4,7 +4,7 @@ import { DebugDisplayTextElement } from './DebugDisplayTextElement';
 import { DebugDisplayShapeElement } from './DebugDisplayShapeElement';
 
 import { Location } from './Location';
-import { HeadLocation } from './HeadLocation';
+import { HeadLevel } from './HeadLevel';
 import { Speed } from './Speed';
 import { ID } from './ID';
 import { Velocity } from './Velocity';
@@ -58,6 +58,7 @@ import { AttackBox } from './AttackBox';
 import { Movement } from './Movement';
 import { UnderwaterMovement } from './UnderwaterMovement';
 import { Horse } from './Horse';
+import { ExplosionRayOrigin } from "./ExposionRayOrigin"
 
 const entityToDebugDisplayMap = {};
 const debugableProperties = Object.freeze({
@@ -70,7 +71,7 @@ const debugableProperties = Object.freeze({
     flyspeed: FlySpeed,
     friction: Friction,
     growup: GrowUp,
-    headlocation: HeadLocation,
+    headlevel: HeadLevel,
     health: Health,
     horse: Horse,
     hunger: Hunger,
@@ -116,7 +117,8 @@ const debugableProperties = Object.freeze({
     collisionbox: CollisionBox,
     hitbox: HitBox,
     eyelevel: EyeLevel,
-    viewdirectionvector: ViewDirectionVector
+    viewdirectionvector: ViewDirectionVector,
+    explosionrayorigin: ExplosionRayOrigin,
 });
 
 export class DebugDisplay {

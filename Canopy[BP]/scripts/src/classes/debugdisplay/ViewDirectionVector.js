@@ -12,6 +12,8 @@ export class ViewDirectionVector extends DebugDisplayShapeElement {
         viewDirectionVector.headRadius = 0.10;
         viewDirectionVector.color = { red: 0, green: 0, blue: 1, alpha: 1 };
         this.drawShape(viewDirectionVector);
+        
+        console.log(JSON.stringify(this.entity.getViewDirection()));
     }
 
     update() {
@@ -27,7 +29,11 @@ export class ViewDirectionVector extends DebugDisplayShapeElement {
         const location = new Vector(0, this.entity.getHeadLocation().y - this.entity.location.y, 0);
         return {
             location,
-            endLocation: location.add(this.entity.getViewDirection()).scale(1 + AABB.extent.x)
+            endLocation: location.add({
+                x: this.entity.getViewDirection().x * AABB.extent.x * 2, //Yeah Idk why this works and .scale doesn't it doesn't make sense to me
+                y: this.entity.getViewDirection().y * AABB.extent.x * 2,
+                z: this.entity.getViewDirection().z * AABB.extent.x * 2, 
+            })
         };
     }
 
