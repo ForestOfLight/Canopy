@@ -7,8 +7,7 @@ export class PlayerCommandOrigin extends CommandOrigin {
     }
 
     getName() {
-        const source = this.getSource();
-        return source.nameTag || source.typeId;
+        return this.getSource().name;
     }
 
     getSource() {
