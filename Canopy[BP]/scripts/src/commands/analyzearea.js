@@ -94,14 +94,19 @@ export class AnalyzeAreaCommand extends VanillaCommand {
         }
 
         const isPlayer = origin.getType() === 'Player';
+        // Non-player origins (e.g. command blocks) resolve to a source without sendMessage; guard it.
+        const notify = (message) => {
+            if (typeof source.sendMessage === 'function')
+                source.sendMessage(message);
+        };
         system.run(() => {
             manager.add(analysis);
             analysis.run(source.dimension)
                 .then(() => {
                     if (isPlayer) showAnalysisPage(source, manager, analysis);
-                    else source.sendMessage({ translate: 'commands.analyzearea.completed', with: [String(analysis.matches.length)] });
+                    else notify({ translate: 'commands.analyzearea.completed', with: [String(analysis.matches.length)] });
                 })
-                .catch(() => source.sendMessage({ translate: 'commands.analyzearea.loadcapacity' }));
+                .catch(() => notify({ translate: 'commands.analyzearea.loadcapacity' }));
         });
         return { status: CustomCommandStatus.Success };
     }
