@@ -70,14 +70,14 @@ export class TickCommand extends VanillaCommand {
         if (mspt < VANILLA_MSPT)
             return { status: CustomCommandStatus.Failure, message: 'commands.tick.mspt.fail' };
         this.targetMSPT = mspt;
-        world.sendMessage({ translate: 'commands.tick.mspt.success', with: [origin.getSource().name, String(mspt)] });
+        world.sendMessage({ translate: 'commands.tick.mspt.success', with: [origin.getName(), String(mspt)] });
         this.tickSpeed(mspt);
         return { status: CustomCommandStatus.Success };
     }
 
     tickReset(origin) {
         this.targetMSPT = VANILLA_MSPT;
-        world.sendMessage({ translate: 'commands.tick.reset.success', with: [origin.getSource().name] });
+        world.sendMessage({ translate: 'commands.tick.reset.success', with: [origin.getName()] });
         return { status: CustomCommandStatus.Success };
     }
 
@@ -90,14 +90,14 @@ export class TickCommand extends VanillaCommand {
             this.shouldStep = 1;
         else
             this.shouldStep = steps;
-        world.sendMessage({ translate: 'commands.tick.step.start', with: [origin.getSource().name, String(this.shouldStep)] });
+        world.sendMessage({ translate: 'commands.tick.step.start', with: [origin.getName(), String(this.shouldStep)] });
         return { status: CustomCommandStatus.Success };
     }
 
     tickSleep(origin, milliseconds) {
         if (!milliseconds || milliseconds < 1)
             return { status: CustomCommandStatus.Success, message: 'commands.tick.sleep.fail' };
-        world.sendMessage({ translate: 'commands.tick.sleep.success', with: [origin.getSource().name, String(milliseconds)] });
+        world.sendMessage({ translate: 'commands.tick.sleep.success', with: [origin.getName(), String(milliseconds)] });
         const startTime = Date.now();
         let waitTime = 0;
         while (waitTime < milliseconds)
