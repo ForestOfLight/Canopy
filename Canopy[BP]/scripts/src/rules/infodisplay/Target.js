@@ -1,5 +1,6 @@
 import { InfoDisplayTextElement } from "./InfoDisplayTextElement";
 import { getRaycastResults, parseName, stringifyLocation } from "../../../include/utils";
+import { LocationInUnloadedChunkError } from "@minecraft/server";
 
 export class Target extends InfoDisplayTextElement {
     static getRuleIdentifier() {
@@ -22,7 +23,13 @@ export class Target extends InfoDisplayTextElement {
 
     getLookingAtName() {
         const { blockRayResult, entityRayResult } = getRaycastResults(this.player, 7);
-        return this.#parseLookingAtEntity(entityRayResult).LookingAtName || this.#parseLookingAtBlock(blockRayResult).LookingAtName;
+        try {
+            return this.#parseLookingAtEntity(entityRayResult).LookingAtName || this.#parseLookingAtBlock(blockRayResult).LookingAtName;
+        } catch (error) {
+            if (error instanceof LocationInUnloadedChunkError)
+                return '';
+            throw error;
+        }
     }
 
     #parseLookingAtBlock(lookingAtBlock) {
@@ -34,7 +41,7 @@ export class Target extends InfoDisplayTextElement {
             try {
                 blockName = `§a${parseName(block)}`;
             } catch (error) {
-                if (error.message.includes('loaded'))
+                if (error instanceof LocationInUnloadedChunkError)
                     blockName = `§c${stringifyLocation(block.location, 0)} Unloaded`;
                 else if (error.message.includes('undefined'))
                     blockName = '§7Undefined';
