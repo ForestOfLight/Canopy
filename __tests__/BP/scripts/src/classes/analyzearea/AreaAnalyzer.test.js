@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { AreaAnalyzer, MATCH_CAP } from '../../../../../../Canopy[BP]/scripts/src/classes/analyzearea/AreaAnalyzer.js';
+import { AreaAnalyzer, MATCH_CAP, SCAN_CAP } from '../../../../../../Canopy[BP]/scripts/src/classes/analyzearea/AreaAnalyzer.js';
 
 // A dimension whose getBlock returns a block with typeId based on coordinates.
 function makeDimension(typeIdAt) {
@@ -42,6 +42,10 @@ describe('AreaAnalyzer', () => {
     });
 
     it('exposes the default match cap', () => {
-        expect(MATCH_CAP).toBe(1000);
+        expect(MATCH_CAP).toBe(10000);
+    });
+
+    it('exposes the scan cap', () => {
+        expect(SCAN_CAP).toBe(2 ** 32);
     });
 });

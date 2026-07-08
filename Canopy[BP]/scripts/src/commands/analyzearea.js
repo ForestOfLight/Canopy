@@ -1,12 +1,12 @@
 import { VanillaCommand, PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin } from "../../lib/canopy/Canopy";
 import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, system } from "@minecraft/server";
 import { AreaAnalysisManager } from "../classes/analyzearea/AreaAnalysisManager";
-import { Analysis } from "../classes/analyzearea/Analysis";
+import { Analysis, analysisErrorMessage } from "../classes/analyzearea/Analysis";
 import { ExpressionEvaluator } from "../classes/analyzearea/ExpressionEvaluator";
+import { SCAN_CAP } from "../classes/analyzearea/AreaAnalyzer";
 import { regionCapacity, normalizeCorners } from "../classes/analyzearea/regionMath";
 import { showSelector, showCreateForm, showAnalysisPage } from "../classes/analyzearea/AnalyzeAreaUI";
 
-const SCAN_CAP = 32767 * 4;
 const REMOVE_TOKEN = 'remove';
 
 export class AnalyzeAreaCommand extends VanillaCommand {
@@ -27,14 +27,18 @@ export class AnalyzeAreaCommand extends VanillaCommand {
                 '(or a prefilled create form). `<from> <to> <expression>` creates and runs an analysis directly; ' +
                 'use the expression `remove` to delete the analysis with those coordinates.',
             subCommandWikiDescription: {
-                '': { description: 'Open the area-analyses menu.', params: [] },
+                '': {
+                    description: 'Open the area-analyses menu.',
+                    params: []
+                },
                 '<from: Location> <to: Location>': {
-                    description: 'Open the saved analysis for those coordinates, or a prefilled create form.',
-                    params: ['from', 'to']
+                    description: 'Open the saved analysis for those coordinates, or a prefilled create form.'
+                },
+                '<from: Location> <to: Location> remove': {
+                    description: 'Remove the saved analysis for those coordinates.'
                 },
                 '<from: Location> <to: Location> <expression: String>': {
-                    description: 'Create and run an analysis; the reserved expression `remove` deletes the matching analysis.',
-                    params: ['from', 'to', 'expression']
+                    description: 'Create and run an analysis; the reserved expression `remove` deletes the matching analysis.'
                 }
             }
         });
@@ -43,23 +47,23 @@ export class AnalyzeAreaCommand extends VanillaCommand {
     analyzeAreaCommand(origin, from, to, expression) {
         const manager = AreaAnalysisManager.getInstance();
 
-        // 3-arg form works for all origins.
-        if (from && to && expression !== undefined) {
+        if (from && to && expression !== void 0) {
             if (expression === REMOVE_TOKEN)
                 return this.#removeAnalysis(origin, manager, from, to);
             return this.#createAndRun(origin, manager, from, to, expression);
         }
 
-        // UI-only forms require a player.
-        if (origin.getType() !== 'Player')
-            return { status: CustomCommandStatus.Failure, message: 'commands.analyzearea.playeronly' };
+        if (!(origin instanceof PlayerCommandOrigin))
+            return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
         const player = origin.getSource();
 
         if (from && to) {
             const existing = manager.findByCoords(from, to, player.dimension.id);
             system.run(() => {
-                if (existing) showAnalysisPage(player, manager, existing);
-                else showCreateForm(player, manager, { from, to });
+                if (existing)
+                    showAnalysisPage(player, manager, existing);
+                else
+                    showCreateForm(player, manager, { from, to });
             });
             return { status: CustomCommandStatus.Success };
         }
@@ -86,27 +90,22 @@ export class AnalyzeAreaCommand extends VanillaCommand {
 
         let analysis;
         try {
-            // Validate expression syntax before persisting (throws on parse error).
             void new ExpressionEvaluator(expression);
             analysis = Analysis.create(from, to, dimensionId, expression);
         } catch {
             return { status: CustomCommandStatus.Failure, message: 'commands.analyzearea.syntaxerror' };
         }
 
-        const isPlayer = origin.getType() === 'Player';
-        // Non-player origins (e.g. command blocks) resolve to a source without sendMessage; guard it.
-        const notify = (message) => {
-            if (typeof source.sendMessage === 'function')
-                source.sendMessage(message);
-        };
+        const isPlayer = origin instanceof PlayerCommandOrigin;
         system.run(() => {
             manager.add(analysis);
+            if (isPlayer) {
+                showAnalysisPage(source, manager, analysis, true);
+                return;
+            }
             analysis.run()
-                .then(() => {
-                    if (isPlayer) showAnalysisPage(source, manager, analysis);
-                    else notify({ translate: 'commands.analyzearea.completed', with: [String(analysis.matches.length)] });
-                })
-                .catch(() => notify({ translate: 'commands.analyzearea.loadcapacity' }));
+                .then(() => origin.sendMessage({ translate: 'commands.analyzearea.completed', with: [String(analysis.matches.length)] }))
+                .catch((error) => origin.sendMessage(analysisErrorMessage(error)));
         });
         return { status: CustomCommandStatus.Success };
     }

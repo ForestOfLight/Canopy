@@ -1,9 +1,8 @@
 import { world } from '@minecraft/server';
 import { Analysis } from './Analysis.js';
 
-export const PROPERTY_KEY = 'areaanalyses';
-
 export class AreaAnalysisManager {
+    static #DP_KEY = 'areaanalyses';
     static #instance;
 
     constructor() {
@@ -17,8 +16,9 @@ export class AreaAnalysisManager {
     }
 
     #load() {
-        const raw = world.getDynamicProperty(PROPERTY_KEY);
-        if (typeof raw !== 'string' || raw.length === 0) return [];
+        const raw = world.getDynamicProperty(AreaAnalysisManager.#DP_KEY);
+        if (typeof raw !== 'string' || raw.length === 0)
+            return [];
         try {
             return JSON.parse(raw).map((obj) => Analysis.deserialize(obj));
         } catch {
@@ -27,7 +27,7 @@ export class AreaAnalysisManager {
     }
 
     #save() {
-        world.setDynamicProperty(PROPERTY_KEY, JSON.stringify(this.analyses.map((a) => a.serialize())));
+        world.setDynamicProperty(AreaAnalysisManager.#DP_KEY, JSON.stringify(this.analyses.map((a) => a.serialize())));
     }
 
     list() {

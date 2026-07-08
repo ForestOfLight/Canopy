@@ -23,17 +23,17 @@ class Hooks {
 	add(name, callback, first) {
 		if (typeof arguments[0] != 'string') {
 			// Multiple hook callbacks, keyed by name
-			for (let name in arguments[0]) {
+			for (const name in arguments[0]) 
 				this.add(name, arguments[0][name], arguments[1]);
-			}
+			
 		}
 		else {
 			(Array.isArray(name) ? name : [name]).forEach(function (name) {
 				this[name] = this[name] || [];
 
-				if (callback) {
+				if (callback) 
 					this[name][first ? 'unshift' : 'push'](callback);
-				}
+				
 			}, this);
 		}
 	}
@@ -79,9 +79,9 @@ class Plugins {
 	 */
 	register(...plugins) {
 		plugins.forEach((plugin) => {
-			if (typeof plugin !== 'object' || !plugin.name || !plugin.init) {
+			if (typeof plugin !== 'object' || !plugin.name || !plugin.init) 
 				throw new Error('Invalid JSEP plugin format');
-			}
+			
 			if (this.registered[plugin.name]) {
 				// already registered. Ignore.
 				return;
@@ -132,12 +132,12 @@ class Jsep {
 	static addBinaryOp(op_name, precedence, isRightAssociative) {
 		Jsep.max_binop_len = Math.max(op_name.length, Jsep.max_binop_len);
 		Jsep.binary_ops[op_name] = precedence;
-		if (isRightAssociative) {
+		if (isRightAssociative) 
 			Jsep.right_associative.add(op_name);
-		}
-		else {
+		
+		else 
 			Jsep.right_associative.delete(op_name);
-		}
+		
 		return Jsep;
 	}
 
@@ -169,9 +169,9 @@ class Jsep {
 	 */
 	static removeUnaryOp(op_name) {
 		delete Jsep.unary_ops[op_name];
-		if (op_name.length === Jsep.max_unop_len) {
+		if (op_name.length === Jsep.max_unop_len) 
 			Jsep.max_unop_len = Jsep.getMaxKeyLen(Jsep.unary_ops);
-		}
+		
 		return Jsep;
 	}
 
@@ -204,9 +204,9 @@ class Jsep {
 	static removeBinaryOp(op_name) {
 		delete Jsep.binary_ops[op_name];
 
-		if (op_name.length === Jsep.max_binop_len) {
+		if (op_name.length === Jsep.max_binop_len) 
 			Jsep.max_binop_len = Jsep.getMaxKeyLen(Jsep.binary_ops);
-		}
+		
 		Jsep.right_associative.delete(op_name);
 
 		return Jsep;
@@ -378,9 +378,9 @@ class Jsep {
 		while (ch === Jsep.SPACE_CODE
 		|| ch === Jsep.TAB_CODE
 		|| ch === Jsep.LF_CODE
-		|| ch === Jsep.CR_CODE) {
+		|| ch === Jsep.CR_CODE) 
 			ch = this.expr.charCodeAt(++this.index);
-		}
+		
 		this.runHook('gobble-spaces');
 	}
 
@@ -408,7 +408,7 @@ class Jsep {
 	 * @returns {jsep.Expression[]}
 	 */
 	gobbleExpressions(untilICode) {
-		let nodes = [], ch_i, node;
+		const nodes = []; let ch_i; let node;
 
 		while (this.index < this.expr.length) {
 			ch_i = this.code;
@@ -426,9 +426,9 @@ class Jsep {
 					// the expression passed in probably has too much
 				}
 				else if (this.index < this.expr.length) {
-					if (ch_i === untilICode) {
+					if (ch_i === untilICode) 
 						break;
-					}
+					
 					this.throwError('Unexpected "' + this.char + '"');
 				}
 			}
@@ -482,21 +482,21 @@ class Jsep {
 	 * @returns {?jsep.BinaryExpression}
 	 */
 	gobbleBinaryExpression() {
-		let node, biop, prec, stack, biop_info, left, right, i, cur_biop;
+		let node; let biop; let prec; let stack; let biop_info; let left; let right; let i; let cur_biop;
 
 		// First, try to get the leftmost thing
 		// Then, check to see if there's a binary operator operating on that leftmost thing
 		// Don't gobbleBinaryOp without a left-hand-side
 		left = this.gobbleToken();
-		if (!left) {
+		if (!left) 
 			return left;
-		}
+		
 		biop = this.gobbleBinaryOp();
 
 		// If there wasn't a binary operator, just return the leftmost node
-		if (!biop) {
+		if (!biop) 
 			return left;
-		}
+		
 
 		// Otherwise, we need to start a stack to properly place the binary operations in their
 		// precedence structure
@@ -504,9 +504,9 @@ class Jsep {
 
 		right = this.gobbleToken();
 
-		if (!right) {
+		if (!right) 
 			this.throwError("Expected expression after " + biop);
-		}
+		
 
 		stack = [left, biop_info, right];
 
@@ -542,9 +542,9 @@ class Jsep {
 
 			node = this.gobbleToken();
 
-			if (!node) {
+			if (!node) 
 				this.throwError("Expected expression after " + cur_biop);
-			}
+			
 
 			stack.push(biop_info, node);
 		}
@@ -571,13 +571,13 @@ class Jsep {
 	 * @returns {boolean|jsep.Expression}
 	 */
 	gobbleToken() {
-		let ch, to_check, tc_len, node;
+		let ch; let to_check; let tc_len; let node;
 
 		this.gobbleSpaces();
 		node = this.searchHook('gobble-token');
-		if (node) {
+		if (node) 
 			return this.runHook('after-token', node);
-		}
+		
 
 		ch = this.code;
 
@@ -607,9 +607,9 @@ class Jsep {
 				)) {
 					this.index += tc_len;
 					const argument = this.gobbleToken();
-					if (!argument) {
+					if (!argument) 
 						this.throwError('missing unaryOp argument');
-					}
+					
 					return this.runHook('after-token', {
 						type: Jsep.UNARY_EXP,
 						operator: to_check,
@@ -639,9 +639,9 @@ class Jsep {
 			}
 		}
 
-		if (!node) {
+		if (!node) 
 			return this.runHook('after-token', false);
-		}
+		
 
 		node = this.gobbleTokenProperty(node);
 		return this.runHook('after-token', node);
@@ -662,9 +662,9 @@ class Jsep {
 		while (ch === Jsep.PERIOD_CODE || ch === Jsep.OBRACK_CODE || ch === Jsep.OPAREN_CODE || ch === Jsep.QUMARK_CODE) {
 			let optional;
 			if (ch === Jsep.QUMARK_CODE) {
-				if (this.expr.charCodeAt(this.index + 1) !== Jsep.PERIOD_CODE) {
+				if (this.expr.charCodeAt(this.index + 1) !== Jsep.PERIOD_CODE) 
 					break;
-				}
+				
 				optional = true;
 				this.index += 2;
 				this.gobbleSpaces();
@@ -679,14 +679,14 @@ class Jsep {
 					object: node,
 					property: this.gobbleExpression()
 				};
-				if (!node.property) {
+				if (!node.property) 
 					this.throwError('Unexpected "' + this.char + '"');
-				}
+				
 				this.gobbleSpaces();
 				ch = this.code;
-				if (ch !== Jsep.CBRACK_CODE) {
+				if (ch !== Jsep.CBRACK_CODE) 
 					this.throwError('Unclosed [');
-				}
+				
 				this.index++;
 			}
 			else if (ch === Jsep.OPAREN_CODE) {
@@ -698,9 +698,9 @@ class Jsep {
 				};
 			}
 			else if (ch === Jsep.PERIOD_CODE || optional) {
-				if (optional) {
+				if (optional) 
 					this.index--;
-				}
+				
 				this.gobbleSpaces();
 				node = {
 					type: Jsep.MEMBER_EXP,
@@ -710,9 +710,9 @@ class Jsep {
 				};
 			}
 
-			if (optional) {
+			if (optional) 
 				node.optional = true;
-			} // else leave undefined for compatibility with esprima
+			 // else leave undefined for compatibility with esprima
 
 			this.gobbleSpaces();
 			ch = this.code;
@@ -727,18 +727,18 @@ class Jsep {
 	 * @returns {jsep.Literal}
 	 */
 	gobbleNumericLiteral() {
-		let number = '', ch, chCode;
+		let number = ''; let ch; let chCode;
 
-		while (Jsep.isDecimalDigit(this.code)) {
+		while (Jsep.isDecimalDigit(this.code)) 
 			number += this.expr.charAt(this.index++);
-		}
+		
 
 		if (this.code === Jsep.PERIOD_CODE) { // can start with a decimal marker
 			number += this.expr.charAt(this.index++);
 
-			while (Jsep.isDecimalDigit(this.code)) {
+			while (Jsep.isDecimalDigit(this.code)) 
 				number += this.expr.charAt(this.index++);
-			}
+			
 		}
 
 		ch = this.char;
@@ -755,9 +755,9 @@ class Jsep {
 				number += this.expr.charAt(this.index++);
 			}
 
-			if (!Jsep.isDecimalDigit(this.expr.charCodeAt(this.index - 1)) ) {
+			if (!Jsep.isDecimalDigit(this.expr.charCodeAt(this.index - 1)) ) 
 				this.throwError('Expected exponent (' + number + this.char + ')');
-			}
+			
 		}
 
 		chCode = this.code;
@@ -815,9 +815,9 @@ class Jsep {
 			}
 		}
 
-		if (!closed) {
+		if (!closed) 
 			this.throwError('Unclosed quote after "' + str + '"');
-		}
+		
 
 		return {
 			type: Jsep.LITERAL,
@@ -834,24 +834,24 @@ class Jsep {
 	 * @returns {jsep.Identifier}
 	 */
 	gobbleIdentifier() {
-		let ch = this.code, start = this.index;
+		let ch = this.code; const start = this.index;
 
-		if (Jsep.isIdentifierStart(ch)) {
+		if (Jsep.isIdentifierStart(ch)) 
 			this.index++;
-		}
-		else {
+		
+		else 
 			this.throwError('Unexpected ' + this.char);
-		}
+		
 
 		while (this.index < this.expr.length) {
 			ch = this.code;
 
-			if (Jsep.isIdentifierPart(ch)) {
+			if (Jsep.isIdentifierPart(ch)) 
 				this.index++;
-			}
-			else {
+			
+			else 
 				break;
-			}
+			
 		}
 		return {
 			type: Jsep.IDENTIFIER,
@@ -875,15 +875,15 @@ class Jsep {
 
 		while (this.index < this.expr.length) {
 			this.gobbleSpaces();
-			let ch_i = this.code;
+			const ch_i = this.code;
 
 			if (ch_i === termination) { // done parsing
 				closed = true;
 				this.index++;
 
-				if (termination === Jsep.CPAREN_CODE && separator_count && separator_count >= args.length){
+				if (termination === Jsep.CPAREN_CODE && separator_count && separator_count >= args.length)
 					this.throwError('Unexpected token ' + String.fromCharCode(termination));
-				}
+				
 
 				break;
 			}
@@ -896,9 +896,9 @@ class Jsep {
 						this.throwError('Unexpected token ,');
 					}
 					else if (termination === Jsep.CBRACK_CODE) {
-						for (let arg = args.length; arg < separator_count; arg++) {
+						for (let arg = args.length; arg < separator_count; arg++) 
 							args.push(null);
-						}
+						
 					}
 				}
 			}
@@ -909,17 +909,17 @@ class Jsep {
 			else {
 				const node = this.gobbleExpression();
 
-				if (!node || node.type === Jsep.COMPOUND) {
+				if (!node || node.type === Jsep.COMPOUND) 
 					this.throwError('Expected comma');
-				}
+				
 
 				args.push(node);
 			}
 		}
 
-		if (!closed) {
+		if (!closed) 
 			this.throwError('Expected ' + String.fromCharCode(termination));
-		}
+		
 
 		return args;
 	}
@@ -935,25 +935,25 @@ class Jsep {
 	 */
 	gobbleGroup() {
 		this.index++;
-		let nodes = this.gobbleExpressions(Jsep.CPAREN_CODE);
+		const nodes = this.gobbleExpressions(Jsep.CPAREN_CODE);
 		if (this.code === Jsep.CPAREN_CODE) {
 			this.index++;
-			if (nodes.length === 1) {
+			if (nodes.length === 1) 
 				return nodes[0];
-			}
-			else if (!nodes.length) {
+			
+			else if (!nodes.length) 
 				return false;
-			}
-			else {
+			
+			
 				return {
 					type: Jsep.SEQUENCE_EXP,
 					expressions: nodes,
 				};
-			}
+			
 		}
-		else {
+		
 			this.throwError('Unclosed (');
-		}
+		
 	}
 
 	/**
@@ -1068,7 +1068,7 @@ jsep.Jsep = Jsep; // allows for const { Jsep } = require('jsep');
 
 const CONDITIONAL_EXP = 'ConditionalExpression';
 
-var ternary = {
+const ternary = {
 	name: 'ternary',
 
 	init(jsep) {
@@ -1079,9 +1079,9 @@ var ternary = {
 				const test = env.node;
 				const consequent = this.gobbleExpression();
 
-				if (!consequent) {
+				if (!consequent) 
 					this.throwError('Expected expression');
-				}
+				
 
 				this.gobbleSpaces();
 
@@ -1089,9 +1089,9 @@ var ternary = {
 					this.index++;
 					const alternate = this.gobbleExpression();
 
-					if (!alternate) {
+					if (!alternate) 
 						this.throwError('Expected expression');
-					}
+					
 					env.node = {
 						type: CONDITIONAL_EXP,
 						test,
@@ -1103,9 +1103,9 @@ var ternary = {
 					// jsep sets || at 1, and assignment at 0.9, and conditional should be between them
 					if (test.operator && jsep.binary_ops[test.operator] <= 0.9) {
 						let newTest = test;
-						while (newTest.right.operator && jsep.binary_ops[newTest.right.operator] <= 0.9) {
+						while (newTest.right.operator && jsep.binary_ops[newTest.right.operator] <= 0.9) 
 							newTest = newTest.right;
-						}
+						
 						env.node.test = newTest.right;
 						newTest.right = env.node;
 						env.node = test;

@@ -54,8 +54,36 @@ describe('ExpressionEvaluator', () => {
     });
 
     it('surfaces runtime errors from the block to the caller', () => {
-        const evaluator = new ExpressionEvaluator('boom()');
-        const block = { boom: () => { throw new Error('restricted'); } };
+        const evaluator = new ExpressionEvaluator('hasTag("x")');
+        const block = { hasTag: () => { throw new Error('restricted'); } };
         expect(() => evaluator.evaluate(block)).toThrow('restricted');
+    });
+
+    describe('sandbox', () => {
+        it('rejects the constructor/prototype escape at construction', () => {
+            expect(() => new ExpressionEvaluator('block.constructor.constructor("return 1")()')).toThrow(/Forbidden property access: constructor/);
+            expect(() => new ExpressionEvaluator('block.__proto__')).toThrow(/Forbidden property access: __proto__/);
+            expect(() => new ExpressionEvaluator('hasTag.prototype')).toThrow(/Forbidden property access: prototype/);
+        });
+
+        it('rejects any access to dimension', () => {
+            expect(() => new ExpressionEvaluator('block.dimension')).toThrow(/Forbidden property access: dimension/);
+        });
+
+        it('rejects computed access to a forbidden key at runtime', () => {
+            const evaluator = new ExpressionEvaluator("block['dimen' + 'sion']");
+            expect(() => evaluator.evaluate(makeBlock())).toThrow(/Forbidden property access: dimension/);
+        });
+
+        it('rejects calls to methods that are not read-only-safe', () => {
+            expect(() => new ExpressionEvaluator("setPermutation('x')")).toThrow(/Forbidden method call: setPermutation/);
+            expect(() => new ExpressionEvaluator("block.setType('minecraft:tnt')")).toThrow(/Forbidden method call: setType/);
+            expect(() => new ExpressionEvaluator("runCommand('kill @a')")).toThrow(/Forbidden method call: runCommand/);
+        });
+
+        it('allows read-only method calls', () => {
+            expect(new ExpressionEvaluator("permutation.getState('redstone_signal') === 7").evaluate(makeBlock())).toBe(true);
+            expect(new ExpressionEvaluator("hasTag('wood')").evaluate({ hasTag: (t) => t === 'wood' })).toBe(true);
+        });
     });
 });

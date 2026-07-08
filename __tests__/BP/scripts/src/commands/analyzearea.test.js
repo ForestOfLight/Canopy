@@ -67,6 +67,6 @@ describe('analyzeAreaCommand', () => {
     it('rejects UI-only forms for non-player origins', () => {
         const blockOrigin = { getType: () => 'Block', sendMessage: vi.fn() };
         const result = analyzeAreaCommand.analyzeAreaCommand(blockOrigin);
-        expect(result).toEqual({ status: 'Failure', message: 'commands.analyzearea.playeronly' });
+        expect(result).toEqual({ status: 'Failure', message: 'commands.generic.invalidsource' });
     });
 });

@@ -15,7 +15,8 @@ export default [
       '**/scripts/lib/mt.js',
       '**/scripts/lib/MCBE-IPC/',
       '**/scripts/lib/SRCItemDatabase/',
-      '**/scripts/lib/chestui/'
+      '**/scripts/lib/chestui/',
+      '**/scripts/lib/jsep/',
     ]
   },
   js.configs.recommended,

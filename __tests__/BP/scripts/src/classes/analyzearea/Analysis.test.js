@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { Analysis } from '../../../../../../Canopy[BP]/scripts/src/classes/analyzearea/Analysis.js';
+import { Analysis, analysisErrorMessage, LOAD_CAPACITY_ERROR } from '../../../../../../Canopy[BP]/scripts/src/classes/analyzearea/Analysis.js';
+import { stringifyLocation } from '../../../../../../Canopy[BP]/scripts/include/utils.js';
 
 const identity = {
     id: 'a1',
@@ -48,6 +49,45 @@ describe('Analysis', () => {
         const analysis = new Analysis(identity);
         expect(analysis.capacity()).toBe(6 * 3 * 6);
         expect(analysis.tickingId()).toBe('canopy_analyzearea_a1');
+    });
+
+    it('starts idle at zero progress and (un)subscribes progress handlers', () => {
+        const analysis = new Analysis(identity);
+        expect(analysis.running).toBe(false);
+        expect(analysis.progress).toBe(0);
+        const unsubscribe = analysis.subscribe({ onProgress: () => {} });
+        expect(typeof unsubscribe).toBe('function');
+        expect(analysis.subscribers.size).toBe(1);
+        unsubscribe();
+        expect(analysis.subscribers.size).toBe(0);
+    });
+
+    it('maps the load-capacity error to its message and anything else to unknown', () => {
+        expect(analysisErrorMessage(new Error(LOAD_CAPACITY_ERROR))).toEqual({ translate: 'commands.analyzearea.loadcapacity' });
+        expect(analysisErrorMessage(new Error('boom'))).toEqual({ translate: 'commands.analyzearea.unknownerror' });
+        expect(analysisErrorMessage(undefined)).toEqual({ translate: 'commands.analyzearea.unknownerror' });
+    });
+
+    it('statusMessage is a single source of truth across states', () => {
+        const analysis = new Analysis(identity);
+        expect(analysis.statusMessage()).toEqual({ translate: 'commands.analyzearea.ui.page.notrun' });
+
+        analysis.hasRun = true;
+        analysis.matches = [{ x: 0, y: 1, z: 0 }];
+        const results = analysis.statusMessage();
+        expect(results.translate).toBe('commands.analyzearea.stats');
+        expect(results.with[2]).toBe(identity.expression);
+        expect(results.with[3]).toBe('1');
+        expect(results.with[4]).toBe('6x3x6');
+
+        analysis.capped = true;
+        expect(analysis.statusMessage().translate).toBe('commands.analyzearea.stats.capped');
+
+        analysis.running = true;
+        analysis.progress = 0.5;
+        const from = stringifyLocation(analysis.min, 0);
+        const to = stringifyLocation(analysis.max, 0);
+        expect(analysis.statusMessage()).toEqual({ translate: 'commands.analyzearea.stats.analyzing', with: [from, to, identity.expression, '50%'] });
     });
 
     it('create generates an id and createdAt', () => {

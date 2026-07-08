@@ -1,9 +1,53 @@
 import jsep from '../../../lib/jsep/jsep.js';
+import { readOnlyMethods } from './readOnlyMethods.js';
+
+const FORBIDDEN_KEYS = new Set(['constructor', '__proto__', 'prototype', 'dimension']);
 
 export class ExpressionEvaluator {
     constructor(expression) {
         this.expression = expression;
-        this.ast = jsep(expression); // throws on syntax error
+        this.ast = jsep(expression);
+        this.#assertSafe(this.ast);
+    }
+
+    #assertSafe(node) {
+        switch (node.type) {
+            case 'Literal':
+            case 'Identifier':
+                return;
+            case 'MemberExpression':
+                if (!node.computed && FORBIDDEN_KEYS.has(node.property.name))
+                    throw new Error(`Forbidden property access: ${node.property.name}`);
+                this.#assertSafe(node.object);
+                this.#assertSafe(node.property);
+                return;
+            case 'CallExpression': {
+                this.#assertSafe(node.callee);
+                const name = this.#staticCalleeName(node.callee);
+                if (name !== null && !readOnlyMethods.has(name))
+                    throw new Error(`Forbidden method call: ${name}`);
+                node.arguments.forEach((arg) => this.#assertSafe(arg));
+                return;
+            }
+            case 'UnaryExpression':
+                this.#assertSafe(node.argument);
+                return;
+            case 'BinaryExpression':
+            case 'LogicalExpression':
+                this.#assertSafe(node.left);
+                this.#assertSafe(node.right);
+                return;
+            default:
+                throw new Error(`Unsupported expression node: ${node.type}`);
+        }
+    }
+
+    #staticCalleeName(callee) {
+        if (callee.type === 'Identifier')
+            return callee.name;
+        if (callee.type === 'MemberExpression' && !callee.computed)
+            return callee.property.name;
+        return null;
     }
 
     evaluate(block) {
@@ -30,20 +74,25 @@ export class ExpressionEvaluator {
         }
     }
 
-    // Returns { object, value } so CallExpression can bind `this` to `object`.
     #evalMember(node, block) {
         const object = this.#evalNode(node.object, block);
         const key = node.computed ? this.#evalNode(node.property, block) : node.property.name;
-        return { object, value: object?.[key] };
+        if (FORBIDDEN_KEYS.has(key))
+            throw new Error(`Forbidden property access: ${key}`);
+        return { object, key, value: object?.[key] };
     }
 
     #evalCall(node, block) {
         if (node.callee.type === 'MemberExpression') {
-            const { object, value: fn } = this.#evalMember(node.callee, block);
+            const { object, key, value: fn } = this.#evalMember(node.callee, block);
+            if (!readOnlyMethods.has(key))
+                throw new Error(`Forbidden method call: ${key}`);
             const args = node.arguments.map((arg) => this.#evalNode(arg, block));
             return fn.apply(object, args);
         }
-        // bare-identifier call, e.g. getTags() -> block.getTags(), bound to block
+        const name = node.callee.name;
+        if (!readOnlyMethods.has(name))
+            throw new Error(`Forbidden method call: ${name}`);
         const fn = this.#evalNode(node.callee, block);
         const args = node.arguments.map((arg) => this.#evalNode(arg, block));
         return fn.apply(block, args);
@@ -68,8 +117,8 @@ export class ExpressionEvaluator {
         switch (op) {
             case '===': return left === right;
             case '!==': return left !== right;
-            case '==': return left == right;
-            case '!=': return left != right;
+            case '==': return left === right;
+            case '!=': return left !== right;
             case '<': return left < right;
             case '>': return left > right;
             case '<=': return left <= right;
