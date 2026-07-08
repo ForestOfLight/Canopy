@@ -351,11 +351,11 @@ describe('Understudy', () => {
         });
 
         describe('look', () => {
-            it('calls lookAtBlock and stores block as look target', () => {
+            it('calls lookAt and stores block location as look target', () => {
                 const target = new Block();
                 target.location = { x: 0, y: 64, z: 0 };
                 understudy.look(target);
-                expect(understudy.simulatedPlayer.lookAtBlock).toHaveBeenCalledWith(target);
+                expect(understudy.simulatedPlayer.lookAt).toHaveBeenCalledWith(target);
                 expect(understudy.lookTarget).toBe(target);
             });
 
