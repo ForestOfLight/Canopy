@@ -22,13 +22,18 @@ export class AnalyzeAreaCommand extends VanillaCommand {
             permissionLevel: CommandPermissionLevel.GameDirectors,
             allowedSources: [PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin],
             callback: (origin, ...args) => this.analyzeAreaCommand(origin, ...args),
-            wikiDescription: 'Analyze a region of blocks with a JavaScript expression (parsed by jsep). ' +
-                'Run with no arguments to open the analyses menu. `<from> <to>` opens the matching saved analysis ' +
-                '(or a prefilled create form). `<from> <to> <expression>` creates and runs an analysis directly; ' +
-                'use the expression `remove` to delete the analysis with those coordinates.',
+            wikiDescription: 'Analyze a region of blocks with a JavaScript expression (parsed by jsep). '
+                + 'The expression is evaluated for each block in the region, and if it returns a truthy value, the block is considered a match. '
+                + 'The expression has access all properties and methods that can be accessed in restricted-execution mode from a '
+                + '[block](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/block?view=minecraft-bedrock-experimental) object '
+                + '(does not include the dimension property). The `block` source keyword can be included or not.\n\n'
+                + 'Example expressions:\n'
+                + "- Stone block: `typeId == 'minecraft:stone'`\n"
+                + "- Immovable block: `getComponent('minecraft:movable').movementType == 'Immovable'`\n"
+                + "- Liquid source block: `permutation.getState('liquid_depth') == 0`",
             subCommandWikiDescription: {
                 '': {
-                    description: 'Open the area-analyses menu.',
+                    description: 'Open the area analyses menu.',
                     params: []
                 },
                 '<from: Location> <to: Location>': {
@@ -38,7 +43,7 @@ export class AnalyzeAreaCommand extends VanillaCommand {
                     description: 'Remove the saved analysis for those coordinates.'
                 },
                 '<from: Location> <to: Location> <expression: String>': {
-                    description: 'Create and run an analysis; the reserved expression `remove` deletes the matching analysis.'
+                    description: 'Create and run an analysis.'
                 }
             }
         });
