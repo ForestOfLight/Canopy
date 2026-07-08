@@ -541,6 +541,7 @@ commands.analyzearea.ui.create.expression=Expression
 commands.analyzearea.ui.create.submit=Create
 commands.analyzearea.ui.page.title=§2Area Analysis
 commands.analyzearea.ui.page.header=§7Expression: §f%1§r §7(§a%2§7 matches)
+commands.analyzearea.ui.page.headercapped=§7Expression: §f%1§r §7(§e%2+§7 matches — cap reached)
 commands.analyzearea.ui.page.notrun=§7Not run this session — press Re-analyze.
 commands.analyzearea.ui.page.prev=§7◀ Prev
 commands.analyzearea.ui.page.next=§7Next ▶

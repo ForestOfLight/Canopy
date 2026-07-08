@@ -1,5 +1,5 @@
 import { CustomForm, ObservableString, ObservableNumber, ObservableBoolean } from '@minecraft/server-ui';
-import { GameMode } from '@minecraft/server';
+import { GameMode, world } from '@minecraft/server';
 import { Analysis } from './Analysis.js';
 import { ExpressionEvaluator } from './ExpressionEvaluator.js';
 import { stringifyLocation, getColoredDimensionName } from '../../../include/utils';
@@ -69,7 +69,7 @@ export function showCreateForm(player, manager, prefill) {
         }
         const analysis = Analysis.create(parsedFrom, parsedTo, DIMENSIONS[dimObservable.getData()], expr);
         manager.add(analysis);
-        analysis.run(player.dimension)
+        analysis.run()
             .then(() => showAnalysisPage(player, manager, analysis))
             .catch(() => player.sendMessage({ translate: 'commands.analyzearea.loadcapacity' }));
     });
@@ -86,7 +86,7 @@ export function showAnalysisPage(player, manager, analysis) {
         const label = new ObservableString('');
         const visible = new ObservableBoolean(false);
         slots.push({ label, visible, location: null });
-        form.button(label, () => teleportTo(player, slots[i].location), { visible });
+        form.button(label, () => teleportTo(player, slots[i].location, analysis.dimensionId), { visible });
     }
 
     const pageIndicator = new ObservableString('');
@@ -108,7 +108,7 @@ export function showAnalysisPage(player, manager, analysis) {
     form.button({ translate: 'commands.analyzearea.ui.page.next' }, () => { if (page < totalPages() - 1) { page++; renderPage(); } });
     form.divider();
     form.button({ translate: 'commands.analyzearea.ui.page.reanalyze' }, () => {
-        analysis.run(player.dimension)
+        analysis.run()
             .then(() => { page = 0; renderPage(); })
             .catch(() => player.sendMessage({ translate: 'commands.analyzearea.loadcapacity' }));
     });
@@ -124,14 +124,15 @@ export function showAnalysisPage(player, manager, analysis) {
 function pageHeader(analysis) {
     if (!analysis.hasRun)
         return { translate: 'commands.analyzearea.ui.page.notrun' };
-    return { translate: 'commands.analyzearea.ui.page.header', with: [analysis.expression, String(analysis.matches.length)] };
+    const key = analysis.capped ? 'commands.analyzearea.ui.page.headercapped' : 'commands.analyzearea.ui.page.header';
+    return { translate: key, with: [analysis.expression, String(analysis.matches.length)] };
 }
 
-function teleportTo(player, location) {
+function teleportTo(player, location, dimensionId) {
     if (!location) return;
     const mode = player.getGameMode();
     if (mode === GameMode.Creative || mode === GameMode.Spectator)
-        player.teleport({ x: location.x + 0.5, y: location.y, z: location.z + 0.5 }, { dimension: player.dimension });
+        player.teleport({ x: location.x + 0.5, y: location.y, z: location.z + 0.5 }, { dimension: world.getDimension(dimensionId) });
     else
         player.sendMessage({ translate: 'commands.analyzearea.teleport.gamemode' });
 }

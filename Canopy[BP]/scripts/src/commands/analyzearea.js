@@ -73,7 +73,7 @@ export class AnalyzeAreaCommand extends VanillaCommand {
         const existing = manager.findByCoords(from, to, dimensionId);
         if (!existing)
             return { status: CustomCommandStatus.Failure, message: 'commands.analyzearea.removenotfound' };
-        manager.remove(existing);
+        system.run(() => manager.remove(existing));
         return { status: CustomCommandStatus.Success, message: 'commands.analyzearea.removed' };
     }
 
@@ -101,7 +101,7 @@ export class AnalyzeAreaCommand extends VanillaCommand {
         };
         system.run(() => {
             manager.add(analysis);
-            analysis.run(source.dimension)
+            analysis.run()
                 .then(() => {
                     if (isPlayer) showAnalysisPage(source, manager, analysis);
                     else notify({ translate: 'commands.analyzearea.completed', with: [String(analysis.matches.length)] });

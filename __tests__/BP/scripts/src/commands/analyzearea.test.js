@@ -60,6 +60,7 @@ describe('analyzeAreaCommand', () => {
         const analysis = { id: 'a1' };
         managerApi.findByCoords.mockReturnValue(analysis);
         analyzeAreaCommand.analyzeAreaCommand(origin, { x: 0, y: 0, z: 0 }, { x: 1, y: 1, z: 1 }, 'remove');
+        scheduler.advanceTicks(1);
         expect(managerApi.remove).toHaveBeenCalledWith(analysis);
     });
 

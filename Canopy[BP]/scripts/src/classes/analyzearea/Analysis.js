@@ -1,4 +1,4 @@
-import { system } from '@minecraft/server';
+import { system, world } from '@minecraft/server';
 import { normalizeCorners, regionCapacity, sameCorner } from './regionMath.js';
 import { ExpressionEvaluator } from './ExpressionEvaluator.js';
 import { AreaAnalyzer } from './AreaAnalyzer.js';
@@ -19,6 +19,7 @@ export class Analysis {
         this.renderer = null;
         this.boxesVisible = false;
         this.hasRun = false;
+        this.capped = false;
         this.jobId = undefined;
         this.loader = null;
     }
@@ -65,7 +66,8 @@ export class Analysis {
     }
 
     // Runs inside system.run (unrestricted). Returns a promise resolving when the scan finishes.
-    run(dimension) {
+    run() {
+        const dimension = world.getDimension(this.dimensionId);
         this.dimension = dimension;
         this.#cancelJob();
         if (this.loader) {
