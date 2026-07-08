@@ -1,5 +1,5 @@
 import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
-import { LiquidType } from '@minecraft/server';
+import { LiquidType, LocationInUnloadedChunkError } from '@minecraft/server';
 
 export class LiquidStates extends InfoDisplayTextElement {
     static getRuleIdentifier() {
@@ -26,10 +26,16 @@ export class LiquidStates extends InfoDisplayTextElement {
     }
 
     tryFormatBlockStates() {
-        const blockRayResult = this.player.getBlockFromViewDirection({ includeLiquidBlocks: true, includePassableBlocks: true, maxDistance: 7 })
-        if (blockRayResult?.block.isLiquid)
-            return this.formatBlockStates(blockRayResult);
-        return '';
+        try {
+            const blockRayResult = this.player.getBlockFromViewDirection({ includeLiquidBlocks: true, includePassableBlocks: true, maxDistance: 7 });
+            if (blockRayResult?.block.isLiquid)
+                return this.formatBlockStates(blockRayResult);
+            return '';
+        } catch (error) {
+            if (error instanceof LocationInUnloadedChunkError)
+                return '';
+            throw error;
+        }
     }
 
     formatBlockStates(lookingAtBlock) {

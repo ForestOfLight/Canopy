@@ -1,5 +1,6 @@
 import { InfoDisplayTextElement } from "./InfoDisplayTextElement";
 import { parseName, stringifyLocation } from "../../../include/utils";
+import { LocationInUnloadedChunkError } from "@minecraft/server";
 
 export class LiquidTarget extends InfoDisplayTextElement {
     static getRuleIdentifier() {
@@ -21,8 +22,14 @@ export class LiquidTarget extends InfoDisplayTextElement {
     }
 
     getLookingAtName() {
-        const blockRayResult = this.player.getBlockFromViewDirection({ includeLiquidBlocks: true, includePassableBlocks: true, maxDistance: 7 });
-        return this.#parseLookingAtLiquid(blockRayResult).LookingAtName;
+        try {
+            const blockRayResult = this.player.getBlockFromViewDirection({ includeLiquidBlocks: true, includePassableBlocks: true, maxDistance: 7 });
+            return this.#parseLookingAtLiquid(blockRayResult).LookingAtName;
+        } catch (error) {
+            if (error instanceof LocationInUnloadedChunkError)
+                return '';
+            throw error;
+        }
     }
 
     #parseLookingAtLiquid(lookingAtBlock) {
@@ -34,7 +41,7 @@ export class LiquidTarget extends InfoDisplayTextElement {
             try {
                 blockName = `§2${parseName(block)}`;
             } catch (error) {
-                if (error.message.includes('loaded'))
+                if (error instanceof LocationInUnloadedChunkError)
                     blockName = `§c${stringifyLocation(block.location, 0)} Unloaded`;
                 else if (error.message.includes('undefined'))
                     blockName = '§7Undefined';

@@ -1,6 +1,6 @@
 import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 import { getRaycastResults } from '../../../include/utils.js';
-import { LiquidType } from '@minecraft/server';
+import { LiquidType, LocationInUnloadedChunkError } from '@minecraft/server';
 
 export class BlockStates extends InfoDisplayTextElement {
     static getRuleIdentifier() {
@@ -27,11 +27,17 @@ export class BlockStates extends InfoDisplayTextElement {
     }
 
     tryFormatBlockStates() {
-        const { blockRayResult, entityRayResult } = getRaycastResults(this.player, 7);
-        const entity = entityRayResult[0]?.entity;
-        if (entity || blockRayResult?.block.isLiquid)
-            return '';
-        return this.formatBlockStates(blockRayResult);
+        try {
+            const { blockRayResult, entityRayResult } = getRaycastResults(this.player, 7);
+            const entity = entityRayResult[0]?.entity;
+            if (entity || blockRayResult?.block.isLiquid)
+                return '';
+            return this.formatBlockStates(blockRayResult);
+        } catch (error) {
+            if (error instanceof LocationInUnloadedChunkError)
+                return '';
+            throw error;
+        }
     }
 
     formatBlockStates(lookingAtBlock) {
