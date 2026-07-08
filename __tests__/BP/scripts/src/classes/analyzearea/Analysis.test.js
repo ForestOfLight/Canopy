@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { Analysis, analysisErrorMessage, LOAD_CAPACITY_ERROR } from '../../../../../../Canopy[BP]/scripts/src/classes/analyzearea/Analysis.js';
+import { Analysis } from '../../../../../../Canopy[BP]/scripts/src/classes/analyzearea/Analysis.js';
+import { ExpressionForbiddenError } from '../../../../../../Canopy[BP]/scripts/src/classes/analyzearea/ExpressionForbiddenError.js';
+import { LoadCapacityError } from '../../../../../../Canopy[BP]/scripts/src/classes/analyzearea/LoadCapacityError.js';
 import { stringifyLocation } from '../../../../../../Canopy[BP]/scripts/include/utils.js';
 
 const identity = {
@@ -16,6 +18,12 @@ describe('Analysis', () => {
         const analysis = new Analysis(identity);
         expect(analysis.min).toEqual({ x: 0, y: 1, z: 0 });
         expect(analysis.max).toEqual({ x: 5, y: 3, z: 5 });
+    });
+
+    it('floors and orders swapped/negative corners on construction', () => {
+        const analysis = new Analysis({ ...identity, from: { x: 5.9, y: 2, z: -3 }, to: { x: -1, y: 10.2, z: 4 } });
+        expect(analysis.min).toEqual({ x: -1, y: 2, z: -3 });
+        expect(analysis.max).toEqual({ x: 5, y: 10, z: 4 });
     });
 
     it('serializes to identity only (no results) with normalized corners', () => {
@@ -62,10 +70,11 @@ describe('Analysis', () => {
         expect(analysis.subscribers.size).toBe(0);
     });
 
-    it('maps the load-capacity error to its message and anything else to unknown', () => {
-        expect(analysisErrorMessage(new Error(LOAD_CAPACITY_ERROR))).toEqual({ translate: 'commands.analyzearea.loadcapacity' });
-        expect(analysisErrorMessage(new Error('boom'))).toEqual({ translate: 'commands.analyzearea.unknownerror' });
-        expect(analysisErrorMessage(undefined)).toEqual({ translate: 'commands.analyzearea.unknownerror' });
+    it('errorMessage maps known errors by type and anything else to unknown', () => {
+        expect(Analysis.errorMessage(new LoadCapacityError())).toEqual({ translate: 'commands.analyzearea.loadcapacity' });
+        expect(Analysis.errorMessage(new ExpressionForbiddenError('nope'))).toEqual({ translate: 'commands.analyzearea.forbidden' });
+        expect(Analysis.errorMessage(new Error('boom'))).toEqual({ translate: 'commands.analyzearea.unknownerror' });
+        expect(Analysis.errorMessage(undefined)).toEqual({ translate: 'commands.analyzearea.unknownerror' });
     });
 
     it('statusMessage is a single source of truth across states', () => {
@@ -95,5 +104,30 @@ describe('Analysis', () => {
         expect(typeof analysis.id).toBe('string');
         expect(analysis.id.length).toBeGreaterThan(0);
         expect(typeof analysis.createdAt).toBe('number');
+    });
+
+    describe('tryCreate', () => {
+        const from = { x: 0, y: 0, z: 0 };
+
+        it('returns the analysis for a valid expression', () => {
+            const result = Analysis.tryCreate(from, { x: 1, y: 1, z: 1 }, 'minecraft:overworld', "typeId === 'minecraft:stone'");
+            expect(result.ok).toBe(true);
+            expect(result.analysis).toBeInstanceOf(Analysis);
+        });
+
+        it('rejects an over-capacity region', () => {
+            const result = Analysis.tryCreate(from, { x: 2 ** 32, y: 0, z: 0 }, 'minecraft:overworld', 'true');
+            expect(result).toEqual({ ok: false, reason: 'overcapacity' });
+        });
+
+        it('rejects a syntactically invalid expression', () => {
+            const result = Analysis.tryCreate(from, { x: 1, y: 1, z: 1 }, 'minecraft:overworld', 'a &&');
+            expect(result).toEqual({ ok: false, reason: 'syntaxerror' });
+        });
+
+        it('rejects a forbidden expression', () => {
+            const result = Analysis.tryCreate(from, { x: 1, y: 1, z: 1 }, 'minecraft:overworld', 'block.constructor');
+            expect(result).toEqual({ ok: false, reason: 'forbidden' });
+        });
     });
 });

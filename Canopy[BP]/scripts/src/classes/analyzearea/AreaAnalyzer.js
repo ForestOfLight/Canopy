@@ -52,7 +52,7 @@ export class AreaAnalyzer {
     }
 
     runToCompletion() {
-        // eslint-disable-next-line no-unused-vars
-        for (const _ of this.scan()) { /* drain */ }
+        const scan = this.scan();
+        while (!scan.next().done);
     }
 }

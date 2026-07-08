@@ -3,14 +3,18 @@ import { world, Player } from '@minecraft/server';
 import { scheduler } from '@forestoflight/minecraft-vitest-mocks';
 import { PlayerCommandOrigin } from '../../../../../Canopy[BP]/scripts/lib/canopy/Canopy';
 
+const uiConstructor = vi.fn();
 const showSelector = vi.fn();
 const showCreateForm = vi.fn();
 const showAnalysisPage = vi.fn();
 vi.mock('../../../../../Canopy[BP]/scripts/src/classes/analyzearea/AnalyzeAreaUI', () => ({
-    showSelector: (...a) => showSelector(...a),
-    showCreateForm: (...a) => showCreateForm(...a),
-    showAnalysisPage: (...a) => showAnalysisPage(...a),
-    LIST_PAGE_SIZE: 50
+    LIST_PAGE_SIZE: 50,
+    AnalyzeAreaUI: class {
+        constructor(player, manager) { uiConstructor(player, manager); }
+        showSelector(...a) { return showSelector(...a); }
+        showCreateForm(...a) { return showCreateForm(...a); }
+        showAnalysisPage(...a) { return showAnalysisPage(...a); }
+    }
 }));
 
 const managerApi = { findByCoords: vi.fn(), remove: vi.fn(), add: vi.fn(), list: vi.fn(() => []) };
@@ -38,7 +42,8 @@ describe('analyzeAreaCommand', () => {
         analyzeAreaCommand.analyzeAreaCommand(origin);
         scheduler.advanceTicks(1);
         world.getDimension('minecraft:overworld'); // noop to keep world imported
-        expect(showSelector).toHaveBeenCalled();
+        expect(uiConstructor).toHaveBeenCalledWith(player, managerApi);
+        expect(showSelector).toHaveBeenCalledWith();
     });
 
     it('opens a matching analysis page for <from> <to>', () => {
@@ -46,14 +51,15 @@ describe('analyzeAreaCommand', () => {
         managerApi.findByCoords.mockReturnValue(analysis);
         analyzeAreaCommand.analyzeAreaCommand(origin, { x: 0, y: 0, z: 0 }, { x: 1, y: 1, z: 1 });
         scheduler.advanceTicks(1);
-        expect(showAnalysisPage).toHaveBeenCalledWith(player, managerApi, analysis);
+        expect(uiConstructor).toHaveBeenCalledWith(player, managerApi);
+        expect(showAnalysisPage).toHaveBeenCalledWith(analysis);
     });
 
     it('opens a prefilled create form when no analysis matches', () => {
         managerApi.findByCoords.mockReturnValue(undefined);
         analyzeAreaCommand.analyzeAreaCommand(origin, { x: 0, y: 0, z: 0 }, { x: 1, y: 1, z: 1 });
         scheduler.advanceTicks(1);
-        expect(showCreateForm).toHaveBeenCalledWith(player, managerApi, { from: { x: 0, y: 0, z: 0 }, to: { x: 1, y: 1, z: 1 } });
+        expect(showCreateForm).toHaveBeenCalledWith({ from: { x: 0, y: 0, z: 0 }, to: { x: 1, y: 1, z: 1 } });
     });
 
     it('removes a matching analysis for the reserved `remove` token', () => {

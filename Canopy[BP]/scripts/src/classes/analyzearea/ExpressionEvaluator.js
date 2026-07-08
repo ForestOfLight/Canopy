@@ -1,7 +1,8 @@
 import jsep from '../../../lib/jsep/jsep.js';
 import { readOnlyMethods } from './readOnlyMethods.js';
+import { ExpressionForbiddenError } from './ExpressionForbiddenError.js';
 
-const FORBIDDEN_KEYS = new Set(['constructor', '__proto__', 'prototype', 'dimension']);
+const FORBIDDEN_KEYS = new Set(['constructor', '__proto__', 'prototype']);
 
 export class ExpressionEvaluator {
     constructor(expression) {
@@ -16,16 +17,18 @@ export class ExpressionEvaluator {
             case 'Identifier':
                 return;
             case 'MemberExpression':
-                if (!node.computed && FORBIDDEN_KEYS.has(node.property.name))
-                    throw new Error(`Forbidden property access: ${node.property.name}`);
+                if (!node.computed && FORBIDDEN_KEYS.has(node.property.name)) {
+                    console.warn(`[Canopy] Forbidden property access in expression: ${this.expression}, property: ${node.property.name}`);
+                    throw new ExpressionForbiddenError(`Forbidden property access: ${node.property.name}`);
+                }
                 this.#assertSafe(node.object);
                 this.#assertSafe(node.property);
                 return;
             case 'CallExpression': {
                 this.#assertSafe(node.callee);
                 const name = this.#staticCalleeName(node.callee);
-                if (name !== null && !readOnlyMethods.has(name))
-                    throw new Error(`Forbidden method call: ${name}`);
+                if (name !== void 0 && !readOnlyMethods.has(name))
+                    throw new ExpressionForbiddenError(`Forbidden method call: ${name}`);
                 node.arguments.forEach((arg) => this.#assertSafe(arg));
                 return;
             }
@@ -47,7 +50,7 @@ export class ExpressionEvaluator {
             return callee.name;
         if (callee.type === 'MemberExpression' && !callee.computed)
             return callee.property.name;
-        return null;
+        return void 0;
     }
 
     evaluate(block) {
@@ -78,7 +81,7 @@ export class ExpressionEvaluator {
         const object = this.#evalNode(node.object, block);
         const key = node.computed ? this.#evalNode(node.property, block) : node.property.name;
         if (FORBIDDEN_KEYS.has(key))
-            throw new Error(`Forbidden property access: ${key}`);
+            throw new ExpressionForbiddenError(`Forbidden property access: ${key}`);
         return { object, key, value: object?.[key] };
     }
 
@@ -86,13 +89,13 @@ export class ExpressionEvaluator {
         if (node.callee.type === 'MemberExpression') {
             const { object, key, value: fn } = this.#evalMember(node.callee, block);
             if (!readOnlyMethods.has(key))
-                throw new Error(`Forbidden method call: ${key}`);
+                throw new ExpressionForbiddenError(`Forbidden method call: ${key}`);
             const args = node.arguments.map((arg) => this.#evalNode(arg, block));
             return fn.apply(object, args);
         }
         const name = node.callee.name;
         if (!readOnlyMethods.has(name))
-            throw new Error(`Forbidden method call: ${name}`);
+            throw new ExpressionForbiddenError(`Forbidden method call: ${name}`);
         const fn = this.#evalNode(node.callee, block);
         const args = node.arguments.map((arg) => this.#evalNode(arg, block));
         return fn.apply(block, args);

@@ -66,13 +66,9 @@ describe('ExpressionEvaluator', () => {
             expect(() => new ExpressionEvaluator('hasTag.prototype')).toThrow(/Forbidden property access: prototype/);
         });
 
-        it('rejects any access to dimension', () => {
-            expect(() => new ExpressionEvaluator('block.dimension')).toThrow(/Forbidden property access: dimension/);
-        });
-
         it('rejects computed access to a forbidden key at runtime', () => {
-            const evaluator = new ExpressionEvaluator("block['dimen' + 'sion']");
-            expect(() => evaluator.evaluate(makeBlock())).toThrow(/Forbidden property access: dimension/);
+            const evaluator = new ExpressionEvaluator("block['constr' + 'uctor']");
+            expect(() => evaluator.evaluate(makeBlock())).toThrow(/Forbidden property access: constructor/);
         });
 
         it('rejects calls to methods that are not read-only-safe', () => {

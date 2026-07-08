@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 const RESTRICTED_MARKER = "can't be called in restricted-execution mode";
-const DANGEROUS_NAMES = new Set(['constructor', '__proto__', 'prototype', 'dimension']);
+const DANGEROUS_NAMES = new Set(['constructor', '__proto__', 'prototype']);
 const METHOD_RE = /^\s+(?:static\s+|readonly\s+|get\s+|set\s+)*([A-Za-z_]\w*)\s*(?:<.+>)?\s*\(/;
 const OUTPUT_RELATIVE = 'scripts/src/classes/analyzearea/readOnlyMethods.js';
 

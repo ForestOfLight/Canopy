@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { world } from '@minecraft/server';
-import { RegionLoader } from '../../../../../../Canopy[BP]/scripts/src/classes/analyzearea/RegionLoader.js';
+import { RegionLoader } from '../../../../../Canopy[BP]/scripts/src/classes/RegionLoader.js';
 
 describe('RegionLoader', () => {
     const dimension = { id: 'minecraft:overworld' };

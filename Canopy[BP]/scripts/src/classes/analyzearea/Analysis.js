@@ -1,23 +1,15 @@
 import { system, world } from '@minecraft/server';
-import { normalizeCorners, regionCapacity, sameCorner } from './regionMath.js';
 import { ExpressionEvaluator } from './ExpressionEvaluator.js';
-import { AreaAnalyzer } from './AreaAnalyzer.js';
-import { RegionLoader } from './RegionLoader.js';
+import { ExpressionForbiddenError } from './ExpressionForbiddenError.js';
+import { LoadCapacityError } from './LoadCapacityError.js';
+import { AreaAnalyzer, SCAN_CAP } from './AreaAnalyzer.js';
+import { RegionLoader } from '../RegionLoader.js';
 import { AnalyzeAreaRenderer } from './AnalyzeAreaRenderer.js';
 import { stringifyLocation } from '../../../include/utils';
 
-export const LOAD_CAPACITY_ERROR = 'loadcapacity';
-
-export function analysisErrorMessage(error) {
-    if (error?.message === LOAD_CAPACITY_ERROR)
-        return { translate: 'commands.analyzearea.loadcapacity' };
-    console.warn('[Canopy] AnalyzeArea error:', error, error?.stack);
-    return { translate: 'commands.analyzearea.unknownerror' };
-}
-
 export class Analysis {
     constructor({ id, from, to, dimensionId, expression, createdAt }) {
-        const { min, max } = normalizeCorners(from, to);
+        const { min, max } = Analysis.#normalizeCorners(from, to);
         this.id = id;
         this.min = min;
         this.max = max;
@@ -57,6 +49,28 @@ export class Analysis {
         return new Analysis({ id, from, to, dimensionId, expression, createdAt: Date.now() });
     }
 
+    static tryCreate(from, to, dimensionId, expression) {
+        const { min, max } = Analysis.#normalizeCorners(from, to);
+        if (Analysis.#regionCapacity(min, max) > SCAN_CAP)
+            return { ok: false, reason: 'overcapacity' };
+        try {
+            void new ExpressionEvaluator(expression);
+        } catch (error) {
+            const reason = error instanceof ExpressionForbiddenError ? 'forbidden' : 'syntaxerror';
+            return { ok: false, reason };
+        }
+        return { ok: true, analysis: Analysis.create(from, to, dimensionId, expression) };
+    }
+
+    static errorMessage(error) {
+        if (error instanceof LoadCapacityError)
+            return { translate: 'commands.analyzearea.loadcapacity' };
+        if (error instanceof ExpressionForbiddenError)
+            return { translate: 'commands.analyzearea.forbidden' };
+        console.warn('[Canopy] AnalyzeArea error:', error, error?.stack);
+        return { translate: 'commands.analyzearea.unknownerror' };
+    }
+
     serialize() {
         return {
             id: this.id,
@@ -73,13 +87,14 @@ export class Analysis {
     }
 
     matchesCoords(from, to, dimensionId) {
-        if (dimensionId !== this.dimensionId) return false;
-        const { min, max } = normalizeCorners(from, to);
-        return sameCorner(min, this.min) && sameCorner(max, this.max);
+        if (dimensionId !== this.dimensionId)
+            return false;
+        const { min, max } = Analysis.#normalizeCorners(from, to);
+        return Analysis.#sameCorner(min, this.min) && Analysis.#sameCorner(max, this.max);
     }
 
     capacity() {
-        return regionCapacity(this.min, this.max);
+        return Analysis.#regionCapacity(this.min, this.max);
     }
 
     tickingId() {
@@ -105,37 +120,31 @@ export class Analysis {
         return loader;
     }
 
-    #createDriver(analyzer, loader, onProgress, total, resolve, reject) {
-        const self = this;
-        function* driver() {
-            let error = null;
-            try {
-                for (const scan = analyzer.scan(); !scan.next().done;) {
-                    if (onProgress)
-                        onProgress(Math.min(analyzer.scanned / total, 1));
-                    yield;
-                }
-                self.matches = analyzer.matches;
-                self.capped = analyzer.capped;
-                self.hasRun = true;
-                if (onProgress)
-                    onProgress(1);
-                self.running = false;
-                self.#finishRender();
-            } catch (thrown) {
-                error = thrown;
-            } finally {
-                self.jobId = undefined;
-                loader.unload();
-                if (self.loader === loader)
-                    self.loader = void 0;
+    *#runScan(analyzer, loader, total, progress, done, fail) {
+        let error = void 0;
+        try {
+            for (const scan = analyzer.scan(); !scan.next().done;) {
+                progress(Math.min(analyzer.scanned / total, 1));
+                yield;
             }
-            if (error)
-                reject(error);
-            else
-                resolve();
+            this.matches = analyzer.matches;
+            this.capped = analyzer.capped;
+            this.hasRun = true;
+            progress(1);
+            this.running = false;
+            this.#finishRender();
+        } catch (thrown) {
+            error = thrown;
+        } finally {
+            this.jobId = void 0;
+            loader.unload();
+            if (this.loader === loader)
+                this.loader = void 0;
         }
-        return driver;
+        if (error)
+            fail(error);
+        else
+            done();
     }
 
     run(onProgress) {
@@ -144,7 +153,7 @@ export class Analysis {
         this.#cancelJob();
         const loader = this.#initializeLoader(dimension);
         if (!loader) {
-            const error = new Error(LOAD_CAPACITY_ERROR);
+            const error = new LoadCapacityError();
             this.#fail(error);
             return Promise.reject(error);
         }
@@ -171,11 +180,10 @@ export class Analysis {
                 return;
             }
             const analyzer = new AreaAnalyzer(dimension, this.min, this.max, evaluator);
-            const total = regionCapacity(this.min, this.max);
-            const done = () => { this.running = false; this.#emit('onDone'); resolve(); };
+            const total = Analysis.#regionCapacity(this.min, this.max);
+            const done = () => { this.#emit('onDone'); resolve(); };
             const fail = (error) => { this.#fail(error); reject(error); };
-            const driver = this.#createDriver(analyzer, loader, progress, total, done, fail);
-            this.jobId = system.runJob(driver());
+            this.jobId = system.runJob(this.#runScan(analyzer, loader, total, progress, done, fail));
         }));
     }
 
@@ -239,5 +247,28 @@ export class Analysis {
             this.renderer.destroy();
         if (this.loader)
             this.loader.unload();
+    }
+
+    static #normalizeCorners(a, b) {
+        return {
+            min: {
+                x: Math.floor(Math.min(a.x, b.x)),
+                y: Math.floor(Math.min(a.y, b.y)),
+                z: Math.floor(Math.min(a.z, b.z))
+            },
+            max: {
+                x: Math.floor(Math.max(a.x, b.x)),
+                y: Math.floor(Math.max(a.y, b.y)),
+                z: Math.floor(Math.max(a.z, b.z))
+            }
+        };
+    }
+
+    static #regionCapacity(min, max) {
+        return (max.x - min.x + 1) * (max.y - min.y + 1) * (max.z - min.z + 1);
+    }
+
+    static #sameCorner(a, b) {
+        return a.x === b.x && a.y === b.y && a.z === b.z;
     }
 }

@@ -1,11 +1,8 @@
 import { VanillaCommand, PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin } from "../../lib/canopy/Canopy";
 import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, system } from "@minecraft/server";
 import { AreaAnalysisManager } from "../classes/analyzearea/AreaAnalysisManager";
-import { Analysis, analysisErrorMessage } from "../classes/analyzearea/Analysis";
-import { ExpressionEvaluator } from "../classes/analyzearea/ExpressionEvaluator";
-import { SCAN_CAP } from "../classes/analyzearea/AreaAnalyzer";
-import { regionCapacity, normalizeCorners } from "../classes/analyzearea/regionMath";
-import { showSelector, showCreateForm, showAnalysisPage } from "../classes/analyzearea/AnalyzeAreaUI";
+import { Analysis } from "../classes/analyzearea/Analysis";
+import { AnalyzeAreaUI } from "../classes/analyzearea/AnalyzeAreaUI";
 
 const REMOVE_TOKEN = 'remove';
 
@@ -25,8 +22,8 @@ export class AnalyzeAreaCommand extends VanillaCommand {
             wikiDescription: 'Analyze a region of blocks with a JavaScript expression (parsed by jsep). '
                 + 'The expression is evaluated for each block in the region, and if it returns a truthy value, the block is considered a match. '
                 + 'The expression has access all properties and methods that can be accessed in restricted-execution mode from a '
-                + '[block](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/block?view=minecraft-bedrock-experimental) object '
-                + '(does not include the dimension property). The `block` source keyword can be included or not.\n\n'
+                + '[block](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/block?view=minecraft-bedrock-experimental) object. '
+                + 'The `block` source keyword can be included or not.\n\n'
                 + 'Example expressions:\n'
                 + "- Stone block: `typeId == 'minecraft:stone'`\n"
                 + "- Immovable block: `getComponent('minecraft:movable').movementType == 'Immovable'`\n"
@@ -60,19 +57,20 @@ export class AnalyzeAreaCommand extends VanillaCommand {
         if (!(origin instanceof PlayerCommandOrigin))
             return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
         const player = origin.getSource();
+        const ui = new AnalyzeAreaUI(player, manager);
 
         if (from && to) {
             const existing = manager.findByCoords(from, to, player.dimension.id);
             system.run(() => {
                 if (existing)
-                    showAnalysisPage(player, manager, existing);
+                    ui.showAnalysisPage(existing);
                 else
-                    showCreateForm(player, manager, { from, to });
+                    ui.showCreateForm({ from, to });
             });
             return { status: CustomCommandStatus.Success };
         }
 
-        system.run(() => showSelector(player, manager));
+        system.run(() => ui.showSelector());
         return { status: CustomCommandStatus.Success };
     }
 
@@ -87,29 +85,21 @@ export class AnalyzeAreaCommand extends VanillaCommand {
 
     #createAndRun(origin, manager, from, to, expression) {
         const source = origin.getSource();
-        const dimensionId = source.dimension.id;
-        const { min, max } = normalizeCorners(from, to);
-        if (regionCapacity(min, max) > SCAN_CAP)
-            return { status: CustomCommandStatus.Failure, message: 'commands.analyzearea.overcapacity' };
+        const result = Analysis.tryCreate(from, to, source.dimension.id, expression);
+        if (!result.ok)
+            return { status: CustomCommandStatus.Failure, message: `commands.analyzearea.${result.reason}` };
 
-        let analysis;
-        try {
-            void new ExpressionEvaluator(expression);
-            analysis = Analysis.create(from, to, dimensionId, expression);
-        } catch {
-            return { status: CustomCommandStatus.Failure, message: 'commands.analyzearea.syntaxerror' };
-        }
-
+        const analysis = result.analysis;
         const isPlayer = origin instanceof PlayerCommandOrigin;
         system.run(() => {
             manager.add(analysis);
             if (isPlayer) {
-                showAnalysisPage(source, manager, analysis, true);
+                new AnalyzeAreaUI(source, manager).showAnalysisPage(analysis, true);
                 return;
             }
             analysis.run()
                 .then(() => origin.sendMessage({ translate: 'commands.analyzearea.completed', with: [String(analysis.matches.length)] }))
-                .catch((error) => origin.sendMessage(analysisErrorMessage(error)));
+                .catch((error) => origin.sendMessage(Analysis.errorMessage(error)));
         });
         return { status: CustomCommandStatus.Success };
     }
