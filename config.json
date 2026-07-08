@@ -17,6 +17,10 @@
 				"runWith": "nodejs",
 				"script": "filters/update_mob_data/main.js"
 			},
+			"generate_readonly_methods": {
+				"runWith": "nodejs",
+				"script": "filters/generate_readonly_methods/main.js"
+			},
 			"package_mcaddon": {
 				"runWith": "nodejs",
 				"script": "filters/package_mcaddon/main.js"
@@ -50,6 +54,7 @@
 				},
 				"filters": [
 					{ "filter": "update_mob_data" },
+					{ "filter": "generate_readonly_methods" },
 					{ "filter": "package_mcaddon" }
 				]
 			},
