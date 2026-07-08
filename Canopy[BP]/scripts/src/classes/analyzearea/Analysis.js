@@ -68,31 +68,46 @@ export class Analysis {
     run(dimension) {
         this.dimension = dimension;
         this.#cancelJob();
-        if (this.loader) this.loader.unload();
-        this.loader = new RegionLoader(dimension, this.min, this.max, this.tickingId());
-        if (!this.loader.hasCapacity())
+        if (this.loader) {
+            this.loader.unload();
+            this.loader = null;
+        }
+        const loader = new RegionLoader(dimension, this.min, this.max, this.tickingId());
+        if (!loader.hasCapacity())
             return Promise.reject(new Error('loadcapacity'));
+        this.loader = loader;
 
-        return this.loader.load().then(() => new Promise((resolve) => {
-            const evaluator = new ExpressionEvaluator(this.expression);
+        return loader.load().then(() => new Promise((resolve, reject) => {
+            let evaluator;
+            try {
+                evaluator = new ExpressionEvaluator(this.expression);
+            } catch (error) {
+                loader.unload();
+                if (this.loader === loader) this.loader = null;
+                reject(error);
+                return;
+            }
             const analyzer = new AreaAnalyzer(dimension, this.min, this.max, evaluator);
-            const generator = (() => {
-                const inner = analyzer.scan();
-                return (function* driver() {
-                    yield* inner;
-                    finish();
-                })();
-            })();
-            const finish = () => {
-                this.jobId = undefined;
-                this.matches = analyzer.matches;
-                this.capped = analyzer.capped;
-                this.hasRun = true;
-                this.#refreshRender();
-                this.loader.unload();
-                resolve();
-            };
-            this.jobId = system.runJob(generator);
+            const self = this;
+            function* driver() {
+                let error = null;
+                try {
+                    yield* analyzer.scan();
+                    self.matches = analyzer.matches;
+                    self.capped = analyzer.capped;
+                    self.hasRun = true;
+                    self.#refreshRender();
+                } catch (thrown) {
+                    error = thrown;
+                } finally {
+                    self.jobId = undefined;
+                    loader.unload();
+                    if (self.loader === loader) self.loader = null;
+                }
+                if (error) reject(error);
+                else resolve();
+            }
+            this.jobId = system.runJob(driver());
         }));
     }
 
