@@ -33,8 +33,7 @@ export class AnalyzeAreaCommand extends VanillaCommand {
                 + "- Liquid source block: `permutation.getState('liquid_depth') == 0`",
             subCommandWikiDescription: {
                 '': {
-                    description: 'Open the area analyses menu.',
-                    params: []
+                    description: 'Open the area analyses menu.'
                 },
                 '<from: Location> <to: Location>': {
                     description: 'Open the saved analysis for those coordinates, or a prefilled create form.'

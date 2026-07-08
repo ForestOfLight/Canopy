@@ -27,24 +27,12 @@ function resolveDescription(desc, lang) {
     return '';
 }
 
-const PARAM_TYPE_DISPLAY = {
-    Boolean: 'bool',
-    Enum: null,      // replaced by enum values inline
-    Float: 'float',
-    Integer: 'int',
-    Location: 'x y z',
-    String: 'string',
-    EntitySelector: 'entity',
-    EntityType: 'entityType',
-    BlockType: 'blockType',
-};
-
 function buildParamDisplay(param, enums) {
     if (param.type === 'Enum') {
         const enumDef = enums?.find(e => e.name === param.name);
-        return enumDef ? enumDef.values.join('/') : param.name;
+        return enumDef ? enumDef.values.join('/') : 'enum';
     }
-    return PARAM_TYPE_DISPLAY[param.type] ?? param.name;
+    return String(param.type ?? 'value');
 }
 
 function buildVanillaCommandBlock(cmd, lang) {

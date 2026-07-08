@@ -16,6 +16,7 @@ const validDimensions = {
 new VanillaCommand({
     name: 'canopy:dtp',
     description: 'commands.changedimension',
+    enums: [{ name: 'canopy:dimension', values: Object.keys(validDimensions) }],
     mandatoryParameters: [{ name: 'canopy:dimension', type: CustomCommandParamType.Enum }],
     optionalParameters: [
         { name: 'destination', type: CustomCommandParamType.Location },
