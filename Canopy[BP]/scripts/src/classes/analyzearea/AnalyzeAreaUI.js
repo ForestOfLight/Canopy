@@ -7,6 +7,9 @@ import { stringifyLocation, getColoredDimensionName } from '../../../include/uti
 export const LIST_PAGE_SIZE = 50;
 
 const DIMENSIONS = ['minecraft:overworld', 'minecraft:nether', 'minecraft:the_end'];
+// CustomForm.dropdown requires DropdownItemData objects ({ label, value }), not raw strings.
+// value === index, so DIMENSIONS[observable.getData()] maps the selection back to a dimension id.
+const DIMENSION_ITEMS = DIMENSIONS.map((id, index) => ({ label: id.replace('minecraft:', ''), value: index }));
 
 function writable() {
     return { clientWritable: true };
@@ -47,7 +50,7 @@ export function showCreateForm(player, manager, prefill) {
     form.textField({ translate: 'commands.analyzearea.ui.create.toX' }, fields.toX);
     form.textField({ translate: 'commands.analyzearea.ui.create.toY' }, fields.toY);
     form.textField({ translate: 'commands.analyzearea.ui.create.toZ' }, fields.toZ);
-    form.dropdown({ translate: 'commands.analyzearea.ui.create.dimension' }, dimObservable, DIMENSIONS);
+    form.dropdown({ translate: 'commands.analyzearea.ui.create.dimension' }, dimObservable, DIMENSION_ITEMS);
     form.textField({ translate: 'commands.analyzearea.ui.create.expression' }, expression);
 
     form.button({ translate: 'commands.analyzearea.ui.create.submit' }, () => {
