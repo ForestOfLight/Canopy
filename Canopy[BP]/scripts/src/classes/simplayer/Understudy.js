@@ -141,7 +141,7 @@ class Understudy {
 
     look(target) {
         if (target instanceof Block) {
-            this.simulatedPlayer.lookAtBlock(target);
+            this.simulatedPlayer.lookAt(target);
             this.#lookTarget = target;
         } else if (target instanceof Entity) {
             this.simulatedPlayer.lookAtEntity(target);

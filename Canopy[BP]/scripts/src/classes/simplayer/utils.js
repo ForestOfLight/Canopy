@@ -1,4 +1,5 @@
-import { Block, Entity, GameMode, Player } from "@minecraft/server";
+import { Block, Direction, Entity, GameMode, Player } from "@minecraft/server";
+import { Vector } from "../../../lib/Vector";
 
 const PLAYER_EYE_HEIGHT = 1.62001002;
 
@@ -53,4 +54,15 @@ export function getLocationInfoFromSource(source) {
     else if (source instanceof Entity)
         return { location: source.location, dimension: source.dimension, rotation: source.getRotation() };
     throw new Error(`[Canopy] Invalid source`);
+}
+
+export function getBlockFaceLocationFromRaycastHit(raycastHit) {
+    const location = Vector.from(raycastHit.block.location).add(raycastHit.faceLocation);
+    if (raycastHit.face === Direction.Up)
+        location.y += 1;
+    else if (raycastHit.face === Direction.East)
+        location.x += 1;
+    else if (raycastHit.face === Direction.South)
+        location.z += 1;
+    return location;
 }

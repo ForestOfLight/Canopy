@@ -2,6 +2,7 @@ import { CustomCommandParamType, CommandPermissionLevel, CustomCommandStatus, En
 import { VanillaCommand, PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin, ServerCommandOrigin } from "../../../lib/canopy/Canopy";
 import Understudies from "../../classes/simplayer/Understudies";
 import { Vector } from "../../../lib/Vector";
+import { getBlockFaceLocationFromRaycastHit } from "../../classes/simplayer/utils";
 
 export const LOOK_OPTIONS = Object.freeze({
     UP: 'up', DOWN: 'down', NORTH: 'north', SOUTH: 'south',
@@ -87,10 +88,11 @@ export class PlayerLookCommand extends VanillaCommand {
         const source = origin.getSource();
         if (source instanceof Entity === false)
             return { status: CustomCommandStatus.Failure, message: 'commands.playerlook.block.entityonly' };
-        const block = source.getBlockFromViewDirection({ maxDistance: 16*64 })?.block;
+        const raycastHit = source.getBlockFromViewDirection({ maxDistance: 16*64 });
+        const block = raycastHit?.block;
         if (block === void 0)
             return { status: CustomCommandStatus.Failure, message: 'commands.playerlook.block.noblock' };
-        system.run(() => understudy.look(block));
+        system.run(() => understudy.look(getBlockFaceLocationFromRaycastHit(raycastHit)));
         return { status: CustomCommandStatus.Success };
     }
 
