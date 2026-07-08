@@ -28,11 +28,19 @@ describe('ExpressionEvaluator', () => {
         expect(evaluator.evaluate(makeBlock())).toBe(true);
     });
 
-    it('short-circuits && and ||', () => {
-        const truthy = new ExpressionEvaluator("typeId === 'minecraft:redstone_wire' && permutation.getState('redstone_signal') === 7");
-        expect(truthy.evaluate(makeBlock())).toBe(true);
-        const falsy = new ExpressionEvaluator("typeId === 'minecraft:air' || permutation.getState('redstone_signal') > 10");
-        expect(falsy.evaluate(makeBlock())).toBe(false);
+    it('short-circuits && and || (does not evaluate the dead operand)', () => {
+        // Right side would throw if evaluated; && must not evaluate it when the left is false.
+        const andCase = new ExpressionEvaluator("typeId === 'minecraft:air' && missing.getState('x')");
+        expect(() => andCase.evaluate(makeBlock())).not.toThrow();
+        expect(andCase.evaluate(makeBlock())).toBe(false);
+
+        // Right side would throw if evaluated; || must not evaluate it when the left is true.
+        const orCase = new ExpressionEvaluator("typeId === 'minecraft:redstone_wire' || missing.getState('x')");
+        expect(() => orCase.evaluate(makeBlock())).not.toThrow();
+        expect(orCase.evaluate(makeBlock())).toBe(true);
+
+        // Sanity: an eagerly-evaluated bare `missing.getState('x')` really does throw.
+        expect(() => new ExpressionEvaluator("missing.getState('x')").evaluate(makeBlock())).toThrow();
     });
 
     it('applies arithmetic, comparison, and unary operators', () => {
