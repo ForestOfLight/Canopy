@@ -1,4 +1,4 @@
-import { CustomCommandSource, CustomCommandStatus, Player, system } from "@minecraft/server";
+import { CustomCommandError, CustomCommandErrorReason, CustomCommandSource, CustomCommandStatus, Player, system } from "@minecraft/server";
 import { Rules } from "../rules/Rules";
 import { VanillaCommands } from "./VanillaCommands";
 import { BlockCommandOrigin } from "./BlockCommandOrigin";
@@ -52,7 +52,13 @@ export class VanillaCommand {
                 const values = typeof customEnum.values === 'function'
                     ? customEnum.values()
                     : customEnum.values;
-                customCommandRegistry.registerEnum(customEnum.name, values);
+                try {
+                    customCommandRegistry.registerEnum(customEnum.name, values);
+                } catch (error) {
+                    if (error instanceof CustomCommandError && error.reason === CustomCommandErrorReason.AlreadyRegistered)
+                        continue;
+                    throw error;
+                }
             }
         }
     }
