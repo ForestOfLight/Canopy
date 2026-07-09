@@ -1,4 +1,14 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+
+vi.mock('@minecraft/server', () => ({
+    ItemStack: class {
+        constructor(typeId, amount = 1) {
+            this.typeId = typeId;
+            this.amount = amount;
+        }
+    }
+}));
+
 import { ExpressionEvaluator } from '../../../../../../Canopy[BP]/scripts/src/classes/analyzearea/ExpressionEvaluator.js';
 
 function makeBlock() {
@@ -80,6 +90,38 @@ describe('ExpressionEvaluator', () => {
         it('allows read-only method calls', () => {
             expect(new ExpressionEvaluator("permutation.getState('redstone_signal') === 7").evaluate(makeBlock())).toBe(true);
             expect(new ExpressionEvaluator("hasTag('wood')").evaluate({ hasTag: (t) => t === 'wood' })).toBe(true);
+        });
+
+        it('allows safe built-in JS methods on values', () => {
+            expect(new ExpressionEvaluator("typeId.includes('redstone')").evaluate(makeBlock())).toBe(true);
+            expect(new ExpressionEvaluator("typeId.startsWith('minecraft:')").evaluate(makeBlock())).toBe(true);
+            expect(new ExpressionEvaluator('typeId.toUpperCase()').evaluate(makeBlock())).toBe('MINECRAFT:REDSTONE_WIRE');
+        });
+
+        it('still rejects invocation-redirection escapes (call/apply/bind)', () => {
+            expect(() => new ExpressionEvaluator("block.setType.call(block, 'minecraft:tnt')")).toThrow(/Forbidden method call: call/);
+            expect(() => new ExpressionEvaluator('block.setType.apply(block)')).toThrow(/Forbidden method call: apply/);
+            expect(() => new ExpressionEvaluator("hasTag.bind(block)")).toThrow(/Forbidden method call: bind/);
+        });
+    });
+
+    describe('new ItemStack', () => {
+        it('constructs an ItemStack with its arguments', () => {
+            expect(new ExpressionEvaluator("new ItemStack('minecraft:diamond')").evaluate({})).toEqual({ typeId: 'minecraft:diamond', amount: 1 });
+            expect(new ExpressionEvaluator("new ItemStack('minecraft:arrow', 16)").evaluate({})).toEqual({ typeId: 'minecraft:arrow', amount: 16 });
+        });
+
+        it('evaluates constructor arguments against the block', () => {
+            expect(new ExpressionEvaluator('new ItemStack(typeId)').evaluate(makeBlock())).toEqual({ typeId: 'minecraft:redstone_wire', amount: 1 });
+        });
+
+        it('rejects constructing any class other than ItemStack', () => {
+            expect(() => new ExpressionEvaluator("new Player('x')")).toThrow(/Only 'new ItemStack/);
+            expect(() => new ExpressionEvaluator('new Date()')).toThrow(/Only 'new ItemStack/);
+        });
+
+        it('rejects new with a non-identifier callee', () => {
+            expect(() => new ExpressionEvaluator("new block.constructor('x')")).toThrow();
         });
     });
 });

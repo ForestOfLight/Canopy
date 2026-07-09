@@ -1,8 +1,30 @@
 import jsep from '../../../lib/jsep/jsep.js';
+import { ItemStack } from '@minecraft/server';
 import { readOnlyMethods } from './readOnlyMethods.js';
+import { SAFE_JS_METHODS } from './safeJsMethods.js';
 import { ExpressionForbiddenError } from './ExpressionForbiddenError.js';
 
 const FORBIDDEN_KEYS = new Set(['constructor', '__proto__', 'prototype']);
+const ALLOWED_METHODS = new Set([...readOnlyMethods, ...SAFE_JS_METHODS]);
+
+jsep.plugins.register({
+    name: 'analyzearea-new',
+    init() {
+        jsep.hooks.add('gobble-token', function gobbleNew(env) {
+            if (this.expr.substr(this.index, 3) !== 'new' || jsep.isIdentifierPart(this.expr.charCodeAt(this.index + 3)))
+                return;
+            this.index += 3;
+            this.gobbleSpaces();
+            const callee = this.gobbleIdentifier();
+            this.gobbleSpaces();
+            if (this.code !== jsep.OPAREN_CODE)
+                this.throwError(`Expected ( after new ${callee.name}`);
+            this.index++;
+            const args = this.gobbleArguments(jsep.CPAREN_CODE);
+            env.node = this.gobbleTokenProperty({ type: 'NewExpression', callee, arguments: args });
+        });
+    }
+});
 
 export class ExpressionEvaluator {
     constructor(expression) {
@@ -27,11 +49,16 @@ export class ExpressionEvaluator {
             case 'CallExpression': {
                 this.#assertSafe(node.callee);
                 const name = this.#staticCalleeName(node.callee);
-                if (name !== void 0 && !readOnlyMethods.has(name))
+                if (name !== void 0 && !ALLOWED_METHODS.has(name))
                     throw new ExpressionForbiddenError(`Forbidden method call: ${name}`);
                 node.arguments.forEach((arg) => this.#assertSafe(arg));
                 return;
             }
+            case 'NewExpression':
+                if (node.callee.type !== 'Identifier' || node.callee.name !== 'ItemStack')
+                    throw new ExpressionForbiddenError("Only 'new ItemStack(...)' may be constructed");
+                node.arguments.forEach((arg) => this.#assertSafe(arg));
+                return;
             case 'UnaryExpression':
                 this.#assertSafe(node.argument);
                 return;
@@ -67,6 +94,8 @@ export class ExpressionEvaluator {
                 return this.#evalMember(node, block).value;
             case 'CallExpression':
                 return this.#evalCall(node, block);
+            case 'NewExpression':
+                return this.#evalNew(node, block);
             case 'UnaryExpression':
                 return this.#evalUnary(node, block);
             case 'BinaryExpression':
@@ -88,17 +117,24 @@ export class ExpressionEvaluator {
     #evalCall(node, block) {
         if (node.callee.type === 'MemberExpression') {
             const { object, key, value: fn } = this.#evalMember(node.callee, block);
-            if (!readOnlyMethods.has(key))
+            if (!ALLOWED_METHODS.has(key))
                 throw new ExpressionForbiddenError(`Forbidden method call: ${key}`);
             const args = node.arguments.map((arg) => this.#evalNode(arg, block));
             return fn.apply(object, args);
         }
         const name = node.callee.name;
-        if (!readOnlyMethods.has(name))
+        if (!ALLOWED_METHODS.has(name))
             throw new ExpressionForbiddenError(`Forbidden method call: ${name}`);
         const fn = this.#evalNode(node.callee, block);
         const args = node.arguments.map((arg) => this.#evalNode(arg, block));
         return fn.apply(block, args);
+    }
+
+    #evalNew(node, block) {
+        if (node.callee.type !== 'Identifier' || node.callee.name !== 'ItemStack')
+            throw new ExpressionForbiddenError("Only 'new ItemStack(...)' may be constructed");
+        const args = node.arguments.map((arg) => this.#evalNode(arg, block));
+        return new ItemStack(...args);
     }
 
     #evalUnary(node, block) {
