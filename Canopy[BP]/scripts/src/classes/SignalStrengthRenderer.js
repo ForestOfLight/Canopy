@@ -44,7 +44,7 @@ export class SignalStrengthRenderer {
     }
 
     updateRedstonePower() {
-        const power = this.block.getRedstonePower();
+        const power = this.#getRedstonePower(this.block);
         if (this.textShape.text !== String(power))
             this.textShape.setText(String(power));
     }
@@ -52,7 +52,7 @@ export class SignalStrengthRenderer {
     createTextShape() {
         const dimensionlocation = Vector.from(this.block.center()).add(new Vector(-0.0125, -7.7/16, 0.0925));
         dimensionlocation.dimension = this.dimension;
-        this.textShape = new TextPrimitive(dimensionlocation, String(this.block.getRedstonePower()));
+        this.textShape = new TextPrimitive(dimensionlocation, String(this.#getRedstonePower(this.block)));
         this.textShape.backgroundColorOverride = { red: 0, green: 0, blue: 0, alpha: 0 };
         this.textShape.rotation = { x: 90, y: 0, z: 0 };
         this.textShape.useRotation = true;
@@ -65,5 +65,9 @@ export class SignalStrengthRenderer {
         if (this.visibleToPlayer)
             this.textShape.visibleTo = [this.visibleToPlayer];
         world.primitiveShapesManager.addText(this.textShape);
+    }
+
+    #getRedstonePower(block) {
+        return block.getRedstonePower() || '?';
     }
 }
