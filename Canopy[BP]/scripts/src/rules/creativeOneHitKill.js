@@ -34,5 +34,5 @@ world.afterEvents.entityHitEntity.subscribe((event) => {
 function isSulfurCubeWithBlockInside(entity) {
     const frictionComponent = entity.getComponent(EntityComponentTypes.FrictionModifier);
     const ageableComponent = entity.getComponent(EntityComponentTypes.Ageable);
-    return frictionComponent?.value !== 1 && !ageableComponent;
+    return entity.typeId === 'minecraft:sulfur_cube' && (frictionComponent?.value !== 1 && !ageableComponent);
 }
