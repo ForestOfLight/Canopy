@@ -19,8 +19,8 @@ export class Structures extends InfoDisplayTextElement {
     getFormattedDataOwnLine() {
         const structures = this.getFormattedStructures();
         if (structures === '')
-            return { rawtext: [{ translate: 'rules.infodisplay.structures.display' }, { translate: 'rules.infodisplay.structures.display.none' }] };
-        return { rawtext: [{ translate: 'rules.infodisplay.structures.display' }, { text: '§d' + structures }] };
+            return { rawtext: [{ translate: 'rules.infoDisplay.structures.display' }, { translate: 'rules.infoDisplay.structures.display.none' }] };
+        return { rawtext: [{ translate: 'rules.infoDisplay.structures.display' }, { text: '§d' + structures }] };
     }
 
     getFormattedDataSharedLine() {
