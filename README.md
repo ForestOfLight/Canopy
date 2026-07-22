@@ -1,7 +1,7 @@
 ![Canopy Logo](./canopylogo_banner.jpg)
 
 <div align="center">
-  <p><b>Technical mastery, refined by powerful tools.</b></p>
+  <p><b>The best friend of all technical players.</b></p>
 
   [![GitHub Downloads](https://img.shields.io/github/downloads/ForestOfLight/Canopy/total?label=Github%20downloads&logo=github)](https://github.com/ForestOfLight/Canopy/releases/latest)
   [![Curseforge Downloads](https://cf.way2muchnoise.eu/full_1062078_downloads.svg)](https://www.curseforge.com/minecraft-bedrock/addons/canopy)
