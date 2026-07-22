@@ -30,6 +30,7 @@ import { Weather } from './Weather';
 import { LiquidTarget } from './LiquidTarget';
 import { LiquidStates } from './LiquidStates';
 import { HeldItemDurability } from './HeldItemDurability';
+import { BlockBreakSpeed } from './BlockBreakSpeed';
 
 import { RenderSignalStrength } from './RenderSignalStrength';
 import { NoFog } from './NoFog';
@@ -68,12 +69,14 @@ class InfoDisplay {
 		[HopperCounterCounts, () => [19]],
 		[SimulationMap, (player) => [player, 20]],
 		[HeldItemDurability, (player) => [player, 21]],
-		[Target, (player) => [player, 22]],
-		[SignalStrength, (player) => [player, 22]],
-		[BlockStates, (player) => [player, 23]],
-		[PeekInventory, (player) => [player, 24]],
-		[LiquidTarget, (player) => [player, 25]],
-		[LiquidStates, (player) => [player, 26]],
+		[BlockBreakSpeed, (player) => [player, 22]],
+		[Target, (player) => [player, 23]],
+		[SignalStrength, (player) => [player, 24]],
+		[BlockStates, (player) => [player, 25]],
+		[PeekInventory, (player) => [player, 26]],
+		[LiquidTarget, (player) => [player, 27]],
+		[LiquidStates, (player) => [player, 28]],
+		
 		[RenderSignalStrength, (player) => [player]],
 		[RenderLightLevel, (player) => [player]],
 		[NoFog, (player) => [player]]
