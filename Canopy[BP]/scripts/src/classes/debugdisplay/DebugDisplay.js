@@ -135,8 +135,7 @@ export class DebugDisplay {
         this.textDrawer.destroy();
         this.textDrawer = void 0;
         this.enabledElements.forEach(element => {
-            if (element instanceof DebugDisplayShapeElement)
-                element.destroy();
+            element.destroy();
         });
         delete entityToDebugDisplayMap[this.entity.id];
     }
