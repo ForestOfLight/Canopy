@@ -1,10 +1,10 @@
 import { DebugDisplayTextElement } from './DebugDisplayTextElement.js';
 import { EntityComponentTypes } from '@minecraft/server';
 
-const UNITS_TO_MPS = 44.05289;
+export const MOVEMENT_UNITS_TO_MPS = 44.05289;
 
 export class Horse extends DebugDisplayTextElement {
-    speedCalcTypes = ['horse', 'donkey', 'mule'];
+    speedCalcTypes = ['horse', 'donkey', 'mule', 'skeleton_horse', 'zombie_horse'];
 
     constructor(entity) {
         super(entity);
@@ -15,6 +15,6 @@ export class Horse extends DebugDisplayTextElement {
     getFormattedData() {
         if (!this.speedCalcTypes.includes(this.entity.typeId.replace("minecraft:", "")))
             return 'n/a';
-        return `§7Speed: §a${this.movementComponent.currentValue * UNITS_TO_MPS} m/s§7, Max Health: §c${this.healthComponent.effectiveMax}`;
+        return `§7Speed: §a${this.movementComponent.currentValue * MOVEMENT_UNITS_TO_MPS} m/s§7, Max Health: §c${this.healthComponent.effectiveMax}`;
     }
 }
