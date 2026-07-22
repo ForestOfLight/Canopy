@@ -15,6 +15,6 @@ export class Horse extends DebugDisplayTextElement {
     getFormattedData() {
         if (!this.speedCalcTypes.includes(this.entity.typeId.replace("minecraft:", "")))
             return 'n/a';
-        return `§7Speed: §a${this.movementComponent.currentValue * UNITS_TO_MPS} m/s§7, Health: §c${this.healthComponent.effectiveMax}`;
+        return `§7Speed: §a${this.movementComponent.currentValue * UNITS_TO_MPS} m/s§7, Max Health: §c${this.healthComponent.effectiveMax}`;
     }
 }
