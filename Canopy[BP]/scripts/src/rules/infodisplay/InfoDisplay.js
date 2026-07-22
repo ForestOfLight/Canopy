@@ -31,6 +31,7 @@ import { LiquidTarget } from './LiquidTarget';
 import { LiquidStates } from './LiquidStates';
 import { HeldItemDurability } from './HeldItemDurability';
 import { BlockBreakSpeed } from './BlockBreakSpeed';
+import { Horse } from './Horse';
 
 import { RenderSignalStrength } from './RenderSignalStrength';
 import { NoFog } from './NoFog';
@@ -68,15 +69,16 @@ class InfoDisplay {
 		[EventTrackers, () => [18]],
 		[HopperCounterCounts, () => [19]],
 		[SimulationMap, (player) => [player, 20]],
-		[HeldItemDurability, (player) => [player, 21]],
-		[BlockBreakSpeed, (player) => [player, 22]],
-		[Target, (player) => [player, 23]],
-		[SignalStrength, (player) => [player, 24]],
-		[BlockStates, (player) => [player, 25]],
-		[PeekInventory, (player) => [player, 26]],
-		[LiquidTarget, (player) => [player, 27]],
-		[LiquidStates, (player) => [player, 28]],
-		
+		[Horse, (player) => [player, 21]],
+		[HeldItemDurability, (player) => [player, 22]],
+		[BlockBreakSpeed, (player) => [player, 23]],
+		[Target, (player) => [player, 24]],
+		[SignalStrength, (player) => [player, 25]],
+		[BlockStates, (player) => [player, 26]],
+		[PeekInventory, (player) => [player, 27]],
+		[LiquidTarget, (player) => [player, 28]],
+		[LiquidStates, (player) => [player, 29]],
+
 		[RenderSignalStrength, (player) => [player]],
 		[RenderLightLevel, (player) => [player]],
 		[NoFog, (player) => [player]]
