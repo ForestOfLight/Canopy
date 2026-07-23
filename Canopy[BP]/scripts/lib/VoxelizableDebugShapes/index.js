@@ -47,3 +47,42 @@ export function deserializeShape(config) {
         throw new Error(`Unknown shape type: ${config?.type}`);
     return ShapeClass.deserialize(config);
 }
+
+function isValidFieldValue(field, value) {
+    if (field.kind === 'vector') {
+        if (value === null || typeof value !== 'object')
+            return false;
+        return field.axes.every((axis) => Number.isFinite(value[axis]));
+    }
+    if (field.kind === 'number')
+        return Number.isFinite(value);
+    if (field.kind === 'boolean')
+        return typeof value === 'boolean';
+    return field.options.includes(value); // enum
+}
+
+/**
+ * Validate a shape config against its type's schema: the type must be known,
+ * required (non-optional) fields must be present and well-formed, and any
+ * present field must match its declared kind. Fields outside the schema
+ * (type, dimension, …) are ignored. Booleans/enums with a default are treated
+ * as satisfiable when absent.
+ */
+export function validateShapeConfig(config) {
+    if (!config || typeof config !== 'object')
+        return false;
+    const schema = getConfigSchema(config.type);
+    if (!schema)
+        return false;
+    for (const field of schema) {
+        const value = config[field.key];
+        if (value === undefined || value === null) {
+            if (field.optional || field.kind === 'boolean' || field.kind === 'enum')
+                continue;
+            return false; // required geometry missing
+        }
+        if (!isValidFieldValue(field, value))
+            return false;
+    }
+    return true;
+}
