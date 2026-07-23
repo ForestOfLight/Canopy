@@ -138,7 +138,13 @@ export class VoxelizableDebugShape {
 
         const pool = this.#pool;
         const reuse = Math.min(pool.length, desired.length);
-        for (let i = 0; i < reuse; i++) this.#applyLine(pool[i], desired[i].group, desired[i].s);
+        // When hidden (after remove()), reused lines were detached from the drawer
+        // and must be re-added; newly constructed lines below are added on creation.
+        const readdReused = !this.#shown;
+        for (let i = 0; i < reuse; i++) {
+            this.#applyLine(pool[i], desired[i].group, desired[i].s);
+            if (readdReused) debugDrawer.addShape(pool[i]);
+        }
         for (let i = pool.length; i < desired.length; i++) {
             const d = desired[i];
             const line = new DebugLine(this.#loc(d.s, 0), { x: d.s[3], y: d.s[4], z: d.s[5] });

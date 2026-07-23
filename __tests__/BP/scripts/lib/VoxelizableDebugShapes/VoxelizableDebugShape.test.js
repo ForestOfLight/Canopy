@@ -99,6 +99,17 @@ describe('VoxelizableDebugShape', () => {
         expect(s.computeCount).toBe(before);
     });
 
+    it('draw after remove + geometry change re-adds reused lines', () => {
+        const s = make([{ group: 'outer', segments: [0, 0, 0, 1, 0, 0, 1, 0, 0, 2, 0, 0] }]);
+        s.draw();
+        expect(getDrawnShapes(debugDrawer).length).toBe(2);
+        s.remove();
+        expect(getDrawnShapes(debugDrawer).length).toBe(0);
+        s.setGroups([{ group: 'outer', segments: [5, 0, 0, 6, 0, 0, 6, 0, 0, 7, 0, 0] }]);
+        s.draw();
+        expect(getDrawnShapes(debugDrawer).length).toBe(2);
+    });
+
     it('destroy() clears the pool', () => {
         const s = make([{ group: 'outer', segments: [0, 0, 0, 1, 0, 0] }]);
         s.draw();

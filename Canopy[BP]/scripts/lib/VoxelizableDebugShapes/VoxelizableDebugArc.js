@@ -63,7 +63,7 @@ export class VoxelizableDebugArc extends VoxelizableDebugShape {
         if (!axes) return [{ group: 'outer', segments: voxelizeOutline(smooth) }];
         const cArr = [c.x, c.y, c.z];
         const g2d = arcVoxel2D(cArr[axes.u], cArr[axes.v], ru, rv, this.#startAngle, this.#endAngle,
-            { innerEdge: this.innerEdge, outerEdge: this.outerEdge, fill: this.fill });
+            { innerEdge: this.innerEdge, outerEdge: this.outerEdge, fill: this.fill }, axes.su, axes.sv);
         return g2d.map((g) => ({ group: g.group, segments: mergeAxisAligned(lift2D(axes, c, g.segments)) }));
     }
 }
