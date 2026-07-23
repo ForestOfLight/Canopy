@@ -1,5 +1,5 @@
 import { VoxelizableDebugShape } from './VoxelizableDebugShape.js';
-import { eulerToBasis, normalToBasis } from './geometry/orient.js';
+import { OrientationFrame } from './geometry/OrientationFrame.js';
 import { autoSegments, smoothArc } from './geometry/smooth.js';
 import { planarVoxel } from './geometry/curve.js';
 
@@ -17,20 +17,22 @@ export class VoxelizableDebugCircle extends VoxelizableDebugShape {
         this.#normal = config.normal;
     }
     get center() { return this.#center; }
-    set center(v) { this.#center = v; this.markGeometryDirty(); }
+    set center(value) { this.#center = value; this.markGeometryDirty(); }
     get radius() { return this.#radius; }
-    set radius(v) { this.#radius = v; this.markGeometryDirty(); }
+    set radius(value) { this.#radius = value; this.markGeometryDirty(); }
     get rotation() { return this.#rotation; }
-    set rotation(v) { this.#rotation = v; this.markGeometryDirty(); }
+    set rotation(value) { this.#rotation = value; this.markGeometryDirty(); }
     get normal() { return this.#normal; }
-    set normal(v) { this.#normal = v; this.markGeometryDirty(); }
+    set normal(value) { this.#normal = value; this.markGeometryDirty(); }
 
-    #basis() {
-        if (this.#rotation) return eulerToBasis(this.#rotation.x || 0, this.#rotation.y || 0, this.#rotation.z || 0);
-        if (this.#normal) return normalToBasis(this.#normal.x, this.#normal.y, this.#normal.z);
-        return eulerToBasis(0, 0, 0);
+    #frame() {
+        if (this.#rotation)
+            return OrientationFrame.fromEuler(this.#rotation.x || 0, this.#rotation.y || 0, this.#rotation.z || 0);
+        if (this.#normal)
+            return OrientationFrame.fromNormal(this.#normal.x, this.#normal.y, this.#normal.z);
+        return OrientationFrame.fromEuler(0, 0, 0);
     }
-    #segCount() { return this.segments ?? autoSegments(Math.max(1e-6, this.#radius)); }
+    #segmentCount() { return this.segments ?? autoSegments(Math.max(1e-6, this.#radius)); }
 
     static get configSchema() {
         return [
@@ -48,14 +50,16 @@ export class VoxelizableDebugCircle extends VoxelizableDebugShape {
     serialize() { return this.serializeGeometry(super.serialize(), ['center', 'radius', 'rotation', 'normal']); }
 
     computeSegments() {
-        const r = this.#radius;
-        if (r <= 0) return [];
-        const basis = this.#basis();
-        const c = this.#center;
-        const n = this.#segCount();
-        const smooth = smoothArc(basis, c.x, c.y, c.z, r, r, 0, 360, n);
-        if (this.mode === 'smooth') return [{ group: 'outer', segments: smooth }];
-        return planarVoxel(basis, c, r, r,
-            { innerEdge: this.innerEdge, outerEdge: this.outerEdge, fill: this.fill }, smooth);
+        const radius = this.#radius;
+        if (radius <= 0)
+            return [];
+        const frame = this.#frame();
+        const center = this.#center;
+        const segmentCount = this.#segmentCount();
+        const smoothSegments = smoothArc(frame, center.x, center.y, center.z, radius, radius, 0, 360, segmentCount);
+        if (this.mode === 'smooth')
+            return [{ group: 'outer', segments: smoothSegments }];
+        return planarVoxel(frame, center, radius, radius,
+            { innerEdge: this.innerEdge, outerEdge: this.outerEdge, fill: this.fill }, smoothSegments);
     }
 }

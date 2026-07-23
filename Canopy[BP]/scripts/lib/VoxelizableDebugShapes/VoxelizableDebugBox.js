@@ -1,5 +1,5 @@
 import { VoxelizableDebugShape } from './VoxelizableDebugShape.js';
-import { eulerToBasis, normalToBasis, isAxisAligned } from './geometry/orient.js';
+import { OrientationFrame } from './geometry/OrientationFrame.js';
 import { boxCorners, boxEdges, worldAABB } from './geometry/corners.js';
 import { boxVoxel } from './geometry/box.js';
 import { voxelizeOutline } from './geometry/line.js';
@@ -22,36 +22,48 @@ export class VoxelizableDebugBox extends VoxelizableDebugShape {
         this.#normal = config.normal;
     }
     get center() { return this.#center; }
-    set center(v) { this.#center = v; this.markGeometryDirty(); }
+    set center(value) { this.#center = value; this.markGeometryDirty(); }
     get size() { return this.#size; }
-    set size(v) { this.#size = v; this.markGeometryDirty(); }
+    set size(value) { this.#size = value; this.markGeometryDirty(); }
     get from() { return this.#from; }
-    set from(v) { this.#from = v; this.markGeometryDirty(); }
+    set from(value) { this.#from = value; this.markGeometryDirty(); }
     get to() { return this.#to; }
-    set to(v) { this.#to = v; this.markGeometryDirty(); }
+    set to(value) { this.#to = value; this.markGeometryDirty(); }
     get rotation() { return this.#rotation; }
-    set rotation(v) { this.#rotation = v; this.markGeometryDirty(); }
+    set rotation(value) { this.#rotation = value; this.markGeometryDirty(); }
     get normal() { return this.#normal; }
-    set normal(v) { this.#normal = v; this.markGeometryDirty(); }
+    set normal(value) { this.#normal = value; this.markGeometryDirty(); }
 
-    #basis() {
-        if (this.#rotation) return eulerToBasis(this.#rotation.x || 0, this.#rotation.y || 0, this.#rotation.z || 0);
-        if (this.#normal) return normalToBasis(this.#normal.x, this.#normal.y, this.#normal.z);
-        return eulerToBasis(0, 0, 0);
+    #frame() {
+        if (this.#rotation)
+            return OrientationFrame.fromEuler(this.#rotation.x || 0, this.#rotation.y || 0, this.#rotation.z || 0);
+        if (this.#normal)
+            return OrientationFrame.fromNormal(this.#normal.x, this.#normal.y, this.#normal.z);
+        return OrientationFrame.fromEuler(0, 0, 0);
     }
-    // returns {cx,cy,cz, hu,hv,hn}: hu along local x, hv along local z, hn along local y
     #bounds() {
         if (this.#from && this.#to) {
-            const f = this.#from;
-            const t = this.#to;
+            const from = this.#from;
+            const to = this.#to;
             return {
-                cx: (f.x + t.x) / 2, cy: (f.y + t.y) / 2, cz: (f.z + t.z) / 2,
-                hu: Math.abs(t.x - f.x) / 2, hn: Math.abs(t.y - f.y) / 2, hv: Math.abs(t.z - f.z) / 2,
+                centerX: (from.x + to.x) / 2,
+                centerY: (from.y + to.y) / 2,
+                centerZ: (from.z + to.z) / 2,
+                halfU: Math.abs(to.x - from.x) / 2,
+                halfNormal: Math.abs(to.y - from.y) / 2,
+                halfV: Math.abs(to.z - from.z) / 2,
             };
         }
-        const c = this.#center || { x: 0, y: 0, z: 0 };
-        const s = this.#size || { x: 0, y: 0, z: 0 };
-        return { cx: c.x, cy: c.y, cz: c.z, hu: s.x / 2, hv: s.z / 2, hn: s.y / 2 };
+        const center = this.#center || { x: 0, y: 0, z: 0 };
+        const size = this.#size || { x: 0, y: 0, z: 0 };
+        return {
+            centerX: center.x,
+            centerY: center.y,
+            centerZ: center.z,
+            halfU: size.x / 2,
+            halfV: size.z / 2,
+            halfNormal: size.y / 2,
+        };
     }
 
     static get configSchema() {
@@ -69,18 +81,18 @@ export class VoxelizableDebugBox extends VoxelizableDebugShape {
     serialize() { return this.serializeGeometry(super.serialize(), ['center', 'size', 'from', 'to', 'rotation', 'normal']); }
 
     computeSegments() {
-        const b = this.#bounds();
-        if (b.hu === 0 && b.hv === 0 && b.hn === 0) return [];
-        const basis = this.#basis();
-        const corners = boxCorners(basis, b.cx, b.cy, b.cz, b.hu, b.hv, b.hn);
+        const bounds = this.#bounds();
+        if (bounds.halfU === 0 && bounds.halfV === 0 && bounds.halfNormal === 0)
+            return [];
+        const frame = this.#frame();
+        const corners = boxCorners(frame, bounds.centerX, bounds.centerY, bounds.centerZ, bounds.halfU, bounds.halfV, bounds.halfNormal);
         if (this.mode === 'smooth')
             return [{ group: 'outer', segments: boxEdges(corners) }];
-        if (isAxisAligned(basis)) {
-            const [x0, y0, z0, x1, y1, z1] = worldAABB(corners);
-            return boxVoxel(x0, y0, z0, x1, y1, z1,
+        if (frame.isAxisAligned()) {
+            const [minX, minY, minZ, maxX, maxY, maxZ] = worldAABB(corners);
+            return boxVoxel(minX, minY, minZ, maxX, maxY, maxZ,
                 { innerEdge: this.innerEdge, outerEdge: this.outerEdge, fill: this.fill });
         }
-        // rotated fallback: voxelize the wireframe outline (outer only)
         return [{ group: 'outer', segments: voxelizeOutline(boxEdges(corners)) }];
     }
 }

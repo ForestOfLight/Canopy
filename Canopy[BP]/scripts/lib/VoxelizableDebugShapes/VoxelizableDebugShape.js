@@ -2,7 +2,6 @@ import { debugDrawer, DebugLine } from "@minecraft/debug-utilities";
 
 const WHITE = { red: 1, green: 1, blue: 1, alpha: 1 };
 
-/** A live Dimension/Entity/Player serializes to its id string; primitives pass through. */
 function idOf(value) {
     if (value !== null && typeof value === 'object' && value.id !== undefined)
         return value.id;
@@ -28,7 +27,7 @@ export class VoxelizableDebugShape {
     #maximumRenderDistance;
     #attachedTo;
 
-    #groupOf = new WeakMap();
+    #groupOfLine = new WeakMap();
 
     constructor(config = {}) {
         this.#mode = config.mode ?? 'voxel';
@@ -49,65 +48,63 @@ export class VoxelizableDebugShape {
 
     get lines() { return this.#pool; }
 
-    // geometry accessors
     get mode() { return this.#mode; }
-    set mode(v) { this.#mode = v; this.markGeometryDirty(); }
+    set mode(value) { this.#mode = value; this.markGeometryDirty(); }
     get innerEdge() { return this.#innerEdge; }
-    set innerEdge(v) { this.#innerEdge = v; this.markGeometryDirty(); }
+    set innerEdge(value) { this.#innerEdge = value; this.markGeometryDirty(); }
     get outerEdge() { return this.#outerEdge; }
-    set outerEdge(v) { this.#outerEdge = v; this.markGeometryDirty(); }
+    set outerEdge(value) { this.#outerEdge = value; this.markGeometryDirty(); }
     get fill() { return this.#fill; }
-    set fill(v) { this.#fill = v; this.markGeometryDirty(); }
+    set fill(value) { this.#fill = value; this.markGeometryDirty(); }
     get segments() { return this.#segmentsOverride; }
-    set segments(v) { this.#segmentsOverride = v; this.markGeometryDirty(); }
+    set segments(value) { this.#segmentsOverride = value; this.markGeometryDirty(); }
 
-    // appearance accessors
     get color() { return this.#color; }
-    set color(v) { this.#color = v; this.markAppearanceDirty(); }
+    set color(value) { this.#color = value; this.markAppearanceDirty(); }
     get dimension() { return this.#dimension; }
-    set dimension(v) { this.#dimension = v; this.markAppearanceDirty(); }
+    set dimension(value) { this.#dimension = value; this.markAppearanceDirty(); }
     get visibleTo() { return this.#visibleTo; }
-    set visibleTo(v) { this.#visibleTo = v; this.markAppearanceDirty(); }
+    set visibleTo(value) { this.#visibleTo = value; this.markAppearanceDirty(); }
     get maximumRenderDistance() { return this.#maximumRenderDistance; }
-    set maximumRenderDistance(v) { this.#maximumRenderDistance = v; this.markAppearanceDirty(); }
+    set maximumRenderDistance(value) { this.#maximumRenderDistance = value; this.markAppearanceDirty(); }
     get attachedTo() { return this.#attachedTo; }
-    set attachedTo(v) { this.#attachedTo = v; this.markAppearanceDirty(); }
+    set attachedTo(value) { this.#attachedTo = value; this.markAppearanceDirty(); }
 
-    // subclasses override
     computeSegments() { throw new Error('computeSegments() must be implemented'); }
 
-    // --- serialization ---
-    // Subclasses override `type` and add their geometry via serializeGeometry().
     get type() { throw new Error('type getter must be implemented'); }
 
     serialize() {
-        const out = {
+        const config = {
             type: this.type,
             mode: this.mode,
             innerEdge: this.innerEdge,
             outerEdge: this.outerEdge,
             fill: this.fill
         };
-        if (this.segments !== undefined) out.segments = this.segments;
+        if (this.segments !== undefined)
+            config.segments = this.segments;
         const color = this.color;
-        // Functions cannot be JSON-encoded directly; save the source text as a
-        // best-effort so it can be rebuilt on deserialize (see reviveConfig).
-        if (typeof color === 'function') out.color = { fn: color.toString() };
-        else if (color !== undefined) out.color = color;
-        // Live handles (Dimension/Entity/Player) are stored as their id strings;
-        // the consumer resolves ids back to objects when it needs live bindings.
-        if (this.dimension !== undefined) out.dimension = idOf(this.dimension);
-        if (this.attachedTo !== undefined) out.attachedTo = idOf(this.attachedTo);
-        if (this.visibleTo !== undefined) out.visibleTo = this.visibleTo.map((p) => idOf(p));
-        return out;
+        if (typeof color === 'function')
+            config.color = { fn: color.toString() };
+        else if (color !== undefined)
+            config.color = color;
+        if (this.dimension !== undefined)
+            config.dimension = idOf(this.dimension);
+        if (this.attachedTo !== undefined)
+            config.attachedTo = idOf(this.attachedTo);
+        if (this.visibleTo !== undefined)
+            config.visibleTo = this.visibleTo.map((viewer) => idOf(viewer));
+        return config;
     }
 
-    serializeGeometry(out, names) {
-        for (const name of names) {
-            const value = this[name];
-            if (value !== undefined) out[name] = value;
+    serializeGeometry(config, propertyNames) {
+        for (const propertyName of propertyNames) {
+            const value = this[propertyName];
+            if (value !== undefined)
+                config[propertyName] = value;
         }
-        return out;
+        return config;
     }
 
     static reviveConfig(config) {
@@ -116,8 +113,6 @@ export class VoxelizableDebugShape {
             return config;
         const revived = { ...config };
         try {
-            // Rebuild the saved function. May be blocked in the Bedrock sandbox
-            // (code generation from strings); fall back to no color if so.
             revived.color = new Function(`return (${config.color.fn});`)();
         } catch {
             delete revived.color;
@@ -129,8 +124,6 @@ export class VoxelizableDebugShape {
         return new this(VoxelizableDebugShape.reviveConfig(config));
     }
 
-    // --- config schema (UI-agnostic field descriptors; subclasses compose these) ---
-    // Each descriptor: { key, kind: 'vector'|'number'|'boolean'|'enum', axes?, options?, default?, optional? }
     static vectorField(key, optional = false) {
         return { key, kind: 'vector', axes: ['x', 'y', 'z'], optional };
     }
@@ -171,7 +164,8 @@ export class VoxelizableDebugShape {
             return this;
         }
         if (!this.#shown) {
-            for (const line of this.#pool) debugDrawer.addShape(line);
+            for (const line of this.#pool)
+                debugDrawer.addShape(line);
             this.#shown = true;
         }
         if (this.#appearanceDirty) {
@@ -182,83 +176,92 @@ export class VoxelizableDebugShape {
     }
 
     remove() {
-        for (const line of this.#pool) line.remove();
+        for (const line of this.#pool)
+            line.remove();
         this.#shown = false;
         return this;
     }
 
     destroy() {
-        for (const line of this.#pool) line.remove();
+        for (const line of this.#pool)
+            line.remove();
         this.#pool.length = 0;
         this.#groups = null;
         this.#shown = false;
         return this;
     }
 
-    #loc(s, o) {
-        const l = { x: s[o], y: s[o + 1], z: s[o + 2] };
-        if (this.#dimension) l.dimension = this.#dimension;
-        return l;
+    #toLocation(segment, offset) {
+        const location = { x: segment[offset], y: segment[offset + 1], z: segment[offset + 2] };
+        if (this.#dimension)
+            location.dimension = this.#dimension;
+        return location;
     }
 
-    #resolveColor(group, s) {
-        const c = this.#color;
-        if (typeof c === 'function')
-            return c({ x: s[0], y: s[1], z: s[2] }, { x: s[3], y: s[4], z: s[5] });
-        if (c && (c.inner || c.outer || c.fill || c.line))
-            return c[group] ?? WHITE;
-        if (c && c.red !== undefined) return c;
+    #resolveColor(group, segment) {
+        const color = this.#color;
+        if (typeof color === 'function')
+            return color({ x: segment[0], y: segment[1], z: segment[2] }, { x: segment[3], y: segment[4], z: segment[5] });
+        if (color && (color.inner || color.outer || color.fill || color.line))
+            return color[group] ?? WHITE;
+        if (color && color.red !== undefined)
+            return color;
         return WHITE;
     }
 
-    #applyLine(line, group, s) {
-        this.#groupOf.set(line, group);
-        line.setLocation(this.#loc(s, 0));
-        line.endLocation = { x: s[3], y: s[4], z: s[5] };
-        line.color = this.#resolveColor(group, s);
-        if (this.#visibleTo !== undefined) line.visibleTo = this.#visibleTo;
-        if (this.#maximumRenderDistance !== undefined) line.maximumRenderDistance = this.#maximumRenderDistance;
-        if (this.#attachedTo !== undefined) line.attachedTo = this.#attachedTo;
+    #applyLine(line, group, segment) {
+        this.#groupOfLine.set(line, group);
+        line.setLocation(this.#toLocation(segment, 0));
+        line.endLocation = { x: segment[3], y: segment[4], z: segment[5] };
+        line.color = this.#resolveColor(group, segment);
+        if (this.#visibleTo !== undefined)
+            line.visibleTo = this.#visibleTo;
+        if (this.#maximumRenderDistance !== undefined)
+            line.maximumRenderDistance = this.#maximumRenderDistance;
+        if (this.#attachedTo !== undefined)
+            line.attachedTo = this.#attachedTo;
     }
 
     #reconcile() {
-        const desired = [];
-        for (const grp of this.#groups) {
-            for (let i = 0; i < grp.segments.length; i += 6)
-                desired.push({ group: grp.group, s: grp.segments.slice(i, i + 6) });
+        const desiredLines = [];
+        for (const segmentGroup of this.#groups) {
+            for (let offset = 0; offset < segmentGroup.segments.length; offset += 6)
+                desiredLines.push({ group: segmentGroup.group, segment: segmentGroup.segments.slice(offset, offset + 6) });
         }
 
         const pool = this.#pool;
-        const reuse = Math.min(pool.length, desired.length);
-        // When hidden (after remove()), reused lines were detached from the drawer
-        // and must be re-added; newly constructed lines below are added on creation.
-        const readdReused = !this.#shown;
-        for (let i = 0; i < reuse; i++) {
-            this.#applyLine(pool[i], desired[i].group, desired[i].s);
-            if (readdReused) debugDrawer.addShape(pool[i]);
+        const reuseCount = Math.min(pool.length, desiredLines.length);
+        const mustReaddReusedLines = !this.#shown;
+        for (let index = 0; index < reuseCount; index++) {
+            this.#applyLine(pool[index], desiredLines[index].group, desiredLines[index].segment);
+            if (mustReaddReusedLines)
+                debugDrawer.addShape(pool[index]);
         }
-        for (let i = pool.length; i < desired.length; i++) {
-            const d = desired[i];
-            const line = new DebugLine(this.#loc(d.s, 0), { x: d.s[3], y: d.s[4], z: d.s[5] });
-            this.#applyLine(line, d.group, d.s);
+        for (let index = pool.length; index < desiredLines.length; index++) {
+            const desired = desiredLines[index];
+            const line = new DebugLine(this.#toLocation(desired.segment, 0), { x: desired.segment[3], y: desired.segment[4], z: desired.segment[5] });
+            this.#applyLine(line, desired.group, desired.segment);
             debugDrawer.addShape(line);
             pool.push(line);
         }
-        for (let i = pool.length - 1; i >= desired.length; i--) {
-            pool[i].remove();
+        for (let index = pool.length - 1; index >= desiredLines.length; index--) {
+            pool[index].remove();
             pool.pop();
         }
     }
 
     #applyAppearance() {
         for (const line of this.#pool) {
-            const s = [line.location.x, line.location.y, line.location.z,
+            const segment = [line.location.x, line.location.y, line.location.z,
                 line.endLocation.x, line.endLocation.y, line.endLocation.z];
-            line.setLocation(this.#loc(s, 0));
-            line.color = this.#resolveColor(this.#groupOf.get(line), s);
-            if (this.#visibleTo !== undefined) line.visibleTo = this.#visibleTo;
-            if (this.#maximumRenderDistance !== undefined) line.maximumRenderDistance = this.#maximumRenderDistance;
-            if (this.#attachedTo !== undefined) line.attachedTo = this.#attachedTo;
+            line.setLocation(this.#toLocation(segment, 0));
+            line.color = this.#resolveColor(this.#groupOfLine.get(line), segment);
+            if (this.#visibleTo !== undefined)
+                line.visibleTo = this.#visibleTo;
+            if (this.#maximumRenderDistance !== undefined)
+                line.maximumRenderDistance = this.#maximumRenderDistance;
+            if (this.#attachedTo !== undefined)
+                line.attachedTo = this.#attachedTo;
         }
     }
 }

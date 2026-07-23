@@ -1,28 +1,44 @@
-import { mapLocal } from './orient.js';
-
-/** 8 world corners. hu along local +X (u), hv along local +Z (v), hn along normal (n). */
-export function boxCorners(basis, cx, cy, cz, hu, hv, hn) {
-    const c = [];
-    for (const su of [-1, 1]) {for (const sn of [-1, 1]) {for (const sv of [-1, 1]) {
-        const p = [0, 0, 0];
-        mapLocal(basis, cx, cy, cz, su * hu, sv * hv, sn * hn, p, 0);
-        c.push(p);
-    }}}
-    return c; // index = ((su bit)*2 + (sn bit))*2 + (sv bit)
+export function boxCorners(frame, centerX, centerY, centerZ, halfU, halfV, halfNormal) {
+    const corners = [];
+    for (const signU of [-1, 1]) {
+        for (const signNormal of [-1, 1]) {
+            for (const signV of [-1, 1]) {
+                const corner = [0, 0, 0];
+                frame.mapLocal(centerX, centerY, centerZ, signU * halfU, signV * halfV, signNormal * halfNormal, corner, 0);
+                corners.push(corner);
+            }
+        }
+    }
+    return corners;
 }
 
-export function boxEdges(c) {
-    const idx = (iu, in_, iv) => (iu * 2 + in_) * 2 + iv;
-    const segs = [];
-    const push = (a, b) => segs.push(a[0], a[1], a[2], b[0], b[1], b[2]);
-    for (const n of [0, 1]) for (const v of [0, 1]) push(c[idx(0, n, v)], c[idx(1, n, v)]); // along u
-    for (const u of [0, 1]) for (const v of [0, 1]) push(c[idx(u, 0, v)], c[idx(u, 1, v)]); // along n
-    for (const u of [0, 1]) for (const n of [0, 1]) push(c[idx(u, n, 0)], c[idx(u, n, 1)]); // along v
-    return segs;
+export function boxEdges(corners) {
+    const cornerIndex = (uIndex, normalIndex, vIndex) => (uIndex * 2 + normalIndex) * 2 + vIndex;
+    const edges = [];
+    const addEdge = (start, end) => edges.push(start[0], start[1], start[2], end[0], end[1], end[2]);
+    for (const normalIndex of [0, 1]) {
+        for (const vIndex of [0, 1])
+            addEdge(corners[cornerIndex(0, normalIndex, vIndex)], corners[cornerIndex(1, normalIndex, vIndex)]);
+    }
+    for (const uIndex of [0, 1]) {
+        for (const vIndex of [0, 1])
+            addEdge(corners[cornerIndex(uIndex, 0, vIndex)], corners[cornerIndex(uIndex, 1, vIndex)]);
+    }
+    for (const uIndex of [0, 1]) {
+        for (const normalIndex of [0, 1])
+            addEdge(corners[cornerIndex(uIndex, normalIndex, 0)], corners[cornerIndex(uIndex, normalIndex, 1)]);
+    }
+    return edges;
 }
 
-export function worldAABB(c) {
-    const a = [Infinity, Infinity, Infinity]; const b = [-Infinity, -Infinity, -Infinity];
-    for (const p of c) for (let k = 0; k < 3; k++) { a[k] = Math.min(a[k], p[k]); b[k] = Math.max(b[k], p[k]); }
-    return [a[0], a[1], a[2], b[0], b[1], b[2]];
+export function worldAABB(corners) {
+    const minimum = [Infinity, Infinity, Infinity];
+    const maximum = [-Infinity, -Infinity, -Infinity];
+    for (const corner of corners) {
+        for (let axis = 0; axis < 3; axis++) {
+            minimum[axis] = Math.min(minimum[axis], corner[axis]);
+            maximum[axis] = Math.max(maximum[axis], corner[axis]);
+        }
+    }
+    return [minimum[0], minimum[1], minimum[2], maximum[0], maximum[1], maximum[2]];
 }

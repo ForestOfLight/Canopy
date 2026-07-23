@@ -1,5 +1,5 @@
 import { VoxelizableDebugShape } from './VoxelizableDebugShape.js';
-import { eulerToBasis, normalToBasis, isAxisAligned, mapLocal } from './geometry/orient.js';
+import { OrientationFrame } from './geometry/OrientationFrame.js';
 import { boxVoxel } from './geometry/box.js';
 import { voxelizeOutline } from './geometry/line.js';
 
@@ -23,52 +23,65 @@ export class VoxelizableDebugSquare extends VoxelizableDebugShape {
         this.#normal = config.normal;
     }
     get center() { return this.#center; }
-    set center(v) { this.#center = v; this.markGeometryDirty(); }
+    set center(value) { this.#center = value; this.markGeometryDirty(); }
     get width() { return this.#width; }
-    set width(v) { this.#width = v; this.markGeometryDirty(); }
+    set width(value) { this.#width = value; this.markGeometryDirty(); }
     get height() { return this.#height; }
-    set height(v) { this.#height = v; this.markGeometryDirty(); }
+    set height(value) { this.#height = value; this.markGeometryDirty(); }
     get from() { return this.#from; }
-    set from(v) { this.#from = v; this.markGeometryDirty(); }
+    set from(value) { this.#from = value; this.markGeometryDirty(); }
     get to() { return this.#to; }
-    set to(v) { this.#to = v; this.markGeometryDirty(); }
+    set to(value) { this.#to = value; this.markGeometryDirty(); }
     get rotation() { return this.#rotation; }
-    set rotation(v) { this.#rotation = v; this.markGeometryDirty(); }
+    set rotation(value) { this.#rotation = value; this.markGeometryDirty(); }
     get normal() { return this.#normal; }
-    set normal(v) { this.#normal = v; this.markGeometryDirty(); }
+    set normal(value) { this.#normal = value; this.markGeometryDirty(); }
 
-    #basis() {
-        if (this.#rotation) return eulerToBasis(this.#rotation.x || 0, this.#rotation.y || 0, this.#rotation.z || 0);
-        if (this.#normal) return normalToBasis(this.#normal.x, this.#normal.y, this.#normal.z);
-        return eulerToBasis(0, 0, 0);
+    #frame() {
+        if (this.#rotation)
+            return OrientationFrame.fromEuler(this.#rotation.x || 0, this.#rotation.y || 0, this.#rotation.z || 0);
+        if (this.#normal)
+            return OrientationFrame.fromNormal(this.#normal.x, this.#normal.y, this.#normal.z);
+        return OrientationFrame.fromEuler(0, 0, 0);
     }
-    // planar bounds: hu along local x (width), hv along local z (height), hn = 0
     #bounds() {
         if (this.#from && this.#to) {
-            const f = this.#from;
-            const t = this.#to;
+            const from = this.#from;
+            const to = this.#to;
             return {
-                cx: (f.x + t.x) / 2, cy: (f.y + t.y) / 2, cz: (f.z + t.z) / 2,
-                hu: Math.abs(t.x - f.x) / 2, hv: Math.abs(t.z - f.z) / 2,
+                centerX: (from.x + to.x) / 2,
+                centerY: (from.y + to.y) / 2,
+                centerZ: (from.z + to.z) / 2,
+                halfU: Math.abs(to.x - from.x) / 2,
+                halfV: Math.abs(to.z - from.z) / 2,
             };
         }
-        const c = this.#center || { x: 0, y: 0, z: 0 };
-        return { cx: c.x, cy: c.y, cz: c.z, hu: (this.#width || 0) / 2, hv: (this.#height || 0) / 2 };
+        const center = this.#center || { x: 0, y: 0, z: 0 };
+        return {
+            centerX: center.x,
+            centerY: center.y,
+            centerZ: center.z,
+            halfU: (this.#width || 0) / 2,
+            halfV: (this.#height || 0) / 2,
+        };
     }
-    #corners(basis, b) {
-        const c = [];
-        for (const su of [-1, 1]) {
-            for (const sv of [-1, 1]) {
-                const p = [0, 0, 0];
-                mapLocal(basis, b.cx, b.cy, b.cz, su * b.hu, sv * b.hv, 0, p, 0);
-                c.push(p);
+    #corners(frame, bounds) {
+        const corners = [];
+        for (const signU of [-1, 1]) {
+            for (const signV of [-1, 1]) {
+                const corner = [0, 0, 0];
+                frame.mapLocal(bounds.centerX, bounds.centerY, bounds.centerZ, signU * bounds.halfU, signV * bounds.halfV, 0, corner, 0);
+                corners.push(corner);
             }
         }
-        return c; // order: (--),(-+),(+-),(++)
+        return corners;
     }
-    #rectEdges(c) {
-        const e = (a, d) => [c[a][0], c[a][1], c[a][2], c[d][0], c[d][1], c[d][2]];
-        return [...e(0, 1), ...e(1, 3), ...e(3, 2), ...e(2, 0)];
+    #rectEdges(corners) {
+        const edge = (startIndex, endIndex) => [
+            corners[startIndex][0], corners[startIndex][1], corners[startIndex][2],
+            corners[endIndex][0], corners[endIndex][1], corners[endIndex][2],
+        ];
+        return [...edge(0, 1), ...edge(1, 3), ...edge(3, 2), ...edge(2, 0)];
     }
 
     static get configSchema() {
@@ -86,22 +99,23 @@ export class VoxelizableDebugSquare extends VoxelizableDebugShape {
     serialize() { return this.serializeGeometry(super.serialize(), ['center', 'width', 'height', 'from', 'to', 'rotation', 'normal']); }
 
     computeSegments() {
-        const b = this.#bounds();
-        if (b.hu === 0 && b.hv === 0) return [];
-        const basis = this.#basis();
-        const corners = this.#corners(basis, b);
+        const bounds = this.#bounds();
+        if (bounds.halfU === 0 && bounds.halfV === 0)
+            return [];
+        const frame = this.#frame();
+        const corners = this.#corners(frame, bounds);
         if (this.mode === 'smooth')
             return [{ group: 'outer', segments: this.#rectEdges(corners) }];
-        if (isAxisAligned(basis)) {
-            const a = [Infinity, Infinity, Infinity];
-            const d = [-Infinity, -Infinity, -Infinity];
-            for (const p of corners) {
-                for (let k = 0; k < 3; k++) {
-                    a[k] = Math.min(a[k], p[k]);
-                    d[k] = Math.max(d[k], p[k]);
+        if (frame.isAxisAligned()) {
+            const minimum = [Infinity, Infinity, Infinity];
+            const maximum = [-Infinity, -Infinity, -Infinity];
+            for (const corner of corners) {
+                for (let axis = 0; axis < 3; axis++) {
+                    minimum[axis] = Math.min(minimum[axis], corner[axis]);
+                    maximum[axis] = Math.max(maximum[axis], corner[axis]);
                 }
             }
-            return boxVoxel(a[0], a[1], a[2], d[0], d[1], d[2],
+            return boxVoxel(minimum[0], minimum[1], minimum[2], maximum[0], maximum[1], maximum[2],
                 { innerEdge: this.innerEdge, outerEdge: this.outerEdge, fill: this.fill });
         }
         return [{ group: 'outer', segments: voxelizeOutline(this.#rectEdges(corners)) }];

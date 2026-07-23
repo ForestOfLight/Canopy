@@ -1,5 +1,5 @@
 import { VoxelizableDebugShape } from './VoxelizableDebugShape.js';
-import { eulerToBasis, normalToBasis } from './geometry/orient.js';
+import { OrientationFrame } from './geometry/OrientationFrame.js';
 import { autoSegments, smoothArc } from './geometry/smooth.js';
 import { planarVoxel } from './geometry/curve.js';
 
@@ -17,18 +17,20 @@ export class VoxelizableDebugEllipse extends VoxelizableDebugShape {
         this.#normal = config.normal;
     }
     get center() { return this.#center; }
-    set center(v) { this.#center = v; this.markGeometryDirty(); }
+    set center(value) { this.#center = value; this.markGeometryDirty(); }
     get radii() { return this.#radii; }
-    set radii(v) { this.#radii = v; this.markGeometryDirty(); }
+    set radii(value) { this.#radii = value; this.markGeometryDirty(); }
     get rotation() { return this.#rotation; }
-    set rotation(v) { this.#rotation = v; this.markGeometryDirty(); }
+    set rotation(value) { this.#rotation = value; this.markGeometryDirty(); }
     get normal() { return this.#normal; }
-    set normal(v) { this.#normal = v; this.markGeometryDirty(); }
+    set normal(value) { this.#normal = value; this.markGeometryDirty(); }
 
-    #basis() {
-        if (this.#rotation) return eulerToBasis(this.#rotation.x || 0, this.#rotation.y || 0, this.#rotation.z || 0);
-        if (this.#normal) return normalToBasis(this.#normal.x, this.#normal.y, this.#normal.z);
-        return eulerToBasis(0, 0, 0);
+    #frame() {
+        if (this.#rotation)
+            return OrientationFrame.fromEuler(this.#rotation.x || 0, this.#rotation.y || 0, this.#rotation.z || 0);
+        if (this.#normal)
+            return OrientationFrame.fromNormal(this.#normal.x, this.#normal.y, this.#normal.z);
+        return OrientationFrame.fromEuler(0, 0, 0);
     }
 
     static get configSchema() {
@@ -47,15 +49,17 @@ export class VoxelizableDebugEllipse extends VoxelizableDebugShape {
     serialize() { return this.serializeGeometry(super.serialize(), ['center', 'radii', 'rotation', 'normal']); }
 
     computeSegments() {
-        const ru = this.#radii.x || 0;
-        const rv = this.#radii.z || 0;
-        if (ru <= 0 || rv <= 0) return [];
-        const basis = this.#basis();
-        const c = this.#center;
-        const n = this.segments ?? autoSegments(Math.max(1e-6, Math.max(ru, rv)));
-        const smooth = smoothArc(basis, c.x, c.y, c.z, ru, rv, 0, 360, n);
-        if (this.mode === 'smooth') return [{ group: 'outer', segments: smooth }];
-        return planarVoxel(basis, c, ru, rv,
-            { innerEdge: this.innerEdge, outerEdge: this.outerEdge, fill: this.fill }, smooth);
+        const radiusU = this.#radii.x || 0;
+        const radiusV = this.#radii.z || 0;
+        if (radiusU <= 0 || radiusV <= 0)
+            return [];
+        const frame = this.#frame();
+        const center = this.#center;
+        const segmentCount = this.segments ?? autoSegments(Math.max(1e-6, Math.max(radiusU, radiusV)));
+        const smoothSegments = smoothArc(frame, center.x, center.y, center.z, radiusU, radiusV, 0, 360, segmentCount);
+        if (this.mode === 'smooth')
+            return [{ group: 'outer', segments: smoothSegments }];
+        return planarVoxel(frame, center, radiusU, radiusV,
+            { innerEdge: this.innerEdge, outerEdge: this.outerEdge, fill: this.fill }, smoothSegments);
     }
 }

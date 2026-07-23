@@ -1,8 +1,8 @@
 import { VoxelizableDebugShape } from './VoxelizableDebugShape.js';
-import { eulerToBasis, normalToBasis } from './geometry/orient.js';
+import { OrientationFrame } from './geometry/OrientationFrame.js';
 import { autoSegments, smoothArc } from './geometry/smooth.js';
 import { arcVoxel2D } from './geometry/arc.js';
-import { planeAxes, lift2D } from './geometry/plane.js';
+import { lift2D } from './geometry/plane.js';
 import { mergeAxisAligned } from './geometry/merge.js';
 import { voxelizeOutline } from './geometry/line.js';
 
@@ -26,27 +26,30 @@ export class VoxelizableDebugArc extends VoxelizableDebugShape {
         this.#normal = config.normal;
     }
     get center() { return this.#center; }
-    set center(v) { this.#center = v; this.markGeometryDirty(); }
+    set center(value) { this.#center = value; this.markGeometryDirty(); }
     get radius() { return this.#radius; }
-    set radius(v) { this.#radius = v; this.markGeometryDirty(); }
+    set radius(value) { this.#radius = value; this.markGeometryDirty(); }
     get radii() { return this.#radii; }
-    set radii(v) { this.#radii = v; this.markGeometryDirty(); }
+    set radii(value) { this.#radii = value; this.markGeometryDirty(); }
     get startAngle() { return this.#startAngle; }
-    set startAngle(v) { this.#startAngle = v; this.markGeometryDirty(); }
+    set startAngle(value) { this.#startAngle = value; this.markGeometryDirty(); }
     get endAngle() { return this.#endAngle; }
-    set endAngle(v) { this.#endAngle = v; this.markGeometryDirty(); }
+    set endAngle(value) { this.#endAngle = value; this.markGeometryDirty(); }
     get rotation() { return this.#rotation; }
-    set rotation(v) { this.#rotation = v; this.markGeometryDirty(); }
+    set rotation(value) { this.#rotation = value; this.markGeometryDirty(); }
     get normal() { return this.#normal; }
-    set normal(v) { this.#normal = v; this.markGeometryDirty(); }
+    set normal(value) { this.#normal = value; this.markGeometryDirty(); }
 
-    #basis() {
-        if (this.#rotation) return eulerToBasis(this.#rotation.x || 0, this.#rotation.y || 0, this.#rotation.z || 0);
-        if (this.#normal) return normalToBasis(this.#normal.x, this.#normal.y, this.#normal.z);
-        return eulerToBasis(0, 0, 0);
+    #frame() {
+        if (this.#rotation)
+            return OrientationFrame.fromEuler(this.#rotation.x || 0, this.#rotation.y || 0, this.#rotation.z || 0);
+        if (this.#normal)
+            return OrientationFrame.fromNormal(this.#normal.x, this.#normal.y, this.#normal.z);
+        return OrientationFrame.fromEuler(0, 0, 0);
     }
-    #radiiPair() {
-        if (this.#radii) return [this.#radii.x || 0, this.#radii.z || 0];
+    #radiusPair() {
+        if (this.#radii)
+            return [this.#radii.x || 0, this.#radii.z || 0];
         return [this.#radius || 0, this.#radius || 0];
     }
 
@@ -68,19 +71,29 @@ export class VoxelizableDebugArc extends VoxelizableDebugShape {
     serialize() { return this.serializeGeometry(super.serialize(), ['center', 'radius', 'radii', 'startAngle', 'endAngle', 'rotation', 'normal']); }
 
     computeSegments() {
-        const [ru, rv] = this.#radiiPair();
-        if (ru <= 0 || rv <= 0 || this.#startAngle === this.#endAngle) return [];
-        const basis = this.#basis();
-        const c = this.#center;
-        const n = this.segments ?? autoSegments(Math.max(1e-6, Math.max(ru, rv)));
-        const smooth = smoothArc(basis, c.x, c.y, c.z, ru, rv, this.#startAngle, this.#endAngle, n);
-        if (this.mode === 'smooth') return [{ group: 'outer', segments: smooth }];
+        const [radiusU, radiusV] = this.#radiusPair();
+        if (radiusU <= 0 || radiusV <= 0 || this.#startAngle === this.#endAngle)
+            return [];
+        const frame = this.#frame();
+        const center = this.#center;
+        const segmentCount = this.segments ?? autoSegments(Math.max(1e-6, Math.max(radiusU, radiusV)));
+        const smoothSegments = smoothArc(frame, center.x, center.y, center.z, radiusU, radiusV, this.#startAngle, this.#endAngle, segmentCount);
+        if (this.mode === 'smooth')
+            return [{ group: 'outer', segments: smoothSegments }];
 
-        const axes = planeAxes(basis);
-        if (!axes) return [{ group: 'outer', segments: voxelizeOutline(smooth) }];
-        const cArr = [c.x, c.y, c.z];
-        const g2d = arcVoxel2D(cArr[axes.u], cArr[axes.v], ru, rv, this.#startAngle, this.#endAngle,
-            { innerEdge: this.innerEdge, outerEdge: this.outerEdge, fill: this.fill }, axes.su, axes.sv);
-        return g2d.map((g) => ({ group: g.group, segments: mergeAxisAligned(lift2D(axes, c, g.segments)) }));
+        const axisMapping = frame.planeAxes();
+        if (!axisMapping)
+            return [{ group: 'outer', segments: voxelizeOutline(smoothSegments) }];
+        const centerCoordinates = [center.x, center.y, center.z];
+        const planarGroups = arcVoxel2D(
+            centerCoordinates[axisMapping.uAxis], centerCoordinates[axisMapping.vAxis],
+            radiusU, radiusV, this.#startAngle, this.#endAngle,
+            { innerEdge: this.innerEdge, outerEdge: this.outerEdge, fill: this.fill },
+            axisMapping.uSign, axisMapping.vSign
+        );
+        return planarGroups.map((planarGroup) => ({
+            group: planarGroup.group,
+            segments: mergeAxisAligned(lift2D(axisMapping, center, planarGroup.segments)),
+        }));
     }
 }

@@ -1,4 +1,3 @@
-// Canopy[BP]/scripts/lib/VoxelizableDebugShapes/VoxelizableDebugLine.js
 import { VoxelizableDebugShape } from './VoxelizableDebugShape.js';
 import { voxelLine } from './geometry/line.js';
 
@@ -12,9 +11,9 @@ export class VoxelizableDebugLine extends VoxelizableDebugShape {
         this.#to = config.to ?? { x: 0, y: 0, z: 0 };
     }
     get from() { return this.#from; }
-    set from(v) { this.#from = v; this.markGeometryDirty(); }
+    set from(value) { this.#from = value; this.markGeometryDirty(); }
     get to() { return this.#to; }
-    set to(v) { this.#to = v; this.markGeometryDirty(); }
+    set to(value) { this.#to = value; this.markGeometryDirty(); }
 
     static get configSchema() {
         return [
@@ -29,11 +28,12 @@ export class VoxelizableDebugLine extends VoxelizableDebugShape {
     serialize() { return this.serializeGeometry(super.serialize(), ['from', 'to']); }
 
     computeSegments() {
-        const f = this.#from;
-        const t = this.#to;
-        if (f.x === t.x && f.y === t.y && f.z === t.z) return [];
+        const from = this.#from;
+        const to = this.#to;
+        if (from.x === to.x && from.y === to.y && from.z === to.z)
+            return [];
         if (this.mode === 'smooth')
-            return [{ group: 'line', segments: [f.x, f.y, f.z, t.x, t.y, t.z] }];
-        return [{ group: 'line', segments: voxelLine(f.x, f.y, f.z, t.x, t.y, t.z) }];
+            return [{ group: 'line', segments: [from.x, from.y, from.z, to.x, to.y, to.z] }];
+        return [{ group: 'line', segments: voxelLine(from.x, from.y, from.z, to.x, to.y, to.z) }];
     }
 }

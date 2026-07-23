@@ -1,62 +1,66 @@
-import { mapLocal } from './orient.js';
+const DEGREES_TO_RADIANS = Math.PI / 180;
 
-const DEG = Math.PI / 180;
-
-export function autoSegments(r) {
-    const arg = Math.max(-1, Math.min(1, 1 - 0.1 / r));
-    const n = Math.ceil(Math.PI / Math.acos(arg));
-    return Math.max(12, Math.min(128, n));
+export function autoSegments(radius) {
+    const cosineArgument = Math.max(-1, Math.min(1, 1 - 0.1 / radius));
+    const segmentCount = Math.ceil(Math.PI / Math.acos(cosineArgument));
+    return Math.max(12, Math.min(128, segmentCount));
 }
 
-export function smoothArc(basis, cx, cy, cz, ru, rv, startDeg, endDeg, segments) {
-    const closed = Math.abs(endDeg - startDeg) >= 360 - 1e-9;
-    const count = closed ? segments : segments; // segment count either way
-    const pts = closed ? segments : segments + 1;
-    const start = startDeg * DEG;
-    const span = (closed ? 360 : (endDeg - startDeg)) * DEG;
-    const p = new Array(pts * 3);
-    for (let i = 0; i < pts; i++) {
-        const t = closed ? (i / segments) : (i / segments);
-        const a = start + span * t;
-        mapLocal(basis, cx, cy, cz, Math.cos(a) * ru, Math.sin(a) * rv, 0, p, i * 3);
+export function smoothArc(frame, centerX, centerY, centerZ, radiusU, radiusV, startAngle, endAngle, segments) {
+    const isClosed = Math.abs(endAngle - startAngle) >= 360 - 1e-9;
+    const pointCount = isClosed ? segments : segments + 1;
+    const startRadians = startAngle * DEGREES_TO_RADIANS;
+    const spanRadians = (isClosed ? 360 : (endAngle - startAngle)) * DEGREES_TO_RADIANS;
+    const points = new Array(pointCount * 3);
+    for (let pointIndex = 0; pointIndex < pointCount; pointIndex++) {
+        const angle = startRadians + spanRadians * (pointIndex / segments);
+        frame.mapLocal(centerX, centerY, centerZ, Math.cos(angle) * radiusU, Math.sin(angle) * radiusV, 0, points, pointIndex * 3);
     }
-    const out = [];
-    for (let i = 0; i < count; i++) {
-        const j = closed ? (i + 1) % pts : i + 1;
-        out.push(p[i * 3], p[i * 3 + 1], p[i * 3 + 2], p[j * 3], p[j * 3 + 1], p[j * 3 + 2]);
+    const edges = [];
+    for (let segmentIndex = 0; segmentIndex < segments; segmentIndex++) {
+        const nextIndex = isClosed ? (segmentIndex + 1) % pointCount : segmentIndex + 1;
+        edges.push(
+            points[segmentIndex * 3], points[segmentIndex * 3 + 1], points[segmentIndex * 3 + 2],
+            points[nextIndex * 3], points[nextIndex * 3 + 1], points[nextIndex * 3 + 2]
+        );
     }
-    return out;
+    return edges;
 }
 
-export function smoothSphere(basis, cx, cy, cz, r, segments) {
-    const out = [];
-    const rings = Math.max(2, Math.floor(segments / 2)); // latitude divisions
-    // latitude rings (constant polar angle), drawn as circles in the u/v plane offset along n
-    for (let k = 1; k < rings; k++) {
-        const phi = (k / rings) * Math.PI;        // 0..π
-        const rr = Math.sin(phi) * r;
-        const w = Math.cos(phi) * r;              // offset along normal
-        const p = new Array(segments * 3);
-        for (let i = 0; i < segments; i++) {
-            const a = (i / segments) * 2 * Math.PI;
-            mapLocal(basis, cx, cy, cz, Math.cos(a) * rr, Math.sin(a) * rr, w, p, i * 3);
+export function smoothSphere(frame, centerX, centerY, centerZ, radius, segments) {
+    const edges = [];
+    const ringCount = Math.max(2, Math.floor(segments / 2));
+    for (let ringIndex = 1; ringIndex < ringCount; ringIndex++) {
+        const polarAngle = (ringIndex / ringCount) * Math.PI;
+        const ringRadius = Math.sin(polarAngle) * radius;
+        const normalOffset = Math.cos(polarAngle) * radius;
+        const points = new Array(segments * 3);
+        for (let pointIndex = 0; pointIndex < segments; pointIndex++) {
+            const angle = (pointIndex / segments) * 2 * Math.PI;
+            frame.mapLocal(centerX, centerY, centerZ, Math.cos(angle) * ringRadius, Math.sin(angle) * ringRadius, normalOffset, points, pointIndex * 3);
         }
-        for (let i = 0; i < segments; i++) {
-            const j = (i + 1) % segments;
-            out.push(p[i * 3], p[i * 3 + 1], p[i * 3 + 2], p[j * 3], p[j * 3 + 1], p[j * 3 + 2]);
+        for (let pointIndex = 0; pointIndex < segments; pointIndex++) {
+            const nextIndex = (pointIndex + 1) % segments;
+            edges.push(
+                points[pointIndex * 3], points[pointIndex * 3 + 1], points[pointIndex * 3 + 2],
+                points[nextIndex * 3], points[nextIndex * 3 + 1], points[nextIndex * 3 + 2]
+            );
         }
     }
-    // longitude rings (great circles through the poles)
-    for (let m = 0; m < segments; m++) {
-        const theta = (m / segments) * 2 * Math.PI;
-        const p = new Array((segments + 1) * 3);
-        for (let i = 0; i <= segments; i++) {
-            const phi = (i / segments) * Math.PI;
-            const rr = Math.sin(phi) * r;
-            mapLocal(basis, cx, cy, cz, Math.cos(theta) * rr, Math.sin(theta) * rr, Math.cos(phi) * r, p, i * 3);
+    for (let meridianIndex = 0; meridianIndex < segments; meridianIndex++) {
+        const meridianAngle = (meridianIndex / segments) * 2 * Math.PI;
+        const points = new Array((segments + 1) * 3);
+        for (let pointIndex = 0; pointIndex <= segments; pointIndex++) {
+            const polarAngle = (pointIndex / segments) * Math.PI;
+            const ringRadius = Math.sin(polarAngle) * radius;
+            frame.mapLocal(centerX, centerY, centerZ, Math.cos(meridianAngle) * ringRadius, Math.sin(meridianAngle) * ringRadius, Math.cos(polarAngle) * radius, points, pointIndex * 3);
         }
-        for (let i = 0; i < segments; i++)
-            out.push(p[i * 3], p[i * 3 + 1], p[i * 3 + 2], p[(i + 1) * 3], p[(i + 1) * 3 + 1], p[(i + 1) * 3 + 2]);
+        for (let pointIndex = 0; pointIndex < segments; pointIndex++) {
+            edges.push(
+                points[pointIndex * 3], points[pointIndex * 3 + 1], points[pointIndex * 3 + 2],
+                points[(pointIndex + 1) * 3], points[(pointIndex + 1) * 3 + 1], points[(pointIndex + 1) * 3 + 2]
+            );
+        }
     }
-    return out;
+    return edges;
 }

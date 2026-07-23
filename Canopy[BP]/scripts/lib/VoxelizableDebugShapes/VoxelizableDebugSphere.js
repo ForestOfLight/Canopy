@@ -1,5 +1,5 @@
 import { VoxelizableDebugShape } from './VoxelizableDebugShape.js';
-import { eulerToBasis, normalToBasis } from './geometry/orient.js';
+import { OrientationFrame } from './geometry/OrientationFrame.js';
 import { autoSegments, smoothSphere } from './geometry/smooth.js';
 import { sphereVoxel } from './geometry/sphere.js';
 import { voxelizeOutline } from './geometry/line.js';
@@ -18,18 +18,20 @@ export class VoxelizableDebugSphere extends VoxelizableDebugShape {
         this.#normal = config.normal;
     }
     get center() { return this.#center; }
-    set center(v) { this.#center = v; this.markGeometryDirty(); }
+    set center(value) { this.#center = value; this.markGeometryDirty(); }
     get radius() { return this.#radius; }
-    set radius(v) { this.#radius = v; this.markGeometryDirty(); }
+    set radius(value) { this.#radius = value; this.markGeometryDirty(); }
     get rotation() { return this.#rotation; }
-    set rotation(v) { this.#rotation = v; this.markGeometryDirty(); }
+    set rotation(value) { this.#rotation = value; this.markGeometryDirty(); }
     get normal() { return this.#normal; }
-    set normal(v) { this.#normal = v; this.markGeometryDirty(); }
+    set normal(value) { this.#normal = value; this.markGeometryDirty(); }
 
-    #basis() {
-        if (this.#rotation) return eulerToBasis(this.#rotation.x || 0, this.#rotation.y || 0, this.#rotation.z || 0);
-        if (this.#normal) return normalToBasis(this.#normal.x, this.#normal.y, this.#normal.z);
-        return eulerToBasis(0, 0, 0);
+    #frame() {
+        if (this.#rotation)
+            return OrientationFrame.fromEuler(this.#rotation.x || 0, this.#rotation.y || 0, this.#rotation.z || 0);
+        if (this.#normal)
+            return OrientationFrame.fromNormal(this.#normal.x, this.#normal.y, this.#normal.z);
+        return OrientationFrame.fromEuler(0, 0, 0);
     }
 
     static get configSchema() {
@@ -48,17 +50,18 @@ export class VoxelizableDebugSphere extends VoxelizableDebugShape {
     serialize() { return this.serializeGeometry(super.serialize(), ['center', 'radius', 'rotation', 'normal']); }
 
     computeSegments() {
-        const r = this.#radius;
-        if (r <= 0) return [];
-        const basis = this.#basis();
-        const c = this.#center;
-        const n = this.segments ?? autoSegments(r);
+        const radius = this.#radius;
+        if (radius <= 0)
+            return [];
+        const frame = this.#frame();
+        const center = this.#center;
+        const segmentCount = this.segments ?? autoSegments(radius);
         if (this.mode === 'smooth')
-            return [{ group: 'outer', segments: smoothSphere(basis, c.x, c.y, c.z, r, n) }];
-        const res = sphereVoxel(basis, c, r,
+            return [{ group: 'outer', segments: smoothSphere(frame, center.x, center.y, center.z, radius, segmentCount) }];
+        const voxelGroups = sphereVoxel(frame, center, radius,
             { innerEdge: this.innerEdge, outerEdge: this.outerEdge, fill: this.fill });
-        if (res !== null) return res;
-        // rotated fallback: voxelize the smooth lat-long outline
-        return [{ group: 'outer', segments: voxelizeOutline(smoothSphere(basis, c.x, c.y, c.z, r, n)) }];
+        if (voxelGroups !== null)
+            return voxelGroups;
+        return [{ group: 'outer', segments: voxelizeOutline(smoothSphere(frame, center.x, center.y, center.z, radius, segmentCount)) }];
     }
 }

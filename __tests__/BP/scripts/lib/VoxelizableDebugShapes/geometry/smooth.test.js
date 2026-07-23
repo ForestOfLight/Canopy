@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { autoSegments, smoothArc, smoothSphere }
     from '../../../../../../Canopy[BP]/scripts/lib/VoxelizableDebugShapes/geometry/smooth.js';
-import { eulerToBasis }
-    from '../../../../../../Canopy[BP]/scripts/lib/VoxelizableDebugShapes/geometry/orient.js';
+import { OrientationFrame }
+    from '../../../../../../Canopy[BP]/scripts/lib/VoxelizableDebugShapes/geometry/OrientationFrame.js';
 
 describe('autoSegments', () => {
     it('matches the formula and clamps', () => {
@@ -14,7 +14,7 @@ describe('autoSegments', () => {
 });
 
 describe('smoothArc', () => {
-    const I = eulerToBasis(0, 0, 0);
+    const I = OrientationFrame.fromEuler(0, 0, 0);
     it('a full circle with N segments emits N segments (closed)', () => {
         expect(smoothArc(I, 0, 0, 0, 1, 1, 0, 360, 4).length / 6).toBe(4);
     });
@@ -29,6 +29,6 @@ describe('smoothArc', () => {
 
 describe('smoothSphere', () => {
     it('emits a non-trivial number of ring segments', () => {
-        expect(smoothSphere(eulerToBasis(0, 0, 0), 0, 0, 0, 3, 8).length).toBeGreaterThan(0);
+        expect(smoothSphere(OrientationFrame.fromEuler(0, 0, 0), 0, 0, 0, 3, 8).length).toBeGreaterThan(0);
     });
 });

@@ -1,48 +1,71 @@
 import { coveredSet, insideSet, boundaryEdges, allEdges } from './circle.js';
 
-function angleDeg(dp, dq) {
-    const a = Math.atan2(dq, dp) * 180 / Math.PI;
-    return a < 0 ? a + 360 : a;
-}
-function inRange(a, start, end) {
-    start = ((start % 360) + 360) % 360;
-    end = ((end % 360) + 360) % 360;
-    if (start <= end) return a >= start && a <= end;
-    return a >= start || a <= end;              // wraps through 0
-}
-// su/sv are the in-plane axis signs (from planeAxes): local +X maps to su·(world u),
-// local +Z to sv·(world v). Angles/caps are defined in the LOCAL frame, so the world
-// cell offsets are pre-multiplied by the signs before measuring/placing them. Without
-// this, a sign-flipped-but-axis-aligned orientation (e.g. yaw 180) reflects the sector.
-function filterSector(set, cp, cq, start, end, su, sv) {
-    const out = new Set();
-    for (const k of set) {
-        const [i, j] = k.split(',').map(Number);
-        if (inRange(angleDeg(su * (i + 0.5 - cp), sv * (j + 0.5 - cq)), start, end)) out.add(k);
-    }
-    return out;
-}
-function capAt(cp, cq, ru, rv, deg, su, sv) {
-    const a = deg * Math.PI / 180; const c = Math.cos(a); const s = Math.sin(a);
-    const inFrac = Math.max(0, 1 - 1 / Math.max(ru, rv));
-    return [cp + su * ru * c * inFrac, cq + sv * rv * s * inFrac, cp + su * ru * c, cq + sv * rv * s];
+function angleDegrees(deltaU, deltaV) {
+    const angle = Math.atan2(deltaV, deltaU) * 180 / Math.PI;
+    return angle < 0 ? angle + 360 : angle;
 }
 
-export function arcVoxel2D(cp, cq, ru, rv, startDeg, endDeg, opts, su = 1, sv = 1) {
-    const { innerEdge = false, outerEdge = false, fill = false } = opts || {};
-    if (ru <= 0 || rv <= 0 || startDeg === endDeg) return [];
-    const isFullCircle = Math.abs(endDeg - startDeg) >= 360 - 1e-9;
-    const cov = isFullCircle ? coveredSet(cp, cq, ru, rv) : filterSector(coveredSet(cp, cq, ru, rv), cp, cq, startDeg, endDeg, su, sv);
-    let insFull = insideSet(cp, cq, ru, rv);
-    if (insFull.size === 0) insFull = coveredSet(cp, cq, ru, rv);
-    const ins = isFullCircle ? insFull : filterSector(insFull, cp, cq, startDeg, endDeg, su, sv);
-    const caps = isFullCircle ? [] : [...capAt(cp, cq, ru, rv, startDeg, su, sv), ...capAt(cp, cq, ru, rv, endDeg, su, sv)];
+function angleInRange(angle, startAngle, endAngle) {
+    const normalizedStart = ((startAngle % 360) + 360) % 360;
+    const normalizedEnd = ((endAngle % 360) + 360) % 360;
+    if (normalizedStart <= normalizedEnd)
+        return angle >= normalizedStart && angle <= normalizedEnd;
+    return angle >= normalizedStart || angle <= normalizedEnd;
+}
+
+function filterCellsBySector(cells, centerU, centerV, startAngle, endAngle, signU, signV) {
+    const sectorCells = new Set();
+    for (const cellId of cells) {
+        const [column, row] = cellId.split(',').map(Number);
+        const cellAngle = angleDegrees(signU * (column + 0.5 - centerU), signV * (row + 0.5 - centerV));
+        if (angleInRange(cellAngle, startAngle, endAngle))
+            sectorCells.add(cellId);
+    }
+    return sectorCells;
+}
+
+function capSegment(centerU, centerV, radiusU, radiusV, capAngle, signU, signV) {
+    const angle = capAngle * Math.PI / 180;
+    const cosAngle = Math.cos(angle);
+    const sinAngle = Math.sin(angle);
+    const innerFraction = Math.max(0, 1 - 1 / Math.max(radiusU, radiusV));
+    return [
+        centerU + signU * radiusU * cosAngle * innerFraction,
+        centerV + signV * radiusV * sinAngle * innerFraction,
+        centerU + signU * radiusU * cosAngle,
+        centerV + signV * radiusV * sinAngle,
+    ];
+}
+
+export function arcVoxel2D(centerU, centerV, radiusU, radiusV, startAngle, endAngle, options, signU = 1, signV = 1) {
+    const { innerEdge = false, outerEdge = false, fill = false } = options || {};
+    if (radiusU <= 0 || radiusV <= 0 || startAngle === endAngle)
+        return [];
+    const isFullCircle = Math.abs(endAngle - startAngle) >= 360 - 1e-9;
+    const allCoveredCells = coveredSet(centerU, centerV, radiusU, radiusV);
+    const coveredCells = isFullCircle
+        ? allCoveredCells
+        : filterCellsBySector(allCoveredCells, centerU, centerV, startAngle, endAngle, signU, signV);
+    let allInsideCells = insideSet(centerU, centerV, radiusU, radiusV);
+    if (allInsideCells.size === 0)
+        allInsideCells = allCoveredCells;
+    const insideCells = isFullCircle
+        ? allInsideCells
+        : filterCellsBySector(allInsideCells, centerU, centerV, startAngle, endAngle, signU, signV);
+    const capSegments = isFullCircle
+        ? []
+        : [
+            ...capSegment(centerU, centerV, radiusU, radiusV, startAngle, signU, signV),
+            ...capSegment(centerU, centerV, radiusU, radiusV, endAngle, signU, signV),
+        ];
     const groups = [];
-    if (outerEdge) groups.push({ group: 'outer', segments: [...boundaryEdges(cov), ...caps] });
-    if (innerEdge) groups.push({ group: 'inner', segments: [...boundaryEdges(ins), ...caps] });
+    if (outerEdge)
+        groups.push({ group: 'outer', segments: [...boundaryEdges(coveredCells), ...capSegments] });
+    if (innerEdge)
+        groups.push({ group: 'inner', segments: [...boundaryEdges(insideCells), ...capSegments] });
     if (fill) {
-        const region = (outerEdge || !innerEdge) ? cov : ins;
-        groups.push({ group: 'fill', segments: allEdges(region) });
+        const fillRegion = (outerEdge || !innerEdge) ? coveredCells : insideCells;
+        groups.push({ group: 'fill', segments: allEdges(fillRegion) });
     }
     return groups;
 }

@@ -28,20 +28,16 @@ const SHAPE_TYPES = {
     sphere: VoxelizableDebugSphere
 };
 
-/** Ordered list of shape type ids (box first, so it can be the UI default). */
 export const shapeTypeIds = Object.keys(SHAPE_TYPES);
 
-/** The shape class for a type id, or undefined. */
 export function getShapeClass(type) {
     return SHAPE_TYPES[type];
 }
 
-/** The UI-agnostic config field descriptors for a type id. */
 export function getConfigSchema(type) {
     return SHAPE_TYPES[type]?.configSchema;
 }
 
-/** Reconstruct a shape from a serialized config (its `type` selects the class). */
 export function deserializeShape(config) {
     const ShapeClass = SHAPE_TYPES[config?.type];
     if (!ShapeClass)
@@ -59,16 +55,9 @@ function isValidFieldValue(field, value) {
         return Number.isFinite(value);
     if (field.kind === 'boolean')
         return typeof value === 'boolean';
-    return field.options.includes(value); // enum
+    return field.options.includes(value);
 }
 
-/**
- * Validate a shape config against its type's schema: the type must be known,
- * required (non-optional) fields must be present and well-formed, and any
- * present field must match its declared kind. Fields outside the schema
- * (type, dimension, …) are ignored. Booleans/enums with a default are treated
- * as satisfiable when absent.
- */
 export function validateShapeConfig(config) {
     if (!config || typeof config !== 'object')
         return false;
@@ -80,7 +69,7 @@ export function validateShapeConfig(config) {
         if (value === undefined || value === null) {
             if (field.optional || field.kind === 'boolean' || field.kind === 'enum')
                 continue;
-            return false; // required geometry missing
+            return false;
         }
         if (!isValidFieldValue(field, value))
             return false;
