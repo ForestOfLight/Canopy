@@ -35,6 +35,7 @@ import './src/commands/lifetimequery'
 import './src/commands/lifetimequeryitem'
 import './src/commands/velocity'
 import './src/commands/analyzearea'
+import './src/commands/draw'
 
 // Simulated Player Commands
 import './src/commands/simplayer/playerjoin'

@@ -175,6 +175,20 @@ commands.distance.cartesian=§7Cartesian: §r§l%s§r
 commands.distance.cylindrical=§7Cartesian(XZ): §r§l%s§r
 commands.distance.manhattan=§7§7Manhattan: §r§l%s§r
 
+commands.draw=Draw shapes in the world.
+commands.draw.specifyname=§cPlease specify a shape name.
+commands.draw.removenotfound=§cNo shape found with the name '%s'.
+commands.draw.removed=§7Removed shape '%s'.
+commands.draw.ui.selector.title=§2Drawn Shapes
+commands.draw.ui.selector.empty=§7No shapes drawn yet.
+commands.draw.ui.selector.new=(+) New Shape
+commands.draw.ui.create.title=§2Create Shape
+commands.draw.ui.create.submit=Create
+commands.draw.ui.create.invalid=§cPlease enter valid values.
+commands.draw.ui.edit.title=§2Edit Shape
+commands.draw.ui.edit.render=Render
+commands.draw.ui.edit.submit=Apply Changes
+
 commands.entitydensity=Find entity-dense areas in a dimension.
 commands.entitydensity.fail.noentities=§7No dense areas found in %s§r§7. No entities in the dimension?
 commands.entitydensity.fail.dimension=§cInvalid dimension. Please use one of these: %s
