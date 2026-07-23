@@ -36,6 +36,16 @@ describe('VoxelizableDebugShape', () => {
         expect(s._pool[0]).toBe(first); // reused, not recreated
     });
 
+    it('reconcile reuses lines on grow', () => {
+        const s = make([{ group: 'outer', segments: [0, 0, 0, 1, 0, 0] }]);
+        s.draw();
+        const first = s._pool[0];
+        s.setGroups([{ group: 'outer', segments: [0, 0, 0, 1, 0, 0, 1, 0, 0, 2, 0, 0] }]);
+        s.draw();
+        expect(s._pool.length).toBe(2);
+        expect(s._pool[0]).toBe(first); // reused, not recreated
+    });
+
     it('appearance-only change does not recompute geometry', () => {
         const s = make([{ group: 'outer', segments: [0, 0, 0, 1, 0, 0] }]);
         s.draw();
@@ -51,6 +61,23 @@ describe('VoxelizableDebugShape', () => {
             { color: { inner: { red: 0, green: 0, blue: 1, alpha: 1 } } });
         s.draw();
         expect(s._pool[0].color).toEqual({ red: 0, green: 0, blue: 1, alpha: 1 });
+    });
+
+    it('per-group color defaults a missing group to white', () => {
+        const s = make([{ group: 'outer', segments: [0, 0, 0, 1, 0, 0] }],
+            { color: { inner: { red: 0, green: 0, blue: 1, alpha: 1 } } });
+        s.draw();
+        expect(s._pool[0].color).toEqual({ red: 1, green: 1, blue: 1, alpha: 1 });
+    });
+
+    it('dimension change re-applies to lines via appearance-only draw', () => {
+        const s = make([{ group: 'outer', segments: [0, 0, 0, 1, 0, 0] }], { dimension: 'A' });
+        s.draw();
+        s.dimension = 'B';
+        const before = s.computeCount;
+        s.draw();
+        expect(s._pool[0].location.dimension).toBe('B');
+        expect(s.computeCount).toBe(before);
     });
 
     it('color callback receives endpoints', () => {

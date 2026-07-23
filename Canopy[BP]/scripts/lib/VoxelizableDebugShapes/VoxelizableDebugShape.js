@@ -95,7 +95,7 @@ export class VoxelizableDebugShape {
         if (typeof c === 'function')
             return c({ x: s[0], y: s[1], z: s[2] }, { x: s[3], y: s[4], z: s[5] });
         if (c && (c.inner || c.outer || c.fill || c.line))
-            return c[group] ?? c.outer ?? c.inner ?? c.fill ?? c.line ?? WHITE;
+            return c[group] ?? WHITE;
         if (c && c.red !== undefined) return c;
         return WHITE;
     }
@@ -136,25 +136,11 @@ export class VoxelizableDebugShape {
         for (const line of this._pool) {
             const s = [line.location.x, line.location.y, line.location.z,
                 line.endLocation.x, line.endLocation.y, line.endLocation.z];
+            line.setLocation(this._loc(s, 0));
             line.color = this._resolveColor(line.__group, s);
             if (this._visibleTo !== undefined) line.visibleTo = this._visibleTo;
             if (this._maximumRenderDistance !== undefined) line.maximumRenderDistance = this._maximumRenderDistance;
             if (this._attachedTo !== undefined) line.attachedTo = this._attachedTo;
         }
-    }
-
-    serialize() {
-        return {
-            mode: this._mode,
-            innerEdge: this._innerEdge,
-            outerEdge: this._outerEdge,
-            fill: this._fill,
-            segmentsOverride: this._segmentsOverride,
-            color: this._color,
-            dimension: this._dimension,
-            visibleTo: this._visibleTo,
-            maximumRenderDistance: this._maximumRenderDistance,
-            attachedTo: this._attachedTo
-        };
     }
 }
