@@ -20,9 +20,9 @@ export function wireBox(x0, y0, z0, x1, y1, z1) {
 
 export function latticeFill(x0, y0, z0, x1, y1, z1) {
     const out = [];
-    for (let y = y0; y <= y1; y++) for (let z = z0; z <= z1; z++) out.push(x0, y, z, x1, y, z);
-    for (let x = x0; x <= x1; x++) for (let z = z0; z <= z1; z++) out.push(x, y0, z, x, y1, z);
-    for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) out.push(x, y, z0, x, y, z1);
+    for (let y = y0; y <= y1; y++) for (let z = z0; z <= z1; z++) pushEdge(out, x0, y, z, x1, y, z);
+    for (let x = x0; x <= x1; x++) for (let z = z0; z <= z1; z++) pushEdge(out, x, y0, z, x, y1, z);
+    for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) pushEdge(out, x, y, z0, x, y, z1);
     return mergeAxisAligned(out);
 }
 
