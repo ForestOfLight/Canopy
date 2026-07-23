@@ -32,6 +32,19 @@ export class VoxelizableDebugSphere extends VoxelizableDebugShape {
         return eulerToBasis(0, 0, 0);
     }
 
+    static get configSchema() {
+        return [
+            VoxelizableDebugShape.vectorField('center'),
+            VoxelizableDebugShape.numberField('radius'),
+            VoxelizableDebugShape.vectorField('rotation', true),
+            VoxelizableDebugShape.modeField,
+            ...VoxelizableDebugShape.edgeFields,
+            VoxelizableDebugShape.segmentsField,
+            VoxelizableDebugShape.colorField,
+            VoxelizableDebugShape.maximumRenderDistanceField
+        ];
+    }
+
     get type() { return 'sphere'; }
     serialize() { return this.serializeGeometry(super.serialize(), ['center', 'radius', 'rotation', 'normal']); }
 

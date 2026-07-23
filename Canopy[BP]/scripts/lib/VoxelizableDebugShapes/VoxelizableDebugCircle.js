@@ -32,6 +32,19 @@ export class VoxelizableDebugCircle extends VoxelizableDebugShape {
     }
     #segCount() { return this.segments ?? autoSegments(Math.max(1e-6, this.#radius)); }
 
+    static get configSchema() {
+        return [
+            VoxelizableDebugShape.vectorField('center'),
+            VoxelizableDebugShape.numberField('radius'),
+            VoxelizableDebugShape.vectorField('rotation', true),
+            VoxelizableDebugShape.modeField,
+            ...VoxelizableDebugShape.edgeFields,
+            VoxelizableDebugShape.segmentsField,
+            VoxelizableDebugShape.colorField,
+            VoxelizableDebugShape.maximumRenderDistanceField
+        ];
+    }
+
     get type() { return 'circle'; }
     serialize() { return this.serializeGeometry(super.serialize(), ['center', 'radius', 'rotation', 'normal']); }
 

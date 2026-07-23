@@ -18,14 +18,27 @@ export {
 };
 
 const SHAPE_TYPES = {
-    line: VoxelizableDebugLine,
     box: VoxelizableDebugBox,
+    line: VoxelizableDebugLine,
     square: VoxelizableDebugSquare,
     circle: VoxelizableDebugCircle,
     ellipse: VoxelizableDebugEllipse,
     arc: VoxelizableDebugArc,
     sphere: VoxelizableDebugSphere
 };
+
+/** Ordered list of shape type ids (box first, so it can be the UI default). */
+export const shapeTypeIds = Object.keys(SHAPE_TYPES);
+
+/** The shape class for a type id, or undefined. */
+export function getShapeClass(type) {
+    return SHAPE_TYPES[type];
+}
+
+/** The UI-agnostic config field descriptors for a type id. */
+export function getConfigSchema(type) {
+    return SHAPE_TYPES[type]?.configSchema;
+}
 
 /** Reconstruct a shape from a serialized config (its `type` selects the class). */
 export function deserializeShape(config) {

@@ -31,6 +31,19 @@ export class VoxelizableDebugEllipse extends VoxelizableDebugShape {
         return eulerToBasis(0, 0, 0);
     }
 
+    static get configSchema() {
+        return [
+            VoxelizableDebugShape.vectorField('center'),
+            { key: 'radii', kind: 'vector', axes: ['x', 'z'], optional: false },
+            VoxelizableDebugShape.vectorField('rotation', true),
+            VoxelizableDebugShape.modeField,
+            ...VoxelizableDebugShape.edgeFields,
+            VoxelizableDebugShape.segmentsField,
+            VoxelizableDebugShape.colorField,
+            VoxelizableDebugShape.maximumRenderDistanceField
+        ];
+    }
+
     get type() { return 'ellipse'; }
     serialize() { return this.serializeGeometry(super.serialize(), ['center', 'radii', 'rotation', 'normal']); }
 

@@ -71,6 +71,18 @@ export class VoxelizableDebugSquare extends VoxelizableDebugShape {
         return [...e(0, 1), ...e(1, 3), ...e(3, 2), ...e(2, 0)];
     }
 
+    static get configSchema() {
+        return [
+            VoxelizableDebugShape.vectorField('from'),
+            VoxelizableDebugShape.vectorField('to'),
+            VoxelizableDebugShape.vectorField('rotation', true),
+            VoxelizableDebugShape.modeField,
+            ...VoxelizableDebugShape.edgeFields,
+            VoxelizableDebugShape.colorField,
+            VoxelizableDebugShape.maximumRenderDistanceField
+        ];
+    }
+
     get type() { return 'square'; }
     serialize() { return this.serializeGeometry(super.serialize(), ['center', 'width', 'height', 'from', 'to', 'rotation', 'normal']); }
 

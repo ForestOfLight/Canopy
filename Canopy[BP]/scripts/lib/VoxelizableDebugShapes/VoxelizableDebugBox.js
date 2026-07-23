@@ -54,6 +54,18 @@ export class VoxelizableDebugBox extends VoxelizableDebugShape {
         return { cx: c.x, cy: c.y, cz: c.z, hu: s.x / 2, hv: s.z / 2, hn: s.y / 2 };
     }
 
+    static get configSchema() {
+        return [
+            VoxelizableDebugShape.vectorField('from'),
+            VoxelizableDebugShape.vectorField('to'),
+            VoxelizableDebugShape.vectorField('rotation', true),
+            VoxelizableDebugShape.modeField,
+            ...VoxelizableDebugShape.edgeFields,
+            VoxelizableDebugShape.colorField,
+            VoxelizableDebugShape.maximumRenderDistanceField
+        ];
+    }
+
     get type() { return 'box'; }
     serialize() { return this.serializeGeometry(super.serialize(), ['center', 'size', 'from', 'to', 'rotation', 'normal']); }
 

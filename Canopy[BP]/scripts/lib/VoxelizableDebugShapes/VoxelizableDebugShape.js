@@ -129,6 +129,42 @@ export class VoxelizableDebugShape {
         return new this(VoxelizableDebugShape.reviveConfig(config));
     }
 
+    // --- config schema (UI-agnostic field descriptors; subclasses compose these) ---
+    // Each descriptor: { key, kind: 'vector'|'number'|'boolean'|'enum', axes?, options?, default?, optional? }
+    static vectorField(key, optional = false) {
+        return { key, kind: 'vector', axes: ['x', 'y', 'z'], optional };
+    }
+
+    static numberField(key, optional = false) {
+        return { key, kind: 'number', optional };
+    }
+
+    static get modeField() {
+        return { key: 'mode', kind: 'enum', options: ['voxel', 'smooth'], default: 'voxel' };
+    }
+
+    static get edgeFields() {
+        return [
+            { key: 'innerEdge', kind: 'boolean', default: true },
+            { key: 'outerEdge', kind: 'boolean', default: false },
+            { key: 'fill', kind: 'boolean', default: false }
+        ];
+    }
+
+    static get segmentsField() {
+        return { key: 'segments', kind: 'number', optional: true };
+    }
+
+    static get colorField() {
+        return { key: 'color', kind: 'vector', axes: ['red', 'green', 'blue', 'alpha'], optional: true };
+    }
+
+    static get maximumRenderDistanceField() {
+        return { key: 'maximumRenderDistance', kind: 'number', optional: true };
+    }
+
+    static get configSchema() { throw new Error('configSchema must be implemented'); }
+
     draw() {
         if (this.#geometryDirty || this.#groups === null) {
             this.#groups = this.computeSegments() || [];

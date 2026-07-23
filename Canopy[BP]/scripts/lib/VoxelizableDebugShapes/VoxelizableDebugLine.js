@@ -16,6 +16,16 @@ export class VoxelizableDebugLine extends VoxelizableDebugShape {
     get to() { return this.#to; }
     set to(v) { this.#to = v; this.markGeometryDirty(); }
 
+    static get configSchema() {
+        return [
+            VoxelizableDebugShape.vectorField('from'),
+            VoxelizableDebugShape.vectorField('to'),
+            VoxelizableDebugShape.modeField,
+            VoxelizableDebugShape.colorField,
+            VoxelizableDebugShape.maximumRenderDistanceField
+        ];
+    }
+
     get type() { return 'line'; }
     serialize() { return this.serializeGeometry(super.serialize(), ['from', 'to']); }
 
