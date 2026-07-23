@@ -159,10 +159,6 @@ export class VoxelizableDebugShape {
         return { key: 'color', kind: 'vector', axes: ['red', 'green', 'blue', 'alpha'], optional: true };
     }
 
-    static get maximumRenderDistanceField() {
-        return { key: 'maximumRenderDistance', kind: 'number', optional: true };
-    }
-
     static get configSchema() { throw new Error('configSchema must be implemented'); }
 
     draw() {

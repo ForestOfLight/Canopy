@@ -7,6 +7,7 @@ import { VoxelizableDebugArc } from './VoxelizableDebugArc.js';
 import { VoxelizableDebugSphere } from './VoxelizableDebugSphere.js';
 
 export { VoxelizableDebugShape } from './VoxelizableDebugShape.js';
+export { autoSegments } from './geometry/smooth.js';
 export {
     VoxelizableDebugLine,
     VoxelizableDebugBox,

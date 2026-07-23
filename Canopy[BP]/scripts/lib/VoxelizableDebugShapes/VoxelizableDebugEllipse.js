@@ -39,8 +39,7 @@ export class VoxelizableDebugEllipse extends VoxelizableDebugShape {
             VoxelizableDebugShape.modeField,
             ...VoxelizableDebugShape.edgeFields,
             VoxelizableDebugShape.segmentsField,
-            VoxelizableDebugShape.colorField,
-            VoxelizableDebugShape.maximumRenderDistanceField
+            VoxelizableDebugShape.colorField
         ];
     }
 

@@ -21,8 +21,7 @@ export class VoxelizableDebugLine extends VoxelizableDebugShape {
             VoxelizableDebugShape.vectorField('from'),
             VoxelizableDebugShape.vectorField('to'),
             VoxelizableDebugShape.modeField,
-            VoxelizableDebugShape.colorField,
-            VoxelizableDebugShape.maximumRenderDistanceField
+            VoxelizableDebugShape.colorField
         ];
     }
 

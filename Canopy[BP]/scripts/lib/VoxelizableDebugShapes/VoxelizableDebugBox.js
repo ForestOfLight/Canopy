@@ -61,8 +61,7 @@ export class VoxelizableDebugBox extends VoxelizableDebugShape {
             VoxelizableDebugShape.vectorField('rotation', true),
             VoxelizableDebugShape.modeField,
             ...VoxelizableDebugShape.edgeFields,
-            VoxelizableDebugShape.colorField,
-            VoxelizableDebugShape.maximumRenderDistanceField
+            VoxelizableDebugShape.colorField
         ];
     }
 

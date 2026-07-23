@@ -40,8 +40,7 @@ export class VoxelizableDebugSphere extends VoxelizableDebugShape {
             VoxelizableDebugShape.modeField,
             ...VoxelizableDebugShape.edgeFields,
             VoxelizableDebugShape.segmentsField,
-            VoxelizableDebugShape.colorField,
-            VoxelizableDebugShape.maximumRenderDistanceField
+            VoxelizableDebugShape.colorField
         ];
     }
 

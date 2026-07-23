@@ -1,13 +1,13 @@
 import { CustomForm, ObservableString, ObservableNumber, ObservableBoolean, ObservableUIRawMessage } from '@minecraft/server-ui';
 import { system } from '@minecraft/server';
 import { DrawableShape } from './DrawableShape.js';
-import { shapeTypeIds, getConfigSchema } from '../../../lib/VoxelizableDebugShapes/index.js';
+import { shapeTypeIds, getConfigSchema, autoSegments } from '../../../lib/VoxelizableDebugShapes/index.js';
 
 // The order config fields appear in the form (union across all shape types).
 const FIELD_ORDER = [
     'from', 'to', 'center', 'radius', 'radii', 'startAngle', 'endAngle',
     'rotation', 'mode', 'innerEdge', 'outerEdge', 'fill', 'segments',
-    'color', 'maximumRenderDistance'
+    'color'
 ];
 
 /** 'maximumRenderDistance' -> 'Maximum Render Distance'. */
@@ -26,6 +26,12 @@ const SLIDER_FIELDS = {
     rotation: { min: 0, max: 360, step: 1, default: 0, toDisplay: (v) => v, toConfig: (v) => v },
     // alpha is omitted from the form and always set to 1.
     color: { min: 0, max: 255, step: 1, default: 255, axes: ['red', 'green', 'blue'], fixed: { alpha: 1 }, toDisplay: (v) => Math.round(v * 255), toConfig: (v) => v / 255 }
+};
+
+// Scalar number fields rendered as a single slider instead of a text box.
+const NUMBER_SLIDER_FIELDS = {
+    startAngle: { min: 0, max: 360, step: 1, default: 0 },
+    endAngle: { min: 0, max: 360, step: 1, default: 90 }
 };
 
 // Force a text field to repaint its value. A field revealed by a visibility
@@ -140,7 +146,7 @@ export class DrawUI {
     #buildConfigInputs(form, prefill, includeName) {
         let nameObservable = null;
         if (includeName) {
-            nameObservable = new ObservableString(prefill?.name ?? '', { clientWritable: true });
+            nameObservable = new ObservableString(prefill?.name ?? 'My New Shape', { clientWritable: true });
             form.textField('Name', nameObservable);
         }
 
@@ -148,9 +154,11 @@ export class DrawUI {
         const typeObservable = new ObservableNumber(shapeTypeIds.indexOf(defaultType), { clientWritable: true });
         const typeItems = shapeTypeIds.map((id, index) => ({ label: prettyLabel(id), value: index }));
         form.dropdown('Shape', typeObservable, typeItems);
-        form.spacer();
 
         const defaults = this.#defaultConfig();
+        // Prefill the segments field with the count the shape would use when no
+        // override is given, so the active segment count is always shown.
+        defaults.segments = this.#activeSegments(prefill, defaults);
         const union = this.#unionFields();
         const defaultKeys = new Set(getConfigSchema(defaultType).map((field) => field.key));
         const defaultMode = prefill?.mode ?? 'voxel';
@@ -231,6 +239,13 @@ export class DrawUI {
             };
             return { descriptor, visible, kind: 'vector', axes, refresh };
         }
+        const numberSliderSpec = NUMBER_SLIDER_FIELDS[descriptor.key];
+        if (descriptor.kind === 'number' && numberSliderSpec) {
+            const start = value === undefined ? numberSliderSpec.default : value;
+            const observable = new ObservableNumber(start, { clientWritable: true });
+            form.slider(label, observable, numberSliderSpec.min, numberSliderSpec.max, { step: numberSliderSpec.step, visible });
+            return { descriptor, visible, kind: 'numberSlider', observable };
+        }
         if (descriptor.kind === 'number') {
             const initial = value === undefined ? '' : String(value);
             const observable = new ObservableString(initial, { clientWritable: true });
@@ -253,14 +268,15 @@ export class DrawUI {
         return { descriptor, visible, kind: 'enum', observable, options };
     }
 
-    // Prefill values for a fresh shape: from/to/center at the origin's block
-    // position, plus sensible non-empty geometry for the other shapes.
+    // Prefill values for a fresh shape: from/to/center at the origin snapped to
+    // the nearest half-block, plus sensible non-empty geometry for the others.
     #defaultConfig() {
         const location = this.player.location;
+        const snap = (v) => Math.round(v * 2) / 2;
         const origin = {
-            x: Math.floor(location.x),
-            y: Math.floor(location.y),
-            z: Math.floor(location.z)
+            x: snap(location.x),
+            y: snap(location.y),
+            z: snap(location.z)
         };
         return {
             from: origin,
@@ -271,6 +287,15 @@ export class DrawUI {
             startAngle: 0,
             endAngle: 90
         };
+    }
+
+    // The segment count a curved shape would use when no override is given,
+    // derived from the radius shown in the form (radii picks the larger axis).
+    #activeSegments(prefill, defaults) {
+        const radii = prefill?.radii;
+        if (radii)
+            return autoSegments(Math.max(radii.x ?? 0, radii.z ?? 0));
+        return autoSegments(prefill?.radius ?? defaults.radius);
     }
 
     // Assembles a shape config from the controls visible for the selected type.
@@ -299,6 +324,8 @@ export class DrawUI {
                 Object.assign(out, field.spec.fixed);
             return out;
         }
+        if (field.kind === 'numberSlider')
+            return field.observable.getData();
         if (field.kind === 'vector') {
             const raws = field.axes.map((entry) => entry.observable.getData());
             if (descriptor.optional && raws.every((raw) => raw.trim() === ''))

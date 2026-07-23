@@ -188,6 +188,7 @@ commands.draw.ui.create.invalid=§cPlease enter valid values.
 commands.draw.ui.edit.title=§2Edit Shape
 commands.draw.ui.edit.render=Render
 commands.draw.ui.edit.submit=Apply Changes
+commands.draw.ui.edit.remove=Remove
 
 commands.entitydensity=Find entity-dense areas in a dimension.
 commands.entitydensity.fail.noentities=§7No dense areas found in %s§r§7. No entities in the dimension?
