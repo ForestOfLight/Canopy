@@ -8,9 +8,9 @@ export function sphereVoxel(basis, center, r, opts) {
     const axes = planeAxes(basis);
     if (!axes) return null;
     const cArr = [center.x, center.y, center.z];
-    const cp = cArr[axes.u], cq = cArr[axes.v], cN = cArr[axes.n];
+    const cp = cArr[axes.u]; const cq = cArr[axes.v]; const cN = cArr[axes.n];
     const acc = { outer: [], inner: [], fill: [] };
-    const wLo = Math.floor(cN - r), wHi = Math.ceil(cN + r) - 1;
+    const wLo = Math.floor(cN - r); const wHi = Math.ceil(cN + r) - 1;
     for (let w = wLo; w <= wHi; w++) {
         const dNear = Math.max(0, Math.max(w - cN, cN - (w + 1)));
         const rl = Math.sqrt(Math.max(0, r * r - dNear * dNear));

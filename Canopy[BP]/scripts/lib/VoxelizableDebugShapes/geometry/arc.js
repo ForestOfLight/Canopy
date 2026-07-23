@@ -1,7 +1,7 @@
 import { coveredSet, insideSet, boundaryEdges, allEdges } from './circle.js';
 
 function angleDeg(dp, dq) {
-    let a = Math.atan2(dq, dp) * 180 / Math.PI;
+    const a = Math.atan2(dq, dp) * 180 / Math.PI;
     return a < 0 ? a + 360 : a;
 }
 function inRange(a, start, end) {
@@ -19,7 +19,7 @@ function filterSector(set, cp, cq, start, end) {
     return out;
 }
 function capAt(cp, cq, ru, rv, deg) {
-    const a = deg * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
+    const a = deg * Math.PI / 180; const c = Math.cos(a); const s = Math.sin(a);
     const inFrac = Math.max(0, 1 - 1 / Math.max(ru, rv));
     return [cp + ru * c * inFrac, cq + rv * s * inFrac, cp + ru * c, cq + rv * s];
 }

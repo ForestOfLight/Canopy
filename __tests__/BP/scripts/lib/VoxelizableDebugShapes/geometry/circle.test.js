@@ -14,7 +14,7 @@ describe('circleVoxel2D', () => {
     it('outer silhouette is within the radius-bounding box and non-empty', () => {
         const [outer] = circleVoxel2D(0.5, 0.5, 3, 3, { outerEdge: true, innerEdge: false, fill: false });
         expect(outer.segments.length).toBeGreaterThan(0);
-        let minP = Infinity, maxP = -Infinity;
+        let minP = Infinity; let maxP = -Infinity;
         for (let i = 0; i < outer.segments.length; i += 2) { minP = Math.min(minP, outer.segments[i]); maxP = Math.max(maxP, outer.segments[i]); }
         expect(minP).toBeGreaterThanOrEqual(-3);
         expect(maxP).toBeLessThanOrEqual(4);

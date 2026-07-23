@@ -7,7 +7,7 @@ function pushEdge(out, ax, ay, az, bx, by, bz) {
 
 export function wireBox(x0, y0, z0, x1, y1, z1) {
     const out = [];
-    const xs = [x0, x1], ys = [y0, y1], zs = [z0, z1];
+    const xs = [x0, x1]; const ys = [y0, y1]; const zs = [z0, z1];
     // 4 edges along X
     for (const y of ys) for (const z of zs) pushEdge(out, x0, y, z, x1, y, z);
     // 4 edges along Y
@@ -28,10 +28,10 @@ export function latticeFill(x0, y0, z0, x1, y1, z1) {
 
 export function boxVoxel(minX, minY, minZ, maxX, maxY, maxZ, opts) {
     const { innerEdge = false, outerEdge = false, fill = false } = opts || {};
-    const oX0 = Math.floor(minX), oY0 = Math.floor(minY), oZ0 = Math.floor(minZ);
-    const oX1 = Math.ceil(maxX), oY1 = Math.ceil(maxY), oZ1 = Math.ceil(maxZ);
-    let iX0 = Math.ceil(minX), iY0 = Math.ceil(minY), iZ0 = Math.ceil(minZ);
-    let iX1 = Math.floor(maxX), iY1 = Math.floor(maxY), iZ1 = Math.floor(maxZ);
+    const oX0 = Math.floor(minX); const oY0 = Math.floor(minY); const oZ0 = Math.floor(minZ);
+    const oX1 = Math.ceil(maxX); const oY1 = Math.ceil(maxY); const oZ1 = Math.ceil(maxZ);
+    let iX0 = Math.ceil(minX); let iY0 = Math.ceil(minY); let iZ0 = Math.ceil(minZ);
+    let iX1 = Math.floor(maxX); let iY1 = Math.floor(maxY); let iZ1 = Math.floor(maxZ);
     const innerEmpty = iX0 > iX1 || iY0 > iY1 || iZ0 > iZ1;
     if (innerEmpty) { iX0 = oX0; iY0 = oY0; iZ0 = oZ0; iX1 = oX1; iY1 = oY1; iZ1 = oZ1; }
 

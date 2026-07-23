@@ -3,18 +3,18 @@ const key = (i, j) => i + ',' + j;
 function classify(cp, cq, ru, rv, predicate) {
     const set = new Set();
     if (ru <= 0 || rv <= 0) return set;
-    const i0 = Math.floor(cp - ru) - 1, i1 = Math.ceil(cp + ru) + 1;
-    const j0 = Math.floor(cq - rv) - 1, j1 = Math.ceil(cq + rv) + 1;
+    const i0 = Math.floor(cp - ru) - 1; const i1 = Math.ceil(cp + ru) + 1;
+    const j0 = Math.floor(cq - rv) - 1; const j1 = Math.ceil(cq + rv) + 1;
     for (let i = i0; i <= i1; i++)
-        for (let j = j0; j <= j1; j++)
-            if (predicate(i, j)) set.add(key(i, j));
+        {for (let j = j0; j <= j1; j++)
+            if (predicate(i, j)) set.add(key(i, j));}
     return set;
 }
 
 export function coveredSet(cp, cq, ru, rv) {
     return classify(cp, cq, ru, rv, (i, j) => {
-        const nx = Math.min(Math.max(cp, i), i + 1), ny = Math.min(Math.max(cq, j), j + 1);
-        const a = (nx - cp) / ru, b = (ny - cq) / rv;
+        const nx = Math.min(Math.max(cp, i), i + 1); const ny = Math.min(Math.max(cq, j), j + 1);
+        const a = (nx - cp) / ru; const b = (ny - cq) / rv;
         return a * a + b * b < 1;
     });
 }
@@ -23,7 +23,7 @@ export function insideSet(cp, cq, ru, rv) {
     return classify(cp, cq, ru, rv, (i, j) => {
         const fx = Math.abs(i - cp) > Math.abs(i + 1 - cp) ? i : i + 1;
         const fy = Math.abs(j - cq) > Math.abs(j + 1 - cq) ? j : j + 1;
-        const a = (fx - cp) / ru, b = (fy - cq) / rv;
+        const a = (fx - cp) / ru; const b = (fy - cq) / rv;
         return a * a + b * b <= 1;
     });
 }

@@ -4,8 +4,8 @@ const DEG = Math.PI / 180;
 function mul(a, b) {
     const r = new Array(9);
     for (let i = 0; i < 3; i++)
-        for (let j = 0; j < 3; j++)
-            r[i * 3 + j] = a[i * 3] * b[j] + a[i * 3 + 1] * b[3 + j] + a[i * 3 + 2] * b[6 + j];
+        {for (let j = 0; j < 3; j++)
+            r[i * 3 + j] = a[i * 3] * b[j] + a[i * 3 + 1] * b[3 + j] + a[i * 3 + 2] * b[6 + j];}
     return r;
 }
 
@@ -14,10 +14,10 @@ function mul(a, b) {
  * axes u0=+X, v0=+Z, n0=+Y. Returns [ux,uy,uz, vx,vy,vz, nx,ny,nz].
  */
 export function eulerToBasis(pitchDeg, yawDeg, rollDeg) {
-    const a = pitchDeg * DEG, b = yawDeg * DEG, c = rollDeg * DEG;
-    const ca = Math.cos(a), sa = Math.sin(a);
-    const cb = Math.cos(b), sb = Math.sin(b);
-    const cc = Math.cos(c), sc = Math.sin(c);
+    const a = pitchDeg * DEG; const b = yawDeg * DEG; const c = rollDeg * DEG;
+    const ca = Math.cos(a); const sa = Math.sin(a);
+    const cb = Math.cos(b); const sb = Math.sin(b);
+    const cc = Math.cos(c); const sc = Math.sin(c);
     const Rx = [1, 0, 0, 0, ca, -sa, 0, sa, ca];
     const Ry = [cb, 0, sb, 0, 1, 0, -sb, 0, cb];
     const Rz = [cc, -sc, 0, sc, cc, 0, 0, 0, 1];
@@ -33,7 +33,7 @@ export function eulerToBasis(pitchDeg, yawDeg, rollDeg) {
 /** Rotate vector (x,y,z) by the shortest-arc rotation from +Y to unit normal (kx,ky,kz). */
 function rotateFromY(nx, ny, nz, x, y, z) {
     // axis = (+Y) × n ; angle from dot(+Y,n)=ny
-    let ax = nz, ay = 0, az = -nx; // cross([0,1,0],[nx,ny,nz]) = (1*nz-0*ny, 0*nx-0*nz, 0*ny-1*nx)
+    let ax = nz; let ay = 0; let az = -nx; // cross([0,1,0],[nx,ny,nz]) = (1*nz-0*ny, 0*nx-0*nz, 0*ny-1*nx)
     const axisLen = Math.hypot(ax, ay, az);
     if (axisLen < 1e-12) {
         if (ny >= 0) return [x, y, z];              // n ≈ +Y → identity
@@ -44,7 +44,7 @@ function rotateFromY(nx, ny, nz, x, y, z) {
     const sin = axisLen; // |+Y × n| = sin(angle) for unit vectors
     // Rodrigues: v cos + (k×v) sin + k (k·v)(1-cos)
     const kdotv = ax * x + ay * y + az * z;
-    const cxx = ay * z - az * y, cyy = az * x - ax * z, czz = ax * y - ay * x;
+    const cxx = ay * z - az * y; const cyy = az * x - ax * z; const czz = ax * y - ay * x;
     return [
         x * cos + cxx * sin + ax * kdotv * (1 - cos),
         y * cos + cyy * sin + ay * kdotv * (1 - cos),

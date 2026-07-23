@@ -3,11 +3,11 @@ import { mapLocal } from './orient.js';
 /** 8 world corners. hu along local +X (u), hv along local +Z (v), hn along normal (n). */
 export function boxCorners(basis, cx, cy, cz, hu, hv, hn) {
     const c = [];
-    for (const su of [-1, 1]) for (const sn of [-1, 1]) for (const sv of [-1, 1]) {
+    for (const su of [-1, 1]) {for (const sn of [-1, 1]) {for (const sv of [-1, 1]) {
         const p = [0, 0, 0];
         mapLocal(basis, cx, cy, cz, su * hu, sv * hv, sn * hn, p, 0);
         c.push(p);
-    }
+    }}}
     return c; // index = ((su bit)*2 + (sn bit))*2 + (sv bit)
 }
 
@@ -22,7 +22,7 @@ export function boxEdges(c) {
 }
 
 export function worldAABB(c) {
-    let a = [Infinity, Infinity, Infinity], b = [-Infinity, -Infinity, -Infinity];
+    const a = [Infinity, Infinity, Infinity]; const b = [-Infinity, -Infinity, -Infinity];
     for (const p of c) for (let k = 0; k < 3; k++) { a[k] = Math.min(a[k], p[k]); b[k] = Math.max(b[k], p[k]); }
     return [a[0], a[1], a[2], b[0], b[1], b[2]];
 }

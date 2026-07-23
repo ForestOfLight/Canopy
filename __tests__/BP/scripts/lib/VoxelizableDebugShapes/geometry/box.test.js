@@ -30,8 +30,8 @@ describe('latticeFill', () => {
         const out = latticeFill(0, 5, 0, 2, 5, 2);
         // verify no zero-length segments (start !== end for all segments)
         for (let i = 0; i < out.length; i += 6) {
-            const ax = out[i], ay = out[i + 1], az = out[i + 2];
-            const bx = out[i + 3], by = out[i + 4], bz = out[i + 5];
+            const ax = out[i]; const ay = out[i + 1]; const az = out[i + 2];
+            const bx = out[i + 3]; const by = out[i + 4]; const bz = out[i + 5];
             expect(ax !== bx || ay !== by || az !== bz).toBe(true);
         }
         // verify it still contains real edges
@@ -64,8 +64,8 @@ describe('boxVoxel', () => {
         expect(fill).toBeDefined();
         // verify no zero-length segments in fill group
         for (let i = 0; i < fill.segments.length; i += 6) {
-            const ax = fill.segments[i], ay = fill.segments[i + 1], az = fill.segments[i + 2];
-            const bx = fill.segments[i + 3], by = fill.segments[i + 4], bz = fill.segments[i + 5];
+            const ax = fill.segments[i]; const ay = fill.segments[i + 1]; const az = fill.segments[i + 2];
+            const bx = fill.segments[i + 3]; const by = fill.segments[i + 4]; const bz = fill.segments[i + 5];
             expect(ax !== bx || ay !== by || az !== bz).toBe(true);
         }
     });
