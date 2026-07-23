@@ -54,6 +54,9 @@ export class VoxelizableDebugBox extends VoxelizableDebugShape {
         return { cx: c.x, cy: c.y, cz: c.z, hu: s.x / 2, hv: s.z / 2, hn: s.y / 2 };
     }
 
+    get type() { return 'box'; }
+    serialize() { return this.serializeGeometry(super.serialize(), ['center', 'size', 'from', 'to', 'rotation', 'normal']); }
+
     computeSegments() {
         const b = this.#bounds();
         if (b.hu === 0 && b.hv === 0 && b.hn === 0) return [];

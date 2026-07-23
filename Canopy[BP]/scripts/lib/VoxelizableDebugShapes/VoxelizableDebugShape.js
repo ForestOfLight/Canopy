@@ -2,6 +2,13 @@ import { debugDrawer, DebugLine } from "@minecraft/debug-utilities";
 
 const WHITE = { red: 1, green: 1, blue: 1, alpha: 1 };
 
+/** A live Dimension/Entity/Player serializes to its id string; primitives pass through. */
+function idOf(value) {
+    if (value !== null && typeof value === 'object' && value.id !== undefined)
+        return value.id;
+    return value;
+}
+
 export class VoxelizableDebugShape {
     #pool = [];
     #groups = null;
@@ -68,6 +75,59 @@ export class VoxelizableDebugShape {
 
     // subclasses override
     computeSegments() { throw new Error('computeSegments() must be implemented'); }
+
+    // --- serialization ---
+    // Subclasses override `type` and add their geometry via serializeGeometry().
+    get type() { throw new Error('type getter must be implemented'); }
+
+    serialize() {
+        const out = {
+            type: this.type,
+            mode: this.mode,
+            innerEdge: this.innerEdge,
+            outerEdge: this.outerEdge,
+            fill: this.fill
+        };
+        if (this.segments !== undefined) out.segments = this.segments;
+        const color = this.color;
+        // Functions cannot be JSON-encoded directly; save the source text as a
+        // best-effort so it can be rebuilt on deserialize (see reviveConfig).
+        if (typeof color === 'function') out.color = { fn: color.toString() };
+        else if (color !== undefined) out.color = color;
+        // Live handles (Dimension/Entity/Player) are stored as their id strings;
+        // the consumer resolves ids back to objects when it needs live bindings.
+        if (this.dimension !== undefined) out.dimension = idOf(this.dimension);
+        if (this.attachedTo !== undefined) out.attachedTo = idOf(this.attachedTo);
+        if (this.visibleTo !== undefined) out.visibleTo = this.visibleTo.map((p) => idOf(p));
+        return out;
+    }
+
+    serializeGeometry(out, names) {
+        for (const name of names) {
+            const value = this[name];
+            if (value !== undefined) out[name] = value;
+        }
+        return out;
+    }
+
+    static reviveConfig(config) {
+        if (!config || typeof config.color !== 'object' || config.color === null
+            || typeof config.color.fn !== 'string')
+            return config;
+        const revived = { ...config };
+        try {
+            // Rebuild the saved function. May be blocked in the Bedrock sandbox
+            // (code generation from strings); fall back to no color if so.
+            revived.color = new Function(`return (${config.color.fn});`)();
+        } catch {
+            delete revived.color;
+        }
+        return revived;
+    }
+
+    static deserialize(config) {
+        return new this(VoxelizableDebugShape.reviveConfig(config));
+    }
 
     draw() {
         if (this.#geometryDirty || this.#groups === null) {

@@ -32,6 +32,9 @@ export class VoxelizableDebugSphere extends VoxelizableDebugShape {
         return eulerToBasis(0, 0, 0);
     }
 
+    get type() { return 'sphere'; }
+    serialize() { return this.serializeGeometry(super.serialize(), ['center', 'radius', 'rotation', 'normal']); }
+
     computeSegments() {
         const r = this.#radius;
         if (r <= 0) return [];

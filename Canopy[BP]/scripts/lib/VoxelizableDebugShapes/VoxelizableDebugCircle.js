@@ -32,6 +32,9 @@ export class VoxelizableDebugCircle extends VoxelizableDebugShape {
     }
     #segCount() { return this.segments ?? autoSegments(Math.max(1e-6, this.#radius)); }
 
+    get type() { return 'circle'; }
+    serialize() { return this.serializeGeometry(super.serialize(), ['center', 'radius', 'rotation', 'normal']); }
+
     computeSegments() {
         const r = this.#radius;
         if (r <= 0) return [];

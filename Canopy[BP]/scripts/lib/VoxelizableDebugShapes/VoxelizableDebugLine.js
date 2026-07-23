@@ -16,6 +16,9 @@ export class VoxelizableDebugLine extends VoxelizableDebugShape {
     get to() { return this.#to; }
     set to(v) { this.#to = v; this.markGeometryDirty(); }
 
+    get type() { return 'line'; }
+    serialize() { return this.serializeGeometry(super.serialize(), ['from', 'to']); }
+
     computeSegments() {
         const f = this.#from;
         const t = this.#to;

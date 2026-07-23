@@ -31,6 +31,9 @@ export class VoxelizableDebugEllipse extends VoxelizableDebugShape {
         return eulerToBasis(0, 0, 0);
     }
 
+    get type() { return 'ellipse'; }
+    serialize() { return this.serializeGeometry(super.serialize(), ['center', 'radii', 'rotation', 'normal']); }
+
     computeSegments() {
         const ru = this.#radii.x || 0;
         const rv = this.#radii.z || 0;

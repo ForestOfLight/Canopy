@@ -50,6 +50,9 @@ export class VoxelizableDebugArc extends VoxelizableDebugShape {
         return [this.#radius || 0, this.#radius || 0];
     }
 
+    get type() { return 'arc'; }
+    serialize() { return this.serializeGeometry(super.serialize(), ['center', 'radius', 'radii', 'startAngle', 'endAngle', 'rotation', 'normal']); }
+
     computeSegments() {
         const [ru, rv] = this.#radiiPair();
         if (ru <= 0 || rv <= 0 || this.#startAngle === this.#endAngle) return [];
