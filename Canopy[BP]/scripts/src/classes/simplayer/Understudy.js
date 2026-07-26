@@ -207,6 +207,13 @@ class Understudy {
         this.simulatedPlayer.isSneaking = shouldSneak;
     }
 
+    glide(shouldGlide) {
+        if (shouldGlide)
+            this.simulatedPlayer.glide();
+        else
+            this.simulatedPlayer.stopGliding();
+    }
+
     claimProjectiles(radius) {
         const simulatedPlayer = this.simulatedPlayer;
         const projectileComponents = this.#getProjectileComponentsInRange(simulatedPlayer, radius);

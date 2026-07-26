@@ -51,6 +51,7 @@ import './src/commands/simplayer/playerswapheld'
 import './src/commands/simplayer/playerinventory'
 import './src/commands/simplayer/playerprefix'
 import './src/commands/simplayer/playeraction'
+import './src/commands/simplayer/playerglide'
 
 // Script Events
 import './src/commands/scriptevents/counter'

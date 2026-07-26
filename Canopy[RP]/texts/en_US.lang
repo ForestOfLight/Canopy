@@ -277,6 +277,8 @@ commands.playeraction=Make a simplayer do actions with variable timing.
 commands.playeraction.invalidtiming=§cInvalid %1 timing: %2.
 commands.playeraction.invalidticks=§cInvalid '%1' tick duration: %2. Expected an integer.
 
+commands.playerglide=Make a simplayer start or stop gliding with an Elytra.
+
 commands.playerinventory=Print the inventory of a simplayer.
 commands.playerinventory.noinventory=§cNo inventory found
 commands.playerinventory.empty=§7%s's inventory is empty.
