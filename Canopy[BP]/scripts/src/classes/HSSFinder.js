@@ -54,12 +54,12 @@ export class HSSFinder {
             for (let chunkZ = chunkOverlay.min.z; chunkZ < chunkOverlay.max.z; chunkZ += CHUNK_SIZE) {
                 const baseX = Math.max(structureBounds.min.x, chunkX);
                 const baseZ = Math.max(structureBounds.min.z, chunkZ);
-                const remainingX = Math.min(structureBounds.max.x - baseX, chunkX + CHUNK_SIZE - baseX);
-                const remainingZ = Math.min(structureBounds.max.z - baseZ, chunkZ + CHUNK_SIZE - baseZ);
+                const remainingX = Math.min(structureBounds.max.x - baseX + 1, chunkX + CHUNK_SIZE - baseX);
+                const remainingZ = Math.min(structureBounds.max.z - baseZ + 1, chunkZ + CHUNK_SIZE - baseZ);
                 const location = new Vector(
-                    baseX + Math.floor((remainingX) * 0.5),
+                    baseX + Math.floor(remainingX * 0.5),
                     86,
-                    baseZ + Math.floor((remainingZ) * 0.5)
+                    baseZ + Math.floor(remainingZ * 0.5)
                 );
                 hssLocations.push(location);
             }
