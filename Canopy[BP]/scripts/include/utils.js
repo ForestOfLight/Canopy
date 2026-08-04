@@ -281,7 +281,7 @@ export function getNameFromEntityId(id) {
 	let entityName = id;
 	try {
 		const entity = world.getEntity(id);
-		entityName = entity?.name || entity?.nameTag || entityName;
+		entityName = entity?.name || entity?.nameTag || id;
 	} catch (error) {
 		if (!error.message.includes("is invalid") && error.name !== 'InvalidArgumentError')
 			throw error;
