@@ -14,10 +14,10 @@ jobs:
       mcaddon: ${{ steps.artifact.outputs.mcaddon }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '20'
 
@@ -65,7 +65,7 @@ jobs:
       CF_PROJECT_ID: 1062078
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Download build artifact
         uses: actions/download-artifact@v4
