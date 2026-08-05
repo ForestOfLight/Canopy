@@ -39,7 +39,7 @@ describe('Structures', () => {
 
     it('should have a method to return any generated structures at the player\'s location', () => {
         expect(structures.getFormattedDataOwnLine()).toEqual({ rawtext: [
-            { "translate": "rules.infodisplay.structures.display" },
+            { "translate": "rules.infoDisplay.structures.display" },
             { text: "§dminecraft:monument, minecraft:pillager_outpost" }
         ] });
     });
@@ -47,8 +47,8 @@ describe('Structures', () => {
     it('should return an empty string when there are no structures found', () => {
         mockPlayer.dimension.getGeneratedStructures.mockReturnValue([]);
         expect(structures.getFormattedDataOwnLine()).toEqual({ "rawtext": [
-            { "translate": "rules.infodisplay.structures.display" },
-            { "translate": "rules.infodisplay.structures.display.none" },
+            { "translate": "rules.infoDisplay.structures.display" },
+            { "translate": "rules.infoDisplay.structures.display.none" },
         ] });
     });
 });
