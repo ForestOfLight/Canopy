@@ -27,30 +27,19 @@ function resolveDescription(desc, lang) {
     return '';
 }
 
-const PARAM_TYPE_DISPLAY = {
-    Boolean: 'bool',
-    Enum: null,      // replaced by enum values inline
-    Float: 'float',
-    Integer: 'int',
-    Location: 'x y z',
-    String: 'string',
-    EntitySelector: 'entity',
-    EntityType: 'entityType',
-    BlockType: 'blockType',
-};
-
 function buildParamDisplay(param, enums) {
     if (param.type === 'Enum') {
         const enumDef = enums?.find(e => e.name === param.name);
-        return enumDef ? enumDef.values.join('/') : param.name;
+        return enumDef ? enumDef.values.join('/') : 'enum';
     }
-    return PARAM_TYPE_DISPLAY[param.type] ?? param.name;
+    return String(param.type ?? 'value');
 }
 
 function buildVanillaCommandBlock(cmd, lang) {
     const cc = cmd.customCommand;
     const cmdName = cmd.getName();
     const sub = cmd.getSubCommandWikiDescription();
+    const commandDesc = cc.wikiDescription ?? resolveDescription(cc.description, lang);
     const isOp = cc.permissionLevel && cc.permissionLevel !== 'Any';
     const opSuffix = isOp ? ' Requires OP.' : '';
 
@@ -67,8 +56,7 @@ function buildVanillaCommandBlock(cmd, lang) {
             const label = p.name.replace(/^[^:]+:/, '');
             parts.push(`[${label}: ${display}]`);
         }
-        const desc = cc.wikiDescription ?? resolveDescription(cc.description, lang);
-        return `**Usage: \`${parts.join(' ')}\`**  \n${desc}${opSuffix}`;
+        return `**Usage: \`${parts.join(' ')}\`**  \n${commandDesc}${opSuffix}`;
     }
 
     // Sub-command style — one block per enum value
@@ -93,7 +81,8 @@ function buildVanillaCommandBlock(cmd, lang) {
         }
         blocks.push(`**Usage: \`${usageParts.join(' ')}\`**  \n${info.description}${opSuffix}`);
     }
-    return blocks.join('\n\n');
+    const prefix = commandDesc ? `${commandDesc}\n\n` : '';
+    return `${prefix}${blocks.join('\n\n')}`;
 }
 
 function buildCommandBlock(cmd, lang) {

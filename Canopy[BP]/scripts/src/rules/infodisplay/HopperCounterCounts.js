@@ -3,8 +3,12 @@ import { counterChannels } from "../../classes/CounterChannels";
 import { getColorCode } from "../../../include/utils";
 
 class HopperCounterCounts extends InfoDisplayTextElement {
+    static getRuleIdentifier() {
+        return 'hopperCounterCounts';
+    }
+
     constructor(displayLine) {
-        const ruleData = { identifier: 'hopperCounterCounts', description: { translate: 'rules.infoDisplay.hopperCounterCounts' }, wikiDescription: 'Shows all active hopper counter channels in real-time, displayed in their respective wool colors. Channel display mode (count, hr, min, sec) is controlled with `./counter <color> <mode>`.' };
+        const ruleData = { description: { translate: 'rules.infoDisplay.hopperCounterCounts' }, wikiDescription: 'Shows all active hopper counter channels in real-time, displayed in their respective wool colors. Channel display mode (count, hr, min, sec) is controlled with `./counter <color> <mode>`.' };
         super(ruleData, displayLine, true);
     }
 

@@ -1,9 +1,14 @@
 import { InfoDisplayTextElement } from "./InfoDisplayTextElement";
 import { getRaycastResults, parseName, stringifyLocation } from "../../../include/utils";
+import { LocationInUnloadedChunkError } from "@minecraft/server";
 
 export class Target extends InfoDisplayTextElement {
+    static getRuleIdentifier() {
+        return 'target';
+    }
+
     constructor(player, displayLine) {
-        const ruleData = { identifier: 'target', description: { translate: 'rules.infoDisplay.target' }, wikiDescription: 'Shows the identifier of the block or entity you are targeting.' };
+        const ruleData = { description: { translate: 'rules.infoDisplay.target' }, wikiDescription: 'Shows the identifier of the block or entity you are targeting.' };
         super(ruleData, displayLine);
         this.player = player;
     }
@@ -18,7 +23,13 @@ export class Target extends InfoDisplayTextElement {
 
     getLookingAtName() {
         const { blockRayResult, entityRayResult } = getRaycastResults(this.player, 7);
-        return this.#parseLookingAtEntity(entityRayResult).LookingAtName || this.#parseLookingAtBlock(blockRayResult).LookingAtName;
+        try {
+            return this.#parseLookingAtEntity(entityRayResult).LookingAtName || this.#parseLookingAtBlock(blockRayResult).LookingAtName;
+        } catch (error) {
+            if (error instanceof LocationInUnloadedChunkError)
+                return '';
+            throw error;
+        }
     }
 
     #parseLookingAtBlock(lookingAtBlock) {
@@ -30,7 +41,7 @@ export class Target extends InfoDisplayTextElement {
             try {
                 blockName = `§a${parseName(block)}`;
             } catch (error) {
-                if (error.message.includes('loaded'))
+                if (error instanceof LocationInUnloadedChunkError)
                     blockName = `§c${stringifyLocation(block.location, 0)} Unloaded`;
                 else if (error.message.includes('undefined'))
                     blockName = '§7Undefined';

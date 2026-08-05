@@ -2,6 +2,10 @@ import { CommandOrigin } from "./CommandOrigin";
 import { FeedbackMessageType } from "./FeedbackMessageType";
 
 export class ServerCommandOrigin extends CommandOrigin {
+    getName() {
+        return "Server";
+    }
+    
     getSource() {
         return this.source.sourceType;
     }

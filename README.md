@@ -5,7 +5,7 @@
 
   [![GitHub Downloads](https://img.shields.io/github/downloads/ForestOfLight/Canopy/total?label=Github%20downloads&logo=github)](https://github.com/ForestOfLight/Canopy/releases/latest)
   [![Curseforge Downloads](https://cf.way2muchnoise.eu/full_1062078_downloads.svg)](https://www.curseforge.com/minecraft-bedrock/addons/canopy)
-  [![Minecraft - Version](https://img.shields.io/badge/Minecraft-v26.30_(Bedrock)-brightgreen)](https://feedback.minecraft.net/hc/en-us/sections/360001186971-Release-Changelogs)
+  [![Minecraft - Version](https://img.shields.io/badge/Minecraft-v26.40_(Bedrock)-brightgreen)](https://feedback.minecraft.net/hc/en-us/sections/360001186971-Release-Changelogs)
   [![CI](https://github.com/ForestOfLight/Canopy/actions/workflows/ci.yml/badge.svg)](https://github.com/ForestOfLight/Canopy/actions/workflows/ci.yml)
   [![Discord](https://badgen.net/discord/members/9KGche8fxm?icon=discord&label=Discord&list=what)](https://discord.gg/9KGche8fxm)
   [![BuyMeACoffee](https://raw.githubusercontent.com/pachadotdev/buymeacoffee-badges/main/bmc-donate-yellow.svg)](https://buymeacoffee.com/forestoflight)
@@ -19,15 +19,12 @@ Whether you're optimizing farm rates, digging into game mechanics, or building u
 
 - **Live InfoDisplay** – Get real-time stats on TPS, light levels, biome info, block/entity details, and more.
 - **Farm & Spawn Tracking** – Optimize efficiency with hopper counters and precise spawn monitoring.
-- **Tick Speed Control** – Slow down ticks for in-depth technical analysis.
-- **Modular & Expandable** – Add functionality with extensions and community add-ons.
+- **Tick Speed Control** – Slow down ticks to see what's going on in your builds.
+- **Modular & Expandable** – Add functionality with community-built extensions.
+- **Simulated Players** - Spawn and control simulated players. 
 - **Built for Power and Performance** – Designed to run effectively and efficiently.
 
 **Explore all the features in the [Canopy Wiki](https://github.com/ForestOfLight/Canopy/wiki)!**
-
-## Looking for Simulated Players?
-
-Check out **[Understudy](https://github.com/ForestOfLight/Understudy)** – a **Canopy** extension that gives you complete control over simulated players in your world.
 
 ## Getting Started
 

@@ -1,7 +1,11 @@
-import { EntityComponentTypes, world } from "@minecraft/server";
+import { world } from "@minecraft/server";
 import { InfoDisplayShapeElement } from "./InfoDisplayShapeElement";
 
 export class NoFog extends InfoDisplayShapeElement {
+    static getRuleIdentifier() {
+        return 'noFog';
+    }
+
     static FOG_REMOVAL_IDS = {
         "minecraft:overworld": "canopy:overworld_no_fog",
         "minecraft:nether": "canopy:nether_no_fog",
@@ -9,11 +13,10 @@ export class NoFog extends InfoDisplayShapeElement {
     };
     static FOG_TAG = "canopy_no_fog";
 
-    playerFogComponent;
+    playerFogSettings;
 
     constructor(player) {
         const ruleData = {
-            identifier: 'noFog',
             description: { translate: 'rules.infoDisplay.noFog' },
             wikiDescription: `Disables the fog effect for the player. Water and lava are unaffected.`,
             onEnableCallback: () => this.removeFog(),
@@ -21,22 +24,23 @@ export class NoFog extends InfoDisplayShapeElement {
         };
         super(ruleData, 0);
         this.player = player;
-        this.playerFogComponent = player.getComponent(EntityComponentTypes.Fog);
+        this.playerFogSettings = player.fogSettings;
         this.onDimensionChangeBound = this.onDimensionChange.bind(this);
     }
 
     removeFog() {
-        this.playerFogComponent.push(this.getCurrentFogId(), NoFog.FOG_TAG);
+        this.clearFogSettings();
+        this.playerFogSettings.push(this.getCurrentFogId(), NoFog.FOG_TAG);
         world.afterEvents.playerDimensionChange.subscribe(this.onDimensionChangeBound);
     }
 
     resetFog() {
         world.afterEvents.playerDimensionChange.unsubscribe(this.onDimensionChangeBound);
-        this.clearFog();
+        this.clearFogSettings();
     }
 
-    clearFog() {
-        this.playerFogComponent.remove(NoFog.FOG_TAG);
+    clearFogSettings() {
+        this.playerFogSettings?.remove(NoFog.FOG_TAG);
     }
 
     getCurrentFogId() {
@@ -49,8 +53,8 @@ export class NoFog extends InfoDisplayShapeElement {
     }
 
     onDimensionChange() {
-        this.clearFog();
+        this.clearFogSettings();
         const fogRemovalId = this.getCurrentFogId();
-        this.playerFogComponent.push(fogRemovalId, NoFog.FOG_TAG);
+        this.playerFogSettings.push(fogRemovalId, NoFog.FOG_TAG);
     }
 }

@@ -5,4 +5,8 @@ export class DebugDisplayElement {
         this.entity = entity;
         this.type = this.constructor.name;
     }
+
+    destroy() {
+        // Overload if needed
+    }
 }

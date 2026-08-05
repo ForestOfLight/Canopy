@@ -30,10 +30,13 @@ import { Weather } from './Weather';
 import { LiquidTarget } from './LiquidTarget';
 import { LiquidStates } from './LiquidStates';
 import { HeldItemDurability } from './HeldItemDurability';
+import { BlockBreakSpeed } from './BlockBreakSpeed';
+import { Horse } from './Horse';
 
 import { RenderSignalStrength } from './RenderSignalStrength';
 import { NoFog } from './NoFog';
 import { Ping } from './Ping';
+import { RenderLightLevel } from './RenderLightLevel';
 
 class InfoDisplay {
 	player;
@@ -43,42 +46,51 @@ class InfoDisplay {
 	static playerToInfoDisplayMap = {};
 	static currentTickWorldwideElementData = {};
 
+	static elementSpecs = [
+		[TPS, () => [1]],
+		[Ping, (player) => [player, 2]],
+		[Dimension, (player) => [player, 3]],
+		[Coords, (player) => [player, 4]],
+		[CardinalFacing, (player) => [player, 4]],
+		[ChunkCoords, (player) => [player, 5]],
+		[SlimeChunk, (player) => [player, 6]],
+		[Light, (player) => [player, 7]],
+		[Biome, (player) => [player, 8]],
+		[Structures, (player) => [player, 9]],
+		[Velocity, (player) => [player, 10]],
+		[Speed, (player) => [player, 11]],
+		[Facing, (player) => [player, 12]],
+		[Entities, (player) => [player, 13]],
+		[MoonPhase, () => [14]],
+		[Weather, (player) => [player, 15]],
+		[WorldDay, () => [16]],
+		[TimeOfDay, () => [17]],
+		[SessionTime, (player) => [player, 17]],
+		[EventTrackers, () => [18]],
+		[HopperCounterCounts, () => [19]],
+		[SimulationMap, (player) => [player, 20]],
+		[Horse, (player) => [player, 21]],
+		[HeldItemDurability, (player) => [player, 22]],
+		[BlockBreakSpeed, (player) => [player, 23]],
+		[Target, (player) => [player, 24]],
+		[SignalStrength, (player) => [player, 25]],
+		[BlockStates, (player) => [player, 26]],
+		[PeekInventory, (player) => [player, 27]],
+		[LiquidTarget, (player) => [player, 28]],
+		[LiquidStates, (player) => [player, 29]],
+
+		[RenderSignalStrength, (player) => [player]],
+		[RenderLightLevel, (player) => [player]],
+		[NoFog, (player) => [player]]
+	];
+
+	static getRuleIdentifiers() {
+		return InfoDisplay.elementSpecs.map(([ElementClass]) => ElementClass.getRuleIdentifier());
+	}
+
 	constructor(player) {
 		this.player = player;
-		this.elements = [
-			new TPS(1),
-			new Ping(player, 2),
-			new Dimension(player, 3),
-			new Coords(player, 4),
-			new CardinalFacing(player, 4),
-			new ChunkCoords(player, 5),
-			new SlimeChunk(player, 6),
-			new Light(player, 7),
-			new Biome(player, 8),
-			new Structures(player, 9),
-			new Velocity(player, 10),
-			new Speed(player, 11),
-			new Facing(player, 12),
-			new Entities(player, 13),
-			new MoonPhase(14),
-			new Weather(player, 15),
-			new WorldDay(16),
-			new TimeOfDay(17),
-			new SessionTime(player, 17),
-			new EventTrackers(18),
-			new HopperCounterCounts(19),
-			new SimulationMap(player, 20),
-			new HeldItemDurability(player, 21),
-			new Target(player, 22),
-			new SignalStrength(player, 22),
-			new BlockStates(player, 23),
-			new PeekInventory(player, 24),
-			new LiquidTarget(player, 25),
-			new LiquidStates(player, 26),
-
-			new RenderSignalStrength(player),
-			new NoFog(player)
-		];
+		this.elements = InfoDisplay.elementSpecs.map(([ElementClass, makeArgs]) => new ElementClass(...makeArgs(player)));
 		InfoDisplay.playerToInfoDisplayMap[player.id] = this;
 		this.enableEnabledRules();
 	}

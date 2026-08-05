@@ -18,7 +18,7 @@ const flipOnPlaceIds = ['piston', 'sticky_piston', 'dropper', 'dispenser', 'obse
 const flipIds = ['piston', 'sticky_piston', 'observer', 'end_rod', 'lightning_rod'];
 const flipWhenVerticalIds = ['dropper', 'dispenser', 'barrel', 'command_block', 'chain_command_block', 'repeating_command_block'];
 const openIds = ['iron_trapdoor', 'iron_door'];
-const noInteractBlockIds = ['piston_arm_collision', 'sticky_piston_arm_collision', 'bed', 'frame'];
+const noInteractBlockIds = ['piston_arm_collision', 'sticky_piston_arm_collision', 'bed', 'frame', 'decorated_pot'];
 
 system.runInterval(() => {
     previousBlocks.shift();

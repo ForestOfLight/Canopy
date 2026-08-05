@@ -9,6 +9,10 @@ export class CommandOrigin {
         return this.source.sourceType;
     }
 
+    getName() {
+        throw new Error("getName() not implemented");
+    }
+
     getSource() {
         throw new Error("getSource() not implemented");
     }

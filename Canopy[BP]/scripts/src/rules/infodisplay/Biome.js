@@ -1,11 +1,14 @@
 import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 
 class Biome extends InfoDisplayTextElement {
+    static getRuleIdentifier() {
+        return 'biome';
+    }
+
     player;
 
     constructor(player, displayLine) {
         const ruleData = {
-            identifier: 'biome',
             description: { translate: 'rules.infoDisplay.biome' },
             wikiDescription: 'Shows the biome at your current location.'
         };

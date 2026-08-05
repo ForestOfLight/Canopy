@@ -246,6 +246,23 @@ describe('Rules', () => {
             expect(Rules.get('queued_rule')).toBe(mockRule);
             expect(Rules.rulesToRegister).toHaveLength(0);
         });
+
+        it('should not queue duplicate rule identifiers before world load', async () => {
+            Rules.clear();
+            Rules.worldLoaded = false;
+            const firstRule = { getID: () => 'queued_rule', getCategory: () => 'test' };
+            const duplicateRule = { getID: () => 'queued_rule', getCategory: () => 'test' };
+
+            await Rules.register(firstRule);
+            await Rules.register(duplicateRule);
+
+            expect(Rules.rulesToRegister).toHaveLength(1);
+            expect(Rules.rulesToRegister[0]).toBe(firstRule);
+
+            Rules.worldLoaded = true;
+            await Rules.registerQueuedRules();
+            expect(Rules.get('queued_rule')).toBe(firstRule);
+        });
     });
 
     describe('register with worldLoaded and Rules category', () => {
@@ -313,6 +330,67 @@ describe('Rules', () => {
 
             const testRules = Rules.getByCategory('unusedCategory');
             expect(testRules.length).toBe(0);
+        });
+    });
+
+    describe('Rules.getSettableRuleIDs', () => {
+        beforeEach(() => {
+            Rules.clear();
+            Rules.rulesToRegister = [];
+            Rules.worldLoaded = false;
+        });
+
+        it('returns IDs of queued "Rules"-category rules', () => {
+            new BooleanRule({ category: 'Rules', identifier: 'queuedRuleA', defaultValue: false });
+            new BooleanRule({ category: 'Rules', identifier: 'queuedRuleB', defaultValue: false });
+            expect(Rules.getSettableRuleIDs().sort()).toEqual(['queuedRuleA', 'queuedRuleB']);
+        });
+
+        it('excludes rules outside the "Rules" category', () => {
+            new BooleanRule({ category: 'Rules', identifier: 'settable', defaultValue: false });
+            new BooleanRule({ category: 'InfoDisplay', identifier: 'displayOnly', defaultValue: false });
+            expect(Rules.getSettableRuleIDs()).toEqual(['settable']);
+        });
+    });
+
+    describe('Rules.getRuleIDsByCategory', () => {
+        beforeEach(() => {
+            Rules.clear();
+            Rules.rulesToRegister = [];
+            Rules.worldLoaded = false;
+        });
+
+        it('returns IDs of queued rules in the given category', () => {
+            new BooleanRule({ category: 'InfoDisplay', identifier: 'showCoords', defaultValue: false });
+            new BooleanRule({ category: 'InfoDisplay', identifier: 'showBiome', defaultValue: false });
+            expect(Rules.getRuleIDsByCategory('InfoDisplay').sort()).toEqual(['showBiome', 'showCoords']);
+        });
+
+        it('excludes rules outside the requested category', () => {
+            new BooleanRule({ category: 'InfoDisplay', identifier: 'showCoords', defaultValue: false });
+            new BooleanRule({ category: 'Rules', identifier: 'settable', defaultValue: false });
+            expect(Rules.getRuleIDsByCategory('InfoDisplay')).toEqual(['showCoords']);
+        });
+
+        it('deduplicates IDs that appear in both registered and queued sources', () => {
+            Rules.worldLoaded = true;
+            new BooleanRule({ category: 'InfoDisplay', identifier: 'showCoords', defaultValue: false });
+            Rules.rulesToRegister = [{ getID: () => 'showCoords', getCategory: () => 'InfoDisplay' }];
+            expect(Rules.getRuleIDsByCategory('InfoDisplay')).toEqual(['showCoords']);
+        });
+    });
+
+    describe('Rules.getSettableRuleIDs delegation', () => {
+        beforeEach(() => {
+            Rules.clear();
+            Rules.rulesToRegister = [];
+            Rules.worldLoaded = false;
+        });
+
+        it('returns only "Rules"-category IDs via getRuleIDsByCategory', () => {
+            new BooleanRule({ category: 'Rules', identifier: 'settable', defaultValue: false });
+            new BooleanRule({ category: 'InfoDisplay', identifier: 'showCoords', defaultValue: false });
+            expect(Rules.getSettableRuleIDs()).toEqual(['settable']);
         });
     });
 });

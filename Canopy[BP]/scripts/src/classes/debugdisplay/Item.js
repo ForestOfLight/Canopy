@@ -9,7 +9,7 @@ export class Item extends ComponentDebugDisplayElement {
 
     getFormattedData() {
         if (!this.component?.isValid) {
-            this.component = this.entity.getComponent(this.componentType);
+            this.component = this.entity.getComponent(this.componentType) || system.currentTick;
             return;
         }
         const itemStack = this.component.itemStack;

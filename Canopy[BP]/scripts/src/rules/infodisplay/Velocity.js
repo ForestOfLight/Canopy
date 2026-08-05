@@ -2,11 +2,14 @@ import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 import { Vector } from '../../../lib/Vector.js';
 
 export class Velocity extends InfoDisplayTextElement {
+    static getRuleIdentifier() {
+        return 'velocity';
+    }
+
     player;
 
     constructor(player, displayLine) {
         const ruleData = {
-            identifier: 'velocity',
             description: { translate: 'rules.infoDisplay.velocity' },
             wikiDescription: 'Shows your current x, y, and z velocity values in meters per tick.'
         }

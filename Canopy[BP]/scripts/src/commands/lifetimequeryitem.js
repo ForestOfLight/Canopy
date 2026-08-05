@@ -1,6 +1,6 @@
 import { CommandPermissionLevel, CustomCommandParamType } from "@minecraft/server";
 import { VanillaCommand, PlayerCommandOrigin, ServerCommandOrigin } from "../../lib/canopy/Canopy";
-import { lifetimeQueryCommand } from "./lifetimequery";
+import { LIFETIME_QUERY_ACTIONS, lifetimeQueryCommand } from "./lifetimequery";
 
 export class LifetimeQueryItem extends VanillaCommand {
     worldLifetimeTracker = void 0;
@@ -9,8 +9,11 @@ export class LifetimeQueryItem extends VanillaCommand {
         super({
             name: 'canopy:lifetimequeryitem',
             description: 'commands.lifetime.query.item',
-            optionalParameters: [
+            enums: [{ name: 'canopy:lifetimeQueryActions', values: Object.values(LIFETIME_QUERY_ACTIONS) }],
+            mandatoryParameters: [
                 { name: 'itemType', type: CustomCommandParamType.ItemType },
+            ],
+            optionalParameters: [
                 { name: 'canopy:lifetimeQueryActions', type: CustomCommandParamType.Enum },
                 { name: 'useRealTime', type: CustomCommandParamType.Boolean }
             ],

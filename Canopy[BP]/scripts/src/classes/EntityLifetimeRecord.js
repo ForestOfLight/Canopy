@@ -5,25 +5,29 @@ export class EntityLifetimeRecord {
     entityType;
     localizationKey;
     spawnReason;
+    spawnPriority;
     spawnTick;
     spawnDate;
     removalReason;
+    removalPriority;
     removalTick;
     removalDate;
 
-    constructor(entity, spawnReason) {
+    constructor(entity, spawnReason, spawnPriority = 0) {
         this.entityId = entity.id;
         this.entityType = entity.typeId;
         this.localizationKey = { translate: entity.localizationKey };
         this.spawnReason = spawnReason;
+        this.spawnPriority = spawnPriority;
         this.spawnTick = system.currentTick;
         this.spawnDate = Date.now();
     }
 
-    collectRemoval(removalReason) {
+    collectRemoval(removalReason, removalPriority = 0) {
         if (this.hasBeenRemoved())
             return;
         this.removalReason = removalReason;
+        this.removalPriority = removalPriority;
         this.removalTick = system.currentTick;
         this.removalDate = Date.now();
     }

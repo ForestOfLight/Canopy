@@ -3,8 +3,12 @@ import { Profiler } from '../../classes/Profiler.js';
 import { TicksPerSecond } from '@minecraft/server';
 
 class TPS extends InfoDisplayTextElement {
+    static getRuleIdentifier() {
+        return 'tps';
+    }
+
     constructor(displayLine) {
-        const ruleData = { identifier: 'tps', description: { translate: 'rules.infoDisplay.tps' }, wikiDescription: 'Shows the server\'s current ticks per second (TPS).' };
+        const ruleData = { description: { translate: 'rules.infoDisplay.tps' }, wikiDescription: 'Shows the server\'s current ticks per second (TPS).' };
         super(ruleData, displayLine, true);
     }
 

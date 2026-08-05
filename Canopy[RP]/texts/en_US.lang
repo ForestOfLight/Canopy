@@ -20,12 +20,50 @@ commands.generic.invalidaction=§cInvalid action. Use /help <command> for more i
 
 commands.help=Displays help pages.
 commands.help.search.noresult=§cNo results found for '%s'.
-commands.help.search.results=§l§aCanopy§r §2Help search results for '§r%1§2':%2
+commands.help.search.results=§l§aCanopy§r §2Help search results for '§r%1§2':
 commands.help.page.header=§l§aCanopy§r§2 Help Page: §f%1
 commands.help.infodisplay=Togglable rules for your InfoDisplay.
 commands.help.rules=Togglable global rules.
 commands.help.extension.rules=Togglable rules for §o§a%s§r§8.
 commands.help.extension.commands=Commands for §o§a%s§r§2.
+
+commands.analyzearea=Analyzes a region of blocks and displays results for a JavaScript expression.
+commands.analyzearea.overcapacity=§cToo many blocks in the specified area (>2^32 blocks).
+commands.analyzearea.loadcapacity=§cThe region spans too many chunks (ticking area capacity exceeded).
+commands.analyzearea.unknownerror=§cAn unknown error occurred.
+commands.analyzearea.syntaxerror=§cThe expression could not be parsed.
+commands.analyzearea.forbidden=§cThe expression accesses a property or method that is not allowed.
+commands.analyzearea.completed=§7Found %1 matching blocks.
+commands.analyzearea.removed=§7Removed the analysis for those coordinates.
+commands.analyzearea.removenotfound=§cNo analysis found for those coordinates.
+commands.analyzearea.create.invalid=§cPlease enter valid coordinates and an expression.
+commands.analyzearea.teleport.gamemode=§cTeleporting to a match requires Creative or Spectator mode.
+commands.analyzearea.stats.header=§l§aArea Analysis§r
+commands.analyzearea.stats=§f%1 §7-> §f%2\n§fExpression: §7%3\n§fMatches: §a%4\n§fSize: §7%5
+commands.analyzearea.stats.capped=§f%1 §7-> §f%2\n§fExpression: §7%3\n§fMatches: §c%4+ (cap reached)\n§fSize: §7%5
+commands.analyzearea.stats.analyzing=§f%1 §7-> §f%2\n§fExpression: §7%3\n§fAnalyzing... §e%4
+commands.analyzearea.ui.selector.title=§2Area Analyses
+commands.analyzearea.ui.selector.new=(+) New Analysis
+commands.analyzearea.ui.selector.empty=§7No analyses yet.
+commands.analyzearea.ui.create.title=§2New Area Analysis
+commands.analyzearea.ui.create.fromX=From X
+commands.analyzearea.ui.create.fromY=From Y
+commands.analyzearea.ui.create.fromZ=From Z
+commands.analyzearea.ui.create.toX=To X
+commands.analyzearea.ui.create.toY=To Y
+commands.analyzearea.ui.create.toZ=To Z
+commands.analyzearea.ui.create.dimension=Dimension
+commands.analyzearea.ui.create.expression=Expression
+commands.analyzearea.ui.create.submit=Create
+commands.analyzearea.ui.page.title=§2Area Analysis
+commands.analyzearea.ui.page.notrun=§7Not run this session. Press Re-analyze.
+commands.analyzearea.ui.page.prev=< Prev <
+commands.analyzearea.ui.page.next=> Next >
+commands.analyzearea.ui.page.reanalyze=Re-analyze
+commands.analyzearea.ui.page.enableboxes=Enable Match Rendering
+commands.analyzearea.ui.page.disableboxes=Disable Match Rendering
+commands.analyzearea.ui.page.remove=(-) Remove Area
+commands.analyzearea.ui.page.back=Back
 
 commands.biomeedges=Finds and displays biome edges in a region.
 commands.biomeedges.finderadded=§7Analyzing biome edges...
@@ -58,17 +96,16 @@ commands.camera.spectate.hardcore=§cPrevented you from spectating. Spectating i
 commands.camera.spectate.flying=§cYou must be on the ground to spectate.
 commands.camera.invalidaction=§cInvalid camera action.
 
-commands.canopy=Enable or disable a rule.
+commands.canopy=Set a rule value. Wrap numeric values in quotes, e.g. "16".
 commands.canopy.version=Displays the current version of Canopy and all loaded extensions.
 commands.canopy.version.message=§7This server is running §l§aCanopy§r
 commands.canopy.version.extensions=§7Loaded extensions:
-commands.canopy.menu=Displays a menu to toggle rules.
+commands.canopy.menu=Displays a menu to set rule values.
 commands.canopy.menu.busy=§8Close your chat window to access the form.
 commands.canopy.menu.timeout=§8Form timed out after %s ticks.
 commands.canopy.menu.canceled=§8Form canceled. Rules were not updated.
 commands.canopy.menu.submit=§aApply
 commands.canopy.single=Modifies the value of a single rule.
-commands.canopy.multiple=Modifies the value of multiple rules.
 commands.canopy.infodisplayRule=§cThe rule '%1' is part of the InfoDisplay, and must be toggled using %2info. Use %2help for more information.
 
 commands.changedimension=Teleports entities to the specified dimension.
@@ -118,7 +155,7 @@ commands.data.components=§aComponents:§r %s
 commands.data.tags=§aTags:§r %s
 commands.data.dynamicProperties=§aDynamicProperties:§r %1 total byte count: %2
 commands.data.effects=§aEffects:§r %s
-commands.data.other=§aOther:§r head location: %1, rotation: [%2, %3], velocity: %4, view direction: %5
+commands.data.other=§aOther:§r head location: %1, rotation: [%2, %3], velocity: %4, view direction: %5, AABB: %6
 
 commands.debugentity=Displays debug information about entities.
 commands.debugentity.invalidProperty=§cInvalid debug property.
@@ -183,12 +220,9 @@ commands.hss.stopped=§7Stopped displaying hardcoded spawn spots.
 commands.hss.alreadyrunning=§cYou are already finding fortress hardcoded spawn spots.
 commands.hss.notrunning=§cYou are not currently finding fortress hardcoded spawn spots.
 
-commands.info=Toggle InfoDisplay rules. (Alias: i)
+commands.info=Toggle InfoDisplay rules.
 commands.info.menu=Displays a menu to toggle InfoDisplay rules.
 commands.info.single=Toggle a single InfoDisplay rule.
-commands.info.multiple=Toggle multiple InfoDisplay rules.
-commands.info.all=Toggle all InfoDisplay rules.
-commands.info.allupdated=§7All InfoDisplay rules are now §l
 commands.info.canopyRule=§cThe rule '%1' is global rule, and must be toggled using %2canopy. Use %2help for more information.
 
 commands.jump=Teleport to the block you are targeting. (Alias: j)
@@ -238,6 +272,59 @@ commands.peek.fail.noinventory=§cNo inventory found in %1 at %2.
 commands.peek.fail.noitems=§cNo items found in %1 at %2.
 commands.peek.query.cleared=§7Peek query cleared.
 commands.peek.query.set=§7Peek query set to '%s'.
+
+commands.playeraction=Make a simplayer do actions with variable timing.
+commands.playeraction.invalidtiming=§cInvalid %1 timing: %2.
+commands.playeraction.invalidticks=§cInvalid '%1' tick duration: %2. Expected an integer.
+
+commands.playerglide=Make a simplayer start or stop gliding with an Elytra.
+
+commands.playerinventory=Print the inventory of a simplayer.
+commands.playerinventory.noinventory=§cNo inventory found
+commands.playerinventory.empty=§7%s's inventory is empty.
+commands.playerinventory.header=%s's inventory:
+commands.playerinventory.item=§7- %1%2§7: %3 x%4
+
+commands.playerjoin=Make a new simplayer join at your location.
+
+commands.playerleave=Make a simplayer leave the game.
+
+commands.playerlook=Make a simplayer look in specified directions.
+commands.playerlook.at.missing=§cMissing coordinates for look at location.
+commands.playerlook.rotation.missing=§cMissing yaw or pitch for look rotation.
+commands.playerlook.invalidoption=§cInvalid look option: '%s'
+commands.playerlook.block.entityonly=§cBlock targeting may only be used by entities.
+commands.playerlook.block.noblock=§cNo block in view.
+commands.playerlook.entity.entityonly=§cEntity targeting may only be used by entities.
+commands.playerlook.entity.noentity=§cNo entity in view.
+commands.playerlook.me.noserver=§cSelf-targeting cannot be used by the server.
+
+commands.playermove=Make a simplayer move in specified directions.
+commands.playermove.invalidoption=§cInvalid move option: '%s'
+commands.playermove.block.entityonly=§cMoving to a block may only be used by entities.
+commands.playermove.block.noblock=§cNo block in view.
+commands.playermove.entity.entityonly=§cMoving to an entity may only be used by entities.
+commands.playermove.entity.noentity=§cNo entity in view.
+commands.playermove.me.noserver=§cMoving to yourself cannot be used by the server.
+
+commands.playerprefix=Set a prefix for simplayer nametags. Use '-none' to clear.
+commands.playerprefix.removed=§7Simplayer prefix removed.
+commands.playerprefix.set=§7Simplayer prefix set to "§r%s§r§7".
+
+commands.playerrejoin=Make a simplayer rejoin at its last location.
+
+commands.playerselect=Make a simplayer select a hotbar slot.
+commands.playerselect.invalidslot=§cInvalid slot number: %s. Expected a number from 0 to 8.
+
+commands.playersneak=Make a simplayer start or stop sneaking.
+
+commands.playersprint=Make a simplayer start or stop sprinting.
+
+commands.playerstop=Make a simplayer stop doing all actions.
+
+commands.playerswapheld=Swap the held item of a simplayer with your held item.
+
+commands.playertp=Make a simplayer teleport to you.
 
 commands.pos=Shows your current position, or the positions of other players.
 commands.pos.self=§aYour position: §f%s
@@ -401,6 +488,8 @@ rules.renderEndGatewayExits=Renders the exit locations of end gateways after pas
 rules.renewableElytraDropChance=Gives phantoms a chance to drop elytra when killed by a shulker bullet.
 rules.renewableSponge=Guardians transform into elder guardians when hurt by lightning.
 rules.serverSideCollisionBoxes=Renders collision boxes according to the entity's server position instead of its client position.
+rules.simplayerSaving=Enables saving playerdata for simplayers. Weakens performance but allows simplayers to keep their inventory and location when they leave and rejoin.
+rules.simplayerRejoining=Makes online simplayers rejoin when the world reloads.
 rules.spawnEggSpawnWithMinecart=When using a spawn egg on a rail, the spawned entity will be placed in a minecart on the rail.
 rules.tntFuse=The TNT fuse time in ticks.
 rules.tntPrimeMomentum=Hardcodes the TNT prime momentum.
@@ -412,7 +501,7 @@ rules.infoDisplay.cardinalFacing.display=Facing: %s
 rules.infoDisplay.chunkCoords=Shows the coordinates of the chunk you are in and your location in that chunk.
 rules.infoDisplay.chunkCoords.display=Chunk: %1§r in %2
 rules.infoDisplay.coords=Shows your coordinates truncated at 2 decimal places.
-rules.infodisplay.dimension=Shows your current dimension.
+rules.infoDisplay.dimension=Shows your current dimension.
 rules.infoDisplay.entities=Shows the number of entities in front of you.
 rules.infoDisplay.entities.display=Entities: %s
 rules.infoDisplay.eventTrackers=Shows the counts of tracked events.
@@ -420,6 +509,8 @@ rules.infoDisplay.facing=Shows your facing direction using yaw and pitch.
 rules.infoDisplay.facing.display=Facing: %1 %2
 rules.infoDisplay.heldItemDurability=Shows the durability of the item in your main hand.
 rules.infoDisplay.heldItemDurability.display=Durability %s
+rules.infoDisplay.blockBreakSpeed=Shows your average blocks broken per second over the last %1 ticks (%2 seconds).
+rules.infoDisplay.blockBreakSpeed.display=Block Break Speed: %1 b/s
 rules.infoDisplay.hopperCounterCounts=Shows all active hopper counter counts in their respective colors. Hopper counter mode controls this info.
 rules.infoDisplay.light=Shows the light level of the block where your foot is.
 rules.infoDisplay.light.display=Light: %1 §r(%2 sky§r)
@@ -439,17 +530,20 @@ rules.infoDisplay.peekInventory=Shows the inventory of the block or entity you a
 rules.infoDisplay.peekInventory.empty=Empty
 rules.infoDisplay.ping=Shows your current network latency to the server.
 rules.infoDisplay.ping.display=Ping: %s
+rules.infoDisplay.renderLightLevel=Renders light level values on top of nearby blocks. Warning: This is a very laggy rule.
 rules.infoDisplay.renderSignalStrength=Renders signal strength values on top of nearby redstone dust.
 rules.infoDisplay.sessionTime=Shows the time since you joined the world.
 rules.infoDisplay.sessionTime.display=Session: %s
 rules.infoDisplay.signalStrength=Shows the signal strength of the block you are targeting.
 rules.infoDisplay.simulationMap=Shows a map of the loaded chunks around you. The simmap command can be used to configure this. Warning: This is a very laggy rule.
+rules.infoDisplay.horse=Shows the speed and max health of the horse you are riding.
+rules.infoDisplay.horse.display=Horse Speed: §a%1§r, Max Health: §c%2§r
 rules.infoDisplay.slimeChunk=Shows whether the chunk you are in is a slime chunk.
 rules.infoDisplay.slimeChunk.display=Slime Chunk: %s
 rules.infoDisplay.speed=Shows your current speed in meters per second.
-rules.infodisplay.structures=Shows naturally generated structures at your location.
-rules.infodisplay.structures.display=Structures: 
-rules.infodisplay.structures.display.none=None
+rules.infoDisplay.structures=Shows naturally generated structures at your location.
+rules.infoDisplay.structures.display=Structures: 
+rules.infoDisplay.structures.display.none=None
 rules.infoDisplay.target=Shows the identifier of the block or entity you are targeting.
 rules.infoDisplay.timeOfDay=Shows the Minecraft day-cycle time as a 12-hour digital clock time.
 rules.infoDisplay.tps=Shows the server's ticks per second.
@@ -460,3 +554,9 @@ rules.infoDisplay.weather=Shows the weather in your current dimension.
 rules.infoDisplay.weather.display=Weather: %s
 rules.infoDisplay.worldDay=Shows the count of Minecraft days since the world began.
 rules.infoDisplay.worldDay.display=Day: %s
+
+## simplayer
+simplayer.notonline=§cSimplayer '%s' is not online.
+simplayer.alreadyonline=§cSimplayer '%s' is already online.
+simplayer.leave.broadcast=§e%s left the game
+simplayer.swapheld.error=§cError while swapping items: %s

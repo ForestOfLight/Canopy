@@ -66,7 +66,6 @@ commands.canopy.menu.timeout=§8Das Formular ist nach %s Ticks abgelaufen.
 commands.canopy.menu.canceled=§8Das Formular wurde abgebrochen. Die Regeln wurden nicht aktualisiert.
 commands.canopy.menu.submit=§aAnwenden
 commands.canopy.single=Aktiviert oder deaktiviert eine bestimmte Regel.
-commands.canopy.multiple=Aktiviert oder deaktiviert alle bestimmten Regeln.
 commands.canopy.infodisplayRule=§cDie Regel '%1' ist ein Teil des Info Displays, und muss mit %2info umgeschaltet werden. Nutze %2help für mehr Informationen.
 
 commands.changedimension=Telepotiert dich zur angegebenen Diemension.

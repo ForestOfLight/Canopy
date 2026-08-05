@@ -1,5 +1,6 @@
 import { world, system } from "@minecraft/server";
 import { displayWelcome } from "./rules/noWelcomeMessage";
+import { simplayerRejoining } from "./rules/simplayer/simplayerRejoining";
 
 let worldIsValid = false;
 
@@ -24,5 +25,5 @@ function onValidPlayer(player) {
 }
 
 function onValidWorld() {
-    
+    simplayerRejoining.onStartup();
 }

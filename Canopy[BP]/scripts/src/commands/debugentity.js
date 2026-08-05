@@ -16,13 +16,13 @@ new VanillaCommand({
         {name: 'canopy:debugableProperty', values: DebugDisplay.getDebugableProperties()}
     ],
     mandatoryParameters: [
-        {name: 'entity', type: CustomCommandParamType.EntitySelector},
+        {name: 'entities', type: CustomCommandParamType.EntitySelector},
         {name: 'canopy:debugAction', type: CustomCommandParamType.Enum},
         {name: 'canopy:debugableProperty', type: CustomCommandParamType.Enum}
     ],
     permissionLevel: CommandPermissionLevel.GameDirectors,
     callback: debugEntityCommand,
-    wikiDescription: "Overlays debug information on selected entities. Not available in realms version."
+    wikiDescription: "Overlays debug information on selected entities."
 });
 
 function debugEntityCommand(origin, entities, addOrRemove, property) {

@@ -6,7 +6,12 @@ export class GrowUp extends ComponentDebugDisplayElement {
 
     constructor(entity) {
         super(entity, EntityComponentTypes.Ageable);
+        this.onPlayerInteractWithEntityBound = this.onPlayerInteractWithEntity.bind(this);
         this.subscribeToEvents();
+    }
+
+    destroy() {
+        this.unsubscribeFromEvents();
     }
 
     getFormattedData() {
@@ -23,14 +28,20 @@ export class GrowUp extends ComponentDebugDisplayElement {
 
     subscribeToEvents() {
         system.run(() => {
-            world.beforeEvents.playerInteractWithEntity.subscribe(this.onPlayerInteractWithEntity.bind(this));
+            world.beforeEvents.playerInteractWithEntity.subscribe(this.onPlayerInteractWithEntityBound);
+        });
+    }
+
+    unsubscribeFromEvents() {
+        system.run(() => {
+            world.beforeEvents.playerInteractWithEntity.unsubscribe(this.onPlayerInteractWithEntityBound);
         });
     }
 
     onPlayerInteractWithEntity(event) {
         const entity = event.target;
         const itemStack = event.itemStack;
-        if (entity?.id !== this.entity.id || !this.component.isValid)
+        if (entity?.id !== this.entity.id || !this.component?.isValid)
             return;
         const growth = this.findGrowthScalar(this.component.getFeedItems(), itemStack);
         this.applyGrowth(growth);

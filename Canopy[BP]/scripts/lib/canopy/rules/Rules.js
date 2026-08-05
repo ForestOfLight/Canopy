@@ -6,10 +6,11 @@ class Rules {
     static worldLoaded = false;
 
     static async register(rule) {
+        const ruleID = rule.getID();
         if (this.worldLoaded) {
-            if (this.exists(rule.getID())) 
-                throw new Error(`[Canopy] Rule with identifier '${rule.getID()}' already exists.`);
-            this.#rules[rule.getID()] = rule;
+            if (this.exists(ruleID)) 
+                throw new Error(`[Canopy] Rule with identifier '${ruleID}' already exists.`);
+            this.#rules[ruleID] = rule;
             if (rule.getCategory() === "Rules") {
                 await Promise.resolve();
                 const value = await rule.getValue();
@@ -19,6 +20,9 @@ class Rules {
                     rule.onModify(value);
             }
         } else {
+            const alreadyQueued = this.rulesToRegister.some(queuedRule => queuedRule.getID() === ruleID);
+            if (alreadyQueued || this.exists(ruleID))
+                return;
             this.rulesToRegister.push(rule);
         }
     }
@@ -77,6 +81,17 @@ class Rules {
 
     static getByCategory(category) {
         return this.getAll().filter(rule => rule.getCategory() === category);
+    }
+
+    static getRuleIDsByCategory(category) {
+        const registered = this.getByCategory(category);
+        const queued = this.rulesToRegister.filter(rule => rule.getCategory() === category);
+        const ids = new Set([...registered, ...queued].map(rule => rule.getID()));
+        return [...ids];
+    }
+
+    static getSettableRuleIDs() {
+        return this.getRuleIDsByCategory("Rules");
     }
 
     static registerQueuedRules() {

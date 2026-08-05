@@ -10,7 +10,8 @@ export default defineConfig({
     alias: {
       '@minecraft/server': `@forestoflight/minecraft-vitest-mocks/server`,
       '@minecraft/server-ui': `@forestoflight/minecraft-vitest-mocks/server-ui`,
-      '@minecraft/debug-utilities': `@forestoflight/minecraft-vitest-mocks/debug-utilities`
+      '@minecraft/debug-utilities': `@forestoflight/minecraft-vitest-mocks/debug-utilities`,
+      '@minecraft/server-gametest': `@forestoflight/minecraft-vitest-mocks/server-gametest`
     }
   },
   test: {

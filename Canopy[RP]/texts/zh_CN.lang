@@ -68,7 +68,6 @@ commands.canopy.menu.timeout=§8窗口在 %s 个刻度后超时.
 commands.canopy.menu.canceled=§8更改已放弃(规则不会更新).
 commands.canopy.menu.submit=§a确认(提交)
 commands.canopy.single=修改单个规则的值.
-commands.canopy.multiple=修改多个规则的值.
 commands.canopy.infodisplayRule=§c规则 '%1' 是 信息显示 的一部分, 并且必须使用%2信息进行切换. 有关详细信息, 请使用%2帮助.
 
 commands.changedimension=传送你到指定的维度.
@@ -89,6 +88,7 @@ commands.cleanup.success=§7清除了 %s 个实体.
 commands.counter=管理漏斗计数器. (快捷指令: ct)
 commands.counter.channel.notfound=§c无效的颜色: %s. 请使用羊毛方块的颜色之一.
 commands.counter.query=显示指定的颜色频道的漏斗计数和效率.
+commands.counter.query.all=显示所有漏斗计数器的计数和速率.
 commands.counter.query.empty=§7没有漏斗计数器在工作.
 commands.counter.query.channel=§7频道 %1§7 (%2%3 min.), 总数: §f%4§7, (§f%5§7):
 commands.counter.realtime=显示漏斗计数和效率(现实时间单位).
@@ -151,6 +151,7 @@ commands.gamemode.sp=已将你的游戏模式设为旁观.
 
 commands.generator=管理漏斗生成器. (快捷指令: gt)
 commands.generator.channel.notfound=§c无效颜色: %s. 请使用一种羊毛块颜色.
+commands.generator.query.all=显示所有漏斗生成器的计数和速率.
 commands.generator.query=显示指定颜色的漏斗生成器的计数和速率.
 commands.generator.query.empty=§7这里没有使用中的漏斗生成器.
 commands.generator.query.channel=§7已生成 %1 物品 在§7 (%2%3 min.), 共计: §f%4§7, (§f%5§7):
@@ -236,6 +237,57 @@ commands.peek.fail.noinventory=§c没找到物品栏:  %1 在 %2.
 commands.peek.fail.noitems=§c没找到物品:  %1 在 %2.
 commands.peek.query.cleared=§7窥视列表清除.
 commands.peek.query.set=§7窥视列表设置为 '%s'.
+
+commands.playeraction=使模拟玩家以可变的时刻执行动作.
+commands.playeraction.invalidtiming=§c无效的 %1 时刻: %2.
+commands.playeraction.invalidticks=§c无效的 '%1' 刻持续时间: %2. 应为整数.
+
+commands.playerinventory=显示模拟玩家的物品栏.
+commands.playerinventory.noinventory=§c未找到物品栏
+commands.playerinventory.empty=§7%s 的物品栏为空.
+commands.playerinventory.header=%s 的物品栏:
+commands.playerinventory.item=§7- %1%2§7: %3 x%4
+
+commands.playerjoin=使一个新的模拟玩家在你的位置加入.
+
+commands.playerleave=使模拟玩家离开游戏.
+
+commands.playerlook=使模拟玩家朝指定方向看.
+commands.playerlook.at.missing=§c缺少用于看向位置的坐标.
+commands.playerlook.rotation.missing=§c缺少用于视角旋转的偏航角或俯仰角.
+commands.playerlook.invalidoption=§c无效的看向选项: '%s'
+commands.playerlook.block.entityonly=§c方块目标选取只能由实体使用.
+commands.playerlook.block.noblock=§c视野内没有方块.
+commands.playerlook.entity.entityonly=§c实体目标选取只能由实体使用.
+commands.playerlook.entity.noentity=§c视野内没有实体.
+commands.playerlook.me.noserver=§c服务器不能使用以自身为目标.
+
+commands.playermove=使模拟玩家向指定方向移动.
+commands.playermove.invalidoption=§c无效的移动选项: '%s'
+commands.playermove.block.entityonly=§c移动到方块只能由实体使用.
+commands.playermove.block.noblock=§c视野内没有方块.
+commands.playermove.entity.entityonly=§c移动到实体只能由实体使用.
+commands.playermove.entity.noentity=§c视野内没有实体.
+commands.playermove.me.noserver=§c服务器不能使用移动到自己.
+
+commands.playerprefix=设置模拟玩家名称标签的前缀. 使用 '-none' 清除.
+commands.playerprefix.removed=§7已移除模拟玩家前缀.
+commands.playerprefix.set=§7模拟玩家前缀已设置为 "§r%s§r§7".
+
+commands.playerrejoin=使模拟玩家在其上次位置重新加入.
+
+commands.playerselect=使模拟玩家选择一个快捷栏槽位.
+commands.playerselect.invalidslot=§c无效的槽位编号: %s. 应为 0 到 8 之间的数字.
+
+commands.playersneak=使模拟玩家开始或停止潜行.
+
+commands.playersprint=使模拟玩家开始或停止疾跑.
+
+commands.playerstop=使模拟玩家停止执行所有动作.
+
+commands.playerswapheld=将模拟玩家手持的物品与你手持的物品交换.
+
+commands.playertp=使模拟玩家传送到你身边.
 
 commands.pos=显示你的位置或者其他玩家的位置.
 commands.pos.self=§a你的位置: §f%s
@@ -367,6 +419,7 @@ rules.carefulBreak=破坏方块和潜行时自动拾取物品.
 rules.cauldronConcreteConversion=混凝土粉末物品丢入装水的炼药锅变成固化的混凝土.
 rules.chunkBorders=当箭在物品栏槽位13(顶部中间)时, 启用区块边界可视化.
 rules.collisionBoxes=当箭在物品栏槽位14(顶部中间旁边)时, 启用实体碰撞箱可视化.
+rules.creativeHotbarSwitching=允许多个快捷栏之间快速切换. 将箭放入物品栏槽位17(右上角), 然后潜行并滚动以切换.
 rules.creativeInstantTame=允许在在创造模式下用对应的食物立即驯服动物.
 rules.creativeNetherWaterPlacement=允许在创造模式下于下界放置水
 rules.creativeNoTileDrops=允许在创造模式下防止方块从被破坏的方块中掉落.
@@ -376,14 +429,16 @@ rules.durabilityNotifier=当你的工具还剩%s耐久度时, 发出叮的响声
 rules.durabilityNotifier.alert=§c耐久度还剩: %s
 rules.durabilitySwap=从您的手中带走0耐久物品.
 rules.echoShardsEnableShriekers=在幽匿感测体上使用回响碎片可使其召唤监守者.
+rules.enderPearlChunkLoading=允许末影珍珠使其周围指定区块半径(方形范围)内的区块运作.
 rules.entityInstantDeath=消除20游戏刻死亡动画. 同时实体不再会掉落经验.
+rules.entitySeparation=当堆叠的实体触发压力板时, 会有一个实体沿相邻投掷器朝向的方向从堆叠中分离.
 rules.explosionChainReactionOnly=使爆炸只影响TNT方块.
 rules.explosionNoBlockDamage=关闭爆炸破坏.
 rules.explosionOff=完全关闭爆炸.
 rules.flippinArrows=对方块使用箭可以翻转、旋转和打开. 放在副手可以使方块放置时翻转.
-rules.creativeHotbarSwitching=允许多个快捷栏之间快速切换. 将箭放入物品栏槽位17(右上角), 然后潜行并滚动以切换.
 rules.instaminableDeepslate=急迫2下使用效率5的下届合金镐时, 可以秒破深板岩.
 rules.instaminableEndstone=急迫2下使用效率5的下届合金镐时, 可以秒破末地石.
+rules.minecartChunkLoading=允许矿车在生成后的 10 秒内使其周围指定区块半径(方形范围)内的区块运作.
 rules.noWelcomeMessage=禁用 §lCanopy§r§8 欢迎消息.
 rules.pistonBedrockBreaking=允许活塞在背对基岩时, 伸出时破坏基岩.
 rules.playerSit=允许玩家通过快速 %s 次蹲起操作来坐下.
@@ -392,12 +447,15 @@ rules.quickFillContainer=对容器使用一个物品时, 放一个箭在物品�
 rules.quickFillContainer.filled=§7已填充%1通过%2
 rules.quickFillContainer.taken=§7已取走所有%1从%2
 rules.refillHand=当你手上的物品用完时，将用背包里的自动填充. 在清单左上角旁边的插槽中放置一个箭头(弓箭)以供使用.
+rules.renderEndGatewayExits=在通过末地折跃门后显示其出口位置.
 rules.renewableElytraDropChance=幻翼被潜影贝导弹杀死时有几率掉落鞘翅.
 rules.renewableSponge=守卫者被闪电击中会变成远古守卫者.
+rules.serverSideCollisionBoxes=根据实体的服务器端位置而非客户端位置显示碰撞箱.
+rules.simplayerSaving=启用对模拟玩家的 playerdata 保存. 会降低性能, 但可让模拟玩家在离开并重新加入时保留其物品栏和位置.
+rules.simplayerRejoining=使在线模拟玩家在世界重新加载时重新加入.
 rules.spawnEggSpawnWithMinecart=在铁轨上使用刷怪蛋时, 生成的实体将被放置在铁轨上的矿车中.
 rules.tntFuse=TNT引信时间(游戏刻).
 rules.tntPrimeMomentum=硬编码TNT引爆动量.
-rules.universalChunkLoading=矿车生成时加载5x5的区块10s.
 
 rules.infoDisplay.biome=显示群系.
 rules.infoDisplay.blockStates=显示你看着的方块状态.
@@ -412,6 +470,8 @@ rules.infoDisplay.entities.display=§r实体数: §7%s§r
 rules.infoDisplay.eventTrackers=显示跟踪的游戏事件发生次数.
 rules.infoDisplay.facing=显示你的仰角和俯角.
 rules.infoDisplay.facing.display=§r俯角: §7%1§r 仰角: §7%2§r
+rules.infoDisplay.heldItemDurability=显示你主手中物品的耐久度.
+rules.infoDisplay.heldItemDurability.display=耐久度 %s
 rules.infoDisplay.hopperCounterCounts=显示所有漏斗计数器和对应颜色. 漏斗计数器模式控制这个信息.
 rules.infoDisplay.light=显示脚下亮度.
 rules.infoDisplay.light.display=§r亮度: §e%s§r
@@ -426,8 +486,12 @@ rules.infoDisplay.moonPhase.waningCrescent=残月
 rules.infoDisplay.moonPhase.waningGibbous=亏凸月
 rules.infoDisplay.moonPhase.waxingCrescent=眉月
 rules.infoDisplay.moonPhase.waxingGibbous=盈凸月
+rules.infoDisplay.noFog=禁用迷雾. 水和熔岩不受影响.
 rules.infoDisplay.peekInventory=显示方块或者实体的物品栏.
 rules.infoDisplay.peekInventory.empty=空
+rules.infoDisplay.ping=显示你当前到服务器的网络延迟.
+rules.infoDisplay.ping.display=延迟: %s
+rules.infoDisplay.renderSignalStrength=在附近红石粉上方显示信号强度值.
 rules.infoDisplay.sessionTime=显示的你加入存档的时间.
 rules.infoDisplay.sessionTime.display=§r在线时间: §7%s§r
 rules.infoDisplay.signalStrength=显示所指方块的信号强度.
@@ -448,3 +512,9 @@ rules.infoDisplay.weather=显示你当前维度的天气.
 rules.infoDisplay.weather.display=天气: %s
 rules.infoDisplay.worldDay=显示存档天数.
 rules.infoDisplay.worldDay.display=§r存档天数: §7%s§r
+
+## simplayer
+simplayer.notonline=§c模拟玩家 '%s' 不在线.
+simplayer.alreadyonline=§c模拟玩家 '%s' 已在线.
+simplayer.leave.broadcast=§e%s 离开了游戏
+simplayer.swapheld.error=§c交换物品时出错: %s

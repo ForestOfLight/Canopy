@@ -1,6 +1,5 @@
 import { DebugDisplayTextElement } from './DebugDisplayTextElement.js';
-import { playerTameEntityEvent } from '../../events/PlayerTameEntityEvent.js';
-import { EntityComponentTypes } from '@minecraft/server';
+import { EntityComponentTypes, world } from '@minecraft/server';
 import { getNameFromEntityId } from '../../../include/utils.js';
 
 export class Tame extends DebugDisplayTextElement {
@@ -9,9 +8,12 @@ export class Tame extends DebugDisplayTextElement {
     tameItems;
     tamedToPlayerIdCache;
 
+    static DP_ID = 'tamedToEntityId';
+
     constructor(entity) {
         super(entity);
-        this.tamedToPlayerIdCache = this.entity.getDynamicProperty('tamedToPlayerId');
+        this.tryPortDPToNewUpdate();
+        this.tamedToPlayerIdCache = this.entity.getDynamicProperty(Tame.DP_ID);
     }
 
     getFormattedData() {
@@ -52,7 +54,7 @@ export class Tame extends DebugDisplayTextElement {
     }
 
     updateTamedToPlayerIdCache() {
-        const playerId = this.tamedToPlayerIdCache || this.entity.getDynamicProperty('tamedToPlayerId');
+        const playerId = this.tamedToPlayerIdCache || this.entity.getDynamicProperty(Tame.DP_ID);
         this.tamedToPlayerIdCache = playerId;
     }
 
@@ -68,11 +70,19 @@ export class Tame extends DebugDisplayTextElement {
         return this.tameable && this.tameable.isValid;
     }
 
-    static onPlayerTameEntity(event) {
-        if (!event.player || !event.entity)
+    tryPortDPToNewUpdate() {
+        const tamedToPlayerId = this.entity.getDynamicProperty('tamedToPlayerId');
+        if (tamedToPlayerId) {
+            this.entity.setDynamicProperty(Tame.DP_ID, tamedToPlayerId);
+            this.entity.setDynamicProperty('tamedToPlayerId', void 0);
+        }
+    }
+
+    static onEntityTamed(event) {
+        if (!event.tamingEntity || !event.entity)
             return;
-        event.entity.setDynamicProperty('tamedToPlayerId', event.player.id);
+        event.entity.setDynamicProperty(Tame.DP_ID, event.tamingEntity.id);
     }
 }
 
-playerTameEntityEvent.subscribe(Tame.onPlayerTameEntity);
+world.afterEvents.entityTamed.subscribe(Tame.onEntityTamed);

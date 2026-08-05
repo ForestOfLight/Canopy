@@ -6,6 +6,10 @@ export class PlayerCommandOrigin extends CommandOrigin {
         return "Player";
     }
 
+    getName() {
+        return this.getSource().name;
+    }
+
     getSource() {
         return this.source.sourceEntity;
     }

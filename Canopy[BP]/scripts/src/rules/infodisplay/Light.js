@@ -1,11 +1,14 @@
 import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 
 class Light extends InfoDisplayTextElement {
+    static getRuleIdentifier() {
+        return 'light';
+    }
+
     player;
 
     constructor(player, displayLine) {
         const ruleData = {
-            identifier: 'light',
             description: { translate: 'rules.infoDisplay.light' },
             wikiDescription: 'Shows the light level at your feet, including the sky light contribution.'
         };

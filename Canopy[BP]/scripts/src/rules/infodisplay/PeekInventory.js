@@ -4,11 +4,14 @@ import { currentQuery } from "../../commands/peek";
 import { ItemStack } from "@minecraft/server";
 
 class PeekInventory extends InfoDisplayTextElement {
+    static getRuleIdentifier() {
+        return 'peekInventory';
+    }
+
     player;
 
     constructor(player, displayLine) {
-		const ruleData = { identifier: 'peekInventory',
-			description: { translate: 'rules.infoDisplay.peekInventory' },
+		const ruleData = {			description: { translate: 'rules.infoDisplay.peekInventory' },
 			contingentRules: ['target'],
 			globalContingentRules: ['allowPeekInventory'],
 			wikiDescription: 'Shows the inventory of the block or entity you are targeting in your InfoDisplay. Requires the `allowPeekInventory` global rule to be enabled.'

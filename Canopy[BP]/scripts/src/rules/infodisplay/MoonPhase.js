@@ -2,8 +2,12 @@ import { InfoDisplayTextElement } from './InfoDisplayTextElement.js';
 import { world } from '@minecraft/server';
 
 class MoonPhase extends InfoDisplayTextElement {
+    static getRuleIdentifier() {
+        return 'moonPhase';
+    }
+
     constructor(displayLine) {
-        const ruleData = { identifier: 'moonPhase', description: { translate: 'rules.infoDisplay.moonPhase' }, wikiDescription: 'Shows the current phase of the moon.' };
+        const ruleData = { description: { translate: 'rules.infoDisplay.moonPhase' }, wikiDescription: 'Shows the current phase of the moon.' };
         super(ruleData, displayLine, true);
     }
 

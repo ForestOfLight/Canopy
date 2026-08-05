@@ -57,11 +57,12 @@ new VanillaCommand({
     name: 'canopy:cs',
     description: 'commands.camera.spectate',
     usage: 'canopy:cs',
+    optionalParameters: [{ name: 'player', type: CustomCommandParamType.PlayerSelector }],
     permissionLevel: CommandPermissionLevel.Any,
     contingentRules: ['commandCamera'],
     allowedSources: [PlayerCommandOrigin],
-    callback: (origin) => cameraCommand(origin, CAM_ACTIONS.Spectate),
-    wikiDescription: 'Alias for `/cam spectate`.'
+    callback: (origin, targets) => spectateAction(origin.getSource(), targets?.[0]),
+    wikiDescription: 'Alias for `/cam spectate`. Use the player argument to spectate another player (requires OP).',
 });
 
 class BeforeSpectatorPlayer {
@@ -167,13 +168,13 @@ function endCameraView(player) {
     player.onScreenDisplay.setActionBar({ translate: 'commands.camera.view.ended' });
 }
 
-function spectateAction(player) {
+function spectateAction(player, target = void 0) {
     system.run(() => {
         if (player.getDynamicProperty('isSpectating')) {
             endSpectate(player);
         } else {
             try {
-                startSpectate(player);
+                startSpectate(player, target);
             } catch (error) {
                 player.sendMessage({ translate: error.message });
                 player.setDynamicProperty('isSpectating', false);
@@ -182,13 +183,15 @@ function spectateAction(player) {
     });
 }
 
-function startSpectate(player) {
+function startSpectate(player, target = void 0) {
     if (world.isHardcore)
         throw new Error('commands.camera.spectate.hardcore');
     if (player.getDynamicProperty('isViewingCamera'))
         throw new Error('commands.camera.spectate.viewing');
     if (!player.isOnGround && player.getGameMode() !== GameMode.Creative)
         throw new Error('commands.camera.spectate.flying');
+    if (target && player.commandPermissionLevel === CommandPermissionLevel.Admin)
+        target = void 0;
     cameraFadeOut(player);
     player.setDynamicProperty('isSpectating', true);
     const savedPlayer = new BeforeSpectatorPlayer(player);
@@ -205,6 +208,8 @@ function startSpectate(player) {
         }
         player.addEffect('night_vision', MAX_EFFECT_DURATION, { amplifier: 0, showParticles: false });
         player.addEffect('conduit_power', MAX_EFFECT_DURATION, { amplifier: 0, showParticles: false });
+        if (target?.isValid)
+            player.teleport(target.location, { dimension: target.dimension, rotation: target.getRotation() });
         player.onScreenDisplay.setActionBar({ translate: 'commands.camera.spectate.started' });
     }, TICKS_TO_COMPLETE_FADE);
 }

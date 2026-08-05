@@ -68,7 +68,6 @@ commands.canopy.menu.timeout=§8%s ティック経過したためフォームが
 commands.canopy.menu.canceled=§8フォームがキャンセルされました。ルールは更新されていません。
 commands.canopy.menu.submit=§a適用
 commands.canopy.single=単一のルールの値を変更します。
-commands.canopy.multiple=複数のルールの値を変更します。
 commands.canopy.infodisplayRule=§cルール '%1' はInfoDisplayのルールであり、切り替えるには %2info を使用する必要があります。詳細は %2help を参照してください。
 
 commands.changedimension=エンティティを指定のディメンションにテレポートします。
