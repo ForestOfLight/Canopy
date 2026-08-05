@@ -16,7 +16,7 @@ commands.generic.nopermission=§c你没有足够的权限使用这个指令.
 commands.generic.usage=§c使用方法: %s
 commands.generic.blocked.survival=§c此指令只能在创造模式或者旁观模式下使用.
 commands.generic.invalidsource=§c这个命令不能从这个来源执行.
-commands.generic.invalidaction=§c无效的操作. 使用 /help <command> 获取更多信息.
+commands.generic.invalidaction=§c无效的操作. 使用 ./help <command> 获取更多信息.
 
 commands.help=显示指令帮助信息.
 commands.help.search.noresult=§c没有与此相关的结果: '%s'
@@ -96,7 +96,7 @@ commands.camera.spectate.hardcore=§c已阻止你进入旁观模式. 在极限�
 commands.camera.spectate.flying=§c你必须在地面上才可以进入旁观.
 commands.camera.invalidaction=§c无效相机行为.
 
-commands.canopy=设置规则的值. 数值需用引号括起, 例如 "16".
+commands.canopy=设置规则的值.
 commands.canopy.version=显示Canopy的当前版本和所有载入的扩展.
 commands.canopy.version.message=§7当前服务器已加载 §l§aCanopy§r.
 commands.canopy.version.extensions=§7已加载的扩展: 
