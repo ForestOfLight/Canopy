@@ -40,7 +40,7 @@ export class NoFog extends InfoDisplayShapeElement {
     }
 
     clearFogSettings() {
-        this.playerFogSettings.remove(NoFog.FOG_TAG);
+        this.playerFogSettings?.remove(NoFog.FOG_TAG);
     }
 
     getCurrentFogId() {
