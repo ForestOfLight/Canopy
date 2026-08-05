@@ -10,8 +10,10 @@ export class LifetimeQueryItem extends VanillaCommand {
             name: 'canopy:lifetimequeryitem',
             description: 'commands.lifetime.query.item',
             enums: [{ name: 'canopy:lifetimeQueryActions', values: Object.values(LIFETIME_QUERY_ACTIONS) }],
-            optionalParameters: [
+            mandatoryParameters: [
                 { name: 'itemType', type: CustomCommandParamType.ItemType },
+            ],
+            optionalParameters: [
                 { name: 'canopy:lifetimeQueryActions', type: CustomCommandParamType.Enum },
                 { name: 'useRealTime', type: CustomCommandParamType.Boolean }
             ],

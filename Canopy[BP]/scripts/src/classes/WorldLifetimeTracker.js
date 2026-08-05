@@ -11,6 +11,13 @@ export class WorldLifetimeTracker {
     dimensionToEntityLifetimeRecordMap = {};
     localizationKeys = {};
 
+    onEntitySpawnBound = this.onEntitySpawn.bind(this);
+    onEntityLoadBound = this.onEntityLoad.bind(this);
+    onEntityItemDropBound = this.onEntityItemDrop.bind(this);
+    onEntityDieBound = this.onEntityDie.bind(this);
+    onEntityRemoveBound = this.onEntityRemove.bind(this);
+    onEntityItemPickupBound = this.onEntityItemPickup.bind(this);
+
     constructor() {
         this.createDimensionRecords();
         this.startCollecting();
@@ -104,7 +111,7 @@ export class WorldLifetimeTracker {
     setLocalizationKey(entityType, localizationKey) {
         this.localizationKeys[entityType] = localizationKey;
     }
-    
+
     createDimensionRecords() {
         this.dimensionToEntityLifetimeRecordMap["minecraft:overworld"] = new EntityLifetimeRecords(this, "minecraft:overworld");
         this.dimensionToEntityLifetimeRecordMap["minecraft:nether"] = new EntityLifetimeRecords(this, "minecraft:nether");
@@ -118,53 +125,81 @@ export class WorldLifetimeTracker {
     }
 
     subscribeToEvents() {
-        world.afterEvents.entitySpawn.subscribe(this.onEntitySpawn.bind(this));
-        world.afterEvents.entityLoad.subscribe(this.onEntityLoad.bind(this));
-        world.afterEvents.entityDie.subscribe(this.onEntityDie.bind(this));
-        world.beforeEvents.entityRemove.subscribe(this.onEntityRemove.bind(this));
+        world.afterEvents.entitySpawn.subscribe(this.onEntitySpawnBound);
+        world.afterEvents.entityLoad.subscribe(this.onEntityLoadBound);
+        world.afterEvents.entityItemDrop.subscribe(this.onEntityItemDropBound);
+        world.afterEvents.entityDie.subscribe(this.onEntityDieBound);
+        world.beforeEvents.entityRemove.subscribe(this.onEntityRemoveBound);
+        world.beforeEvents.entityItemPickup.subscribe(this.onEntityItemPickupBound)
     }
 
     unsubscribeFromEvents() {
-        world.afterEvents.entitySpawn.unsubscribe(this.onEntitySpawn.bind(this));
-        world.afterEvents.entityLoad.unsubscribe(this.onEntityLoad.bind(this));
-        world.afterEvents.entityDie.unsubscribe(this.onEntityDie.bind(this));
-        world.beforeEvents.entityRemove.unsubscribe(this.onEntityRemove.bind(this));
+        world.afterEvents.entitySpawn.unsubscribe(this.onEntitySpawnBound);
+        world.afterEvents.entityLoad.unsubscribe(this.onEntityLoadBound);
+        world.afterEvents.entityItemDrop.unsubscribe(this.onEntityItemDropBound);
+        world.afterEvents.entityDie.unsubscribe(this.onEntityDieBound);
+        world.beforeEvents.entityRemove.unsubscribe(this.onEntityRemoveBound);
+        world.beforeEvents.entityItemPickup.unsubscribe(this.onEntityItemPickupBound);
     }
 
     onEntitySpawn(event) {
+        event.priority = 2;
         this.collectSpawn(event);
     }
 
     onEntityLoad(event) {
         this.localizationKeys[event.entity.typeId] = event.entity.localizationKey;
         event.cause = EntityInitializationCause.Loaded;
+        event.priority = 3;
         this.collectSpawn(event);
+    }
+
+    onEntityItemDrop(event) {
+        for (let i = 0; i < event.items.length; i++) {
+            const spawnEvent = {
+                entity: event.items[i],
+                cause: `Dropped by ${event.entity?.typeId || "unknown"}`,
+                priority: 0
+            };
+            this.collectSpawn(spawnEvent);
+        }
     }
 
     onEntityDie(event) {
         event.entity = event.deadEntity;
         event.cause = `Death §7(§f${event.damageSource.cause}§7)`;
+        event.priority = 1;
         this.collectRemoval(event);
     }
 
     onEntityRemove(event) {
         event.entity = event.removedEntity;
         event.cause = "Despawn";
+        event.priority = 2;
         this.collectRemoval(event);
+    }
+
+    onEntityItemPickup(event) {
+        const removalEvent = {
+            entity: event.item,
+            cause: `Picked up by ${event.entity?.typeId || "unknown"}`,
+            priority: 0
+        };
+        this.collectRemoval(removalEvent);
     }
 
     collectSpawn(event) {
         try {
-            this.dimensionToEntityLifetimeRecordMap[event.entity.dimension.id].collectSpawn(event.entity, event.cause);
-        } catch(error) {
+            this.dimensionToEntityLifetimeRecordMap[event.entity.dimension.id].collectSpawn(event.entity, event.cause, event.priority ?? WorldLifetimeTracker.SPAWN_PRIORITY_GENERIC);
+        } catch (error) {
             if (error.name === "InvalidActorError")
-                console.warn('[Canopy] Entity was skipped because it was removed before its spawn data could not be collected.');
+                console.warn('[Canopy] Entity was skipped because it was removed before its spawn data could be collected.');
             else
                 throw error;
         }
     }
 
     collectRemoval(event) {
-        this.dimensionToEntityLifetimeRecordMap[event.entity.dimension.id].collectRemoval(event.entity, event.cause);
+        this.dimensionToEntityLifetimeRecordMap[event.entity.dimension.id].collectRemoval(event.entity, event.cause, event.priority ?? WorldLifetimeTracker.REMOVAL_PRIORITY_GENERIC);
     }
 }

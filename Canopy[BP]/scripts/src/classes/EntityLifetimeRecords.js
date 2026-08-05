@@ -6,6 +6,7 @@ export class EntityLifetimeRecords {
     worldLifetimeTracker;
     dimensionId;
     entityLifetimeRecords = [];
+    activeRecordsByEntityId = new Map();
     
     constructor(worldLifetimeTracker, dimensionId) {
         this.worldLifetimeTracker = worldLifetimeTracker;
@@ -14,22 +15,53 @@ export class EntityLifetimeRecords {
     
     destroy() {
         this.entityLifetimeRecords.length = 0;
+        this.activeRecordsByEntityId.clear();
         this.worldLifetimeTracker = void 0;
     }
 
-    collectSpawn(entity, spawnReason) {
+    collectSpawn(entity, spawnReason, spawnPriority = 0) {
+        const existingRecord = this.activeRecordsByEntityId.get(entity.id);
+        if (existingRecord) {
+            if (this.shouldPreferPriority(existingRecord.spawnPriority, spawnPriority)) {
+                existingRecord.spawnReason = spawnReason;
+                existingRecord.spawnPriority = spawnPriority;
+            }
+            return;
+        }
         let record;
         if (entity.typeId === "minecraft:item")
-            record = new ItemLifetimeRecord(entity, spawnReason);
+            record = new ItemLifetimeRecord(entity, spawnReason, spawnPriority);
         else
-            record = new EntityLifetimeRecord(entity, spawnReason);
+            record = new EntityLifetimeRecord(entity, spawnReason, spawnPriority);
         this.worldLifetimeTracker.setLocalizationKey(record.entityType, record.localizationKey);
         this.entityLifetimeRecords.push(record);
+        this.activeRecordsByEntityId.set(record.entityId, record);
     }
 
-    collectRemoval(entity, removalReason) {
-        const record = this.entityLifetimeRecords.find(lifetimeRecord => lifetimeRecord.entityId === entity.id);
-        record?.collectRemoval(removalReason);
+    collectRemoval(entity, removalReason, removalPriority = 0) {
+        const record = this.activeRecordsByEntityId.get(entity.id);
+        if (!record) {
+            const existingRecord = this.getLatestRecordByEntityId(entity.id);
+            if (existingRecord?.hasBeenRemoved() && this.shouldPreferPriority(existingRecord.removalPriority, removalPriority)) {
+                existingRecord.removalReason = removalReason;
+                existingRecord.removalPriority = removalPriority;
+            }
+            return;
+        }
+        record.collectRemoval(removalReason, removalPriority);
+        this.activeRecordsByEntityId.delete(entity.id);
+    }
+
+    shouldPreferPriority(currentPriority, incomingPriority) {
+        return incomingPriority < (currentPriority ?? 0);
+    }
+
+    getLatestRecordByEntityId(entityId) {
+        for (let i = this.entityLifetimeRecords.length - 1; i >= 0; i--) {
+            if (this.entityLifetimeRecords[i].entityId === entityId)
+                return this.entityLifetimeRecords[i];
+        }
+        return void 0;
     }
 
     hasRecords() {
