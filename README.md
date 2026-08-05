@@ -1,7 +1,7 @@
 ![Canopy Logo](./canopylogo_banner.jpg)
 
 <div align="center">
-  <p><b>Technical mastery, refined by powerful tools.</b></p>
+  <p><b>The best friend of all technical players.</b></p>
 
   [![GitHub Downloads](https://img.shields.io/github/downloads/ForestOfLight/Canopy/total?label=Github%20downloads&logo=github)](https://github.com/ForestOfLight/Canopy/releases/latest)
   [![Curseforge Downloads](https://cf.way2muchnoise.eu/full_1062078_downloads.svg)](https://www.curseforge.com/minecraft-bedrock/addons/canopy)
@@ -56,6 +56,8 @@ We welcome community contributions! If you’re passionate about improving the t
 
 **Canopy** is a project of the **Amelix Foundation**. For more information on our SMP and other technical projects, [**join the Amelix Foundation Discord!**](https://discord.gg/FabqwVzgyD)
 
-## Donate
+---
 
-If you appreciate my work here and would like to support the future development of my addons, please consider donating to me on [BuyMeACoffee](https://buymeacoffee.com/forestoflight). Your support is greatly appreciated!
+**This addon is the result of hundreds of hours of development.** If you would like to show a token of appreciation for my work and support the future development of my addons, please consider [buying me a coffee](https://buymeacoffee.com/forestoflight).
+
+[![BuyMeACoffee](https://raw.githubusercontent.com/pachadotdev/buymeacoffee-badges/main/bmc-donate-yellow.svg)](https://buymeacoffee.com/forestoflight)
