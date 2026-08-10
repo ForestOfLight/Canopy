@@ -1,4 +1,4 @@
-import { world } from "@minecraft/server";
+import { InvalidEntityError, world } from "@minecraft/server";
 import { InfoDisplayShapeElement } from "./InfoDisplayShapeElement";
 
 export class NoFog extends InfoDisplayShapeElement {
@@ -40,7 +40,13 @@ export class NoFog extends InfoDisplayShapeElement {
     }
 
     clearFogSettings() {
-        this.playerFogSettings?.remove(NoFog.FOG_TAG);
+        try {
+            this.playerFogSettings.remove(NoFog.FOG_TAG);
+        } catch (error) {
+            if (error instanceof InvalidEntityError)
+                return;
+            throw error;
+        }
     }
 
     getCurrentFogId() {
