@@ -41,7 +41,7 @@ export class NoFog extends InfoDisplayShapeElement {
 
     clearFogSettings() {
         try {
-            this.playerFogSettings.remove(NoFog.FOG_TAG);
+            this.playerFogSettings?.remove(NoFog.FOG_TAG);
         } catch (error) {
             if (error instanceof InvalidEntityError)
                 return;
