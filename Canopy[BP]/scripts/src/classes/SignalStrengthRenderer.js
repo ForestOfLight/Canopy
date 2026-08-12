@@ -68,6 +68,12 @@ export class SignalStrengthRenderer {
     }
 
     #getRedstonePower(block) {
-        return block.getRedstonePower() || '?';
+        try {
+            return block.getRedstonePower();
+        } catch (error) {
+            console.warn('[Canopy] Error while getting redstone power level: ', error);
+            return '?';
+        }
+    }
     }
 }
