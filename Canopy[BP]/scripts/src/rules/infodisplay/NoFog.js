@@ -29,7 +29,9 @@ export class NoFog extends InfoDisplayShapeElement {
 
     removeFog() {
         this.clearFogSettings();
-        this.playerFogSettings.push(this.getCurrentFogId(), NoFog.FOG_TAG);
+        const fogRemovalId = this.getCurrentFogId();
+        if (fogRemovalId)
+            this.playerFogSettings.push(this.getCurrentFogId(), NoFog.FOG_TAG);
         world.afterEvents.playerDimensionChange.subscribe(this.onDimensionChangeBound);
     }
 
