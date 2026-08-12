@@ -104,6 +104,18 @@ class InfoDisplay {
 		}
 	}
 
+	static scheduleTeardown(playerId) {
+		const infoDisplay = InfoDisplay.playerToInfoDisplayMap[playerId];
+		if (!infoDisplay)
+			return;
+		system.run(() => {
+			if (InfoDisplay.playerToInfoDisplayMap[playerId] !== infoDisplay)
+				return;
+			infoDisplay.destroy();
+			delete InfoDisplay.playerToInfoDisplayMap[playerId];
+		});
+	}
+
 	update() {
 		this.infoMessage = { rawtext: [] };
 		const enabledElements = this.getEnabledElements();
@@ -222,12 +234,10 @@ system.runInterval(() => {
 	}
 });
 
-world.afterEvents.playerLeave.subscribe((event) => {
-	const infoDisplay = InfoDisplay.playerToInfoDisplayMap[event.playerId];
-	if (!infoDisplay)
+world.beforeEvents.playerLeave.subscribe((event) => {
+	if (!event.player)
 		return;
-	infoDisplay.destroy();
-	delete InfoDisplay.playerToInfoDisplayMap[event.playerId];
+	InfoDisplay.scheduleTeardown(event.player.id);
 });
 
 export { InfoDisplay };

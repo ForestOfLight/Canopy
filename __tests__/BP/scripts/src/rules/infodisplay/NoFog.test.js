@@ -83,11 +83,9 @@ describe('NoFog', () => {
         staleElement.rule.setPlayerElement(beforeReconnect.id, staleElement);
         staleElement.rule.setValue(beforeReconnect, true);
 
-        // Player leaves: the element is torn down and its dimension-change handler unsubscribed.
         staleElement.rule.removePlayerElement(beforeReconnect.id);
         staleElement.destroy();
 
-        // Player rejoins with a fresh Player object under the same id.
         const afterReconnect = createMockPlayer('same-player');
         const freshElement = new NoFog(afterReconnect);
         freshElement.rule.setPlayerElement(afterReconnect.id, freshElement);
