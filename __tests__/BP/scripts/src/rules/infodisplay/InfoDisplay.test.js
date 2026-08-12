@@ -54,3 +54,41 @@ describe('InfoDisplay.getRuleIdentifiers', () => {
         expect(registered).toHaveLength(InfoDisplay.getRuleIdentifiers().length);
     });
 });
+
+describe('InfoDisplay per-player element registration', () => {
+    beforeEach(() => {
+        Rules.clear();
+        Rules.rulesToRegister = [];
+    });
+
+    it('registers every element against its own player', () => {
+        const player = createMockPlayer();
+        const infoDisplay = new InfoDisplay(player);
+
+        for (const element of infoDisplay.elements)
+            expect(element.rule.getPlayerElement(player.id)).toBe(element);
+    });
+
+    it('rebinds every element when the same player reconnects', () => {
+        const firstSession = createMockPlayer();
+        const firstDisplay = new InfoDisplay(firstSession);
+        firstDisplay.destroy();
+
+        const secondSession = createMockPlayer();
+        const secondDisplay = new InfoDisplay(secondSession);
+
+        for (const element of secondDisplay.elements)
+            expect(element.rule.getPlayerElement(secondSession.id)).toBe(element);
+        for (const element of firstDisplay.elements)
+            expect(element.rule.getPlayerElement(firstSession.id)).not.toBe(element);
+    });
+
+    it('tears down every element without throwing, including rules that were never enabled', () => {
+        const player = createMockPlayer();
+        const infoDisplay = new InfoDisplay(player);
+
+        expect(() => infoDisplay.destroy()).not.toThrow();
+        for (const element of infoDisplay.elements)
+            expect(element.rule.getPlayerElement(player.id)).toBeUndefined();
+    });
+});

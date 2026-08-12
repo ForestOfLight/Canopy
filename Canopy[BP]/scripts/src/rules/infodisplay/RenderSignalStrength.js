@@ -37,6 +37,10 @@ class RenderSignalStrength extends InfoDisplayShapeElement {
         this.signalStrengthRenderers = {};
     }
 
+    destroy() {
+        this.stop();
+    }
+
     onTick() {
         this.renderForNearbyBlocks();
     }

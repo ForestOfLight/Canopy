@@ -11,7 +11,7 @@ class RenderLightLevel extends InfoDisplayShapeElement {
     player;
     playerId;
     static RENDER_DISTANCE = 4;
-    signalStrengthRenderers = {};
+    lightLevelRenderers = {};
 
     constructor(player) {
         const ruleData = {
@@ -35,6 +35,10 @@ class RenderLightLevel extends InfoDisplayShapeElement {
             delete this.lightLevelRenderers[key];
         }
         this.lightLevelRenderers = {};
+    }
+
+    destroy() {
+        this.stop();
     }
 
     onTick() {

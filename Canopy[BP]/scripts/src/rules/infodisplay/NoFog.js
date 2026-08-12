@@ -12,7 +12,9 @@ export class NoFog extends InfoDisplayShapeElement {
     };
     static FOG_TAG = "canopy_no_fog";
 
-    playerFogSettings;
+    player;
+    playerId;
+    onDimensionChangeBound;
 
     constructor(player) {
         const ruleData = {
@@ -23,15 +25,12 @@ export class NoFog extends InfoDisplayShapeElement {
         };
         super(ruleData, 0);
         this.player = player;
-        this.playerFogSettings = player.fogSettings;
+        this.playerId = player.id;
         this.onDimensionChangeBound = this.onDimensionChange.bind(this);
     }
 
     removeFog() {
-        this.clearFogSettings();
-        const fogRemovalId = this.getCurrentFogId();
-        if (fogRemovalId)
-            this.playerFogSettings.push(this.getCurrentFogId(), NoFog.FOG_TAG);
+        this.applyFogRemoval();
         world.afterEvents.playerDimensionChange.subscribe(this.onDimensionChangeBound);
     }
 
@@ -40,9 +39,29 @@ export class NoFog extends InfoDisplayShapeElement {
         this.clearFogSettings();
     }
 
+    destroy() {
+        world.afterEvents.playerDimensionChange.unsubscribe(this.onDimensionChangeBound);
+    }
+
+    applyFogRemoval() {
+        this.withPlayer((fogSettings, dimensionId) => {
+            fogSettings.remove(NoFog.FOG_TAG);
+            const fogRemovalId = NoFog.FOG_REMOVAL_IDS[dimensionId];
+            if (fogRemovalId)
+                fogSettings.push(fogRemovalId, NoFog.FOG_TAG);
+        });
+    }
+
     clearFogSettings() {
+        this.withPlayer((fogSettings) => fogSettings.remove(NoFog.FOG_TAG));
+    }
+
+    withPlayer(callback) {
         try {
-            this.playerFogSettings?.remove(NoFog.FOG_TAG);
+            const fogSettings = this.player.fogSettings;
+            if (!fogSettings)
+                return;
+            callback(fogSettings, this.player.dimension.id);
         } catch (error) {
             if (error instanceof InvalidEntityError)
                 return;
@@ -50,19 +69,13 @@ export class NoFog extends InfoDisplayShapeElement {
         }
     }
 
-    getCurrentFogId() {
-        const currentDimension = this.player.dimension.id;
-        return NoFog.FOG_REMOVAL_IDS[currentDimension];
-    }
-
     onTick() {
         /* pass */
     }
 
-    onDimensionChange() {
-        this.clearFogSettings();
-        const fogRemovalId = this.getCurrentFogId();
-        if (fogRemovalId)
-            this.playerFogSettings.push(fogRemovalId, NoFog.FOG_TAG);
+    onDimensionChange(event) {
+        if (event.player.id !== this.playerId)
+            return;
+        this.applyFogRemoval();
     }
 }
