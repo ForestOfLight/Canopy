@@ -68,26 +68,39 @@ export class NoFog extends InfoDisplayShapeElement {
         } catch (error) {
             if (error instanceof InvalidEntityError) {
                 console.warn(`[Canopy] NoFog: could not ${action} for player ${this.playerId}: the player is no longer valid.`);
-                this.logDiagnostics(action);
+                this.logDiagnostics(action, error);
                 return;
             }
             throw error;
         }
     }
 
-    logDiagnostics(action) {
-        let livePlayerExists;
-        let liveIsSameObject;
+    probe(label, callback) {
         try {
-            const live = world.getAllPlayers().find((candidate) => candidate.id === this.playerId);
-            livePlayerExists = Boolean(live);
-            liveIsSameObject = live === this.player;
+            console.warn(`[CanopyDiag] probe ${label} => ${String(callback())}`);
         } catch (error) {
-            livePlayerExists = String(error);
-            liveIsSameObject = 'unknown';
+            console.warn(`[CanopyDiag] probe ${label} THREW name=${error?.name} ctor=${error?.constructor?.name} msg=${error?.message}`);
         }
-        const registered = this.rule.getPlayerElement(this.playerId);
-        console.warn(`[CanopyDiag] noFog fail action=${action} playerId=${this.playerId} cachedValid=${this.player?.isValid} livePlayerExists=${livePlayerExists} liveIsSameObject=${liveIsSameObject} thisIsRegistered=${registered === this} registeredIsMe=${Boolean(registered)} builtTick=${this.builtTick} nowTick=${system.currentTick}`);
+    }
+
+    logDiagnostics(action, thrown) {
+        const player = this.player;
+        console.warn(`[CanopyDiag] fail action=${action} name=${thrown?.name} ctor=${thrown?.constructor?.name} msg=${thrown?.message}`);
+        this.probe('isValid', () => player.isValid);
+        this.probe('lifetimeState', () => player.lifetimeState);
+        this.probe('nameTag', () => player.nameTag);
+        this.probe('dimension.id', () => player.dimension.id);
+        this.probe('fogSettings getter', () => Boolean(player.fogSettings));
+        this.probe('fogSettings.getTags', () => player.fogSettings.getTags().join('+'));
+        this.probe('fogSettings.getStack', () => player.fogSettings.getStack().join('+'));
+        this.probe('fogSettings.remove', () => player.fogSettings.remove(NoFog.FOG_TAG));
+        system.run(() => {
+            console.warn(`[CanopyDiag] deferred retry tick=${system.currentTick}`);
+            this.probe('deferred dimension.id', () => player.dimension.id);
+            this.probe('deferred fogSettings.getTags', () => player.fogSettings.getTags().join('+'));
+            this.probe('deferred fogSettings.remove', () => player.fogSettings.remove(NoFog.FOG_TAG));
+            this.probe('deferred fresh-player fogSettings.remove', () => world.getAllPlayers().find((candidate) => candidate.id === this.playerId).fogSettings.remove(NoFog.FOG_TAG));
+        });
     }
 
     onTick() {
