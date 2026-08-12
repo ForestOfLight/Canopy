@@ -25,10 +25,6 @@ export class BlockBreakSpeed extends InfoDisplayTextElement {
         this.onPlayerBreakBlockBound = this.#onPlayerBreakBlock.bind(this);
     }
 
-    destroy() {
-        this.#unsubscribeFromEvents();
-    }
-
     getFormattedDataOwnLine() {
         return { translate: `rules.infoDisplay.blockBreakSpeed.display`, with: [String(this.#getAverageBlocksBrokenPerSecond().toFixed(1))] };
     }
