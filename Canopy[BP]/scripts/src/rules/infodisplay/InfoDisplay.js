@@ -91,29 +91,8 @@ class InfoDisplay {
 	constructor(player) {
 		this.player = player;
 		this.elements = InfoDisplay.elementSpecs.map(([ElementClass, makeArgs]) => new ElementClass(...makeArgs(player)));
-		for (const element of this.elements)
-			element.rule.setPlayerElement(player.id, element);
 		InfoDisplay.playerToInfoDisplayMap[player.id] = this;
 		this.enableEnabledRules();
-	}
-
-	destroy() {
-		for (const element of this.elements) {
-			element.rule.removePlayerElement(this.player.id);
-			element.destroy();
-		}
-	}
-
-	static scheduleTeardown(playerId) {
-		const infoDisplay = InfoDisplay.playerToInfoDisplayMap[playerId];
-		if (!infoDisplay)
-			return;
-		system.run(() => {
-			if (InfoDisplay.playerToInfoDisplayMap[playerId] !== infoDisplay)
-				return;
-			infoDisplay.destroy();
-			delete InfoDisplay.playerToInfoDisplayMap[playerId];
-		});
 	}
 
 	update() {
@@ -217,8 +196,9 @@ class InfoDisplay {
 
 	enableEnabledRules() {
 		for (const element of this.elements) {
-			if (element.rule.getValue(this.player))
-				element.onEnable();
+			const rule = element.rule;
+			if (rule.getValue(this.player))
+				rule.onEnable();
 		}
 	}
 }
@@ -237,7 +217,7 @@ system.runInterval(() => {
 world.beforeEvents.playerLeave.subscribe((event) => {
 	if (!event.player)
 		return;
-	InfoDisplay.scheduleTeardown(event.player.id);
+	delete InfoDisplay.playerToInfoDisplayMap[event.player.id];
 });
 
 export { InfoDisplay };
