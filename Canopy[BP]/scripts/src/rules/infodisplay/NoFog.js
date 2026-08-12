@@ -7,7 +7,6 @@ export class NoFog extends InfoDisplayShapeElement {
     }
 
     static FOG_REMOVAL_IDS = {
-        "minecraft:overworld": "canopy:overworld_no_fog",
         "minecraft:nether": "canopy:nether_no_fog",
         "minecraft:the_end": "canopy:end_no_fog"
     };
@@ -51,7 +50,7 @@ export class NoFog extends InfoDisplayShapeElement {
 
     getCurrentFogId() {
         const currentDimension = this.player.dimension.id;
-        return NoFog.FOG_REMOVAL_IDS[currentDimension] ?? NoFog.FOG_REMOVAL_IDS["minecraft:overworld"];
+        return NoFog.FOG_REMOVAL_IDS[currentDimension];
     }
 
     onTick() {
@@ -61,6 +60,7 @@ export class NoFog extends InfoDisplayShapeElement {
     onDimensionChange() {
         this.clearFogSettings();
         const fogRemovalId = this.getCurrentFogId();
-        this.playerFogSettings.push(fogRemovalId, NoFog.FOG_TAG);
+        if (fogRemovalId)
+            this.playerFogSettings.push(fogRemovalId, NoFog.FOG_TAG);
     }
 }
