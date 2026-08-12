@@ -1,4 +1,4 @@
-import { InvalidEntityError, world } from "@minecraft/server";
+import { InvalidEntityError, system, world } from "@minecraft/server";
 import { InfoDisplayShapeElement } from "./InfoDisplayShapeElement";
 
 export class NoFog extends InfoDisplayShapeElement {
@@ -26,6 +26,7 @@ export class NoFog extends InfoDisplayShapeElement {
         super(ruleData, 0);
         this.player = player;
         this.playerId = player.id;
+        this.builtTick = system.currentTick;
         this.onDimensionChangeBound = this.onDimensionChange.bind(this);
     }
 
@@ -67,10 +68,26 @@ export class NoFog extends InfoDisplayShapeElement {
         } catch (error) {
             if (error instanceof InvalidEntityError) {
                 console.warn(`[Canopy] NoFog: could not ${action} for player ${this.playerId}: the player is no longer valid.`);
+                this.logDiagnostics(action);
                 return;
             }
             throw error;
         }
+    }
+
+    logDiagnostics(action) {
+        let livePlayerExists;
+        let liveIsSameObject;
+        try {
+            const live = world.getAllPlayers().find((candidate) => candidate.id === this.playerId);
+            livePlayerExists = Boolean(live);
+            liveIsSameObject = live === this.player;
+        } catch (error) {
+            livePlayerExists = String(error);
+            liveIsSameObject = 'unknown';
+        }
+        const registered = this.rule.getPlayerElement(this.playerId);
+        console.warn(`[CanopyDiag] noFog fail action=${action} playerId=${this.playerId} cachedValid=${this.player?.isValid} livePlayerExists=${livePlayerExists} liveIsSameObject=${liveIsSameObject} thisIsRegistered=${registered === this} registeredIsMe=${Boolean(registered)} builtTick=${this.builtTick} nowTick=${system.currentTick}`);
     }
 
     onTick() {

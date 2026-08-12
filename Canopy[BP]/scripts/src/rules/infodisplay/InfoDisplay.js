@@ -90,29 +90,39 @@ class InfoDisplay {
 
 	constructor(player) {
 		this.player = player;
+		this.playerId = player.id;
 		this.elements = InfoDisplay.elementSpecs.map(([ElementClass, makeArgs]) => new ElementClass(...makeArgs(player)));
 		for (const element of this.elements)
 			element.rule.setPlayerElement(player.id, element);
 		InfoDisplay.playerToInfoDisplayMap[player.id] = this;
+		console.warn(`[CanopyDiag] InfoDisplay built playerId=${player.id} valid=${player.isValid} tick=${system.currentTick}`);
 		this.enableEnabledRules();
 	}
 
 	destroy() {
 		for (const element of this.elements) {
-			element.rule.removePlayerElement(this.player.id);
-			element.destroy();
+			try {
+				element.rule.removePlayerElement(this.playerId);
+				element.destroy();
+			} catch (error) {
+				console.warn(`[CanopyDiag] destroy failed element=${element.identifier} error=${error}`);
+			}
 		}
 	}
 
 	static scheduleTeardown(playerId) {
 		const infoDisplay = InfoDisplay.playerToInfoDisplayMap[playerId];
+		console.warn(`[CanopyDiag] teardown scheduled playerId=${playerId} found=${Boolean(infoDisplay)} tick=${system.currentTick}`);
 		if (!infoDisplay)
 			return;
 		system.run(() => {
-			if (InfoDisplay.playerToInfoDisplayMap[playerId] !== infoDisplay)
+			if (InfoDisplay.playerToInfoDisplayMap[playerId] !== infoDisplay) {
+				console.warn(`[CanopyDiag] teardown skipped playerId=${playerId}`);
 				return;
+			}
 			infoDisplay.destroy();
 			delete InfoDisplay.playerToInfoDisplayMap[playerId];
+			console.warn(`[CanopyDiag] teardown done playerId=${playerId} tick=${system.currentTick}`);
 		});
 	}
 

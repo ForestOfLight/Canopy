@@ -211,7 +211,7 @@ describe('NoFog warnings when fog settings are not applied', () => {
 
         element.rule.setValue(player, true);
 
-        expect(warnSpy).not.toHaveBeenCalled();
+        expect(warnSpy).not.toHaveBeenCalledWith(expect.stringContaining('could not'));
     });
 
     it('still rethrows errors that are not InvalidEntityError', () => {

@@ -38,6 +38,8 @@ class InfoDisplayRule extends BooleanRule {
 
     onModifyBoolForPlayer(player, value) {
         const element = this.#playerElements[player.id];
+        if (this.getID() === 'noFog')
+            console.warn(`[CanopyDiag] dispatch noFog value=${value} playerId=${player.id} hasElement=${Boolean(element)} sameRuleObject=${element ? element.rule === this : 'n/a'} registeredIds=${Object.keys(this.#playerElements).join('|')}`);
         if (!element) {
             this.onModifyBool(value);
             return;
