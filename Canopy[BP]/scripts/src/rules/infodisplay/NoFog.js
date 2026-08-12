@@ -44,7 +44,7 @@ export class NoFog extends InfoDisplayShapeElement {
     }
 
     applyFogRemoval() {
-        this.withPlayer((fogSettings, dimensionId) => {
+        this.withPlayer('apply fog removal', (fogSettings, dimensionId) => {
             fogSettings.remove(NoFog.FOG_TAG);
             const fogRemovalId = NoFog.FOG_REMOVAL_IDS[dimensionId];
             if (fogRemovalId)
@@ -53,18 +53,22 @@ export class NoFog extends InfoDisplayShapeElement {
     }
 
     clearFogSettings() {
-        this.withPlayer((fogSettings) => fogSettings.remove(NoFog.FOG_TAG));
+        this.withPlayer('clear fog removal', (fogSettings) => fogSettings.remove(NoFog.FOG_TAG));
     }
 
-    withPlayer(callback) {
+    withPlayer(action, callback) {
         try {
             const fogSettings = this.player.fogSettings;
-            if (!fogSettings)
+            if (!fogSettings) {
+                console.warn(`[Canopy] NoFog: could not ${action} for player ${this.playerId}: fog settings are unavailable.`);
                 return;
+            }
             callback(fogSettings, this.player.dimension.id);
         } catch (error) {
-            if (error instanceof InvalidEntityError)
+            if (error instanceof InvalidEntityError) {
+                console.warn(`[Canopy] NoFog: could not ${action} for player ${this.playerId}: the player is no longer valid.`);
                 return;
+            }
             throw error;
         }
     }

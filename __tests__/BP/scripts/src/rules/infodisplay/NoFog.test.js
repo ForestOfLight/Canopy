@@ -1,13 +1,17 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { Rules } from '../../../../../../Canopy[BP]/scripts/lib/canopy/rules/Rules';
 import { NoFog } from '../../../../../../Canopy[BP]/scripts/src/rules/infodisplay/NoFog';
 
-const dimensionChangeSubscribers = new Set();
+const { InvalidEntityError, dimensionChangeSubscribers } = vi.hoisted(() => ({
+    InvalidEntityError: class extends Error {},
+    dimensionChangeSubscribers: new Set()
+}));
 
 vi.mock('@minecraft/server', async (importOriginal) => {
     const original = await importOriginal();
     return {
         ...original,
+        InvalidEntityError,
         world: {
             ...original.world,
             afterEvents: {
@@ -142,5 +146,84 @@ describe('NoFog', () => {
 
         expect(player.fogSettings.remove).toHaveBeenCalledWith('canopy_no_fog');
         expect(player.fogSettings.push).not.toHaveBeenCalled();
+    });
+});
+
+describe('NoFog warnings when fog settings are not applied', () => {
+    let warnSpy;
+
+    beforeEach(() => {
+        Rules.clear();
+        Rules.rulesToRegister = [];
+        dimensionChangeSubscribers.clear();
+        warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+        warnSpy.mockRestore();
+    });
+
+    it('warns when the player has no fog settings', () => {
+        const player = createMockPlayer('fogless');
+        player.fogSettings = undefined;
+        const element = new NoFog(player);
+        element.rule.setPlayerElement(player.id, element);
+
+        element.rule.setValue(player, true);
+
+        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('apply fog removal'));
+        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('fogless'));
+        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('fog settings are unavailable'));
+    });
+
+    it('warns when the player is no longer valid', () => {
+        const player = createMockPlayer('departed');
+        const element = new NoFog(player);
+        element.rule.setPlayerElement(player.id, element);
+        Object.defineProperty(player, 'fogSettings', {
+            get() { throw new InvalidEntityError('player'); }
+        });
+
+        element.rule.setValue(player, true);
+
+        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('apply fog removal'));
+        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('departed'));
+        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('no longer valid'));
+    });
+
+    it('warns when clearing fog fails, naming the clear action', () => {
+        const player = createMockPlayer('departed-on-disable');
+        const element = new NoFog(player);
+        element.rule.setPlayerElement(player.id, element);
+        element.rule.setValue(player, true);
+        warnSpy.mockClear();
+        Object.defineProperty(player, 'fogSettings', {
+            get() { throw new InvalidEntityError('player'); }
+        });
+
+        element.rule.setValue(player, false);
+
+        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('clear fog removal'));
+    });
+
+    it('does not warn when fog is applied successfully', () => {
+        const player = createMockPlayer('healthy');
+        const element = new NoFog(player);
+        element.rule.setPlayerElement(player.id, element);
+
+        element.rule.setValue(player, true);
+
+        expect(warnSpy).not.toHaveBeenCalled();
+    });
+
+    it('still rethrows errors that are not InvalidEntityError', () => {
+        const player = createMockPlayer('broken');
+        const element = new NoFog(player);
+        element.rule.setPlayerElement(player.id, element);
+        Object.defineProperty(player, 'fogSettings', {
+            get() { throw new TypeError('something else went wrong'); }
+        });
+
+        expect(() => element.rule.setValue(player, true)).toThrow(TypeError);
     });
 });
