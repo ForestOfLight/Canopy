@@ -2,6 +2,7 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { world, system, Block, Entity, Player } from '@minecraft/server';
 import { scheduler, worldDynamicPropertyStore } from '@forestoflight/minecraft-vitest-mocks';
 import Understudy from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudy';
+import { getLookAtLocation } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/utils';
 import { MOVE_OPTIONS } from '../../../../../../Canopy[BP]/scripts/src/commands/simplayer/playermove';
 
 vi.mock('../../../../../../Canopy[BP]/scripts/src/rules/simplayer/simplayerSaving', () => ({
@@ -95,6 +96,13 @@ describe('Understudy', () => {
             understudy.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
             scheduler.advanceTicks(1);
             expect(warnSpy).toHaveBeenCalled();
+        });
+
+        it('aims the head at the facing location so pitch is applied', () => {
+            const location = { x: 0, y: 64, z: 0 };
+            const rotation = { x: -25, y: 120 };
+            understudy.join({ location, dimension: world.getDimension(), rotation });
+            expect(understudy.simulatedPlayer.lookAtLocation).toHaveBeenCalledWith(getLookAtLocation(location, rotation));
         });
 
         it('throws if loading player info hits an unknown error', () => {
@@ -342,6 +350,13 @@ describe('Understudy', () => {
                 understudy.teleport(teleportOptions);
                 const options = understudy.simulatedPlayer.teleport.mock.calls[0][1];
                 expect(options.rotation).toEqual({ x: 0, y: 0 });
+            });
+
+            it('aims the head at the facing location so pitch is applied', () => {
+                const location = { x: 5, y: 70, z: 5 };
+                const rotation = { x: 30, y: 45 };
+                understudy.teleport({ location, dimension: world.getDimension(), rotation });
+                expect(understudy.simulatedPlayer.lookAtLocation).toHaveBeenCalledWith(getLookAtLocation(location, rotation));
             });
 
             it('throws when understudy is not connected', () => {

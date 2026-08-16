@@ -92,12 +92,7 @@ class Understudy {
         const updatedGameMode = portOldGameModeToNewUpdate(gameMode);
         this.#simulatedPlayer = spawnSimulatedPlayer({ ...location, dimension }, this.name, updatedGameMode);
         this.#isConnected = true;
-        const teleportOptions = {
-            dimension,
-            facingLocation: getLookAtLocation(location, rotation),
-            rotation
-        };
-        this.#simulatedPlayer.teleport(location, teleportOptions);
+        this.#teleportFacing(location, dimension, rotation);
         try {
             this.#playerInfoSaver.loadInventoryAndProjectileOwnership();
         } catch (error) {
@@ -130,13 +125,15 @@ class Understudy {
     }
 
     teleport({ location, dimension, rotation = { x: 0, y: 0 } }) {
-        const teleportOptions = {
-            dimension,
-            facingLocation: getLookAtLocation(location, rotation),
-            rotation
-        };
-        this.simulatedPlayer.teleport(location, teleportOptions);
+        this.#assertConnected();
+        this.#teleportFacing(location, dimension, rotation);
         this.savePlayerInfo();
+    }
+
+    #teleportFacing(location, dimension, rotation) {
+        const facingLocation = getLookAtLocation(location, rotation);
+        this.#simulatedPlayer.teleport(location, { dimension, facingLocation, rotation });
+        this.#simulatedPlayer.lookAtLocation(facingLocation);
     }
 
     look(target) {
