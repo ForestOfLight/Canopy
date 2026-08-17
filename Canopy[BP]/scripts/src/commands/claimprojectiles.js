@@ -31,8 +31,10 @@ function claimProjectilesCommand(origin, radius = CLAIM_RADIUS, player) {
     if (!(player instanceof Player))
         return { status: CustomCommandStatus.Failure, message: 'commands.claimprojectiles.fail.sourcenotplayer' };
     const projectiles = getProjectilesInRange(player, radius);
-    if (projectiles.length === 0)
-        return origin.sendMessage({ translate: 'commands.claimprojectiles.fail.nonefound', with: [String(radius)] });
+    if (projectiles.length === 0) {
+        origin.sendMessage({ translate: 'commands.claimprojectiles.fail.nonefound', with: [String(radius)] });
+        return;
+    }
     const numChanged = changeOwner(projectiles, player);
     player.sendMessage({ translate: 'commands.claimprojectiles.success.self', with: [String(numChanged), String(radius)] });
     if (origin !== player)
