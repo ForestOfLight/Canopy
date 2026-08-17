@@ -7,6 +7,8 @@ export class WorkingRegion {
     static #TICKING_AREA_ID = "EntityItemDatabase";
     static #volume = new Vector(3, 3, 3);
 
+    static #ready = Promise.resolve();
+
     static get isCreated() {
         return WorkingRegion.#dimension !== void 0 && WorkingRegion.#location !== void 0;
     }
@@ -15,7 +17,28 @@ export class WorkingRegion {
         return WorkingRegion.#volume;
     }
 
-    static async createAt(dimension, location) {
+    static get dimension() {
+        return WorkingRegion.#dimension;
+    }
+
+    static get location() {
+        return WorkingRegion.#location;
+    }
+
+    /**
+     * Resolves once the most recent createAt() has finished preparing the region.
+     * isCreated flips synchronously, so callers that need loaded chunks must await this instead.
+     */
+    static get ready() {
+        return WorkingRegion.#ready;
+    }
+
+    static createAt(dimension, location) {
+        WorkingRegion.#ready = WorkingRegion.#prepare(dimension, location);
+        return WorkingRegion.#ready;
+    }
+
+    static async #prepare(dimension, location) {
         try {
             WorkingRegion.#init(dimension, location);
             await WorkingRegion.#createTickingArea();
@@ -36,12 +59,18 @@ export class WorkingRegion {
         }
     }
 
-    static clearEntitiesInside() {
+    static getEntitiesInside() {
+        if (!WorkingRegion.isCreated)
+            return [];
         const entityQueryOptions = {
             location: WorkingRegion.#location,
             maxDistance: Math.max(WorkingRegion.volume.x, WorkingRegion.volume.y, WorkingRegion.volume.z)
         };
-        for (const entity of WorkingRegion.#dimension.getEntities(entityQueryOptions)) {
+        return WorkingRegion.#dimension.getEntities(entityQueryOptions);
+    }
+
+    static clearEntitiesInside() {
+        for (const entity of WorkingRegion.getEntitiesInside()) {
             try {
                 entity.remove();
             } catch (error) {

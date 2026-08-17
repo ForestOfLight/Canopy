@@ -2,10 +2,14 @@ import { EntityItemDatabase } from "../../../lib/EntityItemDatabase/EntityItemDa
 import { UnderstudyStorageView } from "./UnderstudyStorageView";
 
 export class UnderstudyInventorySaver {
+    static buildInventoryKey(name) {
+        return `canopy:${name}-inventory`;
+    }
+
     constructor(understudy) {
         this.understudy = understudy;
         this.itemDatabase = new EntityItemDatabase();
-        this.inventoryKey = `canopy:${understudy.name}-inventory`;
+        this.inventoryKey = UnderstudyInventorySaver.buildInventoryKey(understudy.name);
     }
 
     save() {
