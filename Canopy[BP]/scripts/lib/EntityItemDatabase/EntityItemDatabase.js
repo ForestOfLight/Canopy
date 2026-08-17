@@ -22,39 +22,38 @@ export class EntityItemDatabase {
 
     saveContainer(key, containerToSave) {
         this.#assertValid(key);
-        const entity = this.#getOrCreateEntity(key);
-        const container = this.#resolveContainer(entity);
-        this.#writeItemsToContainer(container, containerToSave);
-        const structureCreateOptions = {
-            includeBlocks: false,
-            includeEntities: true,
-            saveMode: StructureSaveMode.World
-        };
-        world.structureManager.delete(key);
-        world.structureManager.createFromWorld(key, EntityItemDatabase.#dimension, EntityItemDatabase.#location, EntityItemDatabase.#location, structureCreateOptions);
-        entity.remove();
+        WorkingRegion.clearEntitiesInside();
+        const entity = this.#createEntity(key);
+        try {
+            const container = this.#resolveContainer(entity);
+            this.#writeItemsToContainer(container, containerToSave);
+            const structureCreateOptions = {
+                includeBlocks: false,
+                includeEntities: true,
+                saveMode: StructureSaveMode.World
+            };
+            world.structureManager.delete(key);
+            world.structureManager.createFromWorld(key, EntityItemDatabase.#dimension, EntityItemDatabase.#location, EntityItemDatabase.#location, structureCreateOptions);
+        } finally {
+            WorkingRegion.clearEntitiesInside();
+        }
     }
 
     loadContainer(key, containerToFill) {
+        WorkingRegion.clearEntitiesInside();
         try {
             world.structureManager.place(key, EntityItemDatabase.#dimension, EntityItemDatabase.#location, { includeBlocks: false, includeEntities: true });
         } catch (error) {
             if (error instanceof InvalidStructureError)
                 return void 0;
-        }
-        const entity = this.#getEntity(key);
-        const container = this.#resolveContainer(entity);
-        this.#writeItemsToContainer(containerToFill, container);
-        entity.remove();
-    }
-
-    #getOrCreateEntity(key) {
-        try {
-            return this.#getEntity(key)
-        } catch (error) {
-            if (error instanceof EntityItemDatabaseKeyNotFoundError)
-                return this.#createEntity(key);
             throw error;
+        }
+        try {
+            const entity = this.#getEntity(key);
+            const container = this.#resolveContainer(entity);
+            this.#writeItemsToContainer(containerToFill, container);
+        } finally {
+            WorkingRegion.clearEntitiesInside();
         }
     }
 

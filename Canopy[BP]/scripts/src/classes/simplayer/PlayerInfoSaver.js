@@ -6,6 +6,7 @@ import { UnderstudyNotConnectedError } from "../errors/UnderstudyNotConnectedErr
 
 export class PlayerInfoSaver {
     saveInterval = 600;
+    activeSaveInterval = TicksPerSecond * 5;
     #understudy;
     #inventory;
 
@@ -21,16 +22,13 @@ export class PlayerInfoSaver {
     #saveOnInterval() {
         if (!simplayerSaving.getNativeValue())
             return;
-        if ((system.currentTick - this.#understudy.createdTick) % this.saveInterval === 0) {
+        const elapsedTicks = system.currentTick - this.#understudy.createdTick;
+        if (elapsedTicks % this.saveInterval === 0) {
             this.save();
             return;
         }
-        if (!this.#understudy.actions.isEmpty()) {
-            if ((system.currentTick - this.#understudy.createdTick) % (TicksPerSecond * 5) === 0)
-                this.save();
-            else
-                this.#inventory.saveWithoutNBT();
-        }
+        if (!this.#understudy.actions.isEmpty() && elapsedTicks % this.activeSaveInterval === 0)
+            this.save();
     }
 
     get() {

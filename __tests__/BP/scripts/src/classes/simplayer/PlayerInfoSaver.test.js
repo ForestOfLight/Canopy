@@ -6,6 +6,7 @@ import Understudy from '../../../../../../Canopy[BP]/scripts/src/classes/simplay
 import { simplayerSaving } from '../../../../../../Canopy[BP]/scripts/src/rules/simplayer/simplayerSaving';
 import { UnderstudySaveInfoError } from '../../../../../../Canopy[BP]/scripts/src/classes/errors/UnderstudySaveInfoError';
 import { UnderstudyNotConnectedError } from '../../../../../../Canopy[BP]/scripts/src/classes/errors/UnderstudyNotConnectedError';
+import { EntityItemDatabase } from '../../../../../../Canopy[BP]/scripts/lib/EntityItemDatabase/EntityItemDatabase';
 
 vi.mock('../../../../../../Canopy[BP]/scripts/src/rules/simplayer/simplayerSaving', () => ({
     simplayerSaving: { getNativeValue: vi.fn(() => true), getID: vi.fn(() => 'simplayerSaving') }
@@ -170,11 +171,12 @@ describe('PlayerInfoSaver', () => {
             expect(spy).toHaveBeenCalled();
         });
 
-        it('saves inventory without NBT on off-ticks when player has repeating actions', () => {
+        it('does not write the item database on off-ticks when the player has repeating actions', () => {
             system.currentTick = TicksPerSecond * 5 - 1;
             understudy.actions.repeat('attack');
+            const saveContainerSpy = vi.spyOn(EntityItemDatabase.prototype, 'saveContainer');
             infoSaver.onConnectedTick();
-            expect(world.setDynamicProperty).toHaveBeenCalledWith('bot_TestBot_inventory', expect.any(String));
+            expect(saveContainerSpy).not.toHaveBeenCalled();
         });
     });
 });

@@ -14,11 +14,6 @@ export class UnderstudyInventorySaver {
         // this.#saveEquippableItems({ saveNBT: true });
     }
 
-    saveWithoutNBT() {
-        this.#saveInventoryItems();
-        // this.#saveEquippableItems({ saveNBT: false });
-    }
-
     load() {
         this.#loadInventoryItems();
         // this.#loadEquippableItems();

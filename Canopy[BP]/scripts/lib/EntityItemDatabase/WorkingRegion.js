@@ -5,8 +5,15 @@ export class WorkingRegion {
     static #dimension;
     static #location;
     static #TICKING_AREA_ID = "EntityItemDatabase";
-    static #tickingArea;
     static #volume = new Vector(3, 3, 3);
+
+    static get isCreated() {
+        return WorkingRegion.#dimension !== void 0 && WorkingRegion.#location !== void 0;
+    }
+
+    static get volume() {
+        return WorkingRegion.#volume;
+    }
 
     static async createAt(dimension, location) {
         try {
@@ -22,15 +29,25 @@ export class WorkingRegion {
     static remove() {
         WorkingRegion.#dimension = void 0;
         WorkingRegion.#location = void 0;
-        world.tickingAreaManager.removeTickingArea(WorkingRegion.#tickingArea);
+        try {
+            world.tickingAreaManager.removeTickingArea(WorkingRegion.#TICKING_AREA_ID);
+        } catch (error) {
+            console.warn("Could not remove working region ticking area:", error, error.stack);
+        }
     }
 
-    static get isCreated() {
-        return WorkingRegion.#dimension !== void 0 && WorkingRegion.#location !== void 0;
-    }
-
-    static get volume() {
-        return WorkingRegion.#volume;
+    static clearEntitiesInside() {
+        const entityQueryOptions = {
+            location: WorkingRegion.#location,
+            maxDistance: Math.max(WorkingRegion.volume.x, WorkingRegion.volume.y, WorkingRegion.volume.z)
+        };
+        for (const entity of WorkingRegion.#dimension.getEntities(entityQueryOptions)) {
+            try {
+                entity.remove();
+            } catch (error) {
+                console.warn("Error removing entity from Working Region:", error, error.stack);
+            }
+        }
     }
 
     static #init(dimension, location) {
@@ -41,13 +58,15 @@ export class WorkingRegion {
     }
 
     static async #createTickingArea() {
+        if (world.tickingAreaManager.hasTickingArea(WorkingRegion.#TICKING_AREA_ID))
+            return;
         const bounds = WorkingRegion.#getBounds();
         const tickingAreaOptions = {
             dimension: WorkingRegion.#dimension,
             from: bounds.min,
             to: bounds.max
         };
-        WorkingRegion.#tickingArea = await world.tickingAreaManager.createTickingArea(WorkingRegion.#TICKING_AREA_ID, tickingAreaOptions);
+        await world.tickingAreaManager.createTickingArea(WorkingRegion.#TICKING_AREA_ID, tickingAreaOptions);
     }
 
     static #fillWithBedrock() {
