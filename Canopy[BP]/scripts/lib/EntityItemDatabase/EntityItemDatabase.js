@@ -22,7 +22,6 @@ export class EntityItemDatabase {
 
     saveContainer(key, containerToSave) {
         this.#assertValid(key);
-        WorkingRegion.clearEntitiesInside();
         const entity = this.#createEntity(key);
         try {
             const container = this.#resolveContainer(entity);
@@ -40,7 +39,6 @@ export class EntityItemDatabase {
     }
 
     loadContainer(key, containerToFill) {
-        WorkingRegion.clearEntitiesInside();
         try {
             world.structureManager.place(key, EntityItemDatabase.#dimension, EntityItemDatabase.#location, { includeBlocks: false, includeEntities: true });
         } catch (error) {
