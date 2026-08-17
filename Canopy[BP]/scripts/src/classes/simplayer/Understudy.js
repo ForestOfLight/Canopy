@@ -30,12 +30,12 @@ class Understudy {
     }
 
     onConnectedTick() {
-        this.#playerInfoSaver.onConnectedTick();
         if (!this.#lookTarget?.isValid)
             this.clearLookTarget();
         if (this.#simulatedPlayer !== null)
             this.refreshHeldItem();
         this.#actions.onTick();
+        this.#playerInfoSaver.onConnectedTick();
     }
 
     get createdTick() {
@@ -84,6 +84,10 @@ class Understudy {
     savePlayerInfo() {
         this.#assertConnected();
         this.#playerInfoSaver.save();
+    }
+
+    markInventoryDirty() {
+        this.#playerInfoSaver.markInventoryDirty();
     }
 
     join({ location, dimension, rotation = { x: 0, y: 0 }, gameMode = GameMode.Survival }) {
@@ -263,6 +267,10 @@ class Understudy {
         const simulatedPlayer = this.simulatedPlayer;
         const inventoryComponent = simulatedPlayer.getComponent(EntityComponentTypes.Inventory);
         return inventoryComponent?.container;
+    }
+
+    getEquippable() {
+        return this.simulatedPlayer.getComponent(EntityComponentTypes.Equippable);
     }
 
     swapHeldItemWithPlayer(targetPlayer) {

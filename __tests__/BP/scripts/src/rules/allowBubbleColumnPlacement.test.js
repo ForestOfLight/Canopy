@@ -1,5 +1,6 @@
 import { allowBubbleColumnPlacement } from "../../../../../Canopy[BP]/scripts/src/rules/allowBubbleColumnPlacement";
-import { expect, test, describe, vi, afterEach } from "vitest";
+import { expect, test, describe, vi, beforeEach, afterEach } from "vitest";
+import { world } from "@minecraft/server";
 
 vi.mock("@minecraft/server", async (importOriginal) => {
     const original = await importOriginal();
@@ -13,6 +14,10 @@ vi.mock("@minecraft/server", async (importOriginal) => {
 });
 
 describe('allowBubbleColumnPlacement', () => {
+    beforeEach(() => {
+        world.structureManager.createFromWorld('mystructure:bubble_column', world.getDimension());
+    });
+
     afterEach(() => {
         vi.clearAllMocks();
     });
