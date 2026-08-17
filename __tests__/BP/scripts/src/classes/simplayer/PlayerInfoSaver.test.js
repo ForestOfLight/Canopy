@@ -6,6 +6,7 @@ import Understudy from '../../../../../../Canopy[BP]/scripts/src/classes/simplay
 import { simplayerSaving } from '../../../../../../Canopy[BP]/scripts/src/rules/simplayer/simplayerSaving';
 import { UnderstudySaveInfoError } from '../../../../../../Canopy[BP]/scripts/src/classes/errors/UnderstudySaveInfoError';
 import { UnderstudyNotConnectedError } from '../../../../../../Canopy[BP]/scripts/src/classes/errors/UnderstudyNotConnectedError';
+import { EntityItemDatabase } from '../../../../../../Canopy[BP]/scripts/lib/EntityItemDatabase/EntityItemDatabase';
 
 vi.mock('../../../../../../Canopy[BP]/scripts/src/rules/simplayer/simplayerSaving', () => ({
     simplayerSaving: { getNativeValue: vi.fn(() => true), getID: vi.fn(() => 'simplayerSaving') }
@@ -114,15 +115,34 @@ describe('PlayerInfoSaver', () => {
             expect(() => infoSaver.loadInventoryAndProjectileOwnership()).toThrow(UnderstudySaveInfoError);
         });
 
-        it('loads player inventory when data exists', () => {
+        it('loads back the inventory that was saved', () => {
             const playerInfo = {
                 location: { x: 1, y: 64, z: 2 }, rotation: { x: 0, y: 90 },
                 dimensionId: 'minecraft:overworld', gameMode: 'Creative', projectileIds: []
             };
             worldDynamicPropertyStore.set('TestBot:playerinfo', JSON.stringify(playerInfo));
-            worldDynamicPropertyStore.set('bot_TestBot_inventory', JSON.stringify({ 0: { typeId: 'minecraft:stone', amount: 1 } }));
+            const inventory = understudy.getInventory();
+            inventory.setItem(0, { typeId: 'minecraft:stone', amount: 5 });
+            infoSaver.save();
+            inventory.setItem(0, void 0);
+
             infoSaver.loadInventoryAndProjectileOwnership();
-            expect(understudy.getInventory().setItem).toHaveBeenCalled();
+
+            expect(inventory.getItem(0)).toEqual({ typeId: 'minecraft:stone', amount: 5 });
+        });
+
+        it('leaves the inventory alone when nothing has been saved', () => {
+            const playerInfo = {
+                location: { x: 1, y: 64, z: 2 }, rotation: { x: 0, y: 90 },
+                dimensionId: 'minecraft:overworld', gameMode: 'Creative', projectileIds: []
+            };
+            worldDynamicPropertyStore.set('TestBot:playerinfo', JSON.stringify(playerInfo));
+            const inventory = understudy.getInventory();
+            inventory.setItem(0, { typeId: 'minecraft:stone', amount: 5 });
+
+            infoSaver.loadInventoryAndProjectileOwnership();
+
+            expect(inventory.getItem(0)).toEqual({ typeId: 'minecraft:stone', amount: 5 });
         });
 
         it('loads claimed projectiles when data exists', () => {
@@ -162,19 +182,58 @@ describe('PlayerInfoSaver', () => {
             expect(world.setDynamicProperty).not.toHaveBeenCalledWith('TestBot:playerinfo', expect.anything());
         });
 
-        it('saves inventory with NBT every 5 seconds when the player has repeating actions', () => {
+        it('does not save on an off-interval tick when the player has repeating actions', () => {
             system.currentTick = TicksPerSecond * 5;
             understudy.actions.repeat('attack');
             const spy = vi.spyOn(infoSaver, 'save');
             infoSaver.onConnectedTick();
-            expect(spy).toHaveBeenCalled();
+            expect(spy).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('markInventoryDirty', () => {
+        beforeEach(() => {
+            vi.clearAllMocks();
+            system.currentTick = 1;
         });
 
-        it('saves inventory without NBT on off-ticks when player has repeating actions', () => {
-            system.currentTick = TicksPerSecond * 5 - 1;
-            understudy.actions.repeat('attack');
+        it('saves on an off-interval tick after the inventory is marked dirty', () => {
+            infoSaver.markInventoryDirty();
             infoSaver.onConnectedTick();
-            expect(world.setDynamicProperty).toHaveBeenCalledWith('bot_TestBot_inventory', expect.any(String));
+            expect(world.setDynamicProperty).toHaveBeenCalledWith('TestBot:playerinfo', expect.any(String));
+        });
+
+        it('writes the item database once for many changes within the same tick', () => {
+            const saveContainerSpy = vi.spyOn(EntityItemDatabase.prototype, 'saveContainer');
+            infoSaver.markInventoryDirty();
+            infoSaver.markInventoryDirty();
+            infoSaver.markInventoryDirty();
+            infoSaver.onConnectedTick();
+            expect(saveContainerSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('keeps the change pending when the save fails so the next tick retries', () => {
+            vi.spyOn(EntityItemDatabase.prototype, 'saveContainer').mockImplementation(() => {
+                throw new Error('structure write failed');
+            });
+            infoSaver.markInventoryDirty();
+            expect(() => infoSaver.onConnectedTick()).toThrow();
+
+            vi.clearAllMocks();
+            system.currentTick = 2;
+            vi.spyOn(EntityItemDatabase.prototype, 'saveContainer').mockImplementation(() => void 0);
+            infoSaver.onConnectedTick();
+
+            expect(world.setDynamicProperty).toHaveBeenCalledWith('TestBot:playerinfo', expect.any(String));
+        });
+
+        it('does not save again on the next tick once the change has been flushed', () => {
+            infoSaver.markInventoryDirty();
+            infoSaver.onConnectedTick();
+            vi.clearAllMocks();
+            system.currentTick = 2;
+            infoSaver.onConnectedTick();
+            expect(world.setDynamicProperty).not.toHaveBeenCalledWith('TestBot:playerinfo', expect.anything());
         });
     });
 });

@@ -29,7 +29,7 @@ export class PlayerRejoinCommand extends VanillaCommand {
         try {
             understudy.rejoin();
         } catch (error) {
-            console.warn(`[Canopy] Error while rejoining. Joining normally instead. Error: ${String(error)}`);
+            console.warn(`[Canopy] Error while rejoining. Joining normally instead. Error: ${String(error)}`, error.stack);
             understudy.join(getLocationInfoFromSource(origin.getSource()));
         }
         Understudies.addNametagPrefix(understudy);

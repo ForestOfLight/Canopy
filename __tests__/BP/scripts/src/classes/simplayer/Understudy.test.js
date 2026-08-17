@@ -2,7 +2,9 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { world, system, Block, Entity, Player } from '@minecraft/server';
 import { scheduler, worldDynamicPropertyStore } from '@forestoflight/minecraft-vitest-mocks';
 import Understudy from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudy';
+import { getLookAtLocation } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/utils';
 import { MOVE_OPTIONS } from '../../../../../../Canopy[BP]/scripts/src/commands/simplayer/playermove';
+import { UnderstudyNotConnectedError } from '../../../../../../Canopy[BP]/scripts/src/classes/errors/UnderstudyNotConnectedError';
 
 vi.mock('../../../../../../Canopy[BP]/scripts/src/rules/simplayer/simplayerSaving', () => ({
     simplayerSaving: { getNativeValue: vi.fn(() => true), getID: vi.fn(() => 'simplayerSaving') }
@@ -97,6 +99,13 @@ describe('Understudy', () => {
             expect(warnSpy).toHaveBeenCalled();
         });
 
+        it('aims the head at the facing location so pitch is applied', () => {
+            const location = { x: 0, y: 64, z: 0 };
+            const rotation = { x: -25, y: 120 };
+            understudy.join({ location, dimension: world.getDimension(), rotation });
+            expect(understudy.simulatedPlayer.lookAtLocation).toHaveBeenCalledWith(getLookAtLocation(location, rotation));
+        });
+
         it('throws if loading player info hits an unknown error', () => {
             system.run.mockImplementation(cb => { cb(); });
             const original = world.getDynamicProperty;
@@ -171,6 +180,16 @@ describe('Understudy', () => {
                 const spy = vi.spyOn(understudy, 'refreshHeldItem');
                 understudy.onConnectedTick();
                 expect(spy).toHaveBeenCalled();
+            });
+        });
+
+        describe('markInventoryDirty', () => {
+            it('saves on the next tick even when it is not a save interval tick', () => {
+                system.currentTick = 1;
+                vi.clearAllMocks();
+                understudy.markInventoryDirty();
+                understudy.onConnectedTick();
+                expect(world.setDynamicProperty).toHaveBeenCalledWith('TestBot:playerinfo', expect.any(String));
             });
         });
 
@@ -342,6 +361,13 @@ describe('Understudy', () => {
                 understudy.teleport(teleportOptions);
                 const options = understudy.simulatedPlayer.teleport.mock.calls[0][1];
                 expect(options.rotation).toEqual({ x: 0, y: 0 });
+            });
+
+            it('aims the head at the facing location so pitch is applied', () => {
+                const location = { x: 5, y: 70, z: 5 };
+                const rotation = { x: 30, y: 45 };
+                understudy.teleport({ location, dimension: world.getDimension(), rotation });
+                expect(understudy.simulatedPlayer.lookAtLocation).toHaveBeenCalledWith(getLookAtLocation(location, rotation));
             });
 
             it('throws when understudy is not connected', () => {
@@ -620,6 +646,21 @@ describe('Understudy', () => {
             it('throws when understudy is not connected', () => {
                 understudy.leave();
                 expect(() => understudy.getInventory()).toThrow();
+            });
+        });
+
+        describe('getEquippable', () => {
+            it('returns the equippable component from simulatedPlayer', () => {
+                expect(understudy.getEquippable()).toBeDefined();
+            });
+
+            it('returns undefined when simulatedPlayer has no equippable component', () => {
+                understudy.simulatedPlayer.getComponent.mockReturnValue(undefined);
+                expect(understudy.getEquippable()).toBeUndefined();
+            });
+
+            it('throws when understudy is not connected', () => {
+                expect(() => new Understudy('NeverJoined').getEquippable()).toThrow(UnderstudyNotConnectedError);
             });
         });
 

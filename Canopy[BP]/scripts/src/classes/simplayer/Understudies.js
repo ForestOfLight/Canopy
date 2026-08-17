@@ -7,6 +7,7 @@ class Understudies {
     static #runner = null;
     static #entityDieHandle = null;
     static #playerGameModeChangeHandle = null;
+    static #playerInventoryItemChangeHandle = null;
 
     static onConnect() {
         if (Understudies.#runner === null)
@@ -24,6 +25,8 @@ class Understudies {
         world.afterEvents.entityDie.subscribe(Understudies.#entityDieHandle);
         Understudies.#playerGameModeChangeHandle = Understudies.onPlayerGameModeChange.bind(Understudies);
         world.afterEvents.playerGameModeChange.subscribe(Understudies.#playerGameModeChangeHandle);
+        Understudies.#playerInventoryItemChangeHandle = Understudies.onPlayerInventoryItemChange.bind(Understudies);
+        world.afterEvents.playerInventoryItemChange.subscribe(Understudies.#playerInventoryItemChangeHandle);
     }
 
     static #stopProcessing() {
@@ -31,8 +34,10 @@ class Understudies {
         Understudies.#runner = null;
         world.afterEvents.entityDie.unsubscribe(Understudies.#entityDieHandle);
         world.afterEvents.playerGameModeChange.unsubscribe(Understudies.#playerGameModeChangeHandle);
+        world.afterEvents.playerInventoryItemChange.unsubscribe(Understudies.#playerInventoryItemChangeHandle);
         Understudies.#entityDieHandle = null;
         Understudies.#playerGameModeChangeHandle = null;
+        Understudies.#playerInventoryItemChangeHandle = null;
     }
 
     static onEntityDie(event) {
@@ -49,6 +54,12 @@ class Understudies {
         const understudy = Understudies.get(event.player?.name);
         if (understudy !== void 0)
             understudy.savePlayerInfo();
+    }
+
+    static onPlayerInventoryItemChange(event) {
+        const understudy = Understudies.get(event.player?.name);
+        if (understudy !== void 0)
+            understudy.markInventoryDirty();
     }
 
     static create(name) {

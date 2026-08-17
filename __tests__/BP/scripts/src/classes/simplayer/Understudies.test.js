@@ -99,6 +99,31 @@ describe('onPlayerGameModeChange', () => {
     });
 });
 
+describe('onPlayerInventoryItemChange', () => {
+    it('subscribes to inventory changes once processing starts', () => {
+        Understudies.onConnect();
+        expect(world.afterEvents.playerInventoryItemChange.subscribe).toHaveBeenCalled();
+    });
+
+    it('marks the inventory dirty when an understudy picks up or loses an item', () => {
+        const u = Understudies.create('Alice');
+        Understudies.onConnect();
+        u.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
+        const spy = vi.spyOn(u, 'markInventoryDirty');
+        Understudies.onPlayerInventoryItemChange({ player: { name: 'Alice' } });
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('ignores inventory changes belonging to real players', () => {
+        const u = Understudies.create('Alice');
+        Understudies.onConnect();
+        u.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
+        const spy = vi.spyOn(u, 'markInventoryDirty');
+        Understudies.onPlayerInventoryItemChange({ player: { name: 'Steve' } });
+        expect(spy).not.toHaveBeenCalled();
+    });
+});
+
 describe('remove', () => {
     it('disconnects the understudy immediately', () => {
         const u = Understudies.create('Alice');

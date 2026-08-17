@@ -17,7 +17,7 @@ export class PlayerActionCommand extends VanillaCommand {
             name: 'canopy:playeraction',
             description: 'commands.playeraction',
             enums: [
-                { name: 'canopy:simplayerAction', values: [ ...Object.values(REPEATABLE_ACTIONS), "stop" ] },
+                { name: 'canopy:simplayerAction', values: [ ...Object.values(REPEATABLE_ACTIONS) ] },
                 { name: 'canopy:simplayerTimingOption', values: Object.values(TIMING_OPTIONS) }
             ],
             mandatoryParameters: [
