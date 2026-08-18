@@ -4,12 +4,6 @@ import { WorkingRegion } from "../../../lib/EntityItemDatabase/WorkingRegion";
 import { LegacyInventoryReader } from "./LegacyInventoryReader";
 import { UnderstudyInventorySaver } from "./UnderstudyInventorySaver";
 
-/**
- * Ports simplayer inventories saved by the pre-EntityItemDatabase format over to the current one.
- *
- * Runs once on world load. It is idempotent by construction: a successful pass deletes the legacy
- * data it read, so a later pass finds nothing left to do.
- */
 export class LegacyInventoryMigrator {
     static #PLAYER_INFO_DP_PATTERN = /^(.+):playerinfo$/;
     static #TRUNCATED_NAME_LENGTH = 8;
@@ -53,11 +47,6 @@ export class LegacyInventoryMigrator {
         }
     }
 
-    /**
-     * The legacy keys truncated names to 8 characters, so the full name has to come from somewhere
-     * else. Every simplayer that saved an inventory also saved a '<name>:playerinfo' property, which
-     * makes those properties the only record of the full names. Ties go to the first one saved.
-     */
     static #mapTruncatedToFullNames() {
         const fullNames = new Map();
         for (const propertyId of world.getDynamicPropertyIds()) {

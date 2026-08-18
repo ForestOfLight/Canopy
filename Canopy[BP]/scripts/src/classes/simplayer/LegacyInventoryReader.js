@@ -2,13 +2,6 @@ import { InvalidStructureError, ItemStack, world } from "@minecraft/server";
 import { WorkingRegion } from "../../../lib/EntityItemDatabase/WorkingRegion";
 import { UnderstudyStorageView } from "./UnderstudyStorageView";
 
-/**
- * Reads simplayer inventories saved by the pre-EntityItemDatabase format.
- *
- * That format split each storage across two places: a structure holding the item entities in no
- * particular order, and a dynamic property recording which slot each typeId/amount pair belonged to.
- * Reading one back means placing the structure and re-pairing its items with the recorded slots.
- */
 export class LegacyInventoryReader {
     static #STRUCTURE_KEY_PATTERN = /^bot_(.{1,8})_item:(?:inv|equ)$/;
     static #PLAYER_INVENTORY_SIZE = 36;
@@ -50,10 +43,6 @@ export class LegacyInventoryReader {
         world.setDynamicProperty(this.#equippableDP, void 0);
     }
 
-    /**
-     * Reuses UnderstudyStorageView so the migrated layout is the same one the current saver reads
-     * back, rather than a second copy of the inventory/equipment slot mapping.
-     */
     #buildStorageView(inventoryItems, equipmentItems) {
         const inventoryContainer = {
             size: LegacyInventoryReader.#PLAYER_INVENTORY_SIZE,
@@ -124,10 +113,6 @@ export class LegacyInventoryReader {
         }
     }
 
-    /**
-     * Consumes the matching saved item so two identical slot entries cannot claim the same stack,
-     * falling back to a plain stack when the item entity did not survive.
-     */
     #resolveItemStack(slotEntry, savedItems) {
         if (!LegacyInventoryReader.#isValidSlotEntry(slotEntry))
             return void 0;
