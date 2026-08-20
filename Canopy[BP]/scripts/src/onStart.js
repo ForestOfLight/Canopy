@@ -1,6 +1,8 @@
 import { world, system } from "@minecraft/server";
 import { displayWelcome } from "./rules/noWelcomeMessage";
 import { simplayerRejoining } from "./rules/simplayer/simplayerRejoining";
+import { understudyInventoryEditor } from "./classes/simplayer/UnderstudyInventoryEditor";
+import { ProxyInventoryEntity } from "./classes/simplayer/editor/ProxyInventoryEntity";
 
 let worldIsValid = false;
 
@@ -26,4 +28,12 @@ function onValidPlayer(player) {
 
 function onValidWorld() {
     simplayerRejoining.onStartup();
+    understudyInventoryEditor.start();
+    sweepInventoryProxies();
+}
+
+function sweepInventoryProxies() {
+    ["overworld", "nether", "the_end"].forEach(dimensionId => {
+        ProxyInventoryEntity.sweepOrphans(world.getDimension(dimensionId));
+    });
 }
