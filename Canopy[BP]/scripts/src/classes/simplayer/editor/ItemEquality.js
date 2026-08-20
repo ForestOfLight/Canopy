@@ -67,8 +67,9 @@ export class ItemEquality {
         const dyeable = itemStack.getComponent(ItemComponentTypes.Dyeable);
         if (dyeable === void 0)
             return "";
-        const color = dyeable.color ?? { red: 0, green: 0, blue: 0 };
-        return `${color.red},${color.green},${color.blue}`;
+        if (dyeable.color === void 0)
+            return "none";
+        return `${dyeable.color.red},${dyeable.color.green},${dyeable.color.blue}`;
     }
 
     static #inventoryOf(itemStack) {
@@ -81,6 +82,6 @@ export class ItemEquality {
             if (item !== void 0)
                 slots.push(`${item.typeId}:${item.amount}`);
         }
-        return slots.join(";");
+        return slots.length === 0 ? "none" : slots.join(";");
     }
 }

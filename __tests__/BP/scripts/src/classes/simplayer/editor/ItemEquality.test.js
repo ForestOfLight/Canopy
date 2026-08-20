@@ -138,6 +138,12 @@ describe('ItemEquality', () => {
             expect(ItemEquality.equal(makeTool({ dyeable: { color: color1 } }), makeTool({ dyeable: { color: color2 } }))).toBe(false);
         });
 
+        it('is unequal when one is undyed and one is black-dyed', () => {
+            const undyed = { color: void 0 };
+            const blackDyed = { color: { red: 0, green: 0, blue: 0 } };
+            expect(ItemEquality.equal(makeTool({ dyeable: undyed }), makeTool({ dyeable: blackDyed }))).toBe(false);
+        });
+
         it('is equal when neither has a dyeable component', () => {
             expect(ItemEquality.equal(makeTool(), makeTool())).toBe(true);
         });
@@ -146,6 +152,11 @@ describe('ItemEquality', () => {
             const inventory1 = { container: { size: 2, getItem: vi.fn((i) => i === 0 ? { typeId: 'minecraft:dirt', amount: 1 } : void 0) } };
             const inventory2 = { container: { size: 2, getItem: vi.fn((i) => i === 0 ? { typeId: 'minecraft:stone', amount: 1 } : void 0) } };
             expect(ItemEquality.equal(makeTool({ inventory: inventory1 }), makeTool({ inventory: inventory2 }))).toBe(false);
+        });
+
+        it('is unequal when one has empty inventory and one has no inventory component', () => {
+            const emptyInventory = { container: { size: 0, getItem: vi.fn(() => void 0) } };
+            expect(ItemEquality.equal(makeTool({ inventory: emptyInventory }), makeTool())).toBe(false);
         });
 
         it('is equal when neither has an inventory component', () => {
