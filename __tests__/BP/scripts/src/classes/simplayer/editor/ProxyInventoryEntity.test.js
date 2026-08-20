@@ -10,6 +10,7 @@ describe('ProxyInventoryEntity', () => {
     beforeEach(() => {
         container = new Container({ size: 54 });
         spawnedEntity = new Entity();
+        spawnedEntity.teleport = vi.fn();
         spawnedEntity.getComponent.mockImplementation(componentId => {
             if (componentId === EntityComponentTypes.Inventory)
                 return { container };
