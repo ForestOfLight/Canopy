@@ -55,6 +55,40 @@
         "private": true,
         "restrict_to_owner": false
       }
+    },
+
+    "component_groups": {
+      "canopy:as_inventory_proxy": {
+        "minecraft:inventory": {
+          "additional_slots_per_strength": 0,
+          "can_be_siphoned_from": false,
+          "container_type": "container",
+          "inventory_size": 54,
+          "private": false,
+          "restrict_to_owner": false
+        },
+        "minecraft:custom_hit_test": {
+          "hitboxes": [
+            {
+              "pivot": [0, 0.5, 0],
+              "width": 1,
+              "height": 1
+            }
+          ]
+        },
+        "minecraft:collision_box": {
+          "width": 0.5,
+          "height": 0.5
+        }
+      }
+    },
+
+    "events": {
+      "canopy:become_inventory_proxy": {
+        "add": {
+          "component_groups": ["canopy:as_inventory_proxy"]
+        }
+      }
     }
   }
 }
