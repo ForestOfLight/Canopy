@@ -17,19 +17,23 @@ export class PlayerStopLookingAtUnderstudyEvent extends Event {
         world.getAllPlayers().forEach(player => {
             if (!player || Understudies.isUnderstudy(player))
                 return;
-            this.playersLookingAtUnderstudiesThisTick[player.id] = this.getLookingAtUnderstudy(player);
+            const lookingAtUnderstudy = this.getLookingAtUnderstudy(player);
+            if (lookingAtUnderstudy)
+                this.playersLookingAtUnderstudiesThisTick[player.id] = lookingAtUnderstudy;
+            else
+                delete this.playersLookingAtUnderstudiesThisTick[player.id];
         });
     }
 
     getFormattedEvents() {
         const events = [];
-        for (const playerId in this.playersLookingAtUnderstudiesThisTick) {
+        for (const playerId in this.playersLookingAtUnderstudiesLastTick) {
             const lookingAtUnderstudy = this.playersLookingAtUnderstudiesThisTick[playerId];
             const lastLookingAtUnderstudy = this.playersLookingAtUnderstudiesLastTick[playerId];
-            if (lastLookingAtUnderstudy || !lookingAtUnderstudy) {
+            if (lastLookingAtUnderstudy && !lookingAtUnderstudy) {
                 events.push({
                     player: world.getEntity(playerId),
-                    understudy: Understudies.get(lookingAtUnderstudy.name)
+                    understudy: Understudies.get(lastLookingAtUnderstudy.name)
                 });
             }
         }
