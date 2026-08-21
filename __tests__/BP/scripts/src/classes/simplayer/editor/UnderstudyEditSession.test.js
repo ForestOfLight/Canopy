@@ -44,6 +44,7 @@ describe('UnderstudyEditSession', () => {
         proxyContainer = new Container({ size: 54 });
         proxy = {
             isValid: true,
+            dimensionId: player.dimension.id,
             container: proxyContainer,
             teleportTo: vi.fn(),
             remove: vi.fn()
@@ -56,7 +57,7 @@ describe('UnderstudyEditSession', () => {
         it('teleports the proxy to the player head each tick', () => {
             const session = makeSession();
             session.onTick();
-            expect(proxy.teleportTo).toHaveBeenCalledWith({ x: 0, y: 66, z: 0 });
+            expect(proxy.teleportTo).toHaveBeenCalledWith({ x: 0, y: 66, z: 0 }, player.dimension);
         });
     });
 
@@ -149,6 +150,33 @@ describe('UnderstudyEditSession', () => {
             expect(proxyContainer.getItem(50)).toBeUndefined();
         });
 
+        it('keeps the overflow item in the proxy when the transfer fails', () => {
+            const session = makeSession();
+            session.onContainerOpened();
+            proxyContainer.setItem(50, makeItem('minecraft:emerald'));
+            playerInventory.addItem.mockImplementation(() => {
+                throw new Error('container is invalid');
+            });
+
+            session.onContainerClosed();
+
+            expect(proxyContainer.getItem(50).typeId).toBe('minecraft:emerald');
+        });
+
+        it('keeps sweeping the remaining overflow slots after one slot fails', () => {
+            const session = makeSession();
+            session.onContainerOpened();
+            proxyContainer.setItem(50, makeItem('minecraft:emerald'));
+            proxyContainer.setItem(51, makeItem('minecraft:gold_ingot'));
+            playerInventory.addItem.mockImplementationOnce(() => {
+                throw new Error('container is invalid');
+            });
+
+            session.onContainerClosed();
+
+            expect(proxyContainer.getItem(51)).toBeUndefined();
+        });
+
         it('drops overflow items when the player inventory is full', () => {
             const session = makeSession();
             session.onContainerOpened();
@@ -178,6 +206,122 @@ describe('UnderstudyEditSession', () => {
             session.onTick();
             expect(session.isDisposed).toBe(true);
         });
+
+        it('disposes on tick when the proxy entity has been removed from the world', () => {
+            const session = makeSession();
+            session.onContainerOpened();
+            proxy.isValid = false;
+            session.onTick();
+            expect(session.isDisposed).toBe(true);
+        });
+
+        it('disposes on tick when the player changed dimension away from the proxy', () => {
+            const session = makeSession();
+            player.dimension = { id: 'minecraft:nether', spawnItem: vi.fn() };
+            session.onTick();
+            expect(session.isDisposed).toBe(true);
+            expect(proxy.teleportTo).not.toHaveBeenCalled();
+        });
+
+        it('does not throw out of a container close when the understudy is gone', () => {
+            const session = makeSession();
+            session.onContainerOpened();
+            understudy.getInventory.mockImplementation(() => {
+                throw new Error('UnderstudyNotConnectedError');
+            });
+            expect(() => session.onContainerClosed()).not.toThrow();
+        });
+
+        it('still disposes on close when the understudy is gone and disposal was deferred', () => {
+            const session = makeSession();
+            session.onContainerOpened();
+            session.onStopLooking();
+            understudy.getInventory.mockImplementation(() => {
+                throw new Error('UnderstudyNotConnectedError');
+            });
+            session.onContainerClosed();
+            expect(session.isDisposed).toBe(true);
+            expect(proxy.remove).toHaveBeenCalled();
+        });
+    });
+
+    describe('rejected understudy writes', () => {
+        it('returns an item the understudy refused to accept to the player', () => {
+            const session = makeSession();
+            session.onContainerOpened();
+            understudyInventory.setItem.mockImplementation(() => void 0);
+            proxyContainer.setItem(4, makeItem('minecraft:diamond_block'));
+
+            session.onTick();
+
+            expect(playerInventory.getItem(0).typeId).toBe('minecraft:diamond_block');
+        });
+
+        it('drops a refused item at the player feet when their inventory is full', () => {
+            const session = makeSession();
+            session.onContainerOpened();
+            for (let slotIndex = 0; slotIndex < 36; slotIndex++)
+                playerInventory.setItem(slotIndex, makeItem('minecraft:stone'));
+            understudyInventory.setItem.mockImplementation(() => void 0);
+            const diamondBlock = makeItem('minecraft:diamond_block');
+            proxyContainer.setItem(4, diamondBlock);
+
+            session.onTick();
+
+            expect(player.dimension.spawnItem).toHaveBeenCalledWith(diamondBlock, player.location);
+        });
+
+        it('does not hand back an item the understudy accepted', () => {
+            const session = makeSession();
+            session.onContainerOpened();
+            proxyContainer.setItem(4, makeItem('minecraft:diamond_block'));
+
+            session.onTick();
+
+            expect(playerInventory.getItem(0)).toBeUndefined();
+        });
+    });
+
+    describe('disposal safety', () => {
+        it('removes the proxy only once across repeated dispose calls', () => {
+            const session = makeSession();
+            session.dispose();
+            session.dispose();
+            expect(proxy.remove).toHaveBeenCalledTimes(1);
+        });
+
+        it('does nothing on a tick after disposal', () => {
+            const session = makeSession();
+            session.dispose();
+            proxy.teleportTo.mockClear();
+
+            session.onTick();
+
+            expect(proxy.teleportTo).not.toHaveBeenCalled();
+            expect(proxy.remove).toHaveBeenCalledTimes(1);
+        });
+
+        it('returns overflow items when the session is disposed without a close', () => {
+            const session = makeSession();
+            session.onContainerOpened();
+            proxyContainer.setItem(50, makeItem('minecraft:emerald'));
+
+            session.dispose();
+
+            expect(playerInventory.getItem(0).typeId).toBe('minecraft:emerald');
+        });
+
+        it('does not throw out of dispose when returning items fails', () => {
+            const session = makeSession();
+            session.onContainerOpened();
+            proxyContainer.setItem(50, makeItem('minecraft:emerald'));
+            player.getComponent.mockImplementation(() => {
+                throw new Error('player is gone');
+            });
+
+            expect(() => session.dispose()).not.toThrow();
+            expect(proxy.remove).toHaveBeenCalled();
+        });
     });
 
     describe('matchesUnderstudy', () => {
@@ -187,6 +331,36 @@ describe('UnderstudyEditSession', () => {
 
         it('is false for a different understudy', () => {
             expect(makeSession().matchesUnderstudy({ name: 'Alex' })).toBe(false);
+        });
+
+        it('never matches an unresolved understudy', () => {
+            expect(makeSession().matchesUnderstudy(void 0)).toBe(false);
+            expect(new UnderstudyEditSession(player, void 0, proxy).matchesUnderstudy(void 0)).toBe(false);
+        });
+    });
+
+    describe('closing the container', () => {
+        it('empties the mirrored proxy slots so nobody else can loot them', () => {
+            understudyInventory.setItem(0, makeItem('minecraft:diamond'));
+            const session = makeSession();
+            session.onContainerOpened();
+            expect(proxyContainer.getItem(0).typeId).toBe('minecraft:diamond');
+
+            session.onContainerClosed();
+
+            expect(proxyContainer.getItem(0)).toBeUndefined();
+            expect(understudyInventory.getItem(0).typeId).toBe('minecraft:diamond');
+        });
+
+        it('refills the proxy from the understudy when it is reopened', () => {
+            understudyInventory.setItem(0, makeItem('minecraft:diamond'));
+            const session = makeSession();
+            session.onContainerOpened();
+            session.onContainerClosed();
+
+            session.onContainerOpened();
+
+            expect(proxyContainer.getItem(0).typeId).toBe('minecraft:diamond');
         });
     });
 });

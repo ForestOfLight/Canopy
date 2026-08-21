@@ -47,17 +47,37 @@ describe('ProxyInventoryEntity', () => {
         });
     });
 
-    describe('teleportTo', () => {
-        it('teleports the underlying entity', () => {
+    describe('entityTypeId', () => {
+        it('exposes the spawned entity type so subscribers cannot drift from it', () => {
+            expect(ProxyInventoryEntity.entityTypeId).toBe('canopy:nbt_item_database');
+        });
+    });
+
+    describe('dimensionId', () => {
+        it('reports the dimension the proxy currently lives in', () => {
             const proxy = ProxyInventoryEntity.spawnFor(player);
-            proxy.teleportTo({ x: 3, y: 4, z: 5 });
-            expect(spawnedEntity.teleport).toHaveBeenCalledWith({ x: 3, y: 4, z: 5 });
+            expect(proxy.dimensionId).toBe(spawnedEntity.dimension.id);
+        });
+
+        it('is undefined once the entity is invalid', () => {
+            const proxy = ProxyInventoryEntity.spawnFor(player);
+            spawnedEntity.isValid = false;
+            expect(proxy.dimensionId).toBeUndefined();
+        });
+    });
+
+    describe('teleportTo', () => {
+        it('teleports the underlying entity into the given dimension', () => {
+            const proxy = ProxyInventoryEntity.spawnFor(player);
+            const dimension = { id: 'minecraft:nether' };
+            proxy.teleportTo({ x: 3, y: 4, z: 5 }, dimension);
+            expect(spawnedEntity.teleport).toHaveBeenCalledWith({ x: 3, y: 4, z: 5 }, { dimension });
         });
 
         it('does nothing when the entity is no longer valid', () => {
             const proxy = ProxyInventoryEntity.spawnFor(player);
             spawnedEntity.isValid = false;
-            proxy.teleportTo({ x: 3, y: 4, z: 5 });
+            proxy.teleportTo({ x: 3, y: 4, z: 5 }, player.dimension);
             expect(spawnedEntity.teleport).not.toHaveBeenCalled();
         });
     });

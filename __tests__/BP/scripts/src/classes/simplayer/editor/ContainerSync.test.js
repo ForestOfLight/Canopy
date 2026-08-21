@@ -25,6 +25,14 @@ const makeView = (size, items = {}) => {
     };
 };
 
+// Mirrors EntityEquippable.setEquipment, which returns false without throwing when
+// the slot refuses the item (EquipmentSlot.Body for a player, for instance).
+const makeSilentlyRefusingView = size => {
+    const view = makeView(size);
+    view.setItem = vi.fn(() => false);
+    return view;
+};
+
 describe('ContainerSync', () => {
     describe('snapshot', () => {
         it('clones every slot up to the view size', () => {
@@ -89,7 +97,7 @@ describe('ContainerSync', () => {
         it('does not echo a write back on the following tick', () => {
             let base = ContainerSync.snapshot(proxy);
             understudy.slots[0] = makeItem('minecraft:cobblestone');
-            base = ContainerSync.sync(understudy, proxy, base);
+            base = ContainerSync.sync(understudy, proxy, base).proxyBase;
 
             understudy.setItem.mockClear();
             proxy.setItem.mockClear();
@@ -107,7 +115,7 @@ describe('ContainerSync', () => {
             });
             proxy.slots[0] = makeItem('minecraft:diamond');
 
-            const nextBase = ContainerSync.sync(understudy, proxy, base);
+            const nextBase = ContainerSync.sync(understudy, proxy, base).proxyBase;
 
             understudy.setItem.mockImplementation(() => void 0);
             ContainerSync.sync(understudy, proxy, nextBase);
@@ -128,7 +136,99 @@ describe('ContainerSync', () => {
         it('returns a snapshot covering the full proxy view', () => {
             const bigProxy = makeView(5);
             const next = ContainerSync.sync(understudy, bigProxy, ContainerSync.snapshot(bigProxy));
-            expect(next).toHaveLength(5);
+            expect(next.proxyBase).toHaveLength(5);
+        });
+
+        it('reports no rejections when every write lands', () => {
+            const base = ContainerSync.snapshot(proxy);
+            proxy.slots[0] = makeItem('minecraft:diamond');
+
+            const result = ContainerSync.sync(understudy, proxy, base);
+
+            expect(result.rejectedItemStacks).toEqual([]);
+        });
+    });
+
+    describe('rejected writes', () => {
+        it('reports the item stack when the understudy silently refuses the write', () => {
+            const understudy = makeSilentlyRefusingView(3);
+            const proxy = makeView(3);
+            const base = ContainerSync.snapshot(proxy);
+            const diamondBlock = makeItem('minecraft:diamond_block');
+            proxy.slots[0] = diamondBlock;
+
+            const result = ContainerSync.sync(understudy, proxy, base);
+
+            expect(result.rejectedItemStacks).toEqual([diamondBlock]);
+        });
+
+        it('reports the item stack when the understudy write throws', () => {
+            const understudy = makeView(3);
+            const proxy = makeView(3);
+            understudy.setItem.mockImplementation(() => {
+                throw new Error('slot rejected the item');
+            });
+            const base = ContainerSync.snapshot(proxy);
+            const diamondBlock = makeItem('minecraft:diamond_block');
+            proxy.slots[0] = diamondBlock;
+
+            const result = ContainerSync.sync(understudy, proxy, base);
+
+            expect(result.rejectedItemStacks).toEqual([diamondBlock]);
+        });
+
+        it('does not report a cleared slot as a rejection', () => {
+            const understudy = makeSilentlyRefusingView(3);
+            const proxy = makeView(3, { 0: makeItem('minecraft:diamond') });
+            const base = ContainerSync.snapshot(proxy);
+            proxy.slots[0] = void 0;
+
+            const result = ContainerSync.sync(understudy, proxy, base);
+
+            expect(result.rejectedItemStacks).toEqual([]);
+        });
+
+        it('reports a rejection per refusing slot without aborting the sweep', () => {
+            const understudy = makeSilentlyRefusingView(3);
+            const proxy = makeView(3);
+            const base = ContainerSync.snapshot(proxy);
+            proxy.slots[0] = makeItem('minecraft:diamond');
+            proxy.slots[2] = makeItem('minecraft:emerald');
+
+            const result = ContainerSync.sync(understudy, proxy, base);
+
+            expect(result.rejectedItemStacks.map(itemStack => itemStack.typeId))
+                .toEqual(['minecraft:diamond', 'minecraft:emerald']);
+        });
+
+        it('keeps syncing the remaining slots when one slot read throws', () => {
+            const understudy = makeView(3);
+            const proxy = makeView(3);
+            understudy.getItem.mockImplementation(slotIndex => {
+                if (slotIndex === 0)
+                    throw new Error('slot is gone');
+                return understudy.slots[slotIndex];
+            });
+            understudy.slots[2] = makeItem('minecraft:cobblestone');
+            const base = ContainerSync.snapshot(proxy);
+
+            expect(() => ContainerSync.sync(understudy, proxy, base)).not.toThrow();
+            expect(proxy.setItem).toHaveBeenCalledWith(2, understudy.slots[2]);
+        });
+
+        it('treats a read-back failure as a rejection', () => {
+            const understudy = makeView(3);
+            const proxy = makeView(3);
+            understudy.getItem.mockImplementation(() => {
+                throw new Error('slot is gone');
+            });
+            const base = ContainerSync.snapshot(proxy);
+            const diamond = makeItem('minecraft:diamond');
+            proxy.slots[0] = diamond;
+
+            const result = ContainerSync.sync(understudy, proxy, base);
+
+            expect(result.rejectedItemStacks).toEqual([diamond]);
         });
     });
 });

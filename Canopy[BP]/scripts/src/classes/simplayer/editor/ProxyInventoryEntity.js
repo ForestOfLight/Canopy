@@ -22,6 +22,10 @@ export class ProxyInventoryEntity {
         return new ProxyInventoryEntity(entity);
     }
 
+    static get entityTypeId() {
+        return ProxyInventoryEntity.#ENTITY_TYPE_ID;
+    }
+
     static sweepOrphans(dimension) {
         const orphans = dimension.getEntities({
             type: ProxyInventoryEntity.#ENTITY_TYPE_ID,
@@ -38,16 +42,22 @@ export class ProxyInventoryEntity {
         return this.#entity?.isValid === true;
     }
 
+    get dimensionId() {
+        if (!this.isValid)
+            return void 0;
+        return this.#entity.dimension?.id;
+    }
+
     get container() {
         if (!this.isValid)
             return void 0;
         return this.#entity.getComponent(EntityComponentTypes.Inventory)?.container;
     }
 
-    teleportTo(location) {
+    teleportTo(location, dimension) {
         if (!this.isValid)
             return;
-        this.#entity.teleport(location);
+        this.#entity.teleport(location, { dimension });
     }
 
     remove() {
