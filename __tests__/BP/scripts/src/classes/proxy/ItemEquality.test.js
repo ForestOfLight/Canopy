@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { ItemComponentTypes } from '@minecraft/server';
-import { ItemEquality } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/editor/ItemEquality';
+import { ItemEquality } from '../../../../../../Canopy[BP]/scripts/src/classes/proxy/ItemEquality';
 
 // Extend ItemComponentTypes with additional component types for testing
 ItemComponentTypes.Book = 'book';

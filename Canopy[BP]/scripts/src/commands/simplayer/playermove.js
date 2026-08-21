@@ -1,3 +1,4 @@
+import { ProxyInventoryEntity } from '../../classes/proxy/ProxyInventoryEntity';
 import { CustomCommandParamType, CommandPermissionLevel, CustomCommandStatus, Entity, system } from "@minecraft/server";
 import { VanillaCommand, PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin, ServerCommandOrigin } from "../../../lib/canopy/Canopy";
 import Understudies from "../../classes/simplayer/Understudies";
@@ -81,7 +82,7 @@ export class PlayerMoveCommand extends VanillaCommand {
         const source = origin.getSource();
         if (source instanceof Entity === false)
             return { status: CustomCommandStatus.Failure, message: 'commands.playermove.entity.entityonly' };
-        const entity = source.getEntitiesFromViewDirection({ maxDistance: 16*64 })[0]?.entity;
+        const entity = ProxyInventoryEntity.excludeFrom(source.getEntitiesFromViewDirection({ maxDistance: 16*64 }))[0]?.entity;
         if (entity === void 0)
             return { status: CustomCommandStatus.Failure, message: 'commands.playermove.entity.noentity' };
         system.run(() => understudy.moveLocation(entity));

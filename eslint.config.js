@@ -14,7 +14,6 @@ export default [
     ignores: [
       '**/scripts/lib/mt.js',
       '**/scripts/lib/MCBE-IPC/',
-      '**/scripts/lib/chestui/',
       '**/scripts/lib/jsep/',
     ]
   },

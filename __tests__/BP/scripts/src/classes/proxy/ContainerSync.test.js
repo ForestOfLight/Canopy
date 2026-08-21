@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ContainerSync } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/editor/ContainerSync';
+import { ContainerSync } from '../../../../../../Canopy[BP]/scripts/src/classes/proxy/ContainerSync';
 
 const makeItem = (typeId, amount = 1) => ({
     typeId,

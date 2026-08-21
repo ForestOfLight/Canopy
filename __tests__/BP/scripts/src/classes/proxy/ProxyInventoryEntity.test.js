@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Container, Entity, EntityComponentTypes, Player } from '@minecraft/server';
-import { ProxyInventoryEntity } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/editor/ProxyInventoryEntity';
+import { ProxyInventoryEntity } from '../../../../../../Canopy[BP]/scripts/src/classes/proxy/ProxyInventoryEntity';
+import { ProxyLayout } from '../../../../../../Canopy[BP]/scripts/src/classes/proxy/ProxyLayout';
 
 describe('ProxyInventoryEntity', () => {
     let player;
@@ -44,6 +45,42 @@ describe('ProxyInventoryEntity', () => {
         it('exposes the entity container', () => {
             const proxy = ProxyInventoryEntity.spawnFor(player);
             expect(proxy.container).toBe(container);
+        });
+    });
+
+    describe('layouts', () => {
+        it('spawns the plain chest proxy by default', () => {
+            ProxyInventoryEntity.spawnFor(player);
+            expect(player.dimension.spawnEntity).toHaveBeenCalledWith(
+                'canopy:inventory_proxy',
+                expect.anything(),
+                expect.anything()
+            );
+        });
+
+        it('spawns a dedicated entity type per layout rather than mutating one after spawn', () => {
+            ProxyInventoryEntity.spawnFor(player, ProxyLayout.Hopper);
+            ProxyInventoryEntity.spawnFor(player, ProxyLayout.Chest);
+
+            const spawnedTypes = player.dimension.spawnEntity.mock.calls.map(([typeId]) => typeId);
+            expect(spawnedTypes).toEqual(['canopy:inventory_proxy_hopper', 'canopy:inventory_proxy']);
+            expect(spawnedEntity.triggerEvent).not.toHaveBeenCalled();
+        });
+
+        it('falls back to the chest layout for an unknown layout', () => {
+            expect(ProxyInventoryEntity.entityTypeIdFor('nonsense')).toBe('canopy:inventory_proxy');
+        });
+    });
+
+    describe('isProxyEntity', () => {
+        it('recognises every proxy variant so raycasts can skip the parked proxy', () => {
+            expect(ProxyInventoryEntity.isProxyEntity({ typeId: 'canopy:inventory_proxy' })).toBe(true);
+            expect(ProxyInventoryEntity.isProxyEntity({ typeId: 'canopy:inventory_proxy_hopper' })).toBe(true);
+        });
+
+        it('does not mistake a real container entity for a proxy', () => {
+            expect(ProxyInventoryEntity.isProxyEntity({ typeId: 'minecraft:chest_minecart' })).toBe(false);
+            expect(ProxyInventoryEntity.isProxyEntity(void 0)).toBe(false);
         });
     });
 
@@ -120,7 +157,7 @@ describe('ProxyInventoryEntity', () => {
     });
 
     describe('sweepOrphans', () => {
-        it('removes every tagged proxy entity left in the dimension', () => {
+        it('removes every sized proxy variant left in the dimension', () => {
             const orphanA = new Entity();
             const orphanB = new Entity();
             const dimension = { getEntities: vi.fn(() => [orphanA, orphanB]) };
@@ -128,7 +165,7 @@ describe('ProxyInventoryEntity', () => {
             ProxyInventoryEntity.sweepOrphans(dimension);
 
             expect(dimension.getEntities).toHaveBeenCalledWith({
-                type: 'canopy:inventory_proxy'
+                families: ['canopy:inventory_proxy']
             });
             expect(orphanA.remove).toHaveBeenCalled();
             expect(orphanB.remove).toHaveBeenCalled();

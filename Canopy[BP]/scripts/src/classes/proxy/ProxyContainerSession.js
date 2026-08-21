@@ -1,23 +1,19 @@
 import { EntityComponentTypes } from "@minecraft/server";
 import { ContainerSync } from "./ContainerSync";
-import { UnderstudyEditView } from "./UnderstudyEditView";
 
-export class UnderstudyEditSession {
-    static #TIP_TRANSLATE_KEY = "simplayer.editor.tip";
-
+export class ProxyContainerSession {
     #player;
-    #understudy;
+    #target;
     #proxy;
     #proxyBase = [];
     #mirroredSlotCount = void 0;
-    #viewMode = void 0;
     #isOpen = false;
     #disposalPending = false;
     #isDisposed = false;
 
-    constructor(player, understudy, proxy) {
+    constructor(player, target, proxy) {
         this.#player = player;
-        this.#understudy = understudy;
+        this.#target = target;
         this.#proxy = proxy;
         this.#refreshPresentation();
     }
@@ -26,8 +22,12 @@ export class UnderstudyEditSession {
         return this.#player.id;
     }
 
-    get understudy() {
-        return this.#understudy;
+    get player() {
+        return this.#player;
+    }
+
+    get target() {
+        return this.#target;
     }
 
     get proxyEntity() {
@@ -38,18 +38,8 @@ export class UnderstudyEditSession {
         return this.#isOpen;
     }
 
-    get viewMode() {
-        return this.#viewMode;
-    }
-
     get isDisposed() {
         return this.#isDisposed;
-    }
-
-    matchesUnderstudy(understudy) {
-        if (this.#understudy === void 0 || understudy === void 0)
-            return false;
-        return this.#understudy.name === understudy.name;
     }
 
     onTick() {
@@ -110,46 +100,44 @@ export class UnderstudyEditSession {
     }
 
     #refreshPresentation() {
-        this.#viewMode = UnderstudyEditView.viewModeFor(this.#player?.isSneaking);
-        this.#proxy?.setName(this.#formatProxyName());
+        this.#target?.refresh?.(this.#player);
+        this.#proxy?.setName(this.#target?.displayName() ?? "");
         this.#showInteractionTip();
     }
 
-    #formatProxyName() {
-        return `${this.#understudy?.name ?? ""} - %${UnderstudyEditView.titleKeyFor(this.#viewMode)}`;
-    }
-
     #showInteractionTip() {
-        this.#player?.onScreenDisplay?.setActionBar?.({ translate: UnderstudyEditSession.#TIP_TRANSLATE_KEY });
+        const tipTranslateKey = this.#target?.tipTranslateKey;
+        if (tipTranslateKey === void 0)
+            return;
+        this.#player?.onScreenDisplay?.setActionBar?.({ translate: tipTranslateKey });
     }
 
     #runSync() {
-        const understudyView = this.#resolveUnderstudyView();
+        const targetView = this.#resolveTargetView();
         const proxyContainer = this.#proxy.container;
-        if (understudyView === void 0 || proxyContainer === void 0)
+        if (targetView === void 0 || proxyContainer === void 0)
             return;
-        const result = ContainerSync.sync(understudyView, proxyContainer, this.#proxyBase);
+        const result = ContainerSync.sync(targetView, proxyContainer, this.#proxyBase);
         this.#proxyBase = result.proxyBase;
         this.#returnRejectedItems(result.rejectedItemStacks);
     }
 
     #isAlive() {
         return this.#player?.isValid === true
-            && this.#understudy?.isConnected() === true
+            && this.#target?.isAlive() === true
             && this.#proxy?.isValid === true
             && this.#proxy.dimensionId === this.#player.dimension?.id;
     }
 
-    #resolveUnderstudyView() {
+    #resolveTargetView() {
         try {
-            const inventoryContainer = this.#understudy?.getInventory();
-            if (inventoryContainer === void 0)
+            const targetView = this.#target?.resolveView();
+            if (targetView === void 0)
                 return void 0;
-            const understudyView = new UnderstudyEditView(inventoryContainer, this.#understudy.getEquippable(), this.#viewMode);
-            this.#mirroredSlotCount = understudyView.size;
-            return understudyView;
+            this.#mirroredSlotCount = targetView.size;
+            return targetView;
         } catch (error) {
-            console.warn("[Canopy] Failed to read the understudy inventory:", error);
+            console.warn("[Canopy] Failed to read the proxy target inventory:", error);
             return void 0;
         }
     }
@@ -182,25 +170,25 @@ export class UnderstudyEditSession {
 
     #returnOverflowItems() {
         const proxyContainer = this.#proxy.container;
-        const understudyView = this.#resolveUnderstudyView();
-        const boundary = understudyView?.size ?? this.#mirroredSlotCount;
+        const targetView = this.#resolveTargetView();
+        const boundary = targetView?.size ?? this.#mirroredSlotCount;
         if (proxyContainer === void 0 || boundary === void 0)
             return;
         for (let slotIndex = 0; slotIndex < proxyContainer.size; slotIndex++) {
-            if (this.#isMirroredSlot(understudyView, boundary, slotIndex))
+            if (this.#isMirroredSlot(targetView, boundary, slotIndex))
                 continue;
             this.#returnOverflowSlot(proxyContainer, slotIndex);
         }
     }
 
-    #isMirroredSlot(understudyView, boundary, slotIndex) {
+    #isMirroredSlot(targetView, boundary, slotIndex) {
         if (slotIndex >= boundary)
             return false;
-        return understudyView?.hasSlot(slotIndex) !== false;
+        return targetView?.hasSlot(slotIndex) !== false;
     }
 
     #resolveMirroredSlotCount() {
-        return this.#resolveUnderstudyView()?.size ?? this.#mirroredSlotCount;
+        return this.#resolveTargetView()?.size ?? this.#mirroredSlotCount;
     }
 
     #returnOverflowSlot(proxyContainer, slotIndex) {

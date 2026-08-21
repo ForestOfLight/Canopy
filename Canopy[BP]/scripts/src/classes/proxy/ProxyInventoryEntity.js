@@ -1,7 +1,13 @@
 import { EntityComponentTypes } from "@minecraft/server";
+import { ProxyLayout } from "./ProxyLayout";
 
 export class ProxyInventoryEntity {
-    static #ENTITY_TYPE_ID = "canopy:inventory_proxy";
+    static #TYPE_FAMILY = "canopy:inventory_proxy";
+
+    static #ENTITY_TYPE_IDS = Object.freeze({
+        [ProxyLayout.Hopper]: "canopy:inventory_proxy_hopper",
+        [ProxyLayout.Chest]: "canopy:inventory_proxy"
+    });
 
     #entity;
 
@@ -9,22 +15,41 @@ export class ProxyInventoryEntity {
         this.#entity = entity;
     }
 
-    static spawnFor(player) {
+    static spawnFor(player, layout = ProxyLayout.Chest) {
         const entity = player.dimension.spawnEntity(
-            ProxyInventoryEntity.#ENTITY_TYPE_ID,
+            ProxyInventoryEntity.entityTypeIdFor(layout),
             player.getHeadLocation(),
             { initialPersistence: true }
         );
         return new ProxyInventoryEntity(entity);
     }
 
+    static entityTypeIdFor(layout) {
+        return ProxyInventoryEntity.#ENTITY_TYPE_IDS[layout]
+            ?? ProxyInventoryEntity.#ENTITY_TYPE_IDS[ProxyLayout.Chest];
+    }
+
     static get entityTypeId() {
-        return ProxyInventoryEntity.#ENTITY_TYPE_ID;
+        return ProxyInventoryEntity.#ENTITY_TYPE_IDS[ProxyLayout.Chest];
+    }
+
+    static get typeFamily() {
+        return ProxyInventoryEntity.#TYPE_FAMILY;
+    }
+
+    static isProxyEntity(entity) {
+        if (entity === void 0)
+            return false;
+        return Object.values(ProxyInventoryEntity.#ENTITY_TYPE_IDS).includes(entity.typeId);
+    }
+
+    static excludeFrom(entityRayResult) {
+        return (entityRayResult ?? []).filter(hit => !ProxyInventoryEntity.isProxyEntity(hit?.entity));
     }
 
     static sweepOrphans(dimension) {
         const orphans = dimension.getEntities({
-            type: ProxyInventoryEntity.#ENTITY_TYPE_ID
+            families: [ProxyInventoryEntity.#TYPE_FAMILY]
         });
         orphans.forEach(orphan => ProxyInventoryEntity.#tryRemove(orphan));
     }

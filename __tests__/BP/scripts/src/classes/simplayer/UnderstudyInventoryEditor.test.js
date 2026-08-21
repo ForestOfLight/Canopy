@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Container, Entity, EntityComponentTypes, Player, world } from '@minecraft/server';
 import { scheduler } from '@forestoflight/minecraft-vitest-mocks';
 import { understudyInventoryEditor } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/UnderstudyInventoryEditor';
-import { ProxyInventoryEntity } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/editor/ProxyInventoryEntity';
+import { ProxyInventoryEntity } from '../../../../../../Canopy[BP]/scripts/src/classes/proxy/ProxyInventoryEntity';
 import { playerStartLookingAtUnderstudy } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/events/PlayerStartLookingAtUnderstudyEvent';
 import { playerStopLookingAtUnderstudy } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/events/PlayerStopLookingAtUnderstudyEvent';
 
@@ -61,7 +61,7 @@ describe('UnderstudyInventoryEditor', () => {
             understudyInventoryEditor.start();
             const expectedFilter = {
                 entityFilter: {
-                    type: 'canopy:inventory_proxy'
+                    families: ['canopy:inventory_proxy']
                 }
             };
             expect(containerOpened.subscribe).toHaveBeenCalledWith(expect.any(Function), expectedFilter);
@@ -74,10 +74,10 @@ describe('UnderstudyInventoryEditor', () => {
             expect(containerOpened.subscribe).toHaveBeenCalledTimes(1);
         });
 
-        it('takes the proxy entity type from ProxyInventoryEntity', () => {
+        it('takes the proxy type family from ProxyInventoryEntity so every sized variant is covered', () => {
             understudyInventoryEditor.start();
             const [, options] = containerOpened.subscribe.mock.calls[0];
-            expect(options.entityFilter.type).toBe(ProxyInventoryEntity.entityTypeId);
+            expect(options.entityFilter.families).toEqual([ProxyInventoryEntity.typeFamily]);
         });
     });
 

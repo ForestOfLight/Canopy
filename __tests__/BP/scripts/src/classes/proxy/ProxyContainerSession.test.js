@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Container, EntityComponentTypes, EquipmentSlot, Player } from '@minecraft/server';
-import { UnderstudyEditSession } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/editor/UnderstudyEditSession';
-import { UnderstudyEditViewMode } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/editor/UnderstudyEditView';
+import { ProxyContainerSession } from '../../../../../../Canopy[BP]/scripts/src/classes/proxy/ProxyContainerSession';
+import { UnderstudyTarget } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/editor/UnderstudyTarget';
+import { UnderstudyEditViewMode } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/editor/UnderstudyEditView';
 
 const makeItem = typeId => ({
     typeId,
@@ -15,7 +16,7 @@ const makeItem = typeId => ({
     }
 });
 
-describe('UnderstudyEditSession', () => {
+describe('ProxyContainerSession driving an Understudy', () => {
     let player;
     let playerInventory;
     let understudy;
@@ -55,7 +56,7 @@ describe('UnderstudyEditSession', () => {
         };
     });
 
-    const makeSession = () => new UnderstudyEditSession(player, understudy, proxy);
+    const makeSession = () => new ProxyContainerSession(player, new UnderstudyTarget(understudy), proxy);
 
     describe('while closed', () => {
         it('teleports the proxy to the player head each tick', () => {
@@ -454,7 +455,7 @@ describe('UnderstudyEditSession', () => {
             player.isSneaking = false;
             session.onTick();
 
-            expect(session.viewMode).toBe(UnderstudyEditViewMode.Inventory);
+            expect(session.target.viewMode).toBe(UnderstudyEditViewMode.Inventory);
             expect(proxyContainer.getItem(0).typeId).toBe('minecraft:diamond');
         });
 
@@ -484,13 +485,13 @@ describe('UnderstudyEditSession', () => {
     describe('proxy title', () => {
         it('names the hotbar view so the container title says what is inside', () => {
             makeSession();
-            expect(proxy.setName).toHaveBeenCalledWith('Steve §7- §r%simplayer.editor.view.hotbarAndArmor');
+            expect(proxy.setName).toHaveBeenCalledWith('Steve - %simplayer.editor.view.hotbarAndArmor');
         });
 
         it('names the inventory view while the player sneaks', () => {
             player.isSneaking = true;
             makeSession();
-            expect(proxy.setName).toHaveBeenCalledWith('Steve §7- §r%simplayer.editor.view.inventory');
+            expect(proxy.setName).toHaveBeenCalledWith('Steve - %simplayer.editor.view.inventory');
         });
 
         it('renames the proxy before the player interacts when they start sneaking', () => {
@@ -500,7 +501,7 @@ describe('UnderstudyEditSession', () => {
 
             session.onTick();
 
-            expect(proxy.setName).toHaveBeenCalledWith('Steve §7- §r%simplayer.editor.view.inventory');
+            expect(proxy.setName).toHaveBeenCalledWith('Steve - %simplayer.editor.view.inventory');
         });
 
         it('leaves the title alone while the container is open', () => {
@@ -546,18 +547,18 @@ describe('UnderstudyEditSession', () => {
         });
     });
 
-    describe('matchesUnderstudy', () => {
+    describe('target matching', () => {
         it('is true for its own understudy', () => {
-            expect(makeSession().matchesUnderstudy(understudy)).toBe(true);
+            expect(makeSession().target.matches(understudy)).toBe(true);
         });
 
         it('is false for a different understudy', () => {
-            expect(makeSession().matchesUnderstudy({ name: 'Alex' })).toBe(false);
+            expect(makeSession().target.matches({ name: 'Alex' })).toBe(false);
         });
 
         it('never matches an unresolved understudy', () => {
-            expect(makeSession().matchesUnderstudy(void 0)).toBe(false);
-            expect(new UnderstudyEditSession(player, void 0, proxy).matchesUnderstudy(void 0)).toBe(false);
+            expect(makeSession().target.matches(void 0)).toBe(false);
+            expect(new ProxyContainerSession(player, new UnderstudyTarget(void 0), proxy).target.matches(void 0)).toBe(false);
         });
     });
 
