@@ -7,7 +7,7 @@ import { UnderstudyEditSession } from "./editor/UnderstudyEditSession";
 export class UnderstudyInventoryEditor {
     static #ENTITY_FILTER = {
         entityFilter: {
-            type: "canopy:nbt_item_database",
+            type: ProxyInventoryEntity.entityTypeId,
             tags: [ProxyInventoryEntity.PROXY_TAG]
         }
     };
@@ -15,6 +15,7 @@ export class UnderstudyInventoryEditor {
     #sessions = new Map();
     #runner = void 0;
     #isStarted = false;
+    #handlers = void 0;
 
     get sessionCount() {
         return this.#sessions.size;
@@ -28,24 +29,44 @@ export class UnderstudyInventoryEditor {
         if (this.#isStarted)
             return;
         this.#isStarted = true;
-        playerStartLookingAtUnderstudy.subscribe(event => this.onStartLooking(event));
-        playerStopLookingAtUnderstudy.subscribe(event => this.onStopLooking(event));
+        this.#handlers = {
+            startLooking: event => this.onStartLooking(event),
+            stopLooking: event => this.onStopLooking(event),
+            containerOpened: event => this.onContainerOpened(event),
+            containerClosed: event => this.onContainerClosed(event),
+            playerLeave: event => this.onPlayerLeave(event)
+        };
+        playerStartLookingAtUnderstudy.subscribe(this.#handlers.startLooking);
+        playerStopLookingAtUnderstudy.subscribe(this.#handlers.stopLooking);
         world.afterEvents.entityContainerOpened.subscribe(
-            event => this.onContainerOpened(event),
+            this.#handlers.containerOpened,
             UnderstudyInventoryEditor.#ENTITY_FILTER
         );
         world.afterEvents.entityContainerClosed.subscribe(
-            event => this.onContainerClosed(event),
+            this.#handlers.containerClosed,
             UnderstudyInventoryEditor.#ENTITY_FILTER
         );
-        world.afterEvents.playerLeave.subscribe(event => this.onPlayerLeave(event));
+        world.afterEvents.playerLeave.subscribe(this.#handlers.playerLeave);
     }
 
     reset() {
         this.#sessions.forEach(session => session.dispose());
         this.#sessions.clear();
         this.#stopTicking();
+        this.#unsubscribeAll();
         this.#isStarted = false;
+    }
+
+    #unsubscribeAll() {
+        const handlers = this.#handlers;
+        this.#handlers = void 0;
+        if (handlers === void 0)
+            return;
+        playerStartLookingAtUnderstudy.unsubscribe(handlers.startLooking);
+        playerStopLookingAtUnderstudy.unsubscribe(handlers.stopLooking);
+        world.afterEvents.entityContainerOpened.unsubscribe(handlers.containerOpened);
+        world.afterEvents.entityContainerClosed.unsubscribe(handlers.containerClosed);
+        world.afterEvents.playerLeave.unsubscribe(handlers.playerLeave);
     }
 
     onStartLooking(event) {

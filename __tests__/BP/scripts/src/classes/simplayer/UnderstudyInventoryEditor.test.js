@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Container, Entity, EntityComponentTypes, Player, world } from '@minecraft/server';
 import { scheduler } from '@forestoflight/minecraft-vitest-mocks';
 import { understudyInventoryEditor } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/UnderstudyInventoryEditor';
+import { ProxyInventoryEntity } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/editor/ProxyInventoryEntity';
 import { playerStartLookingAtUnderstudy } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/events/PlayerStartLookingAtUnderstudyEvent';
 import { playerStopLookingAtUnderstudy } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/events/PlayerStopLookingAtUnderstudyEvent';
 
@@ -49,6 +50,9 @@ describe('UnderstudyInventoryEditor', () => {
         world.afterEvents.entityContainerClosed = containerClosed;
         vi.spyOn(playerStartLookingAtUnderstudy, 'subscribe').mockImplementation(() => void 0);
         vi.spyOn(playerStopLookingAtUnderstudy, 'subscribe').mockImplementation(() => void 0);
+        vi.spyOn(playerStartLookingAtUnderstudy, 'unsubscribe').mockImplementation(() => void 0);
+        vi.spyOn(playerStopLookingAtUnderstudy, 'unsubscribe').mockImplementation(() => void 0);
+        world.afterEvents.playerLeave = { subscribe: vi.fn(), unsubscribe: vi.fn() };
         understudyInventoryEditor.reset();
     });
 
@@ -69,6 +73,50 @@ describe('UnderstudyInventoryEditor', () => {
             understudyInventoryEditor.start();
             understudyInventoryEditor.start();
             expect(containerOpened.subscribe).toHaveBeenCalledTimes(1);
+        });
+
+        it('takes the proxy entity type from ProxyInventoryEntity', () => {
+            understudyInventoryEditor.start();
+            const [, options] = containerOpened.subscribe.mock.calls[0];
+            expect(options.entityFilter.type).toBe(ProxyInventoryEntity.entityTypeId);
+        });
+    });
+
+    describe('reset', () => {
+        it('unsubscribes every handler it registered', () => {
+            understudyInventoryEditor.start();
+            const [openedHandler] = containerOpened.subscribe.mock.calls[0];
+            const [closedHandler] = containerClosed.subscribe.mock.calls[0];
+            const [startHandler] = playerStartLookingAtUnderstudy.subscribe.mock.calls[0];
+            const [stopHandler] = playerStopLookingAtUnderstudy.subscribe.mock.calls[0];
+            const [leaveHandler] = world.afterEvents.playerLeave.subscribe.mock.calls[0];
+
+            understudyInventoryEditor.reset();
+
+            expect(containerOpened.unsubscribe).toHaveBeenCalledWith(openedHandler);
+            expect(containerClosed.unsubscribe).toHaveBeenCalledWith(closedHandler);
+            expect(playerStartLookingAtUnderstudy.unsubscribe).toHaveBeenCalledWith(startHandler);
+            expect(playerStopLookingAtUnderstudy.unsubscribe).toHaveBeenCalledWith(stopHandler);
+            expect(world.afterEvents.playerLeave.unsubscribe).toHaveBeenCalledWith(leaveHandler);
+        });
+
+        it('does not leave a double subscription behind when start is called again', () => {
+            understudyInventoryEditor.start();
+            understudyInventoryEditor.reset();
+            understudyInventoryEditor.start();
+
+            expect(containerOpened.subscribe).toHaveBeenCalledTimes(2);
+            expect(containerOpened.unsubscribe).toHaveBeenCalledTimes(1);
+        });
+
+        it('does not unsubscribe the same handler twice', () => {
+            understudyInventoryEditor.start();
+            understudyInventoryEditor.reset();
+            containerOpened.unsubscribe.mockClear();
+
+            understudyInventoryEditor.reset();
+
+            expect(containerOpened.unsubscribe).not.toHaveBeenCalled();
         });
     });
 
