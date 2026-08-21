@@ -1,13 +1,16 @@
 import { EntityComponentTypes } from "@minecraft/server";
-import { UnderstudyStorageView } from "../UnderstudyStorageView";
 import { ContainerSync } from "./ContainerSync";
+import { UnderstudyEditView } from "./UnderstudyEditView";
 
 export class UnderstudyEditSession {
+    static #TIP_TRANSLATE_KEY = "simplayer.editor.tip";
+
     #player;
     #understudy;
     #proxy;
     #proxyBase = [];
     #mirroredSlotCount = void 0;
+    #viewMode = void 0;
     #isOpen = false;
     #disposalPending = false;
     #isDisposed = false;
@@ -16,6 +19,7 @@ export class UnderstudyEditSession {
         this.#player = player;
         this.#understudy = understudy;
         this.#proxy = proxy;
+        this.#refreshPresentation();
     }
 
     get playerId() {
@@ -32,6 +36,10 @@ export class UnderstudyEditSession {
 
     get isOpen() {
         return this.#isOpen;
+    }
+
+    get viewMode() {
+        return this.#viewMode;
     }
 
     get isDisposed() {
@@ -53,6 +61,7 @@ export class UnderstudyEditSession {
         }
         if (!this.#isOpen) {
             this.#proxy.teleportTo(this.#player.getHeadLocation(), this.#player.dimension);
+            this.#refreshPresentation();
             return;
         }
         this.#runSync();
@@ -100,6 +109,20 @@ export class UnderstudyEditSession {
         this.#proxy.remove();
     }
 
+    #refreshPresentation() {
+        this.#viewMode = UnderstudyEditView.viewModeFor(this.#player?.isSneaking);
+        this.#proxy?.setName(this.#formatProxyName());
+        this.#showInteractionTip();
+    }
+
+    #formatProxyName() {
+        return `${this.#understudy?.name ?? ""} | %${UnderstudyEditView.titleKeyFor(this.#viewMode)}`;
+    }
+
+    #showInteractionTip() {
+        this.#player?.onScreenDisplay?.setActionBar?.({ translate: UnderstudyEditSession.#TIP_TRANSLATE_KEY });
+    }
+
     #runSync() {
         const understudyView = this.#resolveUnderstudyView();
         const proxyContainer = this.#proxy.container;
@@ -122,7 +145,7 @@ export class UnderstudyEditSession {
             const inventoryContainer = this.#understudy?.getInventory();
             if (inventoryContainer === void 0)
                 return void 0;
-            const understudyView = new UnderstudyStorageView(inventoryContainer, this.#understudy.getEquippable());
+            const understudyView = new UnderstudyEditView(inventoryContainer, this.#understudy.getEquippable(), this.#viewMode);
             this.#mirroredSlotCount = understudyView.size;
             return understudyView;
         } catch (error) {
@@ -159,11 +182,21 @@ export class UnderstudyEditSession {
 
     #returnOverflowItems() {
         const proxyContainer = this.#proxy.container;
-        const boundary = this.#resolveMirroredSlotCount();
+        const understudyView = this.#resolveUnderstudyView();
+        const boundary = understudyView?.size ?? this.#mirroredSlotCount;
         if (proxyContainer === void 0 || boundary === void 0)
             return;
-        for (let slotIndex = boundary; slotIndex < proxyContainer.size; slotIndex++)
+        for (let slotIndex = 0; slotIndex < proxyContainer.size; slotIndex++) {
+            if (this.#isMirroredSlot(understudyView, boundary, slotIndex))
+                continue;
             this.#returnOverflowSlot(proxyContainer, slotIndex);
+        }
+    }
+
+    #isMirroredSlot(understudyView, boundary, slotIndex) {
+        if (slotIndex >= boundary)
+            return false;
+        return understudyView?.hasSlot(slotIndex) !== false;
     }
 
     #resolveMirroredSlotCount() {

@@ -7,8 +7,7 @@ import { UnderstudyEditSession } from "./editor/UnderstudyEditSession";
 export class UnderstudyInventoryEditor {
     static #ENTITY_FILTER = {
         entityFilter: {
-            type: ProxyInventoryEntity.entityTypeId,
-            tags: [ProxyInventoryEntity.PROXY_TAG]
+            type: ProxyInventoryEntity.entityTypeId
         }
     };
 

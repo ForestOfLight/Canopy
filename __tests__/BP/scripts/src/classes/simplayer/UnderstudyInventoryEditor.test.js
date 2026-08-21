@@ -57,12 +57,11 @@ describe('UnderstudyInventoryEditor', () => {
     });
 
     describe('start', () => {
-        it('subscribes to both container events filtered to tagged proxy entities', () => {
+        it('subscribes to both container events filtered to proxy entities', () => {
             understudyInventoryEditor.start();
             const expectedFilter = {
                 entityFilter: {
-                    type: 'canopy:nbt_item_database',
-                    tags: ['canopy:inventory_proxy']
+                    type: 'canopy:inventory_proxy'
                 }
             };
             expect(containerOpened.subscribe).toHaveBeenCalledWith(expect.any(Function), expectedFilter);

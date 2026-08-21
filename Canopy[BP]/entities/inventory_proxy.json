@@ -2,7 +2,7 @@
   "format_version": "1.12.0",
   "minecraft:entity": {
     "description": {
-      "identifier": "canopy:nbt_item_database",
+      "identifier": "canopy:inventory_proxy",
       "is_summonable": true,
       "is_spawnable": false,
       "is_experimental": false
@@ -16,9 +16,9 @@
       "minecraft:custom_hit_test": {
         "hitboxes": [
           {
-            "pivot": [0, 100, 0],
-            "width": 0,
-            "height": 0
+            "pivot": [0, 0.5, 0],
+            "width": 1,
+            "height": 1
           }
         ]
       },
@@ -28,8 +28,8 @@
         }
       },
       "minecraft:collision_box": {
-        "width": 0.001,
-        "height": 0.001
+        "width": 0.5,
+        "height": 0.5
       },
       "minecraft:health": {
         "value": 1,
@@ -51,11 +51,10 @@
         "additional_slots_per_strength": 0,
         "can_be_siphoned_from": false,
         "container_type": "container",
-        "inventory_size": 54,
-        "private": true,
+        "inventory_size": 27,
+        "private": false,
         "restrict_to_owner": false
       }
     }
   }
 }
-  

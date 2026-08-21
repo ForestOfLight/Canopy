@@ -22,23 +22,23 @@ describe('ProxyInventoryEntity', () => {
     });
 
     describe('spawnFor', () => {
-        it('spawns the database entity type at the player head location', () => {
+        it('spawns the dedicated proxy entity type at the player head location', () => {
             ProxyInventoryEntity.spawnFor(player);
             expect(player.dimension.spawnEntity).toHaveBeenCalledWith(
-                'canopy:nbt_item_database',
+                'canopy:inventory_proxy',
                 { x: 1, y: 66, z: 2 },
                 { initialPersistence: true }
             );
         });
 
-        it('tags the entity so it can be told apart from database entities', () => {
+        it('leans on the dedicated entity type instead of tagging the entity', () => {
             ProxyInventoryEntity.spawnFor(player);
-            expect(spawnedEntity.addTag).toHaveBeenCalledWith(ProxyInventoryEntity.PROXY_TAG);
+            expect(spawnedEntity.addTag).not.toHaveBeenCalled();
         });
 
-        it('triggers the component group that makes the container openable', () => {
+        it('never mutates the entity after spawning so the client hitbox is right immediately', () => {
             ProxyInventoryEntity.spawnFor(player);
-            expect(spawnedEntity.triggerEvent).toHaveBeenCalledWith('canopy:become_inventory_proxy');
+            expect(spawnedEntity.triggerEvent).not.toHaveBeenCalled();
         });
 
         it('exposes the entity container', () => {
@@ -49,7 +49,7 @@ describe('ProxyInventoryEntity', () => {
 
     describe('entityTypeId', () => {
         it('exposes the spawned entity type so subscribers cannot drift from it', () => {
-            expect(ProxyInventoryEntity.entityTypeId).toBe('canopy:nbt_item_database');
+            expect(ProxyInventoryEntity.entityTypeId).toBe('canopy:inventory_proxy');
         });
     });
 
@@ -128,8 +128,7 @@ describe('ProxyInventoryEntity', () => {
             ProxyInventoryEntity.sweepOrphans(dimension);
 
             expect(dimension.getEntities).toHaveBeenCalledWith({
-                type: 'canopy:nbt_item_database',
-                tags: [ProxyInventoryEntity.PROXY_TAG]
+                type: 'canopy:inventory_proxy'
             });
             expect(orphanA.remove).toHaveBeenCalled();
             expect(orphanB.remove).toHaveBeenCalled();

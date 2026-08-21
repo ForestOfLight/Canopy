@@ -33,6 +33,19 @@ const makeSilentlyRefusingView = size => {
     return view;
 };
 
+// Mirrors an armor slot: clearing it always works and so does the piece it takes,
+// but anything else is refused without throwing.
+const makeArmorSlotView = (size, acceptedTypeId, items = {}) => {
+    const view = makeView(size, items);
+    view.setItem = vi.fn((slotIndex, itemStack) => {
+        if (itemStack !== void 0 && itemStack.typeId !== acceptedTypeId)
+            return false;
+        view.slots[slotIndex] = itemStack;
+        return true;
+    });
+    return view;
+};
+
 describe('ContainerSync', () => {
     describe('snapshot', () => {
         it('clones every slot up to the view size', () => {
@@ -190,6 +203,43 @@ describe('ContainerSync', () => {
             expect(result.rejectedItemStacks).toEqual([diamondBlock]);
         });
 
+        it('takes the item back out of the proxy so it is not handed out twice', () => {
+            const understudy = makeSilentlyRefusingView(3);
+            const proxy = makeView(3);
+            const base = ContainerSync.snapshot(proxy);
+            proxy.slots[0] = makeItem('minecraft:diamond_block');
+
+            const result = ContainerSync.sync(understudy, proxy, base);
+
+            expect(result.rejectedItemStacks).toHaveLength(1);
+            expect(proxy.slots[0]).toBeUndefined();
+        });
+
+        it('takes the item back out of the proxy when the understudy write throws', () => {
+            const understudy = makeView(3);
+            const proxy = makeView(3);
+            understudy.setItem.mockImplementation(() => {
+                throw new Error('slot rejected the item');
+            });
+            const base = ContainerSync.snapshot(proxy);
+            proxy.slots[0] = makeItem('minecraft:diamond_block');
+
+            ContainerSync.sync(understudy, proxy, base);
+
+            expect(proxy.slots[0]).toBeUndefined();
+        });
+
+        it('leaves an accepted item sitting in the proxy', () => {
+            const understudy = makeView(3);
+            const proxy = makeView(3);
+            const base = ContainerSync.snapshot(proxy);
+            proxy.slots[0] = makeItem('minecraft:diamond_block');
+
+            ContainerSync.sync(understudy, proxy, base);
+
+            expect(proxy.slots[0]?.typeId).toBe('minecraft:diamond_block');
+        });
+
         it('does not report a cleared slot as a rejection', () => {
             const understudy = makeSilentlyRefusingView(3);
             const proxy = makeView(3, { 0: makeItem('minecraft:diamond') });
@@ -227,6 +277,43 @@ describe('ContainerSync', () => {
 
             expect(() => ContainerSync.sync(understudy, proxy, base)).not.toThrow();
             expect(proxy.setItem).toHaveBeenCalledWith(2, understudy.slots[2]);
+        });
+
+        it('takes the base item off the understudy when the replacement is refused', () => {
+            const understudy = makeArmorSlotView(1, 'minecraft:diamond_helmet', { 0: makeItem('minecraft:diamond_helmet') });
+            const proxy = makeView(1, { 0: makeItem('minecraft:diamond_helmet') });
+            const base = ContainerSync.snapshot(proxy);
+            proxy.slots[0] = makeItem('minecraft:stone');
+
+            const result = ContainerSync.sync(understudy, proxy, base);
+
+            expect(understudy.slots[0]).toBeUndefined();
+            expect(result.rejectedItemStacks.map(itemStack => itemStack.typeId)).toEqual(['minecraft:stone']);
+        });
+
+        it('does not mirror the base item back into the proxy after a refused replacement', () => {
+            const understudy = makeArmorSlotView(1, 'minecraft:diamond_helmet', { 0: makeItem('minecraft:diamond_helmet') });
+            const proxy = makeView(1, { 0: makeItem('minecraft:diamond_helmet') });
+            const base = ContainerSync.snapshot(proxy);
+            proxy.slots[0] = makeItem('minecraft:stone');
+
+            const nextBase = ContainerSync.sync(understudy, proxy, base).proxyBase;
+            const result = ContainerSync.sync(understudy, proxy, nextBase);
+
+            expect(proxy.slots[0]).toBeUndefined();
+            expect(result.rejectedItemStacks).toEqual([]);
+        });
+
+        it('leaves the understudy slot alone when the refused item went into an empty slot', () => {
+            const understudy = makeArmorSlotView(1, 'minecraft:diamond_helmet');
+            const proxy = makeView(1);
+            const base = ContainerSync.snapshot(proxy);
+            understudy.slots[0] = makeItem('minecraft:diamond_helmet');
+            proxy.slots[0] = makeItem('minecraft:stone');
+
+            ContainerSync.sync(understudy, proxy, base);
+
+            expect(understudy.slots[0]?.typeId).toBe('minecraft:diamond_helmet');
         });
 
         it('treats a read-back failure as a rejection', () => {

@@ -26,23 +26,36 @@ export class ContainerSync {
 
     static #syncSlotUnguarded(understudyView, proxyView, baseItemStack, slotIndex, rejectedItemStacks) {
         const proxyItemStack = proxyView.getItem(slotIndex);
-        if (!ItemEquality.equal(proxyItemStack, baseItemStack)) {
-            ContainerSync.#writeToUnderstudy(understudyView, proxyView, slotIndex, proxyItemStack, rejectedItemStacks);
+        if (ItemEquality.equal(proxyItemStack, baseItemStack)) {
+            ContainerSync.#mirrorUnderstudySlot(understudyView, proxyView, slotIndex, proxyItemStack);
             return;
         }
+        if (ContainerSync.#writeToUnderstudy(understudyView, slotIndex, proxyItemStack))
+            return;
+        ContainerSync.#undoProxyEdit(understudyView, proxyView, baseItemStack, slotIndex);
+        rejectedItemStacks.push(proxyItemStack);
+    }
+
+    static #mirrorUnderstudySlot(understudyView, proxyView, slotIndex, proxyItemStack) {
         const understudyItemStack = understudyView.getItem(slotIndex);
         if (!ItemEquality.equal(understudyItemStack, proxyItemStack))
             ContainerSync.#trySetItem(proxyView, slotIndex, understudyItemStack);
     }
 
-    static #writeToUnderstudy(understudyView, proxyView, slotIndex, itemStack, rejectedItemStacks) {
+    static #writeToUnderstudy(understudyView, slotIndex, itemStack) {
         ContainerSync.#trySetItem(understudyView, slotIndex, itemStack);
         if (itemStack === void 0)
-            return;
-        if (ContainerSync.#wasWriteAccepted(understudyView, slotIndex, itemStack))
-            return;
+            return true;
+        return ContainerSync.#wasWriteAccepted(understudyView, slotIndex, itemStack);
+    }
+
+    // The refused item only reached the proxy slot by taking the base item's place, which means the
+    // player is already holding the base item. The understudy has to give it up even though the write
+    // failed, or the base item exists twice over.
+    static #undoProxyEdit(understudyView, proxyView, baseItemStack, slotIndex) {
+        if (baseItemStack !== void 0)
+            ContainerSync.#trySetItem(understudyView, slotIndex, void 0);
         ContainerSync.#trySetItem(proxyView, slotIndex, void 0);
-        rejectedItemStacks.push(itemStack);
     }
 
     static #wasWriteAccepted(containerView, slotIndex, itemStack) {

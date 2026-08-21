@@ -560,3 +560,6 @@ simplayer.notonline=§cSimplayer '%s' is not online.
 simplayer.alreadyonline=§cSimplayer '%s' is already online.
 simplayer.leave.broadcast=§e%s left the game
 simplayer.swapheld.error=§cError while swapping items: %s
+simplayer.editor.tip=§7Interact: §fHotbar & Armor§r\n§7Sneak + Interact: §fInventory
+simplayer.editor.view.hotbarAndArmor=Hotbar & Armor
+simplayer.editor.view.inventory=Inventory

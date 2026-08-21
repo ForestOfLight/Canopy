@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Container, EntityComponentTypes, Player } from '@minecraft/server';
+import { Container, EntityComponentTypes, EquipmentSlot, Player } from '@minecraft/server';
 import { UnderstudyEditSession } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/editor/UnderstudyEditSession';
+import { UnderstudyEditViewMode } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/editor/UnderstudyEditView';
 
 const makeItem = typeId => ({
     typeId,
@@ -32,6 +33,7 @@ describe('UnderstudyEditSession', () => {
                 return { container: playerInventory };
             return void 0;
         });
+        player.onScreenDisplay = { setActionBar: vi.fn() };
 
         understudyInventory = new Container({ size: 36 });
         understudy = {
@@ -41,13 +43,14 @@ describe('UnderstudyEditSession', () => {
             getEquippable: vi.fn(() => void 0)
         };
 
-        proxyContainer = new Container({ size: 54 });
+        proxyContainer = new Container({ size: 27 });
         proxy = {
             isValid: true,
             dimensionId: player.dimension.id,
             container: proxyContainer,
             teleportTo: vi.fn(),
             dropItem: vi.fn(() => true),
+            setName: vi.fn(),
             remove: vi.fn()
         };
     });
@@ -143,39 +146,39 @@ describe('UnderstudyEditSession', () => {
         it('returns items left beyond the understudy view to the player on close', () => {
             const session = makeSession();
             session.onContainerOpened();
-            proxyContainer.setItem(50, makeItem('minecraft:emerald'));
+            proxyContainer.setItem(20, makeItem('minecraft:emerald'));
 
             session.onContainerClosed();
 
             expect(playerInventory.getItem(0).typeId).toBe('minecraft:emerald');
-            expect(proxyContainer.getItem(50)).toBeUndefined();
+            expect(proxyContainer.getItem(20)).toBeUndefined();
         });
 
         it('keeps the overflow item in the proxy when the transfer fails', () => {
             const session = makeSession();
             session.onContainerOpened();
-            proxyContainer.setItem(50, makeItem('minecraft:emerald'));
+            proxyContainer.setItem(20, makeItem('minecraft:emerald'));
             playerInventory.addItem.mockImplementation(() => {
                 throw new Error('container is invalid');
             });
 
             session.onContainerClosed();
 
-            expect(proxyContainer.getItem(50).typeId).toBe('minecraft:emerald');
+            expect(proxyContainer.getItem(20).typeId).toBe('minecraft:emerald');
         });
 
         it('keeps sweeping the remaining overflow slots after one slot fails', () => {
             const session = makeSession();
             session.onContainerOpened();
-            proxyContainer.setItem(50, makeItem('minecraft:emerald'));
-            proxyContainer.setItem(51, makeItem('minecraft:gold_ingot'));
+            proxyContainer.setItem(20, makeItem('minecraft:emerald'));
+            proxyContainer.setItem(21, makeItem('minecraft:gold_ingot'));
             playerInventory.addItem.mockImplementationOnce(() => {
                 throw new Error('container is invalid');
             });
 
             session.onContainerClosed();
 
-            expect(proxyContainer.getItem(51)).toBeUndefined();
+            expect(proxyContainer.getItem(21)).toBeUndefined();
         });
 
         it('drops overflow items when the player inventory is full', () => {
@@ -184,7 +187,7 @@ describe('UnderstudyEditSession', () => {
             for (let slotIndex = 0; slotIndex < 36; slotIndex++)
                 playerInventory.setItem(slotIndex, makeItem('minecraft:stone'));
             const emerald = makeItem('minecraft:emerald');
-            proxyContainer.setItem(50, emerald);
+            proxyContainer.setItem(20, emerald);
 
             session.onContainerClosed();
 
@@ -305,7 +308,7 @@ describe('UnderstudyEditSession', () => {
         it('returns overflow items when the session is disposed without a close', () => {
             const session = makeSession();
             session.onContainerOpened();
-            proxyContainer.setItem(50, makeItem('minecraft:emerald'));
+            proxyContainer.setItem(20, makeItem('minecraft:emerald'));
 
             session.dispose();
 
@@ -315,7 +318,7 @@ describe('UnderstudyEditSession', () => {
         it('does not throw out of dispose when returning items fails', () => {
             const session = makeSession();
             session.onContainerOpened();
-            proxyContainer.setItem(50, makeItem('minecraft:emerald'));
+            proxyContainer.setItem(20, makeItem('minecraft:emerald'));
             player.getComponent.mockImplementation(() => {
                 throw new Error('player is gone');
             });
@@ -330,19 +333,19 @@ describe('UnderstudyEditSession', () => {
             const session = makeSession();
             session.onContainerOpened();
             const emerald = makeItem('minecraft:emerald');
-            proxyContainer.setItem(50, emerald);
+            proxyContainer.setItem(20, emerald);
             player.isValid = false;
 
             session.dispose();
 
             expect(proxy.dropItem).toHaveBeenCalledWith(emerald);
-            expect(proxyContainer.getItem(50)).toBeUndefined();
+            expect(proxyContainer.getItem(20)).toBeUndefined();
         });
 
         it('does not reach for the departed player inventory', () => {
             const session = makeSession();
             session.onContainerOpened();
-            proxyContainer.setItem(50, makeItem('minecraft:emerald'));
+            proxyContainer.setItem(20, makeItem('minecraft:emerald'));
             player.isValid = false;
 
             session.dispose();
@@ -354,7 +357,7 @@ describe('UnderstudyEditSession', () => {
         it('drops the overflow items before the proxy entity is removed', () => {
             const session = makeSession();
             session.onContainerOpened();
-            proxyContainer.setItem(50, makeItem('minecraft:emerald'));
+            proxyContainer.setItem(20, makeItem('minecraft:emerald'));
             player.isValid = false;
             proxy.remove.mockImplementation(() => {
                 proxy.isValid = false;
@@ -368,27 +371,190 @@ describe('UnderstudyEditSession', () => {
         it('keeps the overflow item in the proxy when the drop fails', () => {
             const session = makeSession();
             session.onContainerOpened();
-            proxyContainer.setItem(50, makeItem('minecraft:emerald'));
+            proxyContainer.setItem(20, makeItem('minecraft:emerald'));
             player.isValid = false;
             proxy.dropItem.mockImplementation(() => {
                 throw new Error('entity is invalid');
             });
 
             expect(() => session.dispose()).not.toThrow();
-            expect(proxyContainer.getItem(50).typeId).toBe('minecraft:emerald');
+            expect(proxyContainer.getItem(20).typeId).toBe('minecraft:emerald');
         });
 
         it('warns instead of throwing when the proxy cannot take the item either', () => {
             const warn = vi.spyOn(console, 'warn').mockImplementation(() => void 0);
             const session = makeSession();
             session.onContainerOpened();
-            proxyContainer.setItem(50, makeItem('minecraft:emerald'));
+            proxyContainer.setItem(20, makeItem('minecraft:emerald'));
             player.isValid = false;
             proxy.dropItem.mockReturnValue(false);
 
             expect(() => session.dispose()).not.toThrow();
             expect(warn).toHaveBeenCalled();
             warn.mockRestore();
+        });
+    });
+
+    describe('split views', () => {
+        let equipment;
+
+        beforeEach(() => {
+            equipment = {};
+            understudy.getEquippable.mockReturnValue({
+                getEquipment: vi.fn(slot => equipment[slot]),
+                setEquipment: vi.fn((slot, itemStack) => {
+                    equipment[slot] = itemStack;
+                    return true;
+                })
+            });
+        });
+
+        it('mirrors the hotbar and worn gear when the player is not sneaking', () => {
+            understudyInventory.setItem(0, makeItem('minecraft:dirt'));
+            understudyInventory.setItem(9, makeItem('minecraft:diamond'));
+            equipment[EquipmentSlot.Head] = makeItem('minecraft:diamond_helmet');
+            const session = makeSession();
+
+            session.onContainerOpened();
+
+            expect(proxyContainer.getItem(0).typeId).toBe('minecraft:dirt');
+            expect(proxyContainer.getItem(18).typeId).toBe('minecraft:diamond_helmet');
+            expect(proxyContainer.getItem(22)).toBeUndefined();
+            expect(proxyContainer.getItem(9)).toBeUndefined();
+        });
+
+        it('mirrors the main inventory when the player is sneaking', () => {
+            understudyInventory.setItem(0, makeItem('minecraft:dirt'));
+            understudyInventory.setItem(9, makeItem('minecraft:diamond'));
+            player.isSneaking = true;
+            const session = makeSession();
+
+            session.onContainerOpened();
+
+            expect(proxyContainer.getItem(0).typeId).toBe('minecraft:diamond');
+            expect(proxyContainer.getItem(26)).toBeUndefined();
+        });
+
+        it('picks up a sneak that started after the session did', () => {
+            understudyInventory.setItem(9, makeItem('minecraft:diamond'));
+            const session = makeSession();
+            player.isSneaking = true;
+            session.onTick();
+
+            session.onContainerOpened();
+
+            expect(proxyContainer.getItem(0).typeId).toBe('minecraft:diamond');
+        });
+
+        it('holds the opened view steady when the player lets go of sneak', () => {
+            understudyInventory.setItem(9, makeItem('minecraft:diamond'));
+            player.isSneaking = true;
+            const session = makeSession();
+            session.onContainerOpened();
+
+            player.isSneaking = false;
+            session.onTick();
+
+            expect(session.viewMode).toBe(UnderstudyEditViewMode.Inventory);
+            expect(proxyContainer.getItem(0).typeId).toBe('minecraft:diamond');
+        });
+
+        it('never mirrors more slots than a single chest can show', () => {
+            player.isSneaking = true;
+            const session = makeSession();
+            session.onContainerOpened();
+            understudyInventory.setItem(35, makeItem('minecraft:emerald'));
+            session.onTick();
+
+            expect(proxyContainer.getItem(26).typeId).toBe('minecraft:emerald');
+            expect(proxyContainer.size).toBe(27);
+        });
+
+        it('hands back items left in the empty row instead of destroying them', () => {
+            const session = makeSession();
+            session.onContainerOpened();
+            proxyContainer.setItem(11, makeItem('minecraft:emerald'));
+
+            session.onContainerClosed();
+
+            expect(playerInventory.getItem(0).typeId).toBe('minecraft:emerald');
+            expect(proxyContainer.getItem(11)).toBeUndefined();
+        });
+
+        it('returns items dropped past the hotbar view when it closes', () => {
+            const session = makeSession();
+            session.onContainerOpened();
+            proxyContainer.setItem(14, makeItem('minecraft:emerald'));
+
+            session.onContainerClosed();
+
+            expect(playerInventory.getItem(0).typeId).toBe('minecraft:emerald');
+            expect(proxyContainer.getItem(14)).toBeUndefined();
+        });
+    });
+
+    describe('proxy title', () => {
+        it('names the hotbar view so the container title says what is inside', () => {
+            makeSession();
+            expect(proxy.setName).toHaveBeenCalledWith('Steve §7- §r%simplayer.editor.view.hotbarAndArmor');
+        });
+
+        it('names the inventory view while the player sneaks', () => {
+            player.isSneaking = true;
+            makeSession();
+            expect(proxy.setName).toHaveBeenCalledWith('Steve §7- §r%simplayer.editor.view.inventory');
+        });
+
+        it('renames the proxy before the player interacts when they start sneaking', () => {
+            const session = makeSession();
+            proxy.setName.mockClear();
+            player.isSneaking = true;
+
+            session.onTick();
+
+            expect(proxy.setName).toHaveBeenCalledWith('Steve §7- §r%simplayer.editor.view.inventory');
+        });
+
+        it('leaves the title alone while the container is open', () => {
+            const session = makeSession();
+            session.onContainerOpened();
+            proxy.setName.mockClear();
+            player.isSneaking = true;
+
+            session.onTick();
+
+            expect(proxy.setName).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('interaction tip', () => {
+        it('tells the player how to reach each half of the inventory', () => {
+            makeSession();
+            expect(player.onScreenDisplay.setActionBar).toHaveBeenCalledWith({ translate: 'simplayer.editor.tip' });
+        });
+
+        it('keeps the tip up for as long as the player is looking', () => {
+            const session = makeSession();
+            player.onScreenDisplay.setActionBar.mockClear();
+
+            session.onTick();
+
+            expect(player.onScreenDisplay.setActionBar).toHaveBeenCalledWith({ translate: 'simplayer.editor.tip' });
+        });
+
+        it('stops nagging once the container is open', () => {
+            const session = makeSession();
+            session.onContainerOpened();
+            player.onScreenDisplay.setActionBar.mockClear();
+
+            session.onTick();
+
+            expect(player.onScreenDisplay.setActionBar).not.toHaveBeenCalled();
+        });
+
+        it('does not throw when the player has no screen display', () => {
+            player.onScreenDisplay = void 0;
+            expect(() => makeSession()).not.toThrow();
         });
     });
 
