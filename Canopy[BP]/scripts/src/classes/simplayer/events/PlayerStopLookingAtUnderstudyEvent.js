@@ -1,6 +1,7 @@
 import { world } from "@minecraft/server";
 import { Event } from "../../../events/Event";
 import Understudies from "../Understudies";
+import { UnderstudyEditorTool } from "../editor/UnderstudyEditorTool";
 
 export class PlayerStopLookingAtUnderstudyEvent extends Event {
     playersLookingAtUnderstudiesThisTick = {};
@@ -41,6 +42,8 @@ export class PlayerStopLookingAtUnderstudyEvent extends Event {
     }
 
     getLookingAtUnderstudy(player) {
+        if (!UnderstudyEditorTool.isHeldBy(player))
+            return void 0;
         const raycastOptions = {
             type: "minecraft:player",
             maxDistance: 7,
