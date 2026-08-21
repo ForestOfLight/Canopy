@@ -82,6 +82,27 @@ describe('ProxyInventoryEntity', () => {
         });
     });
 
+    describe('dropItem', () => {
+        it('spawns the item at the entity location', () => {
+            const proxy = ProxyInventoryEntity.spawnFor(player);
+            const itemStack = { typeId: 'minecraft:emerald' };
+            proxy.dropItem(itemStack);
+            expect(spawnedEntity.dimension.spawnItem).toHaveBeenCalledWith(itemStack, spawnedEntity.location);
+        });
+
+        it('reports that the item was dropped', () => {
+            const proxy = ProxyInventoryEntity.spawnFor(player);
+            expect(proxy.dropItem({ typeId: 'minecraft:emerald' })).toBe(true);
+        });
+
+        it('reports failure without spawning when the entity is no longer valid', () => {
+            const proxy = ProxyInventoryEntity.spawnFor(player);
+            spawnedEntity.isValid = false;
+            expect(proxy.dropItem({ typeId: 'minecraft:emerald' })).toBe(false);
+            expect(spawnedEntity.dimension.spawnItem).not.toHaveBeenCalled();
+        });
+    });
+
     describe('remove', () => {
         it('removes the entity', () => {
             const proxy = ProxyInventoryEntity.spawnFor(player);

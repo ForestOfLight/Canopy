@@ -47,6 +47,7 @@ describe('UnderstudyEditSession', () => {
             dimensionId: player.dimension.id,
             container: proxyContainer,
             teleportTo: vi.fn(),
+            dropItem: vi.fn(() => true),
             remove: vi.fn()
         };
     });
@@ -321,6 +322,73 @@ describe('UnderstudyEditSession', () => {
 
             expect(() => session.dispose()).not.toThrow();
             expect(proxy.remove).toHaveBeenCalled();
+        });
+    });
+
+    describe('player leave', () => {
+        it('drops overflow items at the proxy when the player is already gone', () => {
+            const session = makeSession();
+            session.onContainerOpened();
+            const emerald = makeItem('minecraft:emerald');
+            proxyContainer.setItem(50, emerald);
+            player.isValid = false;
+
+            session.dispose();
+
+            expect(proxy.dropItem).toHaveBeenCalledWith(emerald);
+            expect(proxyContainer.getItem(50)).toBeUndefined();
+        });
+
+        it('does not reach for the departed player inventory', () => {
+            const session = makeSession();
+            session.onContainerOpened();
+            proxyContainer.setItem(50, makeItem('minecraft:emerald'));
+            player.isValid = false;
+
+            session.dispose();
+
+            expect(playerInventory.addItem).not.toHaveBeenCalled();
+            expect(player.dimension.spawnItem).not.toHaveBeenCalled();
+        });
+
+        it('drops the overflow items before the proxy entity is removed', () => {
+            const session = makeSession();
+            session.onContainerOpened();
+            proxyContainer.setItem(50, makeItem('minecraft:emerald'));
+            player.isValid = false;
+            proxy.remove.mockImplementation(() => {
+                proxy.isValid = false;
+            });
+
+            session.dispose();
+
+            expect(proxy.dropItem).toHaveBeenCalled();
+        });
+
+        it('keeps the overflow item in the proxy when the drop fails', () => {
+            const session = makeSession();
+            session.onContainerOpened();
+            proxyContainer.setItem(50, makeItem('minecraft:emerald'));
+            player.isValid = false;
+            proxy.dropItem.mockImplementation(() => {
+                throw new Error('entity is invalid');
+            });
+
+            expect(() => session.dispose()).not.toThrow();
+            expect(proxyContainer.getItem(50).typeId).toBe('minecraft:emerald');
+        });
+
+        it('warns instead of throwing when the proxy cannot take the item either', () => {
+            const warn = vi.spyOn(console, 'warn').mockImplementation(() => void 0);
+            const session = makeSession();
+            session.onContainerOpened();
+            proxyContainer.setItem(50, makeItem('minecraft:emerald'));
+            player.isValid = false;
+            proxy.dropItem.mockReturnValue(false);
+
+            expect(() => session.dispose()).not.toThrow();
+            expect(warn).toHaveBeenCalled();
+            warn.mockRestore();
         });
     });
 

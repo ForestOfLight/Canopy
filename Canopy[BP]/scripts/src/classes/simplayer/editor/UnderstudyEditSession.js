@@ -175,7 +175,7 @@ export class UnderstudyEditSession {
             const itemStack = proxyContainer.getItem(slotIndex);
             if (itemStack === void 0)
                 return;
-            this.#returnItemToPlayer(itemStack);
+            this.#returnItem(itemStack);
             proxyContainer.setItem(slotIndex, void 0);
         } catch (error) {
             console.warn(`[Canopy] Failed to return inventory proxy slot ${slotIndex}:`, error);
@@ -183,21 +183,35 @@ export class UnderstudyEditSession {
     }
 
     #returnRejectedItems(rejectedItemStacks) {
-        rejectedItemStacks.forEach(itemStack => this.#tryReturnItemToPlayer(itemStack));
+        rejectedItemStacks.forEach(itemStack => this.#tryReturnItem(itemStack));
     }
 
-    #tryReturnItemToPlayer(itemStack) {
+    #tryReturnItem(itemStack) {
         try {
-            this.#returnItemToPlayer(itemStack);
+            this.#returnItem(itemStack);
         } catch (error) {
-            console.warn("[Canopy] Failed to return a rejected item to the player:", error);
+            console.warn("[Canopy] Failed to return a rejected item:", error);
         }
     }
 
-    #returnItemToPlayer(itemStack) {
-        const playerContainer = this.#player?.getComponent(EntityComponentTypes.Inventory)?.container;
+    #returnItem(itemStack) {
+        if (this.#player?.isValid === true) {
+            this.#giveToPlayer(itemStack);
+            return;
+        }
+        this.#dropAtProxy(itemStack);
+    }
+
+    #giveToPlayer(itemStack) {
+        const playerContainer = this.#player.getComponent(EntityComponentTypes.Inventory)?.container;
         const leftover = playerContainer === void 0 ? itemStack : playerContainer.addItem(itemStack);
         if (leftover !== void 0)
             this.#player.dimension.spawnItem(leftover, this.#player.location);
+    }
+
+    #dropAtProxy(itemStack) {
+        if (this.#proxy?.dropItem(itemStack) === true)
+            return;
+        console.warn(`[Canopy] Lost inventory proxy item ${itemStack?.typeId}: neither the player nor the proxy could hold it.`);
     }
 }

@@ -60,6 +60,13 @@ export class ProxyInventoryEntity {
         this.#entity.teleport(location, { dimension });
     }
 
+    dropItem(itemStack) {
+        if (!this.isValid)
+            return false;
+        this.#entity.dimension.spawnItem(itemStack, this.#entity.location);
+        return true;
+    }
+
     remove() {
         ProxyInventoryEntity.#tryRemove(this.#entity);
         this.#entity = void 0;
