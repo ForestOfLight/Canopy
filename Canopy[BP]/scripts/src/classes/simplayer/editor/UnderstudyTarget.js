@@ -1,3 +1,4 @@
+import { ButtonState, InputButton } from "@minecraft/server";
 import { UnderstudyEditView } from "./UnderstudyEditView";
 
 export class UnderstudyTarget {
@@ -29,7 +30,11 @@ export class UnderstudyTarget {
     }
 
     refresh(player) {
-        this.#viewMode = UnderstudyEditView.viewModeFor(player?.isSneaking);
+        this.#viewMode = UnderstudyEditView.viewModeFor(UnderstudyTarget.#isSneaking(player));
+    }
+
+    static #isSneaking(player) {
+        return player?.inputInfo?.getButtonState(InputButton.Sneak) === ButtonState.Pressed;
     }
 
     isAlive() {

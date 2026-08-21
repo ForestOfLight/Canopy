@@ -66,7 +66,7 @@ describe('UnderstudyInventorySaver', () => {
             inventorySaver.save();
 
             const [, savedContainer] = spy.mock.calls[0];
-            expect(savedContainer.getItem(container.size)).toBe(helmet);
+            expect(savedContainer.getItem(container.size + 3)).toBe(helmet);
         });
 
         it('does not save when the inventory component is absent', () => {
@@ -98,7 +98,7 @@ describe('UnderstudyInventorySaver', () => {
             const boots = { typeId: 'minecraft:netherite_boots', amount: 1 };
             const inventorySize = understudy.getInventory().size;
             vi.spyOn(inventorySaver.itemDatabase, 'loadContainer').mockImplementation((key, container) => {
-                container.setItem(inventorySize + 3, boots);
+                container.setItem(inventorySize + 2, boots);
             });
 
             inventorySaver.load();

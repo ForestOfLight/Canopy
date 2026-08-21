@@ -1,7 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Container, EntityComponentTypes } from '@minecraft/server';
+import { ButtonState, Container, EntityComponentTypes } from '@minecraft/server';
 import { PeekTarget } from '../../../../../../Canopy[BP]/scripts/src/classes/peek/PeekTarget';
 import { PeekViewMode } from '../../../../../../Canopy[BP]/scripts/src/classes/peek/PeekView';
+
+const makePlayer = (isSneaking = false) => ({
+    inputInfo: { getButtonState: vi.fn(() => isSneaking ? ButtonState.Pressed : ButtonState.Released) }
+});
 
 describe('PeekTarget', () => {
     let container;
@@ -67,7 +71,7 @@ describe('PeekTarget', () => {
             container.setItem(27, { typeId: 'minecraft:emerald', amount: 1 });
             const target = new PeekTarget(paged());
 
-            target.refresh({ isSneaking: true });
+            target.refresh(makePlayer(true));
 
             expect(target.viewMode).toBe(PeekViewMode.Bottom);
             expect(target.resolveView().getItem(0).typeId).toBe('minecraft:emerald');
@@ -78,7 +82,7 @@ describe('PeekTarget', () => {
             const target = new PeekTarget(paged());
             expect(target.displayName()).toBe('%tile.chest.name - %commands.peek.view.top');
 
-            target.refresh({ isSneaking: true });
+            target.refresh(makePlayer(true));
 
             expect(target.displayName()).toBe('%tile.chest.name - %commands.peek.view.bottom');
         });
@@ -96,7 +100,7 @@ describe('PeekTarget', () => {
 
         it('ignores sneaking on a container that fits in one page', () => {
             const target = new PeekTarget(makeTarget());
-            target.refresh({ isSneaking: true });
+            target.refresh(makePlayer(true));
             expect(target.resolveView().size).toBe(27);
         });
     });

@@ -1,4 +1,4 @@
-import { EntityComponentTypes } from "@minecraft/server";
+import { ButtonState, EntityComponentTypes, InputButton } from "@minecraft/server";
 import { PeekView } from "./PeekView";
 
 export class PeekTarget {
@@ -36,7 +36,11 @@ export class PeekTarget {
     }
 
     refresh(player) {
-        this.#viewMode = PeekView.viewModeFor(player?.isSneaking);
+        this.#viewMode = PeekView.viewModeFor(PeekTarget.#isSneaking(player));
+    }
+
+    static #isSneaking(player) {
+        return player?.inputInfo?.getButtonState(InputButton.Sneak) === ButtonState.Pressed;
     }
 
     isAlive() {

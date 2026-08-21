@@ -52,12 +52,12 @@ describe('UnderstudyStorageView', () => {
             expect(equippable.getEquipment).not.toHaveBeenCalled();
         });
 
-        it('reads the first slot past the inventory from the head equipment slot', () => {
-            const helmet = { typeId: 'minecraft:diamond_helmet', amount: 1 };
-            equipment[EquipmentSlot.Head] = helmet;
+        it('reads the first slot past the inventory from the body equipment slot', () => {
+            const wolfArmor = { typeId: 'minecraft:wolf_armor', amount: 1 };
+            equipment[EquipmentSlot.Body] = wolfArmor;
             const view = new UnderstudyStorageView(inventory, equippable);
 
-            expect(view.getItem(36)).toBe(helmet);
+            expect(view.getItem(36)).toBe(wolfArmor);
             expect(inventory.getItem).not.toHaveBeenCalled();
         });
 
@@ -90,13 +90,13 @@ describe('UnderstudyStorageView', () => {
             expect(equippable.setEquipment).not.toHaveBeenCalled();
         });
 
-        it('writes the first slot past the inventory to the head equipment slot', () => {
-            const helmet = { typeId: 'minecraft:diamond_helmet', amount: 1 };
+        it('writes the first slot past the inventory to the body equipment slot', () => {
+            const wolfArmor = { typeId: 'minecraft:wolf_armor', amount: 1 };
             const view = new UnderstudyStorageView(inventory, equippable);
 
-            view.setItem(36, helmet);
+            view.setItem(36, wolfArmor);
 
-            expect(equippable.setEquipment).toHaveBeenCalledWith(EquipmentSlot.Head, helmet);
+            expect(equippable.setEquipment).toHaveBeenCalledWith(EquipmentSlot.Body, wolfArmor);
             expect(inventory.setItem).not.toHaveBeenCalled();
         });
 
@@ -129,11 +129,11 @@ describe('UnderstudyStorageView', () => {
                 view.getItem(i);
 
             expect(equippable.getEquipment.mock.calls.map(([slot]) => slot)).toEqual([
-                EquipmentSlot.Head,
-                EquipmentSlot.Chest,
-                EquipmentSlot.Legs,
-                EquipmentSlot.Feet,
                 EquipmentSlot.Body,
+                EquipmentSlot.Chest,
+                EquipmentSlot.Feet,
+                EquipmentSlot.Head,
+                EquipmentSlot.Legs,
                 EquipmentSlot.Offhand
             ]);
         });

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Container, EntityComponentTypes, EquipmentSlot, Player } from '@minecraft/server';
+import { ButtonState, Container, EntityComponentTypes, EquipmentSlot, Player } from '@minecraft/server';
 import { ProxyContainerSession } from '../../../../../../Canopy[BP]/scripts/src/classes/proxy/ProxyContainerSession';
 import { UnderstudyTarget } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/editor/UnderstudyTarget';
 import { UnderstudyEditViewMode } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/editor/UnderstudyEditView';
@@ -23,11 +23,14 @@ describe('ProxyContainerSession driving an Understudy', () => {
     let understudyInventory;
     let proxyContainer;
     let proxy;
+    let isSneaking;
 
     beforeEach(() => {
         playerInventory = new Container({ size: 36 });
+        isSneaking = false;
         player = new Player();
         player.id = 'player-1';
+        player.inputInfo = { getButtonState: vi.fn(() => isSneaking ? ButtonState.Pressed : ButtonState.Released) };
         player.getHeadLocation.mockReturnValue({ x: 0, y: 66, z: 0 });
         player.getComponent.mockImplementation(componentId => {
             if (componentId === EntityComponentTypes.Inventory)
@@ -426,7 +429,7 @@ describe('ProxyContainerSession driving an Understudy', () => {
         it('mirrors the main inventory when the player is sneaking', () => {
             understudyInventory.setItem(0, makeItem('minecraft:dirt'));
             understudyInventory.setItem(9, makeItem('minecraft:diamond'));
-            player.isSneaking = true;
+            isSneaking = true;
             const session = makeSession();
 
             session.onContainerOpened();
@@ -438,7 +441,7 @@ describe('ProxyContainerSession driving an Understudy', () => {
         it('picks up a sneak that started after the session did', () => {
             understudyInventory.setItem(9, makeItem('minecraft:diamond'));
             const session = makeSession();
-            player.isSneaking = true;
+            isSneaking = true;
             session.onTick();
 
             session.onContainerOpened();
@@ -448,11 +451,11 @@ describe('ProxyContainerSession driving an Understudy', () => {
 
         it('holds the opened view steady when the player lets go of sneak', () => {
             understudyInventory.setItem(9, makeItem('minecraft:diamond'));
-            player.isSneaking = true;
+            isSneaking = true;
             const session = makeSession();
             session.onContainerOpened();
 
-            player.isSneaking = false;
+            isSneaking = false;
             session.onTick();
 
             expect(session.target.viewMode).toBe(UnderstudyEditViewMode.Inventory);
@@ -460,7 +463,7 @@ describe('ProxyContainerSession driving an Understudy', () => {
         });
 
         it('never mirrors more slots than a single chest can show', () => {
-            player.isSneaking = true;
+            isSneaking = true;
             const session = makeSession();
             session.onContainerOpened();
             understudyInventory.setItem(35, makeItem('minecraft:emerald'));
@@ -489,7 +492,7 @@ describe('ProxyContainerSession driving an Understudy', () => {
         });
 
         it('names the inventory view while the player sneaks', () => {
-            player.isSneaking = true;
+            isSneaking = true;
             makeSession();
             expect(proxy.setName).toHaveBeenCalledWith('Steve - %simplayer.editor.view.inventory');
         });
@@ -497,7 +500,7 @@ describe('ProxyContainerSession driving an Understudy', () => {
         it('renames the proxy before the player interacts when they start sneaking', () => {
             const session = makeSession();
             proxy.setName.mockClear();
-            player.isSneaking = true;
+            isSneaking = true;
 
             session.onTick();
 
@@ -508,7 +511,7 @@ describe('ProxyContainerSession driving an Understudy', () => {
             const session = makeSession();
             session.onContainerOpened();
             proxy.setName.mockClear();
-            player.isSneaking = true;
+            isSneaking = true;
 
             session.onTick();
 
