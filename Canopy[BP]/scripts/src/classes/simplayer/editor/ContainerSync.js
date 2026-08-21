@@ -49,9 +49,6 @@ export class ContainerSync {
         return ContainerSync.#wasWriteAccepted(understudyView, slotIndex, itemStack);
     }
 
-    // The refused item only reached the proxy slot by taking the base item's place, which means the
-    // player is already holding the base item. The understudy has to give it up even though the write
-    // failed, or the base item exists twice over.
     static #undoProxyEdit(understudyView, proxyView, baseItemStack, slotIndex) {
         if (baseItemStack !== void 0)
             ContainerSync.#trySetItem(understudyView, slotIndex, void 0);
