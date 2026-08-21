@@ -116,7 +116,7 @@ export class UnderstudyEditSession {
     }
 
     #formatProxyName() {
-        return `${this.#understudy?.name ?? ""} | %${UnderstudyEditView.titleKeyFor(this.#viewMode)}`;
+        return `${this.#understudy?.name ?? ""} - %${UnderstudyEditView.titleKeyFor(this.#viewMode)}`;
     }
 
     #showInteractionTip() {

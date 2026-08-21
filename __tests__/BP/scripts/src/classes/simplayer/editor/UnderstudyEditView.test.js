@@ -51,30 +51,14 @@ describe('UnderstudyEditView', () => {
 
     describe('hotbar and armor view', () => {
         it('is small enough for a single chest UI', () => {
-            expect(makeHotbarView().size).toBe(23);
+            expect(makeHotbarView().size).toBe(14);
             expect(makeHotbarView().size).toBeLessThanOrEqual(27);
         });
 
-        it('starts the worn gear on the bottom row of the chest UI', () => {
+        it('starts the worn gear right after the hotbar', () => {
             const view = makeHotbarView();
             equipment[EquipmentSlot.Head] = makeItem('minecraft:diamond_helmet');
-            expect(view.getItem(18).typeId).toBe('minecraft:diamond_helmet');
-        });
-
-        it('leaves the row between the hotbar and the worn gear empty', () => {
-            inventory.setItem(9, makeItem('minecraft:diamond'));
-            inventory.setItem(17, makeItem('minecraft:emerald'));
-            const view = makeHotbarView();
-            for (let slotIndex = 9; slotIndex < 18; slotIndex++)
-                expect(view.getItem(slotIndex)).toBeUndefined();
-        });
-
-        it('swallows a write into the empty row instead of moving items', () => {
-            const view = makeHotbarView();
-            view.setItem(13, makeItem('minecraft:diamond'));
-            expect(equippable.setEquipment).not.toHaveBeenCalled();
-            for (let slotIndex = 0; slotIndex < inventory.size; slotIndex++)
-                expect(inventory.getItem(slotIndex)?.typeId).not.toBe('minecraft:diamond');
+            expect(view.getItem(9).typeId).toBe('minecraft:diamond_helmet');
         });
 
         it('drops the equipment slots when the understudy has no equippable', () => {
@@ -98,7 +82,7 @@ describe('UnderstudyEditView', () => {
 
         it('lays the worn gear out head to toe with the offhand last', () => {
             const view = makeHotbarView();
-            for (let slotIndex = 18; slotIndex < view.size; slotIndex++)
+            for (let slotIndex = 9; slotIndex < view.size; slotIndex++)
                 view.getItem(slotIndex);
             expect(equippable.getEquipment.mock.calls.map(([slot]) => slot)).toEqual([
                 EquipmentSlot.Head,
@@ -110,7 +94,7 @@ describe('UnderstudyEditView', () => {
         });
 
         it('writes an armor slot back through the equippable', () => {
-            makeHotbarView().setItem(18, makeItem('minecraft:diamond_helmet'));
+            makeHotbarView().setItem(9, makeItem('minecraft:diamond_helmet'));
             expect(equippable.setEquipment).toHaveBeenCalledWith(EquipmentSlot.Head, { typeId: 'minecraft:diamond_helmet' });
         });
 
@@ -161,18 +145,12 @@ describe('UnderstudyEditView', () => {
             const view = makeHotbarView();
             expect(view.hasSlot(0)).toBe(true);
             expect(view.hasSlot(8)).toBe(true);
-            expect(view.hasSlot(18)).toBe(true);
-            expect(view.hasSlot(22)).toBe(true);
-        });
-
-        it('disowns the empty row so its contents can be handed back', () => {
-            const view = makeHotbarView();
-            for (let slotIndex = 9; slotIndex < 18; slotIndex++)
-                expect(view.hasSlot(slotIndex)).toBe(false);
+            expect(view.hasSlot(9)).toBe(true);
+            expect(view.hasSlot(13)).toBe(true);
         });
 
         it('disowns anything past the end of the view', () => {
-            expect(makeHotbarView().hasSlot(23)).toBe(false);
+            expect(makeHotbarView().hasSlot(14)).toBe(false);
         });
     });
 
@@ -192,7 +170,7 @@ describe('UnderstudyEditView', () => {
         it('falls back to the hotbar and armor layout', () => {
             const view = new UnderstudyEditView(inventory, equippable, 'nonsense');
             expect(view.viewMode).toBe(UnderstudyEditViewMode.HotbarAndArmor);
-            expect(view.size).toBe(23);
+            expect(view.size).toBe(14);
         });
     });
 });

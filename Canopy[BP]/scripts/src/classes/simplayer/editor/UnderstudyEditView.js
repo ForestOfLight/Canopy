@@ -7,10 +7,6 @@ export const UnderstudyEditViewMode = Object.freeze({
 
 export class UnderstudyEditView {
     static HOTBAR_SLOT_COUNT = 9;
-    static ROW_SLOT_COUNT = 9;
-    static PROXY_SLOT_COUNT = 27;
-
-    static #ARMOR_ROW_START = UnderstudyEditView.PROXY_SLOT_COUNT - UnderstudyEditView.ROW_SLOT_COUNT;
 
     static #EQUIPMENT_SLOTS = [
         EquipmentSlot.Head,
@@ -95,11 +91,8 @@ export class UnderstudyEditView {
         const hotbarSize = Math.min(UnderstudyEditView.HOTBAR_SLOT_COUNT, this.#inventory.size);
         for (let slotIndex = 0; slotIndex < hotbarSize; slotIndex++)
             slots.push({ inventorySlot: slotIndex });
-        if (this.#equippable === void 0)
-            return slots;
-        while (slots.length < UnderstudyEditView.#ARMOR_ROW_START)
-            slots.push(void 0);
-        UnderstudyEditView.#EQUIPMENT_SLOTS.forEach(equipmentSlot => slots.push({ equipmentSlot }));
+        if (this.#equippable !== void 0)
+            UnderstudyEditView.#EQUIPMENT_SLOTS.forEach(equipmentSlot => slots.push({ equipmentSlot }));
         return slots;
     }
 

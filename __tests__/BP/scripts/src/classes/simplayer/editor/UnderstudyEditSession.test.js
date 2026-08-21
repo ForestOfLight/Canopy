@@ -418,9 +418,8 @@ describe('UnderstudyEditSession', () => {
             session.onContainerOpened();
 
             expect(proxyContainer.getItem(0).typeId).toBe('minecraft:dirt');
-            expect(proxyContainer.getItem(18).typeId).toBe('minecraft:diamond_helmet');
-            expect(proxyContainer.getItem(22)).toBeUndefined();
-            expect(proxyContainer.getItem(9)).toBeUndefined();
+            expect(proxyContainer.getItem(9).typeId).toBe('minecraft:diamond_helmet');
+            expect(proxyContainer.getItem(13)).toBeUndefined();
         });
 
         it('mirrors the main inventory when the player is sneaking', () => {
@@ -468,17 +467,6 @@ describe('UnderstudyEditSession', () => {
 
             expect(proxyContainer.getItem(26).typeId).toBe('minecraft:emerald');
             expect(proxyContainer.size).toBe(27);
-        });
-
-        it('hands back items left in the empty row instead of destroying them', () => {
-            const session = makeSession();
-            session.onContainerOpened();
-            proxyContainer.setItem(11, makeItem('minecraft:emerald'));
-
-            session.onContainerClosed();
-
-            expect(playerInventory.getItem(0).typeId).toBe('minecraft:emerald');
-            expect(proxyContainer.getItem(11)).toBeUndefined();
         });
 
         it('returns items dropped past the hotbar view when it closes', () => {
