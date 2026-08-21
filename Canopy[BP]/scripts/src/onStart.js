@@ -1,4 +1,4 @@
-import { world, system } from "@minecraft/server";
+import { world, system, DimensionTypes } from "@minecraft/server";
 import { displayWelcome } from "./rules/noWelcomeMessage";
 import { simplayerRejoining } from "./rules/simplayer/simplayerRejoining";
 import { understudyInventoryEditor } from "./classes/simplayer/UnderstudyInventoryEditor";
@@ -33,7 +33,7 @@ function onValidWorld() {
 }
 
 function sweepInventoryProxies() {
-    ["overworld", "nether", "the_end"].forEach(dimensionId => {
+    DimensionTypes.getAll().map(dimensionType => dimensionType.typeId).forEach(dimensionId => {
         ProxyInventoryEntity.sweepOrphans(world.getDimension(dimensionId));
     });
 }
