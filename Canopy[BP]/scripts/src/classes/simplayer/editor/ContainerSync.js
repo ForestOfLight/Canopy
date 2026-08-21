@@ -27,7 +27,7 @@ export class ContainerSync {
     static #syncSlotUnguarded(understudyView, proxyView, baseItemStack, slotIndex, rejectedItemStacks) {
         const proxyItemStack = proxyView.getItem(slotIndex);
         if (!ItemEquality.equal(proxyItemStack, baseItemStack)) {
-            ContainerSync.#writeToUnderstudy(understudyView, slotIndex, proxyItemStack, rejectedItemStacks);
+            ContainerSync.#writeToUnderstudy(understudyView, proxyView, slotIndex, proxyItemStack, rejectedItemStacks);
             return;
         }
         const understudyItemStack = understudyView.getItem(slotIndex);
@@ -35,12 +35,13 @@ export class ContainerSync {
             ContainerSync.#trySetItem(proxyView, slotIndex, understudyItemStack);
     }
 
-    static #writeToUnderstudy(understudyView, slotIndex, itemStack, rejectedItemStacks) {
+    static #writeToUnderstudy(understudyView, proxyView, slotIndex, itemStack, rejectedItemStacks) {
         ContainerSync.#trySetItem(understudyView, slotIndex, itemStack);
         if (itemStack === void 0)
             return;
         if (ContainerSync.#wasWriteAccepted(understudyView, slotIndex, itemStack))
             return;
+        ContainerSync.#trySetItem(proxyView, slotIndex, void 0);
         rejectedItemStacks.push(itemStack);
     }
 

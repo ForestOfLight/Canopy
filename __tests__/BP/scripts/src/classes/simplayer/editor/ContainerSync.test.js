@@ -162,6 +162,19 @@ describe('ContainerSync', () => {
             expect(result.rejectedItemStacks).toEqual([diamondBlock]);
         });
 
+        it('clears the proxy slot on the same tick it reports a rejection', () => {
+            const understudy = makeSilentlyRefusingView(3);
+            const proxy = makeView(3);
+            const base = ContainerSync.snapshot(proxy);
+            const diamondBlock = makeItem('minecraft:diamond_block');
+            proxy.slots[0] = diamondBlock;
+
+            const result = ContainerSync.sync(understudy, proxy, base);
+
+            expect(result.rejectedItemStacks).toEqual([diamondBlock]);
+            expect(proxy.slots[0]).toBeUndefined();
+        });
+
         it('reports the item stack when the understudy write throws', () => {
             const understudy = makeView(3);
             const proxy = makeView(3);
