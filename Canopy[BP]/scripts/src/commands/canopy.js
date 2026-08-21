@@ -97,22 +97,32 @@ export class CanopyCommand extends VanillaCommand {
         if (!rule)
             return this.handleRuleChange(origin, ruleID, rawValue);
         const newValue = CanopyCommand.parseValue(rawValue, rule.getType());
-        if (typeof newValue === 'number' && Number.isNaN(newValue))
-            return origin.sendMessage({ translate: 'rules.generic.invalidtype', with: [ruleID, rule.getType()] });
+        if (typeof newValue === 'number' && Number.isNaN(newValue)) {
+            origin.sendMessage({ translate: 'rules.generic.invalidtype', with: [ruleID, rule.getType()] });
+            return
+        }
         return this.handleRuleChange(origin, ruleID, newValue);
     }
 
     async handleRuleChange(origin, ruleID, newValue) {
-        if (!Rules.exists(ruleID))
-            return origin.sendMessage({ translate: 'rules.generic.unknown', with: [ruleID, Commands.getPrefix()] });
+        if (!Rules.exists(ruleID)) {
+            origin.sendMessage({ translate: 'rules.generic.unknown', with: [ruleID, Commands.getPrefix()] });
+            return;
+        }
         const rule = Rules.get(ruleID);
-        if (rule instanceof InfoDisplayRule)
-            return origin.sendMessage({ translate: 'commands.canopy.infodisplayRule', with: [ruleID, Commands.getPrefix()] });
+        if (rule instanceof InfoDisplayRule) {
+            origin.sendMessage({ translate: 'commands.canopy.infodisplayRule', with: [ruleID, Commands.getPrefix()] });
+            return;
+        }
         const ruleValue = await rule.getValue();
-        if (newValue === null)
-            return origin.sendMessage({ rawtext: [{ translate: 'rules.generic.status', with: [rule.getID()] }, this.getValueRawText(ruleValue, rule.getType()), { text: '§r§7.' }] });
-        if (ruleValue === newValue)
-            return origin.sendMessage({ rawtext: [{ translate: 'rules.generic.nochange', with: [rule.getID()] }, this.getValueRawText(newValue, rule.getType()), { text: '§r§7.' }] });
+        if (newValue === null) {
+            origin.sendMessage({ rawtext: [{ translate: 'rules.generic.status', with: [rule.getID()] }, this.getValueRawText(ruleValue, rule.getType()), { text: '§r§7.' }] });
+            return;
+        }
+        if (ruleValue === newValue) {
+            origin.sendMessage({ rawtext: [{ translate: 'rules.generic.nochange', with: [rule.getID()] }, this.getValueRawText(newValue, rule.getType()), { text: '§r§7.' }] });
+            return;
+        }
 
         if (newValue)
             await this.updateRules(origin, rule.getContingentRuleIDs(), newValue);
