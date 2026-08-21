@@ -49,6 +49,12 @@ const makeTool = ({
     })
 });
 
+// PotionEffectType and PotionDeliveryType are classes exposing a readonly `id`, not plain strings.
+const makePotion = (effectId, deliveryId) => ({
+    potionEffectType: { id: effectId },
+    potionDeliveryType: { id: deliveryId }
+});
+
 describe('ItemEquality', () => {
     describe('undefined handling', () => {
         it('treats two empty slots as equal', () => {
@@ -113,19 +119,49 @@ describe('ItemEquality', () => {
         });
 
         it('is unequal when book contents differ', () => {
-            const book1 = { author: 'Alice', contents: ['Hello'], isSigned: true, pageCount: 1 };
-            const book2 = { author: 'Alice', contents: ['World'], isSigned: true, pageCount: 1 };
+            const book1 = { author: 'Alice', title: 'Diary', contents: ['Hello'], isSigned: true, pageCount: 1 };
+            const book2 = { author: 'Alice', title: 'Diary', contents: ['World'], isSigned: true, pageCount: 1 };
             expect(ItemEquality.equal(makeTool({ book: book1 }), makeTool({ book: book2 }))).toBe(false);
+        });
+
+        it('is unequal when only the book title differs', () => {
+            const book1 = { author: 'Alice', title: 'Diary', contents: ['Hello'], isSigned: true, pageCount: 1 };
+            const book2 = { author: 'Alice', title: 'Ledger', contents: ['Hello'], isSigned: true, pageCount: 1 };
+            expect(ItemEquality.equal(makeTool({ book: book1 }), makeTool({ book: book2 }))).toBe(false);
+        });
+
+        it('does not let page text collide across the page delimiter', () => {
+            const onePage = { author: 'Alice', title: 'Diary', contents: ['a|b'], isSigned: true, pageCount: 1 };
+            const twoPages = { author: 'Alice', title: 'Diary', contents: ['a', 'b'], isSigned: true, pageCount: 2 };
+            expect(ItemEquality.equal(makeTool({ book: onePage }), makeTool({ book: twoPages }))).toBe(false);
+        });
+
+        it('does not let page text collide with later signature fields', () => {
+            const spoofed = { author: 'Alice', title: 'Diary', contents: ['a|true|1||'], isSigned: true, pageCount: 1 };
+            const plain = { author: 'Alice', title: 'Diary', contents: ['a'], isSigned: true, pageCount: 1 };
+            expect(ItemEquality.equal(makeTool({ book: spoofed }), makeTool({ book: plain }))).toBe(false);
         });
 
         it('is equal when neither has a book component', () => {
             expect(ItemEquality.equal(makeTool(), makeTool())).toBe(true);
         });
 
-        it('is unequal when potion types differ', () => {
-            const potion1 = { potionEffectType: 'fire_resistance', potionDeliveryType: 'drinkable' };
-            const potion2 = { potionEffectType: 'slowness', potionDeliveryType: 'drinkable' };
+        it('is unequal when potion effect types differ', () => {
+            const potion1 = makePotion('fire_resistance', 'drinkable');
+            const potion2 = makePotion('slowness', 'drinkable');
             expect(ItemEquality.equal(makeTool({ potion: potion1 }), makeTool({ potion: potion2 }))).toBe(false);
+        });
+
+        it('is unequal when potion delivery types differ', () => {
+            const drinkable = makePotion('strength', 'drinkable');
+            const splash = makePotion('strength', 'splash');
+            expect(ItemEquality.equal(makeTool({ potion: drinkable }), makeTool({ potion: splash }))).toBe(false);
+        });
+
+        it('is equal for two potions of the same effect and delivery', () => {
+            const a = makePotion('healing', 'drinkable');
+            const b = makePotion('healing', 'drinkable');
+            expect(ItemEquality.equal(makeTool({ potion: a }), makeTool({ potion: b }))).toBe(true);
         });
 
         it('is equal when neither has a potion component', () => {

@@ -1,6 +1,10 @@
 import { ItemComponentTypes } from "@minecraft/server";
 
 export class ItemEquality {
+    static #FIELD_DELIMITER = "|";
+    static #GROUP_DELIMITER = "\u001E";
+    static #ENTRY_DELIMITER = "\u001F";
+
     static equal(itemStackA, itemStackB) {
         if (itemStackA === void 0 && itemStackB === void 0)
             return true;
@@ -24,7 +28,7 @@ export class ItemEquality {
             ItemEquality.#potionOf(itemStack),
             ItemEquality.#dyeableOf(itemStack),
             ItemEquality.#inventoryOf(itemStack)
-        ].join("|");
+        ].join(ItemEquality.#FIELD_DELIMITER);
     }
 
     static #durabilityOf(itemStack) {
@@ -50,17 +54,18 @@ export class ItemEquality {
             return "";
         return [
             book.author ?? "",
-            book.contents.join("|"),
+            book.title ?? "",
+            book.contents.join(ItemEquality.#ENTRY_DELIMITER),
             String(book.isSigned),
             String(book.pageCount)
-        ].join(":");
+        ].join(ItemEquality.#GROUP_DELIMITER);
     }
 
     static #potionOf(itemStack) {
         const potion = itemStack.getComponent(ItemComponentTypes.Potion);
         if (potion === void 0)
             return "";
-        return `${potion.potionEffectType}:${potion.potionDeliveryType}`;
+        return `${potion.potionEffectType?.id ?? ""}:${potion.potionDeliveryType?.id ?? ""}`;
     }
 
     static #dyeableOf(itemStack) {
