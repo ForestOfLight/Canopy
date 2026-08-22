@@ -197,7 +197,6 @@ class Understudy {
 
     selectSlot(slotNumber) {
         this.simulatedPlayer.selectedSlotIndex = slotNumber;
-        this.savePlayerInfo();
     }
 
     sprint(shouldSprint) {
