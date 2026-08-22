@@ -17,6 +17,7 @@ class Understudy {
     #lookTarget;
     #actions;
     #playerInfoSaver;
+    #isUnloaded = false;
 
     constructor(name) {
         this.name = name;
@@ -36,6 +37,13 @@ class Understudy {
             this.refreshHeldItem();
         if (this.#simulatedPlayer.isGliding && this.#simulatedPlayer.isOnGround)
             this.glide(false);
+        if (this.#isInLoadedChunk()) {
+            this.#isUnloaded = false;
+        } else {
+            if (!this.#isUnloaded)
+                this.#sendUnloadedMessage()
+            this.#isUnloaded = true;
+        }
         this.#actions.onTick();
         this.#playerInfoSaver.onConnectedTick();
     }
@@ -274,6 +282,15 @@ class Understudy {
     #assertNotConnected() {
         if (this.isConnected())
             throw new UnderstudyConnectedError(this.name);
+    }
+
+    #isInLoadedChunk() {
+        const simulatedPlayer = this.#simulatedPlayer;
+        return simulatedPlayer.dimension.isChunkLoaded(simulatedPlayer.location);
+    }
+
+    #sendUnloadedMessage() {
+        world.sendMessage(`§cUnderstudy ${this.name} was unexpectedly unloaded. This is likely due to a bug where simplayers spawned in a dimension other than the overworld do not load chunks unless another player is in the same dimension. Please spawn the simplayer in the overworld, then teleport it where it needs to go.`);
     }
 }
 
