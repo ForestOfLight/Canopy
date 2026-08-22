@@ -1,6 +1,6 @@
 import { world, system } from "@minecraft/server";
 import { displayWelcome } from "./rules/noWelcomeMessage";
-import { startWorldSystems } from "./worldStartup";
+import { startWorldSystems } from "./onWorldStartup";
 
 world.afterEvents.playerJoin.subscribe((event) => {
     const runner = system.runInterval(() => {

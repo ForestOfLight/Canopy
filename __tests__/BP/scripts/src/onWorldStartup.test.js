@@ -24,7 +24,7 @@ function proxyEntitiesIn(dimensionId, family) {
 beforeEach(async () => {
     vi.resetModules();
     ({ world } = await import('@minecraft/server'));
-    ({ startWorldSystems } = await import('../../../../Canopy[BP]/scripts/src/worldStartup'));
+    ({ startWorldSystems } = await import('../../../../Canopy[BP]/scripts/src/onWorldStartup'));
     ({ simplayerRejoining } = await import('../../../../Canopy[BP]/scripts/src/rules/simplayer/simplayerRejoining'));
     ({ playerStartLookingAtUnderstudy } = await import('../../../../Canopy[BP]/scripts/src/classes/simplayer/events/PlayerStartLookingAtUnderstudyEvent'));
     ({ playerStopLookingAtUnderstudy } = await import('../../../../Canopy[BP]/scripts/src/classes/simplayer/events/PlayerStopLookingAtUnderstudyEvent'));

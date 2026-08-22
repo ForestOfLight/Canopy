@@ -6,7 +6,7 @@ vi.mock('../../../../Canopy[BP]/scripts/src/classes/simplayer/LegacyInventoryMig
 vi.mock('../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies', () => ({
     default: { adoptExisting: vi.fn() }
 }));
-vi.mock('../../../../Canopy[BP]/scripts/src/worldStartup', () => ({
+vi.mock('../../../../Canopy[BP]/scripts/src/onWorldStartup', () => ({
     startWorldSystems: vi.fn()
 }));
 
@@ -21,7 +21,7 @@ async function withPlayersOnline(players) {
 async function loadOnReload() {
     await import('../../../../Canopy[BP]/scripts/src/onReload');
     ({ default: Understudies } = await import('../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies'));
-    ({ startWorldSystems } = await import('../../../../Canopy[BP]/scripts/src/worldStartup'));
+    ({ startWorldSystems } = await import('../../../../Canopy[BP]/scripts/src/onWorldStartup'));
 }
 
 beforeEach(() => {
