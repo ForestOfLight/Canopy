@@ -223,38 +223,6 @@ class Understudy {
             this.simulatedPlayer.stopGliding();
     }
 
-    claimProjectiles(radius) {
-        const simulatedPlayer = this.simulatedPlayer;
-        const projectileComponents = this.#getProjectileComponentsInRange(simulatedPlayer, radius);
-        const numChanged = this.#changeProjectileOwner(projectileComponents, simulatedPlayer);
-        if (numChanged === 0)
-            return world.sendMessage({ translate: 'simplayer.claimprojectiles.none', with: [simulatedPlayer.name, String(radius)] });
-        world.sendMessage({ translate: 'simplayer.claimprojectiles.success', with: [simulatedPlayer.name, String(numChanged)] });
-        this.savePlayerInfo();
-    }
-
-    #getProjectileComponentsInRange(player, radius) {
-        const projectileComponents = [];
-        const radiusEntities = player.dimension.getEntities({ location: player.location, maxDistance: radius });
-        for (const entity of radiusEntities) {
-            const projectileComponent = entity?.getComponent(EntityComponentTypes.Projectile);
-            if (projectileComponent)
-                projectileComponents.push(projectileComponent);
-        }
-        return projectileComponents;
-    }
-
-    #changeProjectileOwner(projectileComponents, newOwner) {
-        const successfullyChanged = [];
-        for (const projectileComponent of projectileComponents) {
-            if (!projectileComponent?.isValid)
-                continue;
-            projectileComponent.owner = newOwner;
-            successfullyChanged.push(projectileComponent);
-        }
-        return successfullyChanged.length;
-    }
-
     stopAll() {
         this.actions.clear();
         this.stopMoving();

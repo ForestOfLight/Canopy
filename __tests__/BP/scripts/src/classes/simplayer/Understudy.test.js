@@ -599,41 +599,6 @@ describe('Understudy', () => {
             });
         });
 
-        describe('claimProjectiles', () => {
-            it('claims projectiles within the given radius', () => {
-                const mockComponent = { owner: null, isValid: true };
-                const mockEntity = { getComponent: vi.fn(() => mockComponent) };
-                const mockDimension = { getEntities: vi.fn(() => [mockEntity]) };
-                understudy.simulatedPlayer.dimension = mockDimension;
-                understudy.simulatedPlayer.name = 'TestBot';
-                understudy.claimProjectiles(10);
-                expect(mockComponent.owner).toBe(understudy.simulatedPlayer);
-                expect(world.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.claimprojectiles.success', with: ['TestBot', String(1)] });
-            });
-
-            it('sends a message when no projectiles are found', () => {
-                understudy.simulatedPlayer.dimension = { getEntities: vi.fn(() => []) };
-                understudy.simulatedPlayer.name = 'TestBot';
-                understudy.claimProjectiles(10);
-                expect(world.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.claimprojectiles.none', with: ['TestBot', String(10)] });
-            });
-
-            it('ignores invalid projectile components', () => {
-                const mockComponent = { isValid: false };
-                const mockEntity = { getComponent: vi.fn(() => mockComponent) };
-                const mockDimension = { getEntities: vi.fn(() => [mockEntity]) };
-                understudy.simulatedPlayer.dimension = mockDimension;
-                understudy.simulatedPlayer.name = 'TestBot';
-                understudy.claimProjectiles(10);
-                expect(world.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.claimprojectiles.none', with: ['TestBot', String(10)] });
-            });
-
-            it('throws when understudy is not connected', () => {
-                understudy.leave();
-                expect(() => understudy.claimProjectiles(10)).toThrow();
-            });
-        });
-
         describe('stopAll', () => {
             it('clears all actions', () => {
                 understudy.actions.once('attack');
