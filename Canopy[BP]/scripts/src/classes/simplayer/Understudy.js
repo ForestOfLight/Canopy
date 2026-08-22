@@ -34,6 +34,8 @@ class Understudy {
             this.clearLookTarget();
         if (this.#simulatedPlayer !== null)
             this.refreshHeldItem();
+        if (this.#simulatedPlayer.isGliding && this.#simulatedPlayer.isOnGround)
+            this.glide(false);
         this.#actions.onTick();
         this.#playerInfoSaver.onConnectedTick();
     }
