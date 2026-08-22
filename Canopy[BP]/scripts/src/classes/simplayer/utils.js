@@ -24,15 +24,6 @@ export function getLookAtRotation(baseLocation, targetLocation) {
     return { x: pitch, y: yaw };
 }
 
-export function swapSlots(invContainer, slotNumber1, slotNumber2) {
-    if (!invContainer)
-        throw new Error('[Canopy] Inventory container is not available.');
-    const slot1 = invContainer.getItem(slotNumber1);
-    const slot2 = invContainer.getItem(slotNumber2);
-    invContainer.setItem(slotNumber1, slot2);
-    invContainer.setItem(slotNumber2, slot1);
-}
-
 export function portOldGameModeToNewUpdate(gameMode) {
     if (typeof gameMode === 'string') {
         switch (gameMode.toLowerCase()) {

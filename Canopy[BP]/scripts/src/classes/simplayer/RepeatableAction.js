@@ -1,6 +1,5 @@
 import { system } from "@minecraft/server";
 import { UnknownRepeatingActionError } from "../errors/UnknownRepeatingActionError";
-import { swapSlots } from "./utils";
 
 export const REPEATABLE_ACTIONS = Object.freeze({
     ATTACK: 'attack',
