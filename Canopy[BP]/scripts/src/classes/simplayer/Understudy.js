@@ -107,6 +107,13 @@ class Understudy {
         }
     }
 
+    adopt(simulatedPlayer) {
+        this.#assertNotConnected();
+        Understudies.onConnect();
+        this.#simulatedPlayer = simulatedPlayer;
+        this.#isConnected = true;
+    }
+
     leave() {
         this.#assertConnected();
         this.savePlayerInfo();

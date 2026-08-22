@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { system, world } from '@minecraft/server';
-import { scheduler } from '@forestoflight/minecraft-vitest-mocks';
+import { system, world, Player } from '@minecraft/server';
+import { SimulatedPlayer } from '@minecraft/server-gametest';
+import { scheduler, worldDynamicPropertyStore } from '@forestoflight/minecraft-vitest-mocks';
 
 vi.mock('@minecraft/server', async () => await import('@forestoflight/minecraft-vitest-mocks/server'));
 vi.mock('@minecraft/server-gametest', async () => await import('@forestoflight/minecraft-vitest-mocks/server-gametest'));
@@ -9,6 +10,21 @@ vi.mock('../../../../../../Canopy[BP]/scripts/src/rules/simplayer/simplayerSavin
 }));
 
 let Understudies;
+
+function simulatedPlayer(name) {
+    const player = new SimulatedPlayer();
+    player.name = name;
+    return player;
+}
+
+function invalidatedPlayer() {
+    return {
+        isValid: false,
+        get name() {
+            throw new Error("Failed to get property 'name'.");
+        }
+    };
+}
 
 beforeEach(async () => {
     vi.resetModules();
@@ -70,6 +86,64 @@ describe('create and get', () => {
     });
 });
 
+describe('adoptExisting', () => {
+    it('adopts a live simulated player that has no understudy', () => {
+        world.getAllPlayers.mockReturnValue([simulatedPlayer('Alice')]);
+        Understudies.adoptExisting();
+        expect(Understudies.get('Alice')?.isConnected()).toBe(true);
+    });
+
+    it('attaches the live entity rather than spawning a replacement', () => {
+        const alice = simulatedPlayer('Alice');
+        world.getAllPlayers.mockReturnValue([alice]);
+        Understudies.adoptExisting();
+        expect(Understudies.get('Alice').simulatedPlayer).toBe(alice);
+    });
+
+    it('ignores real players', () => {
+        const steve = new Player();
+        steve.name = 'Steve';
+        world.getAllPlayers.mockReturnValue([steve]);
+        Understudies.adoptExisting();
+        expect(Understudies.isOnline('Steve')).toBe(false);
+    });
+
+    it('skips a name that already has an understudy', () => {
+        const existing = Understudies.create('Alice');
+        world.getAllPlayers.mockReturnValue([simulatedPlayer('Alice')]);
+        Understudies.adoptExisting();
+        expect(Understudies.get('Alice')).toBe(existing);
+        expect(Understudies.length()).toBe(1);
+    });
+
+    it('adopts each player only once across repeated calls', () => {
+        world.getAllPlayers.mockReturnValue([simulatedPlayer('Alice')]);
+        Understudies.adoptExisting();
+        Understudies.adoptExisting();
+        expect(Understudies.length()).toBe(1);
+    });
+
+    it('starts the processing interval for adopted players', () => {
+        world.getAllPlayers.mockReturnValue([simulatedPlayer('Alice')]);
+        Understudies.adoptExisting();
+        expect(scheduler.scheduled.size).toBeGreaterThan(0);
+    });
+
+    it('applies the nametag prefix to adopted players', () => {
+        worldDynamicPropertyStore.set('nametagPrefix', 'Bot');
+        const alice = simulatedPlayer('Alice');
+        world.getAllPlayers.mockReturnValue([alice]);
+        Understudies.adoptExisting();
+        expect(alice.nameTag).toBe('\u00a7r[Bot\u00a7r] Alice');
+    });
+
+    it('does nothing when nobody is online', () => {
+        world.getAllPlayers.mockReturnValue([]);
+        Understudies.adoptExisting();
+        expect(Understudies.length()).toBe(0);
+    });
+});
+
 describe('onEntityDie', () => {
     it('does nothing when the dead entity is not a player', () => {
         const u = Understudies.create('Alice');
@@ -89,12 +163,21 @@ describe('onEntityDie', () => {
 });
 
 describe('onPlayerGameModeChange', () => {
+    it('ignores game mode changes from an invalidated player handle', () => {
+        const u = Understudies.create('Alice');
+        Understudies.onConnect();
+        u.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
+        const saveSpy = vi.spyOn(u, 'savePlayerInfo');
+        expect(() => Understudies.onPlayerGameModeChange({ player: invalidatedPlayer() })).not.toThrow();
+        expect(saveSpy).not.toHaveBeenCalled();
+    });
+
     it('saves player info when an understudy changes game mode', () => {
         const u = Understudies.create('Alice');
         Understudies.onConnect();
         u.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
         const saveSpy = vi.spyOn(u, 'savePlayerInfo');
-        Understudies.onPlayerGameModeChange({ player: { name: 'Alice' } });
+        Understudies.onPlayerGameModeChange({ player: { isValid: true, name: 'Alice' } });
         expect(saveSpy).toHaveBeenCalled();
     });
 });
@@ -110,7 +193,7 @@ describe('onPlayerInventoryItemChange', () => {
         Understudies.onConnect();
         u.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
         const spy = vi.spyOn(u, 'markInventoryDirty');
-        Understudies.onPlayerInventoryItemChange({ player: { name: 'Alice' } });
+        Understudies.onPlayerInventoryItemChange({ player: { isValid: true, name: 'Alice' } });
         expect(spy).toHaveBeenCalled();
     });
 
@@ -119,7 +202,16 @@ describe('onPlayerInventoryItemChange', () => {
         Understudies.onConnect();
         u.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
         const spy = vi.spyOn(u, 'markInventoryDirty');
-        Understudies.onPlayerInventoryItemChange({ player: { name: 'Steve' } });
+        Understudies.onPlayerInventoryItemChange({ player: { isValid: true, name: 'Steve' } });
+        expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('ignores inventory changes from an invalidated player handle', () => {
+        const u = Understudies.create('Alice');
+        Understudies.onConnect();
+        u.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
+        const spy = vi.spyOn(u, 'markInventoryDirty');
+        expect(() => Understudies.onPlayerInventoryItemChange({ player: invalidatedPlayer() })).not.toThrow();
         expect(spy).not.toHaveBeenCalled();
     });
 });

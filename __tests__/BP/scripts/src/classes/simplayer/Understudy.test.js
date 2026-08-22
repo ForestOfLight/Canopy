@@ -5,6 +5,9 @@ import Understudy from '../../../../../../Canopy[BP]/scripts/src/classes/simplay
 import { getLookAtLocation } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/utils';
 import { MOVE_OPTIONS } from '../../../../../../Canopy[BP]/scripts/src/commands/simplayer/playermove';
 import { UnderstudyNotConnectedError } from '../../../../../../Canopy[BP]/scripts/src/classes/errors/UnderstudyNotConnectedError';
+import { UnderstudyConnectedError } from '../../../../../../Canopy[BP]/scripts/src/classes/errors/UnderstudyConnectedError';
+import { PlayerInfoSaver } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/PlayerInfoSaver';
+import { SimulatedPlayer, spawnSimulatedPlayer } from '@minecraft/server-gametest';
 
 vi.mock('../../../../../../Canopy[BP]/scripts/src/rules/simplayer/simplayerSaving', () => ({
     simplayerSaving: { getNativeValue: vi.fn(() => true), getID: vi.fn(() => 'simplayerSaving') }
@@ -12,6 +15,8 @@ vi.mock('../../../../../../Canopy[BP]/scripts/src/rules/simplayer/simplayerSavin
 vi.mock('../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies', () => ({
     default: { onConnect: vi.fn() }
 }));
+
+import Understudies from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies';
 
 describe('Understudy', () => {
     let understudy;
@@ -138,6 +143,43 @@ describe('Understudy', () => {
         });
     });
 
+
+    describe('adopt', () => {
+        it('attaches the given simulated player instead of spawning a new one', () => {
+            const existing = new SimulatedPlayer();
+            understudy.adopt(existing);
+            expect(understudy.simulatedPlayer).toBe(existing);
+            expect(spawnSimulatedPlayer).not.toHaveBeenCalled();
+        });
+
+        it('sets isConnected to true', () => {
+            understudy.adopt(new SimulatedPlayer());
+            expect(understudy.isConnected()).toBe(true);
+        });
+
+        it('starts Understudies processing', () => {
+            understudy.adopt(new SimulatedPlayer());
+            expect(Understudies.onConnect).toHaveBeenCalled();
+        });
+
+        it('throws if already connected', () => {
+            understudy.adopt(new SimulatedPlayer());
+            expect(() => understudy.adopt(new SimulatedPlayer())).toThrow(UnderstudyConnectedError);
+        });
+
+        it('leaves the live inventory alone instead of loading the saved snapshot over it', () => {
+            const loadSpy = vi.spyOn(PlayerInfoSaver.prototype, 'loadInventoryAndProjectileOwnership');
+            new Understudy('Adopted').adopt(new SimulatedPlayer());
+            expect(loadSpy).not.toHaveBeenCalled();
+            loadSpy.mockRestore();
+        });
+
+        it('does not teleport the adopted player away from where it already stands', () => {
+            const existing = new SimulatedPlayer();
+            understudy.adopt(existing);
+            expect(existing.teleport).not.toHaveBeenCalled();
+        });
+    });
     describe('while connected', () => {
         beforeEach(() => {
             understudy.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });

@@ -1,3 +1,4 @@
+import { SimulatedPlayer } from "@minecraft/server-gametest";
 import { UnderstudyNotConnectedError } from "../errors/UnderstudyNotConnectedError";
 import Understudy from "./Understudy";
 import { system, world } from "@minecraft/server";
@@ -51,15 +52,21 @@ class Understudies {
     }
 
     static onPlayerGameModeChange(event) {
-        const understudy = Understudies.get(event.player?.name);
+        const understudy = Understudies.#getFromPlayer(event.player);
         if (understudy !== void 0)
             understudy.savePlayerInfo();
     }
 
     static onPlayerInventoryItemChange(event) {
-        const understudy = Understudies.get(event.player?.name);
+        const understudy = Understudies.#getFromPlayer(event.player);
         if (understudy !== void 0)
             understudy.markInventoryDirty();
+    }
+
+    static #getFromPlayer(player) {
+        if (!player?.isValid)
+            return void 0;
+        return Understudies.get(player.name);
     }
 
     static create(name) {
@@ -68,6 +75,16 @@ class Understudies {
         const understudy = new Understudy(name);
         Understudies.understudies.push(understudy);
         return understudy;
+    }
+
+    static adoptExisting() {
+        for (const player of world.getAllPlayers()) {
+            if (!(player instanceof SimulatedPlayer) || Understudies.isOnline(player.name))
+                continue;
+            const understudy = Understudies.create(player.name);
+            understudy.adopt(player);
+            Understudies.addNametagPrefix(understudy);
+        }
     }
 
     static addNametagPrefix(understudy) {
