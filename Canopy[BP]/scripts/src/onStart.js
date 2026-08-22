@@ -1,11 +1,6 @@
-import { world, system, DimensionTypes } from "@minecraft/server";
+import { world, system } from "@minecraft/server";
 import { displayWelcome } from "./rules/noWelcomeMessage";
-import { simplayerRejoining } from "./rules/simplayer/simplayerRejoining";
-import { understudyInventoryEditor } from "./classes/simplayer/UnderstudyInventoryEditor";
-import { ProxyInventoryEntity } from "./classes/proxy/ProxyInventoryEntity";
-import { PeekCaptureEntity } from "./classes/peek/PeekCaptureEntity";
-
-let worldIsValid = false;
+import { startWorldSystems } from "./worldStartup";
 
 world.afterEvents.playerJoin.subscribe((event) => {
     const runner = system.runInterval(() => {
@@ -14,28 +9,9 @@ world.afterEvents.playerJoin.subscribe((event) => {
             if (!player) return;
             if (player?.isValid) {
                 system.clearRun(runner);
-                onValidPlayer(player);
-                if (!worldIsValid)
-                    onValidWorld();
-                worldIsValid = true;
+                displayWelcome(player);
+                startWorldSystems();
             }
         });
     });
 });
-
-function onValidPlayer(player) {
-    displayWelcome(player);
-}
-
-function onValidWorld() {
-    simplayerRejoining.onStartup();
-    understudyInventoryEditor.start();
-    sweepInventoryProxies();
-}
-
-function sweepInventoryProxies() {
-    DimensionTypes.getAll().map(dimensionType => dimensionType.typeId).forEach(dimensionId => {
-        ProxyInventoryEntity.sweepOrphans(world.getDimension(dimensionId));
-        PeekCaptureEntity.sweepOrphans(world.getDimension(dimensionId));
-    });
-}
