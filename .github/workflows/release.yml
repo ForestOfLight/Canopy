@@ -84,12 +84,6 @@ jobs:
           set -euo pipefail
           MCADDON="${{ needs.build.outputs.mcaddon }}"
           PACK_FILENAME=$(basename "$MCADDON")
-          BP_SOURCE=$(jq -r '.packs.behaviorPack' config.json | sed 's|^\./||')
-
-          # Read the game version from manifest.json
-          MIN_ENGINE_VERSION=$(sed -E 's,//.*$,,' "$BP_SOURCE/manifest.json" | jq -r '.header.min_engine_version | @csv')
-          IFS=',' read -r LEADING MAJOR MINOR <<< "$MIN_ENGINE_VERSION"
-          ENGINE_PREFIX="${MAJOR}.${MINOR}"
 
           # Fetch all Bedrock versions from CurseForge API
           CF_VERSIONS_HTTP=$(curl -sS -L \
@@ -111,21 +105,21 @@ jobs:
               exit 1
           fi
 
-          # Extract all game version IDs whose name matches the game version from the manifest.json
-          GAME_VERSION_IDS=$(jq -c --arg prefix "$ENGINE_PREFIX" '
-              if type == "array" then
-                [ .[] | select((.name // "") | startswith($prefix)) | .id ]
-              elif (type == "object" and has("data") and (.data | type == "array")) then
-                [ .data[] | select((.name // "") | startswith($prefix)) | .id ]
-              else
-                []
-              end
+          # Pick the newest game version CurseForge lists, comparing names numerically.
+          LATEST_VERSION=$(jq -c '
+              (if type == "array" then .
+               elif (type == "object" and has("data") and (.data | type == "array")) then .data
+               else [] end)
+              | map(select((.name // "") | test("^[0-9]+(\\.[0-9]+)*$")))
+              | if length == 0 then null else max_by(.name | split(".") | map(tonumber)) end
           ' curseforge-versions.json)
-          if [ "$GAME_VERSION_IDS" = "[]" ]; then
-              echo "No matching CurseForge versions found for engine prefix $ENGINE_PREFIX"
+          if [ "$LATEST_VERSION" = "null" ]; then
+              echo "No numerically-named CurseForge game versions found"
+              cat curseforge-versions.json
               exit 1
           fi
-          echo "Found CurseForge version IDs for game version $ENGINE_PREFIX: $GAME_VERSION_IDS"
+          GAME_VERSION_IDS=$(jq -c '[.id]' <<< "$LATEST_VERSION")
+          echo "Using latest CurseForge game version $(jq -r '.name' <<< "$LATEST_VERSION") (IDs: $GAME_VERSION_IDS)"
 
           # Build metadata as JSON so the changelog is uploaded with preserved Markdown.
           printf "%s" "$RELEASE_BODY" > curseforge-changelog.md
