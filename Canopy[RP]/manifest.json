@@ -1,13 +1,13 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Canopy [RP] v1.6.0",
+    "name": "Canopy [RP] v1.6.1",
     "description": "Technical informatics & features addon by §aForestOfLight§r.",
     "uuid": "bcf34368-ed0c-4cf7-938e-582cccf9950d",
     "version": [
       1,
       6,
-      0
+      1
     ],
     "min_engine_version": [
       1,
@@ -32,7 +32,7 @@
       "version": [
         1,
         6,
-        0
+        1
       ]
     }
   ],
