@@ -7,9 +7,6 @@ import { proxySessionRegistry } from "../proxy/ProxySessionRegistry";
 import { PeekTarget } from "./PeekTarget";
 import { PeekArming } from "./PeekArming";
 
-const OPERATOR_PERMISSION_LEVEL = 2;
-const PLAYER_TYPE_ID = "minecraft:player";
-
 export class PeekProxyManager {
     static OWNER = "peek";
     static PEEK_ITEM_ID = "minecraft:spyglass";
@@ -33,10 +30,6 @@ export class PeekProxyManager {
         return this.#runner !== void 0;
     }
 
-    static isOperator(player) {
-        return player?.playerPermissionLevel === OPERATOR_PERMISSION_LEVEL;
-    }
-
     static isCreative(player) {
         try {
             return player?.getGameMode() === GameMode.Creative;
@@ -46,7 +39,7 @@ export class PeekProxyManager {
     }
 
     static canPeek(player) {
-        return PeekProxyManager.isOperator(player) && PeekProxyManager.isCreative(player);
+        return PeekProxyManager.isCreative(player);
     }
 
     start() {
@@ -126,10 +119,6 @@ export class PeekProxyManager {
     #reportLostPermission(player) {
         if (player?.isValid !== true || !this.#arming.isArmed(player.id))
             return;
-        if (!PeekProxyManager.isOperator(player)) {
-            player.sendMessage({ translate: "commands.peek.fail.notoperator" });
-            return;
-        }
         if (!PeekProxyManager.isCreative(player))
             player.sendMessage({ translate: "commands.peek.fail.notcreative" });
     }
@@ -182,7 +171,7 @@ export class PeekProxyManager {
     }
 
     #isPeekableEntity(entity) {
-        if (entity === void 0 || entity.typeId === PLAYER_TYPE_ID)
+        if (entity === void 0 || entity.typeId === "minecraft:player")
             return false;
         return !ProxyInventoryEntity.isProxyEntity(entity);
     }
@@ -251,7 +240,6 @@ export class PeekProxyManager {
         world.afterEvents.playerInteractWithEntity.unsubscribe(handlers.interact);
         world.afterEvents.playerLeave.unsubscribe(handlers.playerLeave);
     }
-
 
     #ownSession(playerId) {
         if (this.#registry.ownerOf(playerId) !== PeekProxyManager.OWNER)

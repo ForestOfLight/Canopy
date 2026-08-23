@@ -269,7 +269,6 @@ commands.loop=Run a vanilla command multiple times in a single tick.
 commands.peek=Peek into a target's inventory and optionally highlight items that match a query.
 commands.peek.armed=§7Peek armed. Interact while looking at a container to peek inside it.
 commands.peek.expired=§7Peek expired. Run the command again to peek.
-commands.peek.fail.notoperator=§cPeeking into a container requires operator permissions.
 commands.peek.fail.notcreative=§cPeeking into a container requires creative mode.
 commands.peek.fail.notarget=§cThere is no container to peek into. Peek cancelled.
 commands.peek.tip=§7Interact: §fTop Half§r\n§7Sneak + Interact: §fBottom Half

@@ -12,7 +12,9 @@ new VanillaCommand({
     allowedSources: [PlayerCommandOrigin],
     contingentRules: ['allowPeekInventory'],
     callback: peekCommand,
-    wikiDescription: 'Arms a peek for your next interaction: look at a block or entity up to 96 blocks away and interact to open a mirrored container, or sneak and interact to see the second half of a larger container. Interacting with anything that is not a container cancels the peek, and the arming expires after ten seconds. Requires creative mode and operator permissions. Using the "search term" argument will highlight any items that include your search term in your InfoDisplay.'
+    wikiDescription: `Arms a peek for your next interaction. Interact with a block or entity that has a container up to ${PeekProxyManager.COMMAND_RANGE} blocks away to open a mirrored container. `
+        + `Only your next interaction is armed, and after 10 seconds, interactions will be disarmed. `
+        + `Using the "search term" argument will highlight any items that include your search term in your InfoDisplay.`
 });
 
 function peekCommand(origin, itemQuery) {
@@ -36,10 +38,6 @@ function updateQueryMap(source, itemQuery) {
 }
 
 function armLongRangePeek(source) {
-    if (!PeekProxyManager.isOperator(source)) {
-        source.sendMessage({ translate: 'commands.peek.fail.notoperator' });
-        return;
-    }
     if (!PeekProxyManager.isCreative(source)) {
         source.sendMessage({ translate: 'commands.peek.fail.notcreative' });
         return;
