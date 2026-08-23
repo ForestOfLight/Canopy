@@ -4,9 +4,6 @@ import { PeekProxyManager } from '../../../../../../Canopy[BP]/scripts/src/class
 import { ProxySessionRegistry } from '../../../../../../Canopy[BP]/scripts/src/classes/proxy/ProxySessionRegistry';
 import { PeekArming } from '../../../../../../Canopy[BP]/scripts/src/classes/peek/PeekArming';
 
-const OPERATOR = 2;
-const MEMBER = 1;
-
 describe('PeekProxyManager', () => {
     let registry;
     let manager;
@@ -58,7 +55,6 @@ describe('PeekProxyManager', () => {
 
         player = new Player();
         player.id = 'player-1';
-        player.playerPermissionLevel = OPERATOR;
         player.getGameMode.mockReturnValue(GameMode.Creative);
         player.getHeadLocation.mockReturnValue({ x: 0, y: 66, z: 0 });
         player.dimension.spawnEntity = vi.fn(typeId => {
@@ -79,8 +75,8 @@ describe('PeekProxyManager', () => {
         vi.spyOn(world, 'getAllPlayers').mockReturnValue([player]);
     });
 
-    describe('creative and operator gate', () => {
-        it('never parks a proxy for an operator outside creative', () => {
+    describe('creative gate', () => {
+        it('never parks a proxy for a player outside creative', () => {
             player.getGameMode.mockReturnValue(GameMode.Survival);
             lookAtBlock(makeContainerTarget('minecraft:chest', 27));
 
@@ -96,15 +92,6 @@ describe('PeekProxyManager', () => {
             player.getGameMode.mockReturnValue(GameMode.Adventure);
             manager.updateFor(player);
             player.getGameMode.mockReturnValue(GameMode.Spectator);
-            manager.updateFor(player);
-
-            expect(manager.sessionCount).toBe(0);
-        });
-
-        it('never parks a proxy for a creative non-operator', () => {
-            player.playerPermissionLevel = MEMBER;
-            lookAtBlock(makeContainerTarget('minecraft:chest', 27));
-
             manager.updateFor(player);
 
             expect(manager.sessionCount).toBe(0);
@@ -127,57 +114,10 @@ describe('PeekProxyManager', () => {
             expect(PeekProxyManager.isCreative({ getGameMode: () => GameMode.Survival })).toBe(false);
             expect(PeekProxyManager.isCreative(void 0)).toBe(false);
         });
-
-        it('requires both creative and operator to peek', () => {
-            const creativeOp = { playerPermissionLevel: OPERATOR, getGameMode: () => GameMode.Creative };
-            const survivalOp = { playerPermissionLevel: OPERATOR, getGameMode: () => GameMode.Survival };
-            const creativeMember = { playerPermissionLevel: MEMBER, getGameMode: () => GameMode.Creative };
-
-            expect(PeekProxyManager.canPeek(creativeOp)).toBe(true);
-            expect(PeekProxyManager.canPeek(survivalOp)).toBe(false);
-            expect(PeekProxyManager.canPeek(creativeMember)).toBe(false);
-        });
-    });
-
-    describe('operator gate', () => {
-        it('parks a proxy for an operator holding a spyglass', () => {
-            lookAtBlock(makeContainerTarget('minecraft:chest', 27));
-
-            manager.updateFor(player);
-
-            expect(manager.sessionCount).toBe(1);
-            expect(spawnedEntities).toHaveLength(1);
-        });
-
-        it('never parks a proxy for a non-operator', () => {
-            player.playerPermissionLevel = MEMBER;
-            lookAtBlock(makeContainerTarget('minecraft:chest', 27));
-
-            manager.updateFor(player);
-
-            expect(manager.sessionCount).toBe(0);
-            expect(player.dimension.spawnEntity).not.toHaveBeenCalled();
-        });
-
-        it('never parks a proxy for a non-operator who ran the command', () => {
-            player.playerPermissionLevel = MEMBER;
-            manager.armFromCommand(player);
-            lookAtBlock(makeContainerTarget('minecraft:chest', 27));
-
-            manager.updateFor(player);
-
-            expect(manager.sessionCount).toBe(0);
-        });
-
-        it('reports operator status from the player permission level', () => {
-            expect(PeekProxyManager.isOperator({ playerPermissionLevel: OPERATOR })).toBe(true);
-            expect(PeekProxyManager.isOperator({ playerPermissionLevel: MEMBER })).toBe(false);
-            expect(PeekProxyManager.isOperator(void 0)).toBe(false);
-        });
     });
 
     describe('arming', () => {
-        it('does nothing while the operator holds something other than a spyglass', () => {
+        it('does nothing while the player holds something other than a spyglass', () => {
             holdSpyglass('minecraft:stick');
             lookAtBlock(makeContainerTarget('minecraft:chest', 27));
 
@@ -338,16 +278,6 @@ describe('PeekProxyManager', () => {
             expect(player.sendMessage).toHaveBeenCalledWith({ translate: 'commands.peek.fail.notcreative' });
             expect(manager.isArmedFromCommand(player.id)).toBe(false);
             expect(spawnedEntities[0].remove).toHaveBeenCalled();
-        });
-
-        it('tells an armed player who lost operator permissions why the peek stopped', () => {
-            armAndLookAway();
-            player.playerPermissionLevel = MEMBER;
-
-            manager.updateFor(player);
-
-            expect(player.sendMessage).toHaveBeenCalledWith({ translate: 'commands.peek.fail.notoperator' });
-            expect(manager.isArmedFromCommand(player.id)).toBe(false);
         });
 
         it('gives up its capture entities when the rule is turned off', () => {
