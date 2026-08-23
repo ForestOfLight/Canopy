@@ -5,6 +5,7 @@ import { worldDynamicPropertyStore } from '@forestoflight/minecraft-vitest-mocks
 vi.mock('../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies', () => ({
     default: {
         create: vi.fn(),
+        isOnline: vi.fn(() => false),
         addNametagPrefix: vi.fn(),
         understudies: []
     }
@@ -106,6 +107,18 @@ describe('simplayerRejoining', () => {
             expect(Understudies.create).toHaveBeenCalledWith('Alice');
             expect(Understudies.create).toHaveBeenCalledWith('Bob');
             expect(mockPlayer.rejoin).toHaveBeenCalledTimes(2);
+        });
+
+        it('skips names that already have an understudy', () => {
+            worldDynamicPropertyStore.set('simplayerRejoining', true);
+            worldDynamicPropertyStore.set('simplayersToRejoin', JSON.stringify(['Alice', 'Bob']));
+            vi.mocked(Understudies.isOnline).mockImplementation(name => name === 'Alice');
+            const mockPlayer = { rejoin: vi.fn() };
+            vi.mocked(Understudies.create).mockReturnValue(mockPlayer);
+            simplayerRejoining.onStartup();
+            expect(Understudies.create).not.toHaveBeenCalledWith('Alice');
+            expect(Understudies.create).toHaveBeenCalledWith('Bob');
+            expect(mockPlayer.rejoin).toHaveBeenCalledTimes(1);
         });
 
         it('logs an error and continues when a player fails to rejoin', () => {

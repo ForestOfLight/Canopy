@@ -267,9 +267,13 @@ commands.lifetime.query.ticktime.unit= gt
 commands.loop=Run a vanilla command multiple times in a single tick.
 
 commands.peek=Peek into a target's inventory and optionally highlight items that match a query.
-commands.peek.fail.unloaded=§cTarget at %s is unloaded.
-commands.peek.fail.noinventory=§cNo inventory found in %1 at %2.
-commands.peek.fail.noitems=§cNo items found in %1 at %2.
+commands.peek.armed=§7Peek armed. Interact while looking at a container to peek inside it.
+commands.peek.expired=§7Peek expired. Run the command again to peek.
+commands.peek.fail.notcreative=§cPeeking into a container requires creative mode.
+commands.peek.fail.notarget=§cThere is no container to peek into. Peek cancelled.
+commands.peek.tip=§7Interact: §fTop Half§r\n§7Sneak + Interact: §fBottom Half
+commands.peek.view.top=Top Half
+commands.peek.view.bottom=Bottom Half
 commands.peek.query.cleared=§7Peek query cleared.
 commands.peek.query.set=§7Peek query set to '%s'.
 
@@ -560,3 +564,6 @@ simplayer.notonline=§cSimplayer '%s' is not online.
 simplayer.alreadyonline=§cSimplayer '%s' is already online.
 simplayer.leave.broadcast=§e%s left the game
 simplayer.swapheld.error=§cError while swapping items: %s
+simplayer.editor.tip=§7Interact: §fHotbar & Armor§r\n§7Sneak + Interact: §fInventory
+simplayer.editor.view.hotbarAndArmor=Hotbar & Armor
+simplayer.editor.view.inventory=Inventory

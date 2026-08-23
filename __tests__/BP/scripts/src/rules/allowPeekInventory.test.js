@@ -1,141 +1,26 @@
+import { expect, it, describe, vi, beforeEach } from "vitest";
 import { allowPeekInventory } from "../../../../../Canopy[BP]/scripts/src/rules/allowPeekInventory";
-import { expect, it, describe, vi, afterEach } from "vitest";
-import { InventoryUI } from "../../../../../Canopy[BP]/scripts/src/classes/InventoryUI";
-
-vi.mock('@minecraft/server', async (importOriginal) => {
-    const original = await importOriginal();
-    return {
-        ...original,
-        system: {
-            ...original.system,
-            currentTick: (Date.now() / 50),
-            runInterval: vi.fn((callback, interval) => {
-                const intervalId = setInterval(callback, interval * 50);
-                return { clear: () => clearInterval(intervalId) };
-            }),
-            clearRun: vi.fn((runner) => { runner.clear(); }),
-            run: vi.fn((callback) => { callback(); })
-        },
-        world: {
-            ...original.world,
-            beforeEvents: {
-                ...original.world.beforeEvents,
-                playerInteractWithBlock: { subscribe: vi.fn(), unsubscribe: vi.fn() },
-                playerInteractWithEntity: { subscribe: vi.fn(), unsubscribe: vi.fn() }
-            }
-        }
-    };
-});
-
-vi.mock("@minecraft/server-ui", async (importOriginal) => {
-    const original = await importOriginal();
-    return {
-        ...original,
-        uiManager: { closeAllForms: vi.fn() }
-    };
-});
+import { peekProxyManager } from "../../../../../Canopy[BP]/scripts/src/classes/peek/PeekProxyManager";
 
 describe('allowPeekInventory', () => {
-    afterEach(() => {
-        vi.clearAllMocks();
+    beforeEach(() => {
+        vi.restoreAllMocks();
     });
 
-    it('should subscribe to player block placements when enabled', () => {
-        const subscribeSpy = vi.spyOn(allowPeekInventory, 'subscribeToEvents');
+    it('starts parking peek proxies when enabled', () => {
+        const startSpy = vi.spyOn(peekProxyManager, 'start').mockImplementation(() => void 0);
         allowPeekInventory.onEnable();
-        expect(subscribeSpy).toHaveBeenCalled();
+        expect(startSpy).toHaveBeenCalled();
     });
 
-    it('should unsubscribe from player block placements when disabled', () => {
-        const unsubscribeSpy = vi.spyOn(allowPeekInventory, 'unsubscribeFromEvents');
+    it('tears every peek proxy down when disabled', () => {
+        const stopSpy = vi.spyOn(peekProxyManager, 'stop').mockImplementation(() => void 0);
         allowPeekInventory.onDisable();
-        expect(unsubscribeSpy).toHaveBeenCalled();
+        expect(stopSpy).toHaveBeenCalled();
     });
 
-    it('should show the inventory UI when a player holds the spyglass and interacts with an entity', () => {
-        const showSpy = vi.spyOn(InventoryUI.prototype, 'show').mockImplementation(() => {});
-        const target = {
-            typeId: 'minecraft:test_target', 
-            getComponent: vi.fn().mockReturnValue({ 
-                container: { 
-                    size: 5,
-                    getItem: vi.fn().mockReturnValue({
-                        typeId: 'minecraft:test_item',
-                        amount: 1,
-                        getComponent: vi.fn().mockReturnValue({
-                            damage: 10,
-                            maxDurability: 20,
-                            getEnchantments: () => [{ type: { id: 'minecraft:test_enchantment' }, level: 1 }]
-                        })
-                    })
-                }
-            })
-        };
-        const player = {
-            typeId: 'minecraft:player',
-            sendMessage: vi.fn()
-        }
-        const itemStack = { typeId: 'minecraft:spyglass' };
-        const mockEvent = { player, target, itemStack };
-        allowPeekInventory.onPlayerInteraction(mockEvent);
-        expect(showSpy).toHaveBeenCalled();
-    });
-
-    it('should show the inventory UI when a player holds the spyglass and interacts with a block', () => {
-        const showSpy = vi.spyOn(InventoryUI.prototype, 'show').mockImplementation(() => {});
-        const block = {
-            typeId: 'minecraft:test_target', 
-            getComponent: vi.fn().mockReturnValue({ 
-                container: { 
-                    size: 5,
-                    getItem: vi.fn().mockReturnValue({
-                        typeId: 'minecraft:test_item',
-                        amount: 1,
-                        getComponent: vi.fn().mockReturnValue({
-                            damage: 10,
-                            maxDurability: 20,
-                            getEnchantments: () => [{ type: { id: 'minecraft:test_enchantment' }, level: 1 }]
-                        })
-                    })
-                }
-            })
-        };
-        const player = {
-            typeId: 'minecraft:player',
-            sendMessage: vi.fn()
-        }
-        const itemStack = { typeId: 'minecraft:spyglass' };
-        const mockEvent = { player, target: block, itemStack };
-        allowPeekInventory.onPlayerInteraction(mockEvent);
-        expect(showSpy).toHaveBeenCalled();
-    });
-
-    it('should not show the inventory UI if the player does not hold a spyglass', () => {
-        const showSpy = vi.spyOn(InventoryUI.prototype, 'show').mockImplementation(() => {});
-        const target = { typeId: 'minecraft:test_target' };
-        const player = {
-            typeId: 'minecraft:player',
-            sendMessage: vi.fn()
-        }
-        const itemStack = { typeId: 'minecraft:not_a_spyglass' };
-        const mockEvent = { player, target, itemStack };
-        allowPeekInventory.onPlayerInteraction(mockEvent);
-        expect(showSpy).not.toHaveBeenCalled();
-    });
-
-    it('should not show the inventory UI if the target does not have an inventory', () => {
-        const showSpy = vi.spyOn(InventoryUI.prototype, 'show');
-        const target = {
-            typeId: 'minecraft:test_target', 
-            getComponent: vi.fn().mockReturnValue(void 0)
-        };
-        const player = {
-            typeId: 'minecraft:player',
-            sendMessage: vi.fn()
-        }
-        const itemStack = { typeId: 'minecraft:spyglass' };
-        const mockEvent = { player, target, itemStack };
-        allowPeekInventory.onPlayerInteraction(mockEvent);
-        expect(showSpy).not.toHaveBeenCalled();
+    it('no longer cancels player interactions to show a form', () => {
+        expect(allowPeekInventory.onPlayerInteraction).toBeUndefined();
+        expect(allowPeekInventory.subscribeToEvents).toBeUndefined();
     });
 });

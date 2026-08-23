@@ -1,5 +1,7 @@
 import { world, system, ItemStack, DimensionTypes } from '@minecraft/server';
 import { FormCancelationReason, uiManager } from '@minecraft/server-ui';
+import { ProxyInventoryEntity } from '../src/classes/proxy/ProxyInventoryEntity';
+import { PeekCaptureEntity } from '../src/classes/peek/PeekCaptureEntity';
 
 export function calcDistance(locationOne, locationTwo, useY = true) {
 	const dx = locationOne.x - locationTwo.x;
@@ -232,18 +234,8 @@ export function getEntitiesByType(type) {
 
 export function getRaycastResults(player, distance) {
 	const blockRayResult = player.getBlockFromViewDirection({ includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: distance });
-	const entityRayResult = player.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: false, maxDistance: distance });
+	const entityRayResult = PeekCaptureEntity.excludeFrom(ProxyInventoryEntity.excludeFrom(player.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: false, maxDistance: distance })));
 	return { blockRayResult, entityRayResult };
-}
-
-export function titleCase(str) {
-	return str
-		.replace(/([a-z])([A-Z])/g, '$1 $2')
-		.toLowerCase()
-		.replace(/_/g, ' ')
-		.split(' ')
-		.map(word => word.charAt(0).toUpperCase() + word.slice(1))
-		.join(' ');
 }
 
 export function formatColorStr(color) {

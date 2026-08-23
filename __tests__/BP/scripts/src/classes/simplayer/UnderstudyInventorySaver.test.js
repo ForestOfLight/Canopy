@@ -1,7 +1,8 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { world, Container, EquipmentSlot, EntityComponentTypes } from '@minecraft/server';
+import { world, EquipmentSlot, EntityComponentTypes } from '@minecraft/server';
 import { makeEquippable } from '@minecraft/server-gametest';
 import { UnderstudyInventorySaver } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/UnderstudyInventorySaver';
+import { UnderstudyStorageView } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/UnderstudyStorageView';
 import Understudy from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudy';
 
 vi.mock('../../../../../../Canopy[BP]/scripts/src/rules/simplayer/simplayerSaving', () => ({
@@ -12,6 +13,7 @@ vi.mock('../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies
 }));
 
 describe('UnderstudyInventorySaver', () => {
+    const EQUIPMENT_SLOT_COUNT = 6;
     let understudy;
     let inventorySaver;
 
@@ -23,161 +25,92 @@ describe('UnderstudyInventorySaver', () => {
     });
 
     describe('constructor', () => {
-        it('sets inventory dynamic property key based on player name', () => {
-            expect(inventorySaver.inventoryDP).toBe('bot_TestBot_inventory');
-        });
-
-        it('sets equippable dynamic property key based on player name', () => {
-            expect(inventorySaver.equippableDP).toBe('bot_TestBot_equippable');
-        });
-
-        it('truncates player name to 8 characters in the table name', () => {
-            const inv = new UnderstudyInventorySaver(new Understudy('LongNamedPlayer'));
-            expect(inv.inventoryDP).toBe('bot_LongName_inventory');
+        it('namespaces the inventory key with the player name', () => {
+            expect(inventorySaver.inventoryKey).toBe('canopy:TestBot-inventory');
         });
     });
 
     describe('save', () => {
-        it('writes inventory items to world dynamic property', () => {
+        it('saves under the inventory key', () => {
+            const spy = vi.spyOn(inventorySaver.itemDatabase, 'saveContainer').mockImplementation(() => void 0);
             inventorySaver.save();
-            expect(world.setDynamicProperty).toHaveBeenCalledWith('bot_TestBot_inventory', expect.any(String));
+            expect(spy).toHaveBeenCalledWith('canopy:TestBot-inventory', expect.any(UnderstudyStorageView));
         });
 
-        it('writes equippable items to world dynamic property', () => {
+        it('saves the inventory and every equipment slot in one container', () => {
+            const spy = vi.spyOn(inventorySaver.itemDatabase, 'saveContainer').mockImplementation(() => void 0);
+            const inventorySize = understudy.getInventory().size;
+
             inventorySaver.save();
-            expect(world.setDynamicProperty).toHaveBeenCalledWith('bot_TestBot_equippable', expect.any(String));
+
+            const [, savedContainer] = spy.mock.calls[0];
+            expect(savedContainer.size).toBe(inventorySize + EQUIPMENT_SLOT_COUNT);
         });
 
-        it('includes equipped items in the serialized equippable output', () => {
-            const sword = { typeId: 'minecraft:iron_sword', amount: 1 };
-            const equippable = makeEquippable({ [EquipmentSlot.Head]: sword });
+        it('writes a single structure rather than one per storage kind', () => {
+            const spy = vi.spyOn(inventorySaver.itemDatabase, 'saveContainer').mockImplementation(() => void 0);
+            inventorySaver.save();
+            expect(spy).toHaveBeenCalledTimes(1);
+        });
+
+        it('exposes equipped items through the saved container', () => {
+            const helmet = { typeId: 'minecraft:diamond_helmet', amount: 1 };
+            const equippable = makeEquippable({ [EquipmentSlot.Head]: helmet });
             const container = understudy.getInventory();
             understudy.simulatedPlayer.getComponent.mockImplementation(type => {
                 if (type === EntityComponentTypes.Equippable) return equippable;
                 if (type === EntityComponentTypes.Inventory) return { container };
             });
+            const spy = vi.spyOn(inventorySaver.itemDatabase, 'saveContainer').mockImplementation(() => void 0);
+
             inventorySaver.save();
-            expect(world.setDynamicProperty).toHaveBeenCalledWith(
-                'bot_TestBot_equippable',
-                expect.stringContaining('"Head":{"typeId":"minecraft:iron_sword","amount":1}')
-            );
+
+            const [, savedContainer] = spy.mock.calls[0];
+            expect(savedContainer.getItem(container.size + 3)).toBe(helmet);
         });
 
-        it('excludes undefined items from the serialized output', () => {
-            const inventory = understudy.getInventory();
-            const itemStack = { typeId: 'minecraft:stone', amount: 1 };
-            inventory.setItem(0, itemStack);
+        it('does not save when the inventory component is absent', () => {
+            understudy.simulatedPlayer.getComponent.mockReturnValue(undefined);
+            const spy = vi.spyOn(inventorySaver.itemDatabase, 'saveContainer').mockImplementation(() => void 0);
             inventorySaver.save();
-            expect(world.setDynamicProperty).toHaveBeenCalledWith(
-                'bot_TestBot_inventory', JSON.stringify({ 0: itemStack })
-            );
-        });
-
-        it('saves items to the item database', () => {
-            const spy = vi.spyOn(inventorySaver.itemDatabase, 'setItems');
-            inventorySaver.save();
-            expect(spy).toHaveBeenCalled();
-        });
-    });
-
-    describe('saveWithoutNBT', () => {
-        it('writes inventory items to world dynamic property', () => {
-            inventorySaver.saveWithoutNBT();
-            expect(world.setDynamicProperty).toHaveBeenCalledWith('bot_TestBot_inventory', expect.any(String));
-        });
-
-        it('writes equippable items to world dynamic property', () => {
-            inventorySaver.saveWithoutNBT();
-            expect(world.setDynamicProperty).toHaveBeenCalledWith('bot_TestBot_equippable', expect.any(String));
-        });
-
-        it('does not save items to the item database', () => {
-            const spy = vi.spyOn(inventorySaver.itemDatabase, 'setItems');
-            inventorySaver.saveWithoutNBT();
             expect(spy).not.toHaveBeenCalled();
         });
     });
 
     describe('load', () => {
-        describe('inventory', () => {
-            it('returns early when inventory component is absent', () => {
-                understudy.simulatedPlayer.getComponent.mockImplementation(
-                    component => component === EntityComponentTypes.Equippable ? makeEquippable() : undefined
-                );
-                inventorySaver.load();
-                understudy.simulatedPlayer.getComponent.mockRestore();
-                expect(understudy.getInventory().setItem).not.toHaveBeenCalled();
-            });
-
-            it('returns early when no saved data exists', () => {
-                inventorySaver.load();
-                expect(understudy.getInventory().setItem).not.toHaveBeenCalled();
-            });
-
-            it('sets items in the inventory container from saved data', () => {
-                world.getDynamicProperty.mockImplementation(key =>
-                    key === 'bot_TestBot_inventory'
-                        ? JSON.stringify({ 0: { typeId: 'minecraft:stone', amount: 1 } })
-                        : undefined
-                );
-                vi.spyOn(inventorySaver.itemDatabase, 'getItems').mockReturnValue([{ typeId: 'minecraft:stone', amount: 1 }]);
-                inventorySaver.load();
-                expect(understudy.getInventory().setItem).toHaveBeenCalled();
-            });
-
-            it('falls back to non-NBT item data when absent from the NBT database', () => {
-                world.getDynamicProperty.mockImplementation(key =>
-                    key === 'bot_TestBot_inventory'
-                        ? JSON.stringify({ 0: { typeId: 'minecraft:stone', amount: 1 } })
-                        : undefined
-                );
-                vi.spyOn(inventorySaver.itemDatabase, 'getItems').mockReturnValue([]);
-                inventorySaver.load();
-                expect(understudy.getInventory().setItem).toHaveBeenCalledWith(
-                    0,
-                    expect.objectContaining({ typeId: 'minecraft:stone', amount: 1 })
-                );
-            });
-
-            it('sets undefined for slots with no saved item data', () => {
-                world.getDynamicProperty.mockImplementation(key =>
-                    key === 'bot_TestBot_inventory'
-                        ? JSON.stringify({ 0: { typeId: 'minecraft:stone', amount: 1 } })
-                        : undefined
-                );
-                vi.spyOn(inventorySaver.itemDatabase, 'getItems').mockReturnValue([]);
-                inventorySaver.load();
-                expect(understudy.getInventory().setItem).toHaveBeenCalledWith(1, undefined);
-            });
+        it('loads under the inventory key', () => {
+            const spy = vi.spyOn(inventorySaver.itemDatabase, 'loadContainer').mockImplementation(() => void 0);
+            inventorySaver.load();
+            expect(spy).toHaveBeenCalledWith('canopy:TestBot-inventory', expect.any(UnderstudyStorageView));
         });
 
-        describe('equippable', () => {
-            it('returns early when equippable component is absent', () => {
-                understudy.simulatedPlayer.getComponent.mockImplementation(
-                    component => component === EntityComponentTypes.Inventory ? new Container() : undefined
-                );
-                inventorySaver.load();
-                understudy.simulatedPlayer.getComponent.mockRestore();
-                const equippable = understudy.simulatedPlayer.getComponent(EntityComponentTypes.Equippable);
-                expect(equippable.setEquipment).not.toHaveBeenCalled();
+        it('loads into a container covering the inventory and every equipment slot', () => {
+            const spy = vi.spyOn(inventorySaver.itemDatabase, 'loadContainer').mockImplementation(() => void 0);
+            const inventorySize = understudy.getInventory().size;
+
+            inventorySaver.load();
+
+            const [, filledContainer] = spy.mock.calls[0];
+            expect(filledContainer.size).toBe(inventorySize + EQUIPMENT_SLOT_COUNT);
+        });
+
+        it('applies loaded equipment to the understudy', () => {
+            const boots = { typeId: 'minecraft:netherite_boots', amount: 1 };
+            const inventorySize = understudy.getInventory().size;
+            vi.spyOn(inventorySaver.itemDatabase, 'loadContainer').mockImplementation((key, container) => {
+                container.setItem(inventorySize + 2, boots);
             });
 
-            it('returns early when no saved data exists', () => {
-                inventorySaver.load();
-                const equippable = understudy.simulatedPlayer.getComponent(EntityComponentTypes.Equippable);
-                expect(equippable.setEquipment).not.toHaveBeenCalled();
-            });
+            inventorySaver.load();
 
-            it('calls setEquipment for each slot from saved data', () => {
-                const savedData = Object.fromEntries(Object.keys(EquipmentSlot).map(slot => [slot, null]));
-                world.getDynamicProperty.mockImplementation(key =>
-                    key === 'bot_TestBot_equippable' ? JSON.stringify(savedData) : undefined
-                );
-                vi.spyOn(inventorySaver.itemDatabase, 'getItems').mockReturnValue([]);
-                inventorySaver.load();
-                const equippable = understudy.simulatedPlayer.getComponent(EntityComponentTypes.Equippable);
-                expect(equippable.setEquipment).toHaveBeenCalledTimes(Object.keys(EquipmentSlot).length);
-            });
+            expect(understudy.getEquippable().setEquipment).toHaveBeenCalledWith(EquipmentSlot.Feet, boots);
+        });
+
+        it('does not load when the inventory component is absent', () => {
+            understudy.simulatedPlayer.getComponent.mockReturnValue(undefined);
+            const spy = vi.spyOn(inventorySaver.itemDatabase, 'loadContainer').mockImplementation(() => void 0);
+            inventorySaver.load();
+            expect(spy).not.toHaveBeenCalled();
         });
     });
 });

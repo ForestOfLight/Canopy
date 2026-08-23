@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { 
 	calcDistance, isString, isNumeric, parseName, getClosestTarget, stringifyLocation, 
 	getColorCode, wait, getInventory, locationInArea, getColoredDimensionName, 
-	getScriptEventSourceName, getScriptEventSourceObject, recolor, titleCase, formatColorStr
+	getScriptEventSourceName, getScriptEventSourceObject, recolor, formatColorStr
 } from '../../../../Canopy[BP]/scripts/include/utils.js';
 
 
@@ -378,21 +378,6 @@ describe.skip('getEntitiesByType()', () => {
 
 describe.skip('getRaycastResults()', () => {
 	// Gametest
-});
-
-describe('titleCase()', () => {
-	it.each([
-		['camelCaseString', 'Camel Case String'],
-		['snake_case_string', 'Snake Case String'],
-		['mixedCase_string', 'Mixed Case String'],
-		['word', 'Word'],
-		['', ''],
-		['multiple__underscores', 'Multiple  Underscores'],
-		['multipleCamelCaseWords', 'Multiple Camel Case Words'],
-		['string_with_123_numbers_and_$pecial_characters', 'String With 123 Numbers And $pecial Characters']
-	])('converts %s to Title Case', (input, expected) => {
-		expect(titleCase(input)).toBe(expected);
-	});
 });
 
 describe('formatColorStr', () => {

@@ -1,8 +1,6 @@
 import { world, system } from "@minecraft/server";
 import { displayWelcome } from "./rules/noWelcomeMessage";
-import { simplayerRejoining } from "./rules/simplayer/simplayerRejoining";
-
-let worldIsValid = false;
+import { startWorldSystems } from "./onWorldStartup";
 
 world.afterEvents.playerJoin.subscribe((event) => {
     const runner = system.runInterval(() => {
@@ -11,19 +9,9 @@ world.afterEvents.playerJoin.subscribe((event) => {
             if (!player) return;
             if (player?.isValid) {
                 system.clearRun(runner);
-                onValidPlayer(player);
-                if (!worldIsValid)
-                    onValidWorld();
-                worldIsValid = true;
+                displayWelcome(player);
+                startWorldSystems();
             }
         });
     });
 });
-
-function onValidPlayer(player) {
-    displayWelcome(player);
-}
-
-function onValidWorld() {
-    simplayerRejoining.onStartup();
-}

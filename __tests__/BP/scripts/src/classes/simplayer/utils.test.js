@@ -1,6 +1,6 @@
 import { beforeEach, describe, it, expect, vi } from 'vitest';
 import { Block, Entity, Player, world } from '@minecraft/server';
-import { getLookAtLocation, getLookAtRotation, swapSlots, portOldGameModeToNewUpdate, getLocationInfoFromSource } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/utils.js';
+import { getLookAtLocation, getLookAtRotation, portOldGameModeToNewUpdate, getLocationInfoFromSource } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/utils.js';
 
 vi.mock('@minecraft/server', async () => await import('@forestoflight/minecraft-vitest-mocks/server'));
 
@@ -122,39 +122,6 @@ describe('getLookAtRotation', () => {
         const base = { x: 0, y: 0, z: 0 };
         const result = getLookAtRotation(base, { x: 0, y: PLAYER_EYE_HEIGHT - 1000, z: 0 });
         expect(result.x).toBeCloseTo(90);
-    });
-});
-
-describe('swapSlots', () => {
-    it('swaps items between two slots', () => {
-        const item0 = { typeId: 'minecraft:apple' };
-        const item1 = { typeId: 'minecraft:stone' };
-        const container = {
-            getItem: vi.fn(i => i === 0 ? item0 : item1),
-            setItem: vi.fn()
-        };
-        swapSlots(container, 0, 1);
-        expect(container.setItem).toHaveBeenCalledWith(0, item1);
-        expect(container.setItem).toHaveBeenCalledWith(1, item0);
-    });
-
-    it('swaps when one slot is empty', () => {
-        const item0 = { typeId: 'minecraft:apple' };
-        const container = {
-            getItem: vi.fn(i => i === 0 ? item0 : undefined),
-            setItem: vi.fn()
-        };
-        swapSlots(container, 0, 1);
-        expect(container.setItem).toHaveBeenCalledWith(0, undefined);
-        expect(container.setItem).toHaveBeenCalledWith(1, item0);
-    });
-
-    it('throws when container is null', () => {
-        expect(() => swapSlots(null, 0, 1)).toThrow();
-    });
-
-    it('throws when container is undefined', () => {
-        expect(() => swapSlots(undefined, 0, 1)).toThrow();
     });
 });
 

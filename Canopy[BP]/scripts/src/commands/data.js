@@ -1,6 +1,7 @@
+import { getColoredDimensionName, stringifyLocation } from "../../include/utils";
+import { ProxyInventoryEntity } from '../classes/proxy/ProxyInventoryEntity';
 import { VanillaCommand, PlayerCommandOrigin } from "../../lib/canopy/Canopy";
 import { BlockComponentTypes, CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus } from "@minecraft/server";
-import { getColoredDimensionName, stringifyLocation } from "../../include/utils";
 
 const TARGET_DISTANCE = 100;
 
@@ -30,7 +31,7 @@ function dataCommand(origin, entity) {
 
 function getTargetedMessage(source) {
     const blockRayResult = source.getBlockFromViewDirection({ includeLiquidBlocks: true, includePassableBlocks: true, maxDistance: TARGET_DISTANCE });
-    const entityRayResult = source.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: TARGET_DISTANCE });
+    const entityRayResult = ProxyInventoryEntity.excludeFrom(source.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: true, maxDistance: TARGET_DISTANCE }));
     const block = blockRayResult?.block;
     const entity = entityRayResult[0]?.entity;
     if (!block && !entity)

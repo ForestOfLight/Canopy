@@ -37,6 +37,8 @@ class SimplayerRejoining extends BooleanRule {
         }
         if (playersToRejoin) {
             playersToRejoin.forEach(name => {
+                if (Understudies.isOnline(name))
+                    return;
                 const simPlayer = Understudies.create(name);
                 system.runTimeout(() => {
                     Understudies.addNametagPrefix(simPlayer);

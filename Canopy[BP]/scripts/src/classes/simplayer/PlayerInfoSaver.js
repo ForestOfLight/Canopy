@@ -5,9 +5,10 @@ import { UnderstudySaveInfoError } from "../errors/UnderstudySaveInfoError";
 import { UnderstudyNotConnectedError } from "../errors/UnderstudyNotConnectedError";
 
 export class PlayerInfoSaver {
-    saveInterval = 600;
+    saveInterval = TicksPerSecond * 30;
     #understudy;
     #inventory;
+    #isInventoryDirty = false;
 
     constructor(understudy) {
         this.#understudy = understudy;
@@ -15,22 +16,21 @@ export class PlayerInfoSaver {
     }
 
     onConnectedTick() {
+        if (this.#isInventoryDirty)
+            return this.save();
         this.#saveOnInterval();
+    }
+
+    markInventoryDirty() {
+        this.#isInventoryDirty = true;
     }
 
     #saveOnInterval() {
         if (!simplayerSaving.getNativeValue())
             return;
-        if ((system.currentTick - this.#understudy.createdTick) % this.saveInterval === 0) {
+        const elapsedTicks = system.currentTick - this.#understudy.createdTick;
+        if (elapsedTicks % this.saveInterval === 0)
             this.save();
-            return;
-        }
-        if (!this.#understudy.actions.isEmpty()) {
-            if ((system.currentTick - this.#understudy.createdTick) % (TicksPerSecond * 5) === 0)
-                this.save();
-            else
-                this.#inventory.saveWithoutNBT();
-        }
     }
 
     get() {
@@ -62,6 +62,7 @@ export class PlayerInfoSaver {
         };
         world.setDynamicProperty(`${this.#understudy.name}:playerinfo`, JSON.stringify(playerInfo));
         this.#inventory.save();
+        this.#isInventoryDirty = false;
     }
 
     #findOwnedProjectileIds() {

@@ -1,4 +1,5 @@
 import { getTranslatedEntityList } from '../../include/utils';
+import { ProxyInventoryEntity } from '../classes/proxy/ProxyInventoryEntity';
 import { VanillaCommand } from '../../lib/canopy/Canopy';
 import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, Entity, Player, system } from '@minecraft/server';
 
@@ -33,7 +34,7 @@ function butcherCommand(origin, entity) {
 function getTargetEntity(origin, entity) {
     const source = origin.getSource();
     if (!entity && source instanceof Entity)
-        return source.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: false, maxDistance: 16 })[0]?.entity;
+        return ProxyInventoryEntity.excludeFrom(source.getEntitiesFromViewDirection({ ignoreBlockCollision: false, includeLiquidBlocks: false, includePassableBlocks: false, maxDistance: 16 }))[0]?.entity;
     return void 0;
 }
 

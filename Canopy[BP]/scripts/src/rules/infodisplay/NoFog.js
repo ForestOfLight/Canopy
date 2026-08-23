@@ -1,4 +1,4 @@
-import { world } from "@minecraft/server";
+import { InvalidEntityError, world } from "@minecraft/server";
 import { InfoDisplayShapeElement } from "./InfoDisplayShapeElement";
 
 export class NoFog extends InfoDisplayShapeElement {
@@ -7,7 +7,6 @@ export class NoFog extends InfoDisplayShapeElement {
     }
 
     static FOG_REMOVAL_IDS = {
-        "minecraft:overworld": "canopy:overworld_no_fog",
         "minecraft:nether": "canopy:nether_no_fog",
         "minecraft:the_end": "canopy:end_no_fog"
     };
@@ -30,7 +29,9 @@ export class NoFog extends InfoDisplayShapeElement {
 
     removeFog() {
         this.clearFogSettings();
-        this.playerFogSettings.push(this.getCurrentFogId(), NoFog.FOG_TAG);
+        const fogRemovalId = this.getCurrentFogId();
+        if (fogRemovalId)
+            this.playerFogSettings.push(this.getCurrentFogId(), NoFog.FOG_TAG);
         world.afterEvents.playerDimensionChange.subscribe(this.onDimensionChangeBound);
     }
 
@@ -40,12 +41,18 @@ export class NoFog extends InfoDisplayShapeElement {
     }
 
     clearFogSettings() {
-        this.playerFogSettings?.remove(NoFog.FOG_TAG);
+        try {
+            this.playerFogSettings?.remove(NoFog.FOG_TAG);
+        } catch (error) {
+            if (error instanceof InvalidEntityError)
+                return;
+            throw error;
+        }
     }
 
     getCurrentFogId() {
         const currentDimension = this.player.dimension.id;
-        return NoFog.FOG_REMOVAL_IDS[currentDimension] ?? NoFog.FOG_REMOVAL_IDS["minecraft:overworld"];
+        return NoFog.FOG_REMOVAL_IDS[currentDimension];
     }
 
     onTick() {
@@ -55,6 +62,7 @@ export class NoFog extends InfoDisplayShapeElement {
     onDimensionChange() {
         this.clearFogSettings();
         const fogRemovalId = this.getCurrentFogId();
-        this.playerFogSettings.push(fogRemovalId, NoFog.FOG_TAG);
+        if (fogRemovalId)
+            this.playerFogSettings.push(fogRemovalId, NoFog.FOG_TAG);
     }
 }

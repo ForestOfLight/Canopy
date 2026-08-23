@@ -21,8 +21,10 @@ new VanillaCommand({
 
 function jumpCommand(origin) {
     const entity = origin.getSource();
-    if (!Rules.getNativeValue('commandJumpSurvival') && entity.getGameMode() === GameMode.Survival)
-        return origin.sendMessage({ translate: 'rules.generic.blocked', with: ['commandJumpSurvival'] });
+    if (!Rules.getNativeValue('commandJumpSurvival') && entity.getGameMode() === GameMode.Survival) {
+        origin.sendMessage({ translate: 'rules.generic.blocked', with: ['commandJumpSurvival'] });
+        return;
+    }
     jumpToViewDirectionBlock(entity);
 }
 

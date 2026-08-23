@@ -17,6 +17,7 @@ class Understudy {
     #lookTarget;
     #actions;
     #playerInfoSaver;
+    #isUnloaded = false;
 
     constructor(name) {
         this.name = name;
@@ -30,12 +31,21 @@ class Understudy {
     }
 
     onConnectedTick() {
-        this.#playerInfoSaver.onConnectedTick();
         if (!this.#lookTarget?.isValid)
             this.clearLookTarget();
         if (this.#simulatedPlayer !== null)
             this.refreshHeldItem();
+        if (this.#simulatedPlayer.isGliding && this.#simulatedPlayer.isOnGround)
+            this.glide(false);
+        if (this.#isInLoadedChunk()) {
+            this.#isUnloaded = false;
+        } else {
+            if (!this.#isUnloaded)
+                this.#sendUnloadedMessage()
+            this.#isUnloaded = true;
+        }
         this.#actions.onTick();
+        this.#playerInfoSaver.onConnectedTick();
     }
 
     get createdTick() {
@@ -86,18 +96,17 @@ class Understudy {
         this.#playerInfoSaver.save();
     }
 
+    markInventoryDirty() {
+        this.#playerInfoSaver.markInventoryDirty();
+    }
+
     join({ location, dimension, rotation = { x: 0, y: 0 }, gameMode = GameMode.Survival }) {
         this.#assertNotConnected();
         Understudies.onConnect();
         const updatedGameMode = portOldGameModeToNewUpdate(gameMode);
         this.#simulatedPlayer = spawnSimulatedPlayer({ ...location, dimension }, this.name, updatedGameMode);
         this.#isConnected = true;
-        const teleportOptions = {
-            dimension,
-            facingLocation: getLookAtLocation(location, rotation),
-            rotation
-        };
-        this.#simulatedPlayer.teleport(location, teleportOptions);
+        this.#teleportFacing(location, dimension, rotation);
         try {
             this.#playerInfoSaver.loadInventoryAndProjectileOwnership();
         } catch (error) {
@@ -106,6 +115,13 @@ class Understudy {
             else
                 throw error;
         }
+    }
+
+    adopt(simulatedPlayer) {
+        this.#assertNotConnected();
+        Understudies.onConnect();
+        this.#simulatedPlayer = simulatedPlayer;
+        this.#isConnected = true;
     }
 
     leave() {
@@ -130,13 +146,15 @@ class Understudy {
     }
 
     teleport({ location, dimension, rotation = { x: 0, y: 0 } }) {
-        const teleportOptions = {
-            dimension,
-            facingLocation: getLookAtLocation(location, rotation),
-            rotation
-        };
-        this.simulatedPlayer.teleport(location, teleportOptions);
+        this.#assertConnected();
+        this.#teleportFacing(location, dimension, rotation);
         this.savePlayerInfo();
+    }
+
+    #teleportFacing(location, dimension, rotation) {
+        const facingLocation = getLookAtLocation(location, rotation);
+        this.#simulatedPlayer.teleport(location, { dimension, facingLocation, rotation });
+        this.#simulatedPlayer.lookAtLocation(facingLocation);
     }
 
     look(target) {
@@ -196,7 +214,6 @@ class Understudy {
 
     selectSlot(slotNumber) {
         this.simulatedPlayer.selectedSlotIndex = slotNumber;
-        this.savePlayerInfo();
     }
 
     sprint(shouldSprint) {
@@ -212,38 +229,6 @@ class Understudy {
             this.simulatedPlayer.glide();
         else
             this.simulatedPlayer.stopGliding();
-    }
-
-    claimProjectiles(radius) {
-        const simulatedPlayer = this.simulatedPlayer;
-        const projectileComponents = this.#getProjectileComponentsInRange(simulatedPlayer, radius);
-        const numChanged = this.#changeProjectileOwner(projectileComponents, simulatedPlayer);
-        if (numChanged === 0)
-            return world.sendMessage({ translate: 'simplayer.claimprojectiles.none', with: [simulatedPlayer.name, String(radius)] });
-        world.sendMessage({ translate: 'simplayer.claimprojectiles.success', with: [simulatedPlayer.name, String(numChanged)] });
-        this.savePlayerInfo();
-    }
-
-    #getProjectileComponentsInRange(player, radius) {
-        const projectileComponents = [];
-        const radiusEntities = player.dimension.getEntities({ location: player.location, maxDistance: radius });
-        for (const entity of radiusEntities) {
-            const projectileComponent = entity?.getComponent(EntityComponentTypes.Projectile);
-            if (projectileComponent)
-                projectileComponents.push(projectileComponent);
-        }
-        return projectileComponents;
-    }
-
-    #changeProjectileOwner(projectileComponents, newOwner) {
-        const successfullyChanged = [];
-        for (const projectileComponent of projectileComponents) {
-            if (!projectileComponent?.isValid)
-                continue;
-            projectileComponent.owner = newOwner;
-            successfullyChanged.push(projectileComponent);
-        }
-        return successfullyChanged.length;
     }
 
     stopAll() {
@@ -266,6 +251,10 @@ class Understudy {
         const simulatedPlayer = this.simulatedPlayer;
         const inventoryComponent = simulatedPlayer.getComponent(EntityComponentTypes.Inventory);
         return inventoryComponent?.container;
+    }
+
+    getEquippable() {
+        return this.simulatedPlayer.getComponent(EntityComponentTypes.Equippable);
     }
 
     swapHeldItemWithPlayer(targetPlayer) {
@@ -293,6 +282,15 @@ class Understudy {
     #assertNotConnected() {
         if (this.isConnected())
             throw new UnderstudyConnectedError(this.name);
+    }
+
+    #isInLoadedChunk() {
+        const simulatedPlayer = this.#simulatedPlayer;
+        return simulatedPlayer.dimension.isChunkLoaded(simulatedPlayer.location);
+    }
+
+    #sendUnloadedMessage() {
+        world.sendMessage(`§cUnderstudy ${this.name} was unexpectedly unloaded. This is likely due to a bug where simplayers spawned in a dimension other than the overworld do not load chunks unless another player is in the same dimension. Please spawn the simplayer in the overworld, then teleport it where it needs to go.`);
     }
 }
 

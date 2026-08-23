@@ -2,7 +2,12 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { world, system, Block, Entity, Player } from '@minecraft/server';
 import { scheduler, worldDynamicPropertyStore } from '@forestoflight/minecraft-vitest-mocks';
 import Understudy from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudy';
+import { getLookAtLocation } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/utils';
 import { MOVE_OPTIONS } from '../../../../../../Canopy[BP]/scripts/src/commands/simplayer/playermove';
+import { UnderstudyNotConnectedError } from '../../../../../../Canopy[BP]/scripts/src/classes/errors/UnderstudyNotConnectedError';
+import { UnderstudyConnectedError } from '../../../../../../Canopy[BP]/scripts/src/classes/errors/UnderstudyConnectedError';
+import { PlayerInfoSaver } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/PlayerInfoSaver';
+import { SimulatedPlayer, spawnSimulatedPlayer } from '@minecraft/server-gametest';
 
 vi.mock('../../../../../../Canopy[BP]/scripts/src/rules/simplayer/simplayerSaving', () => ({
     simplayerSaving: { getNativeValue: vi.fn(() => true), getID: vi.fn(() => 'simplayerSaving') }
@@ -10,6 +15,8 @@ vi.mock('../../../../../../Canopy[BP]/scripts/src/rules/simplayer/simplayerSavin
 vi.mock('../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies', () => ({
     default: { onConnect: vi.fn() }
 }));
+
+import Understudies from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies';
 
 describe('Understudy', () => {
     let understudy;
@@ -97,6 +104,13 @@ describe('Understudy', () => {
             expect(warnSpy).toHaveBeenCalled();
         });
 
+        it('aims the head at the facing location so pitch is applied', () => {
+            const location = { x: 0, y: 64, z: 0 };
+            const rotation = { x: -25, y: 120 };
+            understudy.join({ location, dimension: world.getDimension(), rotation });
+            expect(understudy.simulatedPlayer.lookAtLocation).toHaveBeenCalledWith(getLookAtLocation(location, rotation));
+        });
+
         it('throws if loading player info hits an unknown error', () => {
             system.run.mockImplementation(cb => { cb(); });
             const original = world.getDynamicProperty;
@@ -129,6 +143,43 @@ describe('Understudy', () => {
         });
     });
 
+
+    describe('adopt', () => {
+        it('attaches the given simulated player instead of spawning a new one', () => {
+            const existing = new SimulatedPlayer();
+            understudy.adopt(existing);
+            expect(understudy.simulatedPlayer).toBe(existing);
+            expect(spawnSimulatedPlayer).not.toHaveBeenCalled();
+        });
+
+        it('sets isConnected to true', () => {
+            understudy.adopt(new SimulatedPlayer());
+            expect(understudy.isConnected()).toBe(true);
+        });
+
+        it('starts Understudies processing', () => {
+            understudy.adopt(new SimulatedPlayer());
+            expect(Understudies.onConnect).toHaveBeenCalled();
+        });
+
+        it('throws if already connected', () => {
+            understudy.adopt(new SimulatedPlayer());
+            expect(() => understudy.adopt(new SimulatedPlayer())).toThrow(UnderstudyConnectedError);
+        });
+
+        it('leaves the live inventory alone instead of loading the saved snapshot over it', () => {
+            const loadSpy = vi.spyOn(PlayerInfoSaver.prototype, 'loadInventoryAndProjectileOwnership');
+            new Understudy('Adopted').adopt(new SimulatedPlayer());
+            expect(loadSpy).not.toHaveBeenCalled();
+            loadSpy.mockRestore();
+        });
+
+        it('does not teleport the adopted player away from where it already stands', () => {
+            const existing = new SimulatedPlayer();
+            understudy.adopt(existing);
+            expect(existing.teleport).not.toHaveBeenCalled();
+        });
+    });
     describe('while connected', () => {
         beforeEach(() => {
             understudy.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
@@ -171,6 +222,16 @@ describe('Understudy', () => {
                 const spy = vi.spyOn(understudy, 'refreshHeldItem');
                 understudy.onConnectedTick();
                 expect(spy).toHaveBeenCalled();
+            });
+        });
+
+        describe('markInventoryDirty', () => {
+            it('saves on the next tick even when it is not a save interval tick', () => {
+                system.currentTick = 1;
+                vi.clearAllMocks();
+                understudy.markInventoryDirty();
+                understudy.onConnectedTick();
+                expect(world.setDynamicProperty).toHaveBeenCalledWith('TestBot:playerinfo', expect.any(String));
             });
         });
 
@@ -342,6 +403,13 @@ describe('Understudy', () => {
                 understudy.teleport(teleportOptions);
                 const options = understudy.simulatedPlayer.teleport.mock.calls[0][1];
                 expect(options.rotation).toEqual({ x: 0, y: 0 });
+            });
+
+            it('aims the head at the facing location so pitch is applied', () => {
+                const location = { x: 5, y: 70, z: 5 };
+                const rotation = { x: 30, y: 45 };
+                understudy.teleport({ location, dimension: world.getDimension(), rotation });
+                expect(understudy.simulatedPlayer.lookAtLocation).toHaveBeenCalledWith(getLookAtLocation(location, rotation));
             });
 
             it('throws when understudy is not connected', () => {
@@ -531,41 +599,6 @@ describe('Understudy', () => {
             });
         });
 
-        describe('claimProjectiles', () => {
-            it('claims projectiles within the given radius', () => {
-                const mockComponent = { owner: null, isValid: true };
-                const mockEntity = { getComponent: vi.fn(() => mockComponent) };
-                const mockDimension = { getEntities: vi.fn(() => [mockEntity]) };
-                understudy.simulatedPlayer.dimension = mockDimension;
-                understudy.simulatedPlayer.name = 'TestBot';
-                understudy.claimProjectiles(10);
-                expect(mockComponent.owner).toBe(understudy.simulatedPlayer);
-                expect(world.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.claimprojectiles.success', with: ['TestBot', String(1)] });
-            });
-
-            it('sends a message when no projectiles are found', () => {
-                understudy.simulatedPlayer.dimension = { getEntities: vi.fn(() => []) };
-                understudy.simulatedPlayer.name = 'TestBot';
-                understudy.claimProjectiles(10);
-                expect(world.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.claimprojectiles.none', with: ['TestBot', String(10)] });
-            });
-
-            it('ignores invalid projectile components', () => {
-                const mockComponent = { isValid: false };
-                const mockEntity = { getComponent: vi.fn(() => mockComponent) };
-                const mockDimension = { getEntities: vi.fn(() => [mockEntity]) };
-                understudy.simulatedPlayer.dimension = mockDimension;
-                understudy.simulatedPlayer.name = 'TestBot';
-                understudy.claimProjectiles(10);
-                expect(world.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.claimprojectiles.none', with: ['TestBot', String(10)] });
-            });
-
-            it('throws when understudy is not connected', () => {
-                understudy.leave();
-                expect(() => understudy.claimProjectiles(10)).toThrow();
-            });
-        });
-
         describe('stopAll', () => {
             it('clears all actions', () => {
                 understudy.actions.once('attack');
@@ -620,6 +653,21 @@ describe('Understudy', () => {
             it('throws when understudy is not connected', () => {
                 understudy.leave();
                 expect(() => understudy.getInventory()).toThrow();
+            });
+        });
+
+        describe('getEquippable', () => {
+            it('returns the equippable component from simulatedPlayer', () => {
+                expect(understudy.getEquippable()).toBeDefined();
+            });
+
+            it('returns undefined when simulatedPlayer has no equippable component', () => {
+                understudy.simulatedPlayer.getComponent.mockReturnValue(undefined);
+                expect(understudy.getEquippable()).toBeUndefined();
+            });
+
+            it('throws when understudy is not connected', () => {
+                expect(() => new Understudy('NeverJoined').getEquippable()).toThrow(UnderstudyNotConnectedError);
             });
         });
 
