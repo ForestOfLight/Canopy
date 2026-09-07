@@ -5,9 +5,11 @@ import { InventoryUtils } from "./InventoryUtils";
 
 export class FastMine {
     #isBlockTypeCallback;
+    #playBreakSoundCallback;
 
-    constructor(blockTypeCallback) {
+    constructor(blockTypeCallback, playBreakSoundCallback) {
         this.#isBlockTypeCallback = blockTypeCallback;
+        this.#playBreakSoundCallback = playBreakSoundCallback;
         this.onPlayerStartBreakingBlockBound = this.onPlayerStartBreakingBlock.bind(this);
     }
 
@@ -38,7 +40,7 @@ export class FastMine {
     breakBlock(player, block, heldItemStack) {
         const dimension = block.dimension;
         const blockCenter = { x: block.x + 0.5, y: block.y + 0.5, z: block.z + 0.5 };
-        dimension.playSound("dig.stone", blockCenter, { volume: 1.0 });
+        this.#playBreakSoundCallback(dimension, blockCenter);
         this.createLoot(dimension, blockCenter, block, player, heldItemStack);
         block.setType("minecraft:air");
     }

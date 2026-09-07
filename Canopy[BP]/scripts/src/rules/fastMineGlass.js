@@ -11,11 +11,15 @@ export class FastMineGlass extends BooleanRule {
             onEnableCallback: () => this.fastMine.subscribeToEvents(),
             onDisableCallback: () => this.fastMine.unsubscribeFromEvents()
         }))
-        this.fastMine = new FastMine(FastMineGlass.isGlass);
+        this.fastMine = new FastMine(FastMineGlass.isGlass, FastMineGlass.playBreakSound);
     }
 
     static isGlass(blockId) {
         return blockId.includes("glass");
+    }
+
+    static playBreakSound(dimension, location) {
+        dimension.playSound("random.glass", location, { volume: 1.0 });
     }
 }
 
