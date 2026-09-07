@@ -1,20 +1,29 @@
-import { Rules} from "../../lib/canopy/Canopy";
 import { system, world } from "@minecraft/server";
 
 const beaconRefreshOffset = {};
 const BEACON_REFRESH_RATE = 80;
 
-class Instaminable {
-    constructor(litmusCallback, ruleId) {
-        this.litmusCallback = litmusCallback;
-        this.ruleId = ruleId;
-        this.initEvents();
+export class Instaminable {
+    #isBlockTypeCallback;
+    #runner = void 0;
+
+    constructor(blockTypeCallback) {
+        this.#isBlockTypeCallback = blockTypeCallback;
+        this.onPlayerStartBreakingBlockBound = this.onPlayerStartBreakingBlock.bind(this);
+        this.onEffectAddBound = this.onEffectAdd.bind(this);
     }
 
-    initEvents() {
-        system.runInterval(this.onTick.bind(this), 1);
-        world.beforeEvents.playerBreakBlock.subscribe((event) => this.onPlayerBreakBlock(event));
-        world.afterEvents.effectAdd.subscribe((event) => this.onEffectAdd(event));
+    subscribeToEvents() {
+        this.#runner = system.runInterval(() => this.onTick());
+        world.afterEvents.playerStartBreakingBlock.subscribe(this.onPlayerStartBreakingBlockBound);
+        world.afterEvents.effectAdd.subscribe(this.onEffectAddBound);
+    }
+
+    unsubscribeFromEvents() {
+        if (this.#runner !== void 0)
+            system.clearRun(this.#runner);
+        world.afterEvents.playerStartBreakingBlock.unsubscribe(this.onPlayerStartBreakingBlockBound);
+        world.afterEvents.effectAdd.unsubscribe(this.onEffectAddBound);
     }
 
     onTick() {
@@ -26,15 +35,12 @@ class Instaminable {
         }
     }
 
-    onPlayerBreakBlock(event) {
-        const blockId = event.block.typeId;
-        if (Rules.getNativeValue(this.ruleId) !== true)
-            return;
-        if (!this.litmusCallback(blockId))
+    onPlayerStartBreakingBlock(event) {
+        if (!this.#isBlockTypeCallback(event.block.typeId))
             return;
         const player = event.player;
-        if (this.isEfficiencyFiveNetheritePick(event.itemStack) && this.hasHasteTwo(player)) {
-            const duration = player.getEffect('haste')?.duration;
+        if (this.isEfficiencyFiveNetheritePick(event.heldItemStack) && this.hasHasteTwo(player)) {
+            const duration = player.getEffect("haste")?.duration;
             if (duration > 0)
                 system.run(() => player.addEffect('haste', duration, { amplifier: 2 }));
         }
@@ -63,5 +69,3 @@ class Instaminable {
         return haste?.amplifier === 1;
     }
 }
-
-export default Instaminable;
