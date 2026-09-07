@@ -1,4 +1,4 @@
-import { world, system, ItemStack, DimensionTypes } from '@minecraft/server';
+import { world, system, DimensionTypes } from '@minecraft/server';
 import { FormCancelationReason, uiManager } from '@minecraft/server-ui';
 import { ProxyInventoryEntity } from '../src/classes/proxy/ProxyInventoryEntity';
 import { PeekCaptureEntity } from '../src/classes/peek/PeekCaptureEntity';
@@ -77,30 +77,6 @@ export function wait(ms) {
 		endTime = Date.now();
 	
 	return { startTime, endTime };
-}
-
-export function getInventory(block) {
-	const container = block.getComponent('inventory')?.container;
-	if (container === undefined) return {};
-	const items = {};
-	for (let i = 0; i < container.size; i++) {
-		const itemStack = container.getItem(i);
-		if (itemStack === undefined) continue;
-		items[i] = { typeId: itemStack.type.id, amount: itemStack.amount };
-	}
-	return items;
-}
-
-export function restoreInventory(block, items) {
-	const container = block.getComponent('inventory')?.container;
-	if (container === undefined)
-		return;
-	for (let i = 0; i < container.size; i++) {
-		const item = items[i];
-		if (item === undefined)
-			continue;
-		container.getSlot(i).setItem(new ItemStack(item.typeId, item.amount));
-	}
 }
 
 export function broadcastActionBar(message, sender) {

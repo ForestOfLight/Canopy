@@ -98,6 +98,7 @@ import './src/rules/serverSideCollisionBoxes'
 import './src/rules/entitySeparation'
 import './src/rules/enderPearlChunkLoading'
 import './src/rules/renderEndGatewayExits'
+import './src/rules/carefulBreak'
 
 // Simulated Player Rules
 import './src/rules/simplayer/simplayerSaving'

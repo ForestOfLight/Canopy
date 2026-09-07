@@ -2,19 +2,19 @@ import { BooleanRule, GlobalRule } from "../../lib/canopy/Canopy";
 import { system, world, GameMode } from "@minecraft/server";
 import { calcDistance } from "../../include/utils";
 import { InventoryUtils } from "../classes/InventoryUtils";
+import { AutoItemPickup } from "./autoItemPickup";
 
-export class AutoItemPickup extends BooleanRule {
-    static PICKUP_RANGE = 4;
+export class CarefulBreak extends BooleanRule {
+    static PICKUP_RANGE = AutoItemPickup.PICKUP_RANGE;
     brokenBlockEventsThisTick = [];
     #runner = void 0;
 
     constructor() {
         super(GlobalRule.morphOptions({
-            identifier: 'autoItemPickup',
-            wikiDescription: 'Enables the automatic pickup of items that drop when you break a block.',
+            identifier: 'carefulBreak',
             onEnableCallback: () => this.subscribeToEvents(),
             onDisableCallback: () => this.unsubscribeFromEvents(),
-            independentRules: ['carefulBreak']
+            independentRules: ['autoItemPickup']
         }));
         this.onPlayerBreakBlockBound = this.onPlayerBreakBlock.bind(this);
         this.onEntitySpawnBound = this.onEntitySpawn.bind(this);
@@ -44,7 +44,7 @@ export class AutoItemPickup extends BooleanRule {
     }
 
     shouldPickup(player) {
-        return player?.getGameMode() === GameMode.Survival;
+        return player?.isSneaking && player?.getGameMode() === GameMode.Survival;
     }
     
     onEntitySpawn(event) {
@@ -69,8 +69,8 @@ export class AutoItemPickup extends BooleanRule {
     }
     
     entityCameFromBlock(blockEvent, itemEntity) {
-        return calcDistance(blockEvent.block.location, itemEntity.location) < this.PICKUP_RANGE;
+        return calcDistance(blockEvent.block.location, itemEntity.location) < CarefulBreak.PICKUP_RANGE;
     }
 }
 
-export const autoItemPickup = new AutoItemPickup();
+export const carefulBreak = new CarefulBreak();
