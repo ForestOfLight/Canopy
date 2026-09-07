@@ -476,6 +476,7 @@ rules.entitySeparation=When stacked entities trigger a pressure plate, one entit
 rules.explosionChainReactionOnly=Makes explosions only affect TNT blocks.
 rules.explosionNoBlockDamage=Makes explosions not affect blocks.
 rules.explosionOff=Disables explosions entirely.
+rules.fastMineGlass=Makes glass mine near-instantly when using a netherite pickaxe with efficiency 5.
 rules.flippinArrows=Using an arrow on blocks will flip, rotate, or open them. Putting it in your offhand will flip blocks when placed.
 rules.instaminableDeepslate=Makes deepslate instaminable while using netherite, efficiency 5, and haste 2.
 rules.instaminableEndstone=Makes endstone instaminable while using netherite, efficiency 5, and haste 2.
