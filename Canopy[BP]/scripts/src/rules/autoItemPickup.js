@@ -1,75 +1,23 @@
 import { BooleanRule, GlobalRule } from "../../lib/canopy/Canopy";
-import { system, world, GameMode } from "@minecraft/server";
-import { calcDistance } from "../../include/utils";
-import { InventoryUtils } from "../classes/InventoryUtils";
+import { GameMode } from "@minecraft/server";
+import ItemPickup from "../classes/ItemPickup";
 
 export class AutoItemPickup extends BooleanRule {
-    static PICKUP_RANGE = 4;
-    brokenBlockEventsThisTick = [];
-    #runner = void 0;
+    itemPickup;
 
     constructor() {
         super(GlobalRule.morphOptions({
             identifier: 'autoItemPickup',
             wikiDescription: 'Enables the automatic pickup of items that drop when you break a block.',
-            onEnableCallback: () => this.subscribeToEvents(),
-            onDisableCallback: () => this.unsubscribeFromEvents(),
+            onEnableCallback: () => this.itemPickup.subscribeToEvents(),
+            onDisableCallback: () => this.itemPickup.unsubscribeFromEvents(),
             independentRules: ['carefulBreak']
-        }));
-        this.onPlayerBreakBlockBound = this.onPlayerBreakBlock.bind(this);
-        this.onEntitySpawnBound = this.onEntitySpawn.bind(this);
+        }))
+        this.itemPickup = new ItemPickup(AutoItemPickup.isSurvivalPlayer);
     }
 
-    subscribeToEvents() {
-        this.#runner = system.runInterval(() => this.onTick());
-        world.afterEvents.playerBreakBlock.subscribe(this.onPlayerBreakBlockBound);
-        world.afterEvents.entitySpawn.subscribe(this.onEntitySpawnBound);
-    }
-
-    unsubscribeFromEvents() {
-        if (this.#runner !== void 0)
-            system.clearRun(this.#runner);
-        world.afterEvents.playerBreakBlock.unsubscribe(this.onPlayerBreakBlockBound);
-        world.afterEvents.entitySpawn.unsubscribe(this.onEntitySpawnBound);
-    }
-
-    onTick() {
-        this.brokenBlockEventsThisTick = [];
-    }
-
-    onPlayerBreakBlock(event) {
-        if (!this.shouldPickup(event.player))
-            return;
-        this.brokenBlockEventsThisTick.push(event);
-    }
-
-    shouldPickup(player) {
+    static isSurvivalPlayer(player) {
         return player?.getGameMode() === GameMode.Survival;
-    }
-    
-    onEntitySpawn(event) {
-        if (event.cause !== 'Spawned' || event.entity?.typeId !== 'minecraft:item')
-            return;
-        
-        const itemEntity = event.entity;
-        const brokenBlockEvent = this.findBrokenBlockEventWhichDropped(itemEntity);
-        if (!brokenBlockEvent)
-            return;
-        InventoryUtils.pickupItemEntity(brokenBlockEvent.player, itemEntity);
-    }
-
-    findBrokenBlockEventWhichDropped(itemEntity) {
-        let brokenBlockEvent;
-        try {
-            brokenBlockEvent = this.brokenBlockEventsThisTick.find(blockEvent => this.entityCameFromBlock(blockEvent, itemEntity));
-        } catch {
-            /* pass */
-        }
-        return brokenBlockEvent;
-    }
-    
-    entityCameFromBlock(blockEvent, itemEntity) {
-        return calcDistance(blockEvent.block.location, itemEntity.location) < this.PICKUP_RANGE;
     }
 }
 
