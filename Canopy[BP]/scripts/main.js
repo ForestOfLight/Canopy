@@ -99,6 +99,7 @@ import './src/rules/entitySeparation'
 import './src/rules/enderPearlChunkLoading'
 import './src/rules/renderEndGatewayExits'
 import './src/rules/carefulBreak'
+import './src/rules/fastMineGlass'
 
 // Simulated Player Rules
 import './src/rules/simplayer/simplayerSaving'
