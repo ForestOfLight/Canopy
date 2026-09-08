@@ -233,15 +233,23 @@ export async function forceShow(player, form, { timeout = Infinity, showBusyMess
 
 export function getTranslatedEntityList(entities) {
 	const message = { rawtext: [] };
-	for (let i = 0; i < entities.length; i++) {
-		const entity = entities[i];
-		if (entity.nameTag)
-			message.rawtext.push({ translate: entity.nameTag });
+	const groupedEntities = new Map();
+	for (const entity of entities) {
+		const name = entity.nameTag || entity.localizationKey;
+		const group = groupedEntities.get(name);
+		if (group)
+			group.count++;
 		else
-			message.rawtext.push({ translate: entities[i].localizationKey });
-        if (i !== entities.length - 1)
-			message.rawtext.push({ rawtext: [{ text: ', ' }] });
-    }
+			groupedEntities.set(name, { entity, count: 1 });
+	}
+
+	let index = 0;
+	for (const { entity, count } of groupedEntities.values()) {
+		message.rawtext.push({ translate: entity.nameTag || entity.localizationKey });
+		message.rawtext.push({ text: ` x${count}` });
+		if (index++ !== groupedEntities.size - 1)
+			message.rawtext.push({ text: ', ' });
+	}
 	return message;
 }
 
