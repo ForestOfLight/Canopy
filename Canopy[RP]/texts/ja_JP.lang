@@ -20,12 +20,50 @@ commands.generic.invalidaction=§c無効なアクションです。詳細は /he
 
 commands.help=ヘルプページを表示します。
 commands.help.search.noresult=§c「%s」に一致する内容は見つかりませんでした。
-commands.help.search.results=§l§aCanopy§r §2「§r%1§2」のヘルプ検索結果:%2
+commands.help.search.results=§l§aCanopy§r §2「§r%1§2」のヘルプ検索結果:
 commands.help.page.header=§l§aCanopy§r§2 ヘルプページ: §f%1
 commands.help.infodisplay=設定可能なInfoDisplayのルール。
 commands.help.rules=設定可能なグローバルルール。
 commands.help.extension.rules=§o§a%s§r§8 用の切り替え可能なルール。
 commands.help.extension.commands=§o§a%s§r§2 用のコマンド。
+
+commands.analyzearea=ブロックの範囲を分析し、JavaScript式の結果を表示します。
+commands.analyzearea.overcapacity=§c指定範囲のブロック数が多すぎます (>2^32 ブロック)。
+commands.analyzearea.loadcapacity=§c範囲が多くのチャンクにまたがっています (ティックエリアの上限を超えました)。
+commands.analyzearea.unknownerror=§c不明なエラーが発生しました。
+commands.analyzearea.syntaxerror=§c式を解析できませんでした。
+commands.analyzearea.forbidden=§c式が許可されていないプロパティまたはメソッドにアクセスしています。
+commands.analyzearea.completed=§7%1 個の一致するブロックが見つかりました。
+commands.analyzearea.removed=§7その座標の分析を削除しました。
+commands.analyzearea.removenotfound=§cその座標の分析が見つかりません。
+commands.analyzearea.create.invalid=§c有効な座標と式を入力してください。
+commands.analyzearea.teleport.gamemode=§c一致地点へのテレポートにはクリエイティブまたはスペクテイターモードが必要です。
+commands.analyzearea.stats.header=§l§aエリア分析§r
+commands.analyzearea.stats=§f%1 §7-> §f%2\n§f式: §7%3\n§f一致: §a%4\n§fサイズ: §7%5
+commands.analyzearea.stats.capped=§f%1 §7-> §f%2\n§f式: §7%3\n§f一致: §c%4+ (上限に到達)\n§fサイズ: §7%5
+commands.analyzearea.stats.analyzing=§f%1 §7-> §f%2\n§f式: §7%3\n§f分析中... §e%4
+commands.analyzearea.ui.selector.title=§2エリア分析
+commands.analyzearea.ui.selector.new=(+) 新しい分析
+commands.analyzearea.ui.selector.empty=§7分析はまだありません。
+commands.analyzearea.ui.create.title=§2新しいエリア分析
+commands.analyzearea.ui.create.fromX=開始 X
+commands.analyzearea.ui.create.fromY=開始 Y
+commands.analyzearea.ui.create.fromZ=開始 Z
+commands.analyzearea.ui.create.toX=終了 X
+commands.analyzearea.ui.create.toY=終了 Y
+commands.analyzearea.ui.create.toZ=終了 Z
+commands.analyzearea.ui.create.dimension=ディメンション
+commands.analyzearea.ui.create.expression=式
+commands.analyzearea.ui.create.submit=作成
+commands.analyzearea.ui.page.title=§2エリア分析
+commands.analyzearea.ui.page.notrun=§7このセッションでは未実行です。再分析を押してください。
+commands.analyzearea.ui.page.prev=< 前へ <
+commands.analyzearea.ui.page.next=> 次へ >
+commands.analyzearea.ui.page.reanalyze=再分析
+commands.analyzearea.ui.page.enableboxes=一致の描画を有効化
+commands.analyzearea.ui.page.disableboxes=一致の描画を無効化
+commands.analyzearea.ui.page.remove=(-) エリアを削除
+commands.analyzearea.ui.page.back=戻る
 
 commands.biomeedges=指定範囲内のバイオーム境界を検出して表示します。
 commands.biomeedges.finderadded=§7バイオーム境界を分析中...
@@ -58,7 +96,7 @@ commands.camera.spectate.hardcore=§cスペクテイターへの切り替えを�
 commands.camera.spectate.flying=§cスペクテイターに切り替えるには地面にいる必要があります。
 commands.camera.invalidaction=§c無効なカメラアクションです。
 
-commands.canopy=ルールを設定します。
+commands.canopy=ルールの値を設定します。数値は引用符で囲みます。例: "16"。
 commands.canopy.version=Canopyと全ロード済み拡張機能の現在のバージョンを表示します。
 commands.canopy.version.message=§7このサーバーは §l§aCanopy§r を実行しています
 commands.canopy.version.extensions=§7ロード済み拡張機能:
@@ -88,6 +126,7 @@ commands.cleanup.success=§7%1 個のエンティティをクリーンアップ�
 commands.counter=ホッパーカウンターを管理します。(エイリアス: ct)
 commands.counter.channel.notfound=§c無効な色: %s。羊毛ブロックの色のいずれかを使用してください。
 commands.counter.query=指定した色のホッパーカウンターのカウントとレートを表示します。
+commands.counter.query.all=すべてのホッパーカウンターのカウントとレートを表示します。
 commands.counter.query.empty=§7使用中のホッパーカウンターがありません。
 commands.counter.query.channel=§7%1§7 のアイテム (%2%3 分), 合計: §f%4§7, (§f%5§7):
 commands.counter.realtime=ゲームティックに基づく時間ではなく、現実世界の時間を使用してカウントとレートを表示します。
@@ -116,7 +155,7 @@ commands.data.components=§aコンポーネント:§r %s
 commands.data.tags=§aタグ:§r %s
 commands.data.dynamicProperties=§aダイナミックプロパティ:§r %1 合計バイト数: %2
 commands.data.effects=§aエフェクト:§r %s
-commands.data.other=§aその他:§r 頭の位置: %1, 回転: [%2, %3], 速度: %4, 視線方向: %5
+commands.data.other=§aその他:§r 頭の位置: %1, 回転: [%2, %3], 速度: %4, 視線方向: %5, AABB: %6
 
 commands.debugentity=エンティティのデバッグ情報を表示します。
 commands.debugentity.invalidProperty=§c無効なデバッグプロパティです。
@@ -150,6 +189,7 @@ commands.gamemode.sp=ゲームモードをスペクテイターに設定しま�
 
 commands.generator=ホッパージェネレーターを管理します。(エイリアス: gt)
 commands.generator.channel.notfound=§c無効な色: %s。羊毛ブロックの色のいずれかを使用してください。
+commands.generator.query.all=すべてのホッパージェネレーターのカウントとレートを表示します。
 commands.generator.query=指定した色のホッパージェネレーターのカウントとレートを表示します。
 commands.generator.query.empty=§7使用中のホッパージェネレーターはありません。
 commands.generator.query.channel=§7%1§7 の生成アイテム (%2%3 分), 合計: §f%4§7, (§f%5§7):
@@ -180,12 +220,9 @@ commands.hss.stopped=§7固定スポーン地点の表示を終了しました�
 commands.hss.alreadyrunning=§c既にネザー要塞の固定スポーン地点を捜索中です。
 commands.hss.notrunning=§c固定スポーン地点の捜索は現在実行中ではありません。
 
-commands.info=InfoDisplayルールを設定します。(エイリアス: i)
+commands.info=InfoDisplayルールを設定します。
 commands.info.menu=InfoDisplayルール設定用のメニューフォームを表示します。
 commands.info.single=単一のInfoDisplayルールを設定します。
-commands.info.multiple=複数のInfoDisplayルールを設定します。
-commands.info.all=すべてのInfoDisplayルールを設定します。
-commands.info.allupdated=§7すべてのInfoDisplayルールが §l
 commands.info.canopyRule=§cルール '%1' はグローバルルールであり、切り替えるには %2canopy を使用する必要があります。詳細は %2help を参照してください。
 
 commands.jump=ターゲット中のブロックにテレポートします。(エイリアス: j)
@@ -230,11 +267,68 @@ commands.lifetime.query.ticktime.unit= gt
 commands.loop=バニラコマンドを1ティック内で複数回実行します。
 
 commands.peek=ターゲットのインベントリの中身を確認します。クエリに一致するアイテムをハイライト表示できます。
-commands.peek.fail.unloaded=§c%s のターゲットは読み込まれていません。
-commands.peek.fail.noinventory=§c%2 の %1 にインベントリが見つかりません。
-commands.peek.fail.noitems=§c%2 の %1 にアイテムが見つかりません。
+commands.peek.armed=§7ピークを準備しました。コンテナを見ながら操作すると中身を確認できます。
+commands.peek.expired=§7ピークの有効期限が切れました。もう一度コマンドを実行してください。
+commands.peek.fail.notcreative=§cコンテナのピークにはクリエイティブモードが必要です。
+commands.peek.fail.notarget=§cピークするコンテナがありません。ピークをキャンセルしました。
+commands.peek.tip=§7操作: §f上半分§r\n§7スニーク+操作: §f下半分
+commands.peek.view.top=上半分
+commands.peek.view.bottom=下半分
 commands.peek.query.cleared=§7ピーククエリをクリアしました。
 commands.peek.query.set=§7ピーククエリを '%s' に設定しました。
+
+commands.playeraction=シミュレートプレイヤーに可変タイミングでアクションを実行させます。
+commands.playeraction.invalidtiming=§c無効な %1 タイミング: %2。
+commands.playeraction.invalidticks=§c無効な '%1' のティック時間: %2。整数を指定してください。
+
+commands.playerglide=シミュレートプレイヤーのエリトラ滑空を開始・停止させます。
+
+commands.playerinventory=シミュレートプレイヤーのインベントリを表示します。
+commands.playerinventory.noinventory=§cインベントリが見つかりません
+commands.playerinventory.empty=§7%s のインベントリは空です。
+commands.playerinventory.header=%s のインベントリ:
+commands.playerinventory.item=§7- %1%2§7: %3 x%4
+
+commands.playerjoin=新しいシミュレートプレイヤーを現在地に参加させます。
+
+commands.playerleave=シミュレートプレイヤーをゲームから退出させます。
+
+commands.playerlook=シミュレートプレイヤーに指定した方向を向かせます。
+commands.playerlook.at.missing=§c注視する位置の座標が指定されていません。
+commands.playerlook.rotation.missing=§c向きのヨーまたはピッチが指定されていません。
+commands.playerlook.invalidoption=§c無効な注視オプション: '%s'
+commands.playerlook.block.entityonly=§cブロックのターゲット指定はエンティティのみが使用できます。
+commands.playerlook.block.noblock=§c視界内にブロックがありません。
+commands.playerlook.entity.entityonly=§cエンティティのターゲット指定はエンティティのみが使用できます。
+commands.playerlook.entity.noentity=§c視界内にエンティティがありません。
+commands.playerlook.me.noserver=§c自分自身のターゲット指定はサーバーからは使用できません。
+
+commands.playermove=シミュレートプレイヤーを指定した方向に移動させます。
+commands.playermove.invalidoption=§c無効な移動オプション: '%s'
+commands.playermove.block.entityonly=§cブロックへの移動はエンティティのみが使用できます。
+commands.playermove.block.noblock=§c視界内にブロックがありません。
+commands.playermove.entity.entityonly=§cエンティティへの移動はエンティティのみが使用できます。
+commands.playermove.entity.noentity=§c視界内にエンティティがありません。
+commands.playermove.me.noserver=§c自分自身への移動はサーバーからは使用できません。
+
+commands.playerprefix=シミュレートプレイヤーのネームタグの接頭辞を設定します。'-none' で解除します。
+commands.playerprefix.removed=§7シミュレートプレイヤーの接頭辞を解除しました。
+commands.playerprefix.set=§7シミュレートプレイヤーの接頭辞を "§r%s§r§7" に設定しました。
+
+commands.playerrejoin=シミュレートプレイヤーを最後の位置で再参加させます。
+
+commands.playerselect=シミュレートプレイヤーにホットバースロットを選択させます。
+commands.playerselect.invalidslot=§c無効なスロット番号: %s。0 から 8 の数値を指定してください。
+
+commands.playersneak=シミュレートプレイヤーのスニークを開始・停止させます。
+
+commands.playersprint=シミュレートプレイヤーのダッシュを開始・停止させます。
+
+commands.playerstop=シミュレートプレイヤーのすべてのアクションを停止させます。
+
+commands.playerswapheld=シミュレートプレイヤーの手持ちアイテムを自分の手持ちアイテムと交換します。
+
+commands.playertp=シミュレートプレイヤーを自分の場所にテレポートさせます。
 
 commands.pos=現在の位置、または他のプレイヤーの位置を表示します。
 commands.pos.self=§aあなたの位置: §f%s
@@ -394,9 +488,12 @@ rules.quickFillContainer=アイテムを持ってコンテナを使うと、そ�
 rules.quickFillContainer.filled=§7すべての %2 を %1 に収納しました
 rules.quickFillContainer.taken=§7%2 からすべての %1 を取り出しました
 rules.refillHand=持っているアイテムが無くなったときにインベントリから補充します。インベントリスロット10（左上の右隣）に矢を入れると有効になります。
+rules.renderEndGatewayExits=エンドゲートウェイを通過した後、その出口の位置を描画します。
 rules.renewableElytraDropChance=ファントムがシュルカーの弾で倒されると、確率でエリトラをドロップします。
 rules.renewableSponge=ガーディアンが雷に打たれるとエルダーガーディアンに変化します。
 rules.serverSideCollisionBoxes=エンティティの当たり判定ボックスを、クライアント座標ではなくサーバー座標に基づいて描画します。
+rules.simplayerSaving=シミュレートプレイヤーのプレイヤーデータの保存を有効にします。パフォーマンスは低下しますが、退出して再参加してもインベントリと位置が保持されます。
+rules.simplayerRejoining=ワールドの再読み込み時に、オンラインのシミュレートプレイヤーを再参加させます。
 rules.spawnEggSpawnWithMinecart=レールの上でスポーンエッグを使用すると、スポーンしたエンティティがトロッコに乗った状態で現れます。
 rules.tntFuse=TNTの起爆時間（ティック単位）。
 rules.tntPrimeMomentum=TNT着火時の運動量を固定値にします。
@@ -408,12 +505,16 @@ rules.infoDisplay.cardinalFacing.display=向き: %s
 rules.infoDisplay.chunkCoords=現在のチャンク座標とチャンク内の位置を表示します。
 rules.infoDisplay.chunkCoords.display=チャンク: %1§r in %2
 rules.infoDisplay.coords=座標を小数点以下2桁に丸めて表示します。
-rules.infodisplay.dimension=現在のディメンションを表示します。
+rules.infoDisplay.dimension=現在のディメンションを表示します。
 rules.infoDisplay.entities=正面にいるエンティティ数を表示します。
 rules.infoDisplay.entities.display=エンティティ: %s
 rules.infoDisplay.eventTrackers=トラッキング中のイベントのカウントを表示します。
-rules.infoDisplay.facing=yawとpitchで向いている方向を表示します。
+rules.infoDisplay.facing=ヨーとピッチで向いている方向を表示します。
 rules.infoDisplay.facing.display=向き: %1 %2
+rules.infoDisplay.heldItemDurability=メインハンドに持っているアイテムの耐久値を表示します。
+rules.infoDisplay.heldItemDurability.display=耐久値 %s
+rules.infoDisplay.blockBreakSpeed=直近 %1 ティック (%2 秒) における1秒あたりの平均ブロック破壊数を表示します。
+rules.infoDisplay.blockBreakSpeed.display=ブロック破壊速度: %1 b/s
 rules.infoDisplay.hopperCounterCounts=すべてのアクティブなホッパーカウンターのカウントをそれぞれの色で表示します。ホッパーカウンターモードを変更することで表示を調整できます。
 rules.infoDisplay.light=足元のブロックの明るさレベルを表示します。
 rules.infoDisplay.light.display=明るさ: %1 §r(空の明るさ %2§r) 
@@ -428,18 +529,25 @@ rules.infoDisplay.moonPhase.waningCrescent=二十六夜
 rules.infoDisplay.moonPhase.waningGibbous=寝待月
 rules.infoDisplay.moonPhase.waxingCrescent=三日月
 rules.infoDisplay.moonPhase.waxingGibbous=十三夜
+rules.infoDisplay.noFog=霧を無効にします。水と溶岩には影響しません。
 rules.infoDisplay.peekInventory=ターゲット中のブロックまたはエンティティのインベントリを表示します。
 rules.infoDisplay.peekInventory.empty=空
+rules.infoDisplay.ping=サーバーへの現在のネットワーク遅延を表示します。
+rules.infoDisplay.ping.display=Ping: %s
+rules.infoDisplay.renderLightLevel=近くのブロックの上に明るさレベルの値を描画します。警告: 非常に負荷の大きいルールです。
+rules.infoDisplay.renderSignalStrength=近くのレッドストーンダストの上に信号強度の値を描画します。
 rules.infoDisplay.sessionTime=ワールドに参加してからの時間を表示します。
 rules.infoDisplay.sessionTime.display=セッション: %s
 rules.infoDisplay.signalStrength=ターゲット中のブロックの信号強度を表示します。
 rules.infoDisplay.simulationMap=周囲の読み込み済みチャンクのマップを表示します。simmapコマンドで設定できます。警告: 非常に負荷の大きいルールです。
+rules.infoDisplay.horse=騎乗している馬の速度と最大体力を表示します。
+rules.infoDisplay.horse.display=馬の速度: §a%1§r, 最大体力: §c%2§r
 rules.infoDisplay.slimeChunk=現在のチャンクがスライムチャンクかどうかを表示します。
 rules.infoDisplay.slimeChunk.display=スライムチャンク: %s
 rules.infoDisplay.speed=現在の速度をメートル毎秒[m/s]で表示します。
-rules.infodisplay.structures=現在地の自然生成構造物を表示します。
-rules.infodisplay.structures.display=構造物: 
-rules.infodisplay.structures.display.none=なし
+rules.infoDisplay.structures=現在地の自然生成構造物を表示します。
+rules.infoDisplay.structures.display=構造物: 
+rules.infoDisplay.structures.display.none=なし
 rules.infoDisplay.target=ターゲット中のブロックまたはエンティティのIDを表示します。
 rules.infoDisplay.timeOfDay=Minecraftの時刻を12時間制のデジタル時計形式で表示します。
 rules.infoDisplay.tps=サーバーの1秒あたりの処理ティック数(TPS: Ticks Per Second)を表示します。
@@ -450,3 +558,12 @@ rules.infoDisplay.weather=現在のディメンションの天気を表示しま
 rules.infoDisplay.weather.display=天気: %s
 rules.infoDisplay.worldDay=ワールド開始からのMinecraft日数を表示します。
 rules.infoDisplay.worldDay.display=日数: %s
+
+## simplayer
+simplayer.notonline=§cシミュレートプレイヤー '%s' はオンラインではありません。
+simplayer.alreadyonline=§cシミュレートプレイヤー '%s' は既にオンラインです。
+simplayer.leave.broadcast=§e%s がゲームから退出しました
+simplayer.swapheld.error=§cアイテムの交換中にエラーが発生しました: %s
+simplayer.editor.tip=§7操作: §fホットバーと防具§r\n§7スニーク+操作: §fインベントリ
+simplayer.editor.view.hotbarAndArmor=ホットバーと防具
+simplayer.editor.view.inventory=インベントリ
