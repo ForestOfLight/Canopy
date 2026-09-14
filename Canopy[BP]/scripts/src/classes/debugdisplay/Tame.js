@@ -19,7 +19,7 @@ export class Tame extends DebugDisplayTextElement {
     getFormattedData() {
         this.updateTamedToPlayerIdCache();
         this.populateComponents();
-        if (this.isTamed())
+        if (this.hasIsTamedComponent())
             return this.getTamedText();
         let untamedText = `§3false`;
         if (this.hasPlayerIdProperty())
@@ -33,22 +33,25 @@ export class Tame extends DebugDisplayTextElement {
         let output = `§3true`;
         if (this.tamedToPlayerIdCache)
             output += `§7, By: ${getNameFromEntityId(this.tamedToPlayerIdCache)}`;
+        else if (this.isTamed?.tamedToPlayerId !== void 0)
+            output += `§7, By: ${getNameFromEntityId(this.isTamed.tamedToPlayerId)}`;
         return output;
     }
 
     getTamedToPlayerIdText() {
-        return `§7, By: ${getNameFromEntityId(this.tamedToPlayerIdCache) ?? 'None'}`;
+        return `§7, By: ${getNameFromEntityId(this.tamedToPlayerIdCache || this.isTamed?.tamedToPlayerId) ?? 'None'}`;
     }
 
     getTameableText() {
         const tameItems = this.tameable.getTameItems;
         const tameItemsText = tameItems.length === 0 ? '§7None' : tameItems.map(item => item?.typeId ?? 'Unknown').join(', ');
         return `\n§7Probability: ${this.tameable.probability.toFixed(2)}, Items: ${tameItemsText}`;
-    }    
+    }
 
     populateComponents() {
         this.tameable = this.entity.getComponent(EntityComponentTypes.Tameable);
         this.tameMount = this.entity.getComponent(EntityComponentTypes.TameMount);
+        this.isTamed = this.entity.getComponent(EntityComponentTypes.IsTamed);
         if (this.tameable)
             this.tameItems = this.tameable.getTameItems;
     }
@@ -58,16 +61,16 @@ export class Tame extends DebugDisplayTextElement {
         this.tamedToPlayerIdCache = playerId;
     }
 
-    isTamed() {
-        return this.entity.hasComponent(EntityComponentTypes.IsTamed);
+    hasIsTamedComponent() {
+        return this.isTamed?.isValid;
     }
 
     hasPlayerIdProperty() {
-        return (this.tameMount && this.tameMount.isValid) || (this.tameable && this.tameable.isValid) || this.tamedToPlayerIdCache;
+        return this.tameMount?.isValid || this.tameable?.isValid || this.tamedToPlayerIdCache || (this.isTamed?.isValid && this.isTamed?.tamedToPlayerId);
     }
 
     hasTameableComponent() {
-        return this.tameable && this.tameable.isValid;
+        return this.tameable?.isValid;
     }
 
     tryPortDPToNewUpdate() {
