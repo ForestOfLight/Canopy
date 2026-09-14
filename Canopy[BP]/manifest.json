@@ -1,18 +1,18 @@
 {
 	"format_version": 2,
 	"header": {
-		"name": "Canopy [BP] v1.6.1",
+		"name": "Canopy [BP] v1.6.2",
 		"description": "Technical informatics & features addon by §aForestOfLight§r.",
 		"uuid": "7f6b23df-a583-476b-b0e4-87457e65f7c0",
 		"version": [
 			1,
 			6,
-			1
+			2
 		],
 		"min_engine_version": [
 			1,
 			26,
-			40
+			50
 		]
 	},
 	"modules": [
@@ -42,11 +42,11 @@
 	"dependencies": [
 		{
 			"module_name": "@minecraft/server",
-			"version": "2.10.0-beta"
+			"version": "2.11.0-beta"
 		},
 		{
 			"module_name": "@minecraft/server-ui",
-			"version": "2.2.0-beta"
+			"version": "2.3.0-beta"
 		},
 		{
 			"module_name": "@minecraft/debug-utilities",
