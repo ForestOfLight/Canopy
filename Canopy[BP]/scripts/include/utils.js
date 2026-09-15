@@ -99,36 +99,30 @@ export function locationInArea(area, position) {
 	return inX && inY && inZ;
 }
 
-export function getColoredDimensionName(dimensionId) {
+function getDimensionStyle(dimensionId) {
 	switch (dimensionId) {
 		case 'minecraft:overworld':
 		case 'overworld':
-			return '§aOverworld';
+			return { color: '§a', name: 'Overworld' };
 		case 'minecraft:nether':
 		case 'nether':
-			return '§cNether';
+			return { color: '§c', name: 'Nether' };
 		case 'minecraft:the_end':
 		case 'the_end':
-			return '§dEnd';
+			return { color: '§d', name: 'End' };
 		default:
-			return '§f' + dimensionId;
+			return { color: '§f', name: dimensionId };
 	}
 }
 
+export function getColoredDimensionName(dimensionId) {
+	const style = getDimensionStyle(dimensionId);
+	return style.color + style.name;
+}
+
 export function getColorByDimension(dimensionId) {
-	switch (dimensionId) {
-		case 'minecraft:overworld':
-		case 'overworld':
-			return '§a';
-		case 'minecraft:nether':
-		case 'nether':
-			return '§c';
-		case 'minecraft:the_end':
-		case 'the_end':
-			return '§d';
-		default:
-			return '§f';
-	}
+	const style = getDimensionStyle(dimensionId);
+	return style.color;
 }
 
 export function getScriptEventSourceName(event) {
