@@ -1,7 +1,7 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { 
 	calcDistance, isString, isNumeric, parseName, getClosestTarget, stringifyLocation, 
-	getColorCode, wait, getInventory, locationInArea, getColoredDimensionName, 
+	getColorCode, wait, locationInArea, getColoredDimensionName, 
 	getScriptEventSourceName, getScriptEventSourceObject, recolor, formatColorStr
 } from '../../../../Canopy[BP]/scripts/include/utils.js';
 
