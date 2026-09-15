@@ -1,6 +1,7 @@
 {
 	"hud_title_text": {
-		"type": "image",
+		"type": "stack_panel",
+		"orientation": "vertical",
 		"size": [ "100%c + 5px", "100%c + 4px"],
 		"alpha": 0.7,
 		"anchor_from": "top_right",
