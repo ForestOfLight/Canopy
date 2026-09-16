@@ -159,22 +159,25 @@ function formatComponent(target, component) {
     return `\n  §7>§f ${component.typeId}§7 - {${output}}`;
 }
 
-function formatObject(target, object, shouldColorTopLevel = false) {
+export function formatObject(target, object, shouldColorTopLevel = false) {
     let output = '';
     for (const key in object) {
         try {
-            if (typeof object[key] === 'function')
+            const value = object[key];
+            if (typeof value === 'function')
                 continue;
-            let value = object[key];
+            let formatted;
             if (target === value)
-                value = 'this';
+                formatted = JSON.stringify('this');
             else if (typeof value === 'object')
-                value = formatObject(target, value, false);
-            
-            if (shouldColorTopLevel)
-                output += `§7${key}=§b${JSON.stringify(value)}§7, `;
+                formatted = formatObject(target, value, false);
             else
-                output += `${key}=${JSON.stringify(value)}, `;
+                formatted = JSON.stringify(value);
+
+            if (shouldColorTopLevel)
+                output += `§7${key}=§b${formatted}§7, `;
+            else
+                output += `${key}=${formatted}, `;
         } catch(error) {
             console.warn(error);
         }
