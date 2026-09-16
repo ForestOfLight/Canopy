@@ -5,6 +5,11 @@ import { categoryToMobMap, meleeMobs } from '../../../../Canopy[BP]/scripts/incl
 import stripJsonComments from 'strip-json-comments';
 
 const bedrockSamplesRawUrl = `https://raw.githubusercontent.com/Mojang/bedrock-samples/refs/tags/v${MC_VERSION}/`;
+const githubToken = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+const githubApiHeaders = {
+    Accept: 'application/vnd.github+json',
+    ...(githubToken ? { Authorization: `Bearer ${githubToken}` } : {})
+};
 
 describe.concurrent('categoryToMobMap', () => {
     for (const category in categoryToMobMap) {
@@ -63,7 +68,7 @@ async function fetchAllFilesInRepoPath(owner, repo, path, ref = 'main') {
 
   async function walk(dirPath) {
     const url = `https://api.github.com/repos/${owner}/${repo}/contents/${dirPath}`;
-    const res = await axios.get(url, { params: { ref } });
+    const res = await axios.get(url, { params: { ref }, headers: githubApiHeaders });
     for (const item of res.data) {
       if (item.type === 'file') {
         const fileResponse = await axios.get(item.download_url);
