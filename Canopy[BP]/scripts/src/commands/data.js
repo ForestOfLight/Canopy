@@ -99,13 +99,13 @@ function formatProperties(target) {
     for (const key in target) {
         try {
             let value = target[key];
-            if (typeof value === 'function') 
+            if (typeof value === 'function')
                 continue;
-            else if (target === value)
+            else if (isDataTarget(target, value))
                 value = 'this';
             else if (typeof value === 'object')
                 value = formatObject(target, value);
-            else 
+            else
                 value = JSON.stringify(value);
             output += `§7${key}=§b${value}§7, `;
         } catch(error) {
@@ -144,11 +144,11 @@ function formatComponent(target, component) {
             let value = component[key];
             if (typeof value === 'function')
                 continue;
-            else if (target === value) 
+            else if (isDataTarget(target, value))
                 value = 'this';
             else if (typeof value === 'object')
                 value = formatObject(target, value);
-            else 
+            else
                 value = JSON.stringify(value);
             output += `${key}=§b${value}§7, `;
         } catch(error) {
@@ -159,6 +159,32 @@ function formatComponent(target, component) {
     return `\n  §7>§f ${component.typeId}§7 - {${output}}`;
 }
 
+export function isDataTarget(target, value) {
+    if (target === value)
+        return true;
+    if (!target || !value || typeof target !== 'object' || typeof value !== 'object')
+        return false;
+    try {
+        return isSameEntity(target, value) || isSameBlock(target, value);
+    } catch {
+        return false;
+    }
+}
+
+function isSameEntity(target, value) {
+    return target.id !== undefined && target.id === value.id && target.typeId === value.typeId;
+}
+
+function isSameBlock(target, value) {
+    if (target.id !== undefined || value.id !== undefined)
+        return false;
+    if (!target.location || !value.location || target.dimension?.id !== value.dimension?.id)
+        return false;
+    return target.location.x === value.location.x
+        && target.location.y === value.location.y
+        && target.location.z === value.location.z;
+}
+
 export function formatObject(target, object, shouldColorTopLevel = false) {
     let output = '';
     for (const key in object) {
@@ -167,7 +193,7 @@ export function formatObject(target, object, shouldColorTopLevel = false) {
             if (typeof value === 'function')
                 continue;
             let formatted;
-            if (target === value)
+            if (isDataTarget(target, value))
                 formatted = JSON.stringify('this');
             else if (typeof value === 'object')
                 formatted = formatObject(target, value, false);
