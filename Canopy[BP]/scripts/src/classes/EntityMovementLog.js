@@ -1,5 +1,5 @@
 import { EntityLog } from "./EntityLog";
-import { world, system } from "@minecraft/server";
+import { world, system, DimensionTypes } from "@minecraft/server";
 
 class EntityMovementLog extends EntityLog {
     validTypes = ['projectiles', 'falling_blocks'];
@@ -42,7 +42,8 @@ class EntityMovementLog extends EntityLog {
     updateEntityLists() {
         this.thisTickEntities = [];
         this.movingEntities = [];
-        for (const dimensionId of ['overworld', 'nether', 'the_end']) {
+        const dimensionIds = DimensionTypes.getAll().map(dimensionType => dimensionType.typeId);
+        for (const dimensionId of dimensionIds) {
             const dimEntities = world.getDimension(dimensionId).getEntities();
             for (const entity of dimEntities) {
                 if (this.hasTrait(entity, this.type)) 

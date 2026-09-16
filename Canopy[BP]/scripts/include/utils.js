@@ -1,4 +1,4 @@
-import { world, system, ItemStack, DimensionTypes } from '@minecraft/server';
+import { world, system, DimensionTypes } from '@minecraft/server';
 import { FormCancelationReason, uiManager } from '@minecraft/server-ui';
 import { ProxyInventoryEntity } from '../src/classes/proxy/ProxyInventoryEntity';
 import { PeekCaptureEntity } from '../src/classes/peek/PeekCaptureEntity';
@@ -79,30 +79,6 @@ export function wait(ms) {
 	return { startTime, endTime };
 }
 
-export function getInventory(block) {
-	const container = block.getComponent('inventory')?.container;
-	if (container === undefined) return {};
-	const items = {};
-	for (let i = 0; i < container.size; i++) {
-		const itemStack = container.getItem(i);
-		if (itemStack === undefined) continue;
-		items[i] = { typeId: itemStack.type.id, amount: itemStack.amount };
-	}
-	return items;
-}
-
-export function restoreInventory(block, items) {
-	const container = block.getComponent('inventory')?.container;
-	if (container === undefined)
-		return;
-	for (let i = 0; i < container.size; i++) {
-		const item = items[i];
-		if (item === undefined)
-			continue;
-		container.getSlot(i).setItem(new ItemStack(item.typeId, item.amount));
-	}
-}
-
 export function broadcastActionBar(message, sender) {
 	let players;
 	if (sender)
@@ -123,36 +99,30 @@ export function locationInArea(area, position) {
 	return inX && inY && inZ;
 }
 
-export function getColoredDimensionName(dimensionId) {
+function getDimensionStyle(dimensionId) {
 	switch (dimensionId) {
 		case 'minecraft:overworld':
 		case 'overworld':
-			return '§aOverworld';
+			return { color: '§a', name: 'Overworld' };
 		case 'minecraft:nether':
 		case 'nether':
-			return '§cNether';
+			return { color: '§c', name: 'Nether' };
 		case 'minecraft:the_end':
 		case 'the_end':
-			return '§dEnd';
+			return { color: '§d', name: 'End' };
 		default:
-			return '§f' + dimensionId;
+			return { color: '§f', name: dimensionId };
 	}
 }
 
+export function getColoredDimensionName(dimensionId) {
+	const style = getDimensionStyle(dimensionId);
+	return style.color + style.name;
+}
+
 export function getColorByDimension(dimensionId) {
-	switch (dimensionId) {
-		case 'minecraft:overworld':
-		case 'overworld':
-			return '§a';
-		case 'minecraft:nether':
-		case 'nether':
-			return '§c';
-		case 'minecraft:the_end':
-		case 'the_end':
-			return '§d';
-		default:
-			return '§f';
-	}
+	const style = getDimensionStyle(dimensionId);
+	return style.color;
 }
 
 export function getScriptEventSourceName(event) {
@@ -257,15 +227,23 @@ export async function forceShow(player, form, { timeout = Infinity, showBusyMess
 
 export function getTranslatedEntityList(entities) {
 	const message = { rawtext: [] };
-	for (let i = 0; i < entities.length; i++) {
-		const entity = entities[i];
-		if (entity.nameTag)
-			message.rawtext.push({ translate: entity.nameTag });
+	const groupedEntities = new Map();
+	for (const entity of entities) {
+		const name = entity.nameTag || entity.localizationKey;
+		const group = groupedEntities.get(name);
+		if (group)
+			group.count++;
 		else
-			message.rawtext.push({ translate: entities[i].localizationKey });
-        if (i !== entities.length - 1)
-			message.rawtext.push({ rawtext: [{ text: ', ' }] });
-    }
+			groupedEntities.set(name, { entity, count: 1 });
+	}
+
+	let index = 0;
+	for (const { entity, count } of groupedEntities.values()) {
+		message.rawtext.push({ translate: entity.nameTag || entity.localizationKey });
+		message.rawtext.push({ text: ` x${count}` });
+		if (index++ !== groupedEntities.size - 1)
+			message.rawtext.push({ text: ', ' });
+	}
 	return message;
 }
 

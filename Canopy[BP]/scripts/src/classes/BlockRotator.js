@@ -1,6 +1,6 @@
 import { world, StructureSaveMode, StructureRotation, BlockPermutation, StructureMirrorAxis } from "@minecraft/server";
 import DirectionStateFinder from "../classes/DirectionState";
-import { getInventory, restoreInventory } from "../../include/utils";
+import { InventoryUtils } from "./InventoryUtils";
 
 class BlockRotator {
     static idPrefix = 'canopy:rotator-';
@@ -48,7 +48,7 @@ class BlockRotator {
         if (!this.isValidId(structureId)) return console.warn('[BlockRotator] Invalid structure ID.');
         const mirroredDirection = DirectionStateFinder.getMirroredDirection(block);
         let axis;
-        const items = getInventory(block);
+        const items = InventoryUtils.getInventory(block);
         if ([StructureMirrorAxis.X, StructureMirrorAxis.Z].includes(mirroredDirection)) {
             axis = mirroredDirection;
         } else { // block data has to be rebuilt manually 🎉
@@ -66,7 +66,8 @@ class BlockRotator {
             mirror: axis
         };
         this.place(structureId, block, structurePlaceOptions);
-        if (Object.keys(items).length > 0) restoreInventory(block, items);
+        if (Object.keys(items).length > 0)
+            InventoryUtils.restoreInventory(block, items);
     }
 
     static place(structureId, block, structurePlaceOptions) {

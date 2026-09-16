@@ -113,10 +113,9 @@ export class WorldLifetimeTracker {
     }
 
     createDimensionRecords() {
-        this.dimensionToEntityLifetimeRecordMap["minecraft:overworld"] = new EntityLifetimeRecords(this, "minecraft:overworld");
-        this.dimensionToEntityLifetimeRecordMap["minecraft:nether"] = new EntityLifetimeRecords(this, "minecraft:nether");
-        this.dimensionToEntityLifetimeRecordMap["minecraft:the_end"] = new EntityLifetimeRecords(this, "minecraft:the_end");
         const dimensionIds = DimensionTypes.getAll().map(dimensionType => dimensionType.typeId);
+        for (const dimensionId of dimensionIds)
+            this.dimensionToEntityLifetimeRecordMap[dimensionId] = new EntityLifetimeRecords(this, dimensionId);
         for (const dimensionId of dimensionIds) {
             if (Object.keys(this.dimensionToEntityLifetimeRecordMap).includes(dimensionId))
                 continue;

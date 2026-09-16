@@ -1,5 +1,5 @@
 import { VanillaCommand, PlayerCommandOrigin } from "../../lib/canopy/Canopy";
-import { CommandPermissionLevel, CustomCommandParamType, world } from '@minecraft/server';
+import { CommandPermissionLevel, CustomCommandParamType, DimensionTypes, world } from '@minecraft/server';
 import { getColoredDimensionName } from "../../include/utils";
 
 const NUM_RESULTS = 10;
@@ -70,7 +70,7 @@ function parseArgs(origin, gridSize, dimension) {
 function printDimensionEntities(origin) {
     const dimensionColors = ['§a', '§c', '§d'];
     let totalEntities = 0;
-    const dimensionIds = ['minecraft:overworld', 'minecraft:nether', 'minecraft:the_end'];
+    const dimensionIds = DimensionTypes.getAll().map(dimensionType => dimensionType.typeId);
     let output = '§7Dimension entities: '
     for (let i = 0; i < dimensionIds.length; i++) {
         const dimensionId = dimensionIds[i];

@@ -1,29 +1,17 @@
 import { DebugDisplayTextElement } from './DebugDisplayTextElement.js';
-import { EntityComponentTypes, world } from '@minecraft/server';
+import { EntityComponentTypes } from '@minecraft/server';
 import { getNameFromEntityId } from '../../../include/utils.js';
 
 export class Tame extends DebugDisplayTextElement {
     tameable;
-    tameMount;
     tameItems;
-    tamedToPlayerIdCache;
-
-    static DP_ID = 'tamedToEntityId';
-
-    constructor(entity) {
-        super(entity);
-        this.tryPortDPToNewUpdate();
-        this.tamedToPlayerIdCache = this.entity.getDynamicProperty(Tame.DP_ID);
-    }
+    isTamed;
 
     getFormattedData() {
-        this.updateTamedToPlayerIdCache();
         this.populateComponents();
-        if (this.isTamed())
+        if (this.hasIsTamedComponent())
             return this.getTamedText();
         let untamedText = `§3false`;
-        if (this.hasPlayerIdProperty())
-            untamedText += this.getTamedToPlayerIdText();
         if (this.hasTameableComponent())
             untamedText += this.getTameableText();
         return untamedText;
@@ -31,58 +19,30 @@ export class Tame extends DebugDisplayTextElement {
     
     getTamedText() {
         let output = `§3true`;
-        if (this.tamedToPlayerIdCache)
-            output += `§7, By: ${getNameFromEntityId(this.tamedToPlayerIdCache)}`;
+        const tamedToPlayerId = this.isTamed?.tamedToPlayerId;
+        if (tamedToPlayerId !== void 0)
+            output += `§7, By: ${getNameFromEntityId(tamedToPlayerId)}`;
         return output;
-    }
-
-    getTamedToPlayerIdText() {
-        return `§7, By: ${getNameFromEntityId(this.tamedToPlayerIdCache) ?? 'None'}`;
     }
 
     getTameableText() {
         const tameItems = this.tameable.getTameItems;
         const tameItemsText = tameItems.length === 0 ? '§7None' : tameItems.map(item => item?.typeId ?? 'Unknown').join(', ');
         return `\n§7Probability: ${this.tameable.probability.toFixed(2)}, Items: ${tameItemsText}`;
-    }    
+    }
 
     populateComponents() {
         this.tameable = this.entity.getComponent(EntityComponentTypes.Tameable);
-        this.tameMount = this.entity.getComponent(EntityComponentTypes.TameMount);
+        this.isTamed = this.entity.getComponent(EntityComponentTypes.IsTamed);
         if (this.tameable)
             this.tameItems = this.tameable.getTameItems;
     }
 
-    updateTamedToPlayerIdCache() {
-        const playerId = this.tamedToPlayerIdCache || this.entity.getDynamicProperty(Tame.DP_ID);
-        this.tamedToPlayerIdCache = playerId;
-    }
-
-    isTamed() {
-        return this.entity.hasComponent(EntityComponentTypes.IsTamed);
-    }
-
-    hasPlayerIdProperty() {
-        return (this.tameMount && this.tameMount.isValid) || (this.tameable && this.tameable.isValid) || this.tamedToPlayerIdCache;
+    hasIsTamedComponent() {
+        return this.isTamed?.isValid;
     }
 
     hasTameableComponent() {
-        return this.tameable && this.tameable.isValid;
-    }
-
-    tryPortDPToNewUpdate() {
-        const tamedToPlayerId = this.entity.getDynamicProperty('tamedToPlayerId');
-        if (tamedToPlayerId) {
-            this.entity.setDynamicProperty(Tame.DP_ID, tamedToPlayerId);
-            this.entity.setDynamicProperty('tamedToPlayerId', void 0);
-        }
-    }
-
-    static onEntityTamed(event) {
-        if (!event.tamingEntity || !event.entity)
-            return;
-        event.entity.setDynamicProperty(Tame.DP_ID, event.tamingEntity.id);
+        return this.tameable?.isValid;
     }
 }
-
-world.afterEvents.entityTamed.subscribe(Tame.onEntityTamed);

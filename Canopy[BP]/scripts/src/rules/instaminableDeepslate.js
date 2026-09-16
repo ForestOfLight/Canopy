@@ -1,15 +1,22 @@
-import { BooleanRule } from 'lib/canopy/Canopy';
-import Instaminable from 'src/classes/Instaminable';
+import { BooleanRule, GlobalRule } from '../../lib/canopy/Canopy';
+import { Instaminable } from '../classes/Instaminable';
 
-const instamineableDeepslateRule = new BooleanRule({
-    category: 'Rules',
-    identifier: 'instaminableDeepslate',
-    description: { translate: 'rules.instaminableDeepslate' },
-    wikiDescription: 'Makes deepslate and its variants instaminable when using an efficiency 5 netherite pickaxe with haste 2.'
-});
+export class InstaminableDeepslate extends BooleanRule {
+    instaminable;
 
-function isDeepslate(value) {
-    return value.includes('deepslate')
+    constructor() {
+        super(GlobalRule.morphOptions({
+            identifier: 'instaminableDeepslate',
+            wikiDescription: 'Makes deepslate and its variants instaminable when using an efficiency 5 netherite pickaxe with haste 2.',
+            onEnableCallback: () => this.instaminable.subscribeToEvents(),
+            onDisableCallback: () => this.instaminable.unsubscribeFromEvents()
+        }))
+        this.instaminable = new Instaminable(InstaminableDeepslate.isDeepslate);
+    }
+
+    static isDeepslate(blockId) {
+        return blockId.includes('deepslate');
+    }
 }
 
-new Instaminable(isDeepslate, instamineableDeepslateRule.getID());
+export const instaminableDeepslate = new InstaminableDeepslate();
