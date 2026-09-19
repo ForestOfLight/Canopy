@@ -1,12 +1,12 @@
 import { getColoredDimensionName, stringifyLocation } from "../../include/utils";
 import { ProxyInventoryEntity } from '../classes/proxy/ProxyInventoryEntity';
 import { VanillaCommand, PlayerCommandOrigin } from "../../lib/canopy/Canopy";
-import { BlockComponentTypes, CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus } from "@minecraft/server";
+import { Block, Entity, BlockComponentTypes, CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus } from "@minecraft/server";
 import { unique } from "../../lib/unique";
 
 const TARGET_DISTANCE = 100;
 
-const ELLIPSIS = "§5...§r";
+const ELLIPSIS = "§d...§r";
 
 new VanillaCommand({
     name: 'canopy:data',
@@ -47,11 +47,13 @@ function getTargetedMessage(source) {
 }
 
 // TODO: propagate memo down
-function formatBlockOutput(block, memo = null) {
+function formatBlockOutput(block) {
+    const memo = new Set();
+
     const dimensionId = block.dimension.id.replace('minecraft:', '');
-    const properties = formatProperties(block);
+    const properties = formatProperties(memo, block);
     const states = JSON.stringify(block.permutation.getAllStates());
-    const components = formatComponents(block, tryGetBlockComponents(block));
+    const components = formatComponents(memo, tryGetBlockComponents(block));
     const tags = JSON.stringify(block.getTags());
 
     const message = {
@@ -68,13 +70,13 @@ function formatBlockOutput(block, memo = null) {
     return message;
 }
 
-// TODO: propagate memo down
 function formatEntityOutput(entity) {
     const memo = new Set();
+
     const nameTag = entity.nameTag ? `§r§a(§o${entity.nameTag}§r§a)` : '';
     const dimensionId = entity.dimension.id.replace('minecraft:', '');
-    const properties = formatProperties(entity);
-    const components = formatComponents(entity, entity.getComponents());
+    const properties = formatProperties(memo, entity);
+    const components = formatComponents(memo, entity.getComponents());
     const dynamicProperties = JSON.stringify(entity.getDynamicPropertyIds());
     const effects = JSON.stringify(entity.getEffects());
     const tags = JSON.stringify(entity.getTags());
@@ -101,17 +103,17 @@ function formatEntityOutput(entity) {
 }
 
 // TODO: add memotable
-function formatProperties(target) {
+function formatProperties(memo, target) {
     let output = '';
     for (const key in target) {
         try {
             let value = target[key];
             if (typeof value === 'function')
                 continue;
-            else if (isDataTarget(target, value))
+            else if (inMemo(memo, value))
                 value = ELLIPSIS;
             else if (typeof value === 'object')
-                value = formatObject(target, value);
+                value = formatObject(memo, value);
             else
                 value = JSON.stringify(value);
             output += `§7${key}=§b${value}§7, `;
@@ -135,27 +137,27 @@ function tryGetBlockComponents(target) {
     return components;
 }
 
-function formatComponents(target, components) {
+function formatComponents(memo, components) {
     if (components.length === 0) 
         return 'none';
     let output = '';
     for (const component of components) 
-        output += formatComponent(target, component);
+        output += formatComponent(memo, component);
     return output;
 }
 
 // TODO: add memotable
-function formatComponent(target, component) {
+function formatComponent(memo, component) {
     let output = '';
     for (const key in component) {
         try {
             let value = component[key];
             if (typeof value === 'function')
                 continue;
-            else if (isDataTarget(target, value))
-                value = 'this';
+            else if (inMemo(memo, value))
+                value = ELLIPSIS;
             else if (typeof value === 'object')
-                value = formatObject(target, value);
+                value = formatObject(memo, value);
             else
                 value = JSON.stringify(value);
             output += `${key}=§b${value}§7, `;
@@ -167,6 +169,24 @@ function formatComponent(target, component) {
     return `\n  §7>§f ${component.typeId}§7 - {${output}}`;
 }
 
+export function inMemo(memo, value) {
+    let hashValue;
+    if (value instanceof Block) {
+        hashValue = hashBlock(value);
+        console.log(hashValue);
+    }
+    if (value instanceof Entity) {
+        hashValue = hashEntity(value);
+        console.log(hashValue);
+    }
+    else {
+        return false;
+    }
+    const isInMemo = memo.has(hashValue);
+    memo.add(hashValue);
+    return isInMemo;
+}
+
 function hashBlock(block) {
     if (block.id === undefined || block.dimension === undefined || block.location === undefined) {
         return unique(); // Will never match with any other value.
@@ -175,28 +195,14 @@ function hashBlock(block) {
 }
 
 function hashEntity(entity) {
-    if (target.id === undefined) {
+    if (entity.id === undefined) {
         return unique(); // Will never match with any other value.
     }
-    return `E:${entity.location},${entity.typeId}`;
-}
-
-function isSameEntity(target, value) {
-    return target.id !== undefined && target.id === value.id && target.typeId === value.typeId;
-}
-
-function isSameBlock(target, value) {
-    if (target.id !== undefined || value.id !== undefined)
-        return false;
-    if (!target.location || !value.location || target.dimension?.id !== value.dimension?.id)
-        return false;
-    return target.location.x === value.location.x
-        && target.location.y === value.location.y
-        && target.location.z === value.location.z;
+    return `E:${entity.id}`;
 }
 
 // TODO: add memotable
-export function formatObject(target, object, shouldColorTopLevel = false) {
+export function formatObject(memo, object, shouldColorTopLevel = false) {
     let output = '';
     for (const key in object) {
         try {
@@ -204,10 +210,10 @@ export function formatObject(target, object, shouldColorTopLevel = false) {
             if (typeof value === 'function')
                 continue;
             let formatted;
-            if (isDataTarget(target, value))
-                formatted = JSON.stringify('this');
+            if (inMemo(memo, value))
+                formatted = ELLIPSIS;
             else if (typeof value === 'object')
-                formatted = formatObject(target, value, false);
+                formatted = formatObject(memo, value, false);
             else
                 formatted = JSON.stringify(value);
 
