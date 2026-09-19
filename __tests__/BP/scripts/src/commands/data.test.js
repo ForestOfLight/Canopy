@@ -24,7 +24,7 @@ describe('formatObject', () => {
 
     it('should replace self-references with this', () => {
         const target = { id: 1 };
-        expect(formatObject(target, { self: target, id: 1 })).toBe('{self="this", id=1}');
+        expect(formatObject(target, { self: target, id: 1 })).toBe('{self=this, id=1}');
     });
 
     it('should handle an empty object', () => {
@@ -38,7 +38,7 @@ describe('formatObject target identity', () => {
 
     it('should recognize another wrapper of the same entity', () => {
         const wrapper = { id: entity.id, typeId: entity.typeId, location: { x: 1, y: 2, z: 3 }, dimension: { id: 'minecraft:overworld' } };
-        expect(formatObject(entity, { entity: wrapper })).toBe('{entity="this"}');
+        expect(formatObject(entity, { entity: wrapper })).toBe('{entity=this}');
     });
 
     it('should expand a different entity', () => {
@@ -48,7 +48,7 @@ describe('formatObject target identity', () => {
 
     it('should recognize another wrapper of the same block', () => {
         const wrapper = { typeId: block.typeId, location: { x: 1, y: 2, z: 3 }, dimension: { id: 'minecraft:overworld' } };
-        expect(formatObject(block, { block: wrapper })).toBe('{block="this"}');
+        expect(formatObject(block, { block: wrapper })).toBe('{block=this}');
     });
 
     it('should expand a block at a different location', () => {
@@ -67,7 +67,7 @@ describe('formatObject target identity', () => {
 
     it('should recognize the target nested several levels deep', () => {
         const wrapper = { id: entity.id, typeId: entity.typeId, location: { x: 1, y: 2, z: 3 }, dimension: { id: 'minecraft:overworld' } };
-        expect(formatObject(entity, { a: { b: { owner: wrapper } } })).toBe('{a={b={owner="this"}}}');
+        expect(formatObject(entity, { a: { b: { owner: wrapper } } })).toBe('{a={b={owner=this}}}');
     });
 
     it('should not treat the dimension as the target', () => {
