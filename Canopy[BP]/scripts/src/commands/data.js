@@ -2,8 +2,11 @@ import { getColoredDimensionName, stringifyLocation } from "../../include/utils"
 import { ProxyInventoryEntity } from '../classes/proxy/ProxyInventoryEntity';
 import { VanillaCommand, PlayerCommandOrigin } from "../../lib/canopy/Canopy";
 import { BlockComponentTypes, CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus } from "@minecraft/server";
+import { unique } from "../../lib/unique";
 
 const TARGET_DISTANCE = 100;
+
+const ELLIPSIS = "§5...§r";
 
 new VanillaCommand({
     name: 'canopy:data',
@@ -43,7 +46,8 @@ function getTargetedMessage(source) {
         return formatBlockOutput(block);
 }
 
-function formatBlockOutput(block) {
+// TODO: propagate memo down
+function formatBlockOutput(block, memo = null) {
     const dimensionId = block.dimension.id.replace('minecraft:', '');
     const properties = formatProperties(block);
     const states = JSON.stringify(block.permutation.getAllStates());
@@ -64,7 +68,9 @@ function formatBlockOutput(block) {
     return message;
 }
 
+// TODO: propagate memo down
 function formatEntityOutput(entity) {
+    const memo = new Set();
     const nameTag = entity.nameTag ? `§r§a(§o${entity.nameTag}§r§a)` : '';
     const dimensionId = entity.dimension.id.replace('minecraft:', '');
     const properties = formatProperties(entity);
@@ -94,6 +100,7 @@ function formatEntityOutput(entity) {
     return message;
 }
 
+// TODO: add memotable
 function formatProperties(target) {
     let output = '';
     for (const key in target) {
@@ -102,7 +109,7 @@ function formatProperties(target) {
             if (typeof value === 'function')
                 continue;
             else if (isDataTarget(target, value))
-                value = 'this';
+                value = ELLIPSIS;
             else if (typeof value === 'object')
                 value = formatObject(target, value);
             else
@@ -137,6 +144,7 @@ function formatComponents(target, components) {
     return output;
 }
 
+// TODO: add memotable
 function formatComponent(target, component) {
     let output = '';
     for (const key in component) {
@@ -159,16 +167,18 @@ function formatComponent(target, component) {
     return `\n  §7>§f ${component.typeId}§7 - {${output}}`;
 }
 
-export function isDataTarget(target, value) {
-    if (target === value)
-        return true;
-    if (!target || !value || typeof target !== 'object' || typeof value !== 'object')
-        return false;
-    try {
-        return isSameEntity(target, value) || isSameBlock(target, value);
-    } catch {
-        return false;
+function hashBlock(block) {
+    if (block.id === undefined || block.dimension === undefined || block.location === undefined) {
+        return unique(); // Will never match with any other value.
     }
+    return `B:${block.location.x},${block.location.y},${block.location.z}`;
+}
+
+function hashEntity(entity) {
+    if (target.id === undefined) {
+        return unique(); // Will never match with any other value.
+    }
+    return `E:${entity.location},${entity.typeId}`;
 }
 
 function isSameEntity(target, value) {
@@ -185,6 +195,7 @@ function isSameBlock(target, value) {
         && target.location.z === value.location.z;
 }
 
+// TODO: add memotable
 export function formatObject(target, object, shouldColorTopLevel = false) {
     let output = '';
     for (const key in object) {
