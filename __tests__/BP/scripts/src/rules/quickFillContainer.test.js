@@ -1,359 +1,196 @@
-import { ButtonState, system } from "@minecraft/server";
-import { QuickFillClipboardController } from "../../../../../Canopy[BP]/scripts/src/classes/QuickFillClipboardController";
+import { BlockComponentTypes, ButtonState, Container, EntityComponentTypes, ItemStack, Player, system } from "@minecraft/server";
+import { QuickFillClipboardController } from "../../../../../Canopy[BP]/scripts/src/classes/quickfill/QuickFillClipboardController";
 import { quickFillContainer } from "../../../../../Canopy[BP]/scripts/src/rules/quickFillContainer";
-import { expect, test, describe, vi, afterEach } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
+
+function makePlayer(container) {
+    const player = new Player();
+    player.getComponent.mockImplementation(component => component === EntityComponentTypes.Inventory ? { container } : undefined);
+    return player;
+}
+
+function makeBlock(container, typeId = 'minecraft:chest') {
+    return {
+        typeId,
+        localizationKey: `tile.${typeId}`,
+        getComponent: vi.fn(component => component === BlockComponentTypes.Inventory ? { container } : undefined)
+    };
+}
 
 describe('quickFillContainer', () => {
     afterEach(() => {
         vi.restoreAllMocks();
     });
 
-    function makeItemStack({
-        typeId = 'minecraft:stone',
-        amount = 1,
-        maxAmount = 64
-    } = {}) {
-        const itemStack = {
-            typeId,
-            amount,
-            maxAmount,
-            localizationKey: `item.${typeId}`
-        };
-
-        itemStack.clone = vi.fn(() => makeItemStack({
-            typeId: itemStack.typeId,
-            amount: itemStack.amount,
-            maxAmount: itemStack.maxAmount
-        }));
-
-        return itemStack;
-    }
-
-    function makeContainer(size, contents = []) {
-        const slots = new Array(size).fill(void 0);
-
-        for (const [slot, item] of contents)
-            slots[slot] = item;
-
-        return {
-            size,
-            slots,
-
-            get emptySlotsCount() {
-                return slots.filter(slot => !slot).length;
-            },
-
-            getItem: vi.fn(slot => slots[slot]),
-
-            setItem: vi.fn((slot, item) => {
-                slots[slot] = item ?? void 0;
-            }),
-
-            addItem: vi.fn(item => {
-                for (let slot = 0; slot < slots.length; slot++) {
-                    if (!slots[slot]) {
-                        slots[slot] = item;
-                        return;
-                    }
-                }
-
-                return item;
-            })
-        };
-    }
-
-    function makePlayer(playerInv) {
-        return {
-            getComponent: vi.fn(component => {
-                if (component === 'inventory')
-                    return { container: playerInv };
-            }),
-            inputInfo: {
-                getButtonState: vi.fn()
-            },
-            onScreenDisplay: {
-                setActionBar: vi.fn()
-            }
-        };
-    }
-
-    function makeBlock(blockInv, typeId = 'minecraft:chest') {
-        return {
-            typeId,
-            localizationKey: `tile.${typeId}`,
-            getComponent: vi.fn(component => {
-                if (component === 'inventory')
-                    return { container: blockInv };
-            })
-        };
-    }
-
     test('survival QuickFill transfers matching owned items into the container', () => {
-        const heldItem = makeItemStack();
-
-        const playerInv = makeContainer(4, [
-            [0, makeItemStack({ amount: 8 })],
-            [1, makeItemStack({
-                typeId: 'minecraft:dirt',
-                amount: 64
-            })],
-            [2, makeItemStack({ amount: 3 })]
-        ]);
-
-        const blockInv = makeContainer(4);
+        const heldItem = new ItemStack('minecraft:stone');
+        const playerInv = new Container({ size: 4, items: {
+            0: new ItemStack('minecraft:stone', 8),
+            1: new ItemStack('minecraft:dirt', 64),
+            2: new ItemStack('minecraft:stone', 3)
+        }});
+        const blockInv = new Container({ size: 4 });
         const player = makePlayer(playerInv);
         const block = makeBlock(blockInv);
 
-        vi.spyOn(
-            quickFillContainer,
-            'sendFeedbackMessage'
-        ).mockImplementation(() => {});
+        const feedback = vi.spyOn(quickFillContainer, 'sendFeedbackMessage').mockImplementation(() => {});
+        quickFillContainer.transferToContainer(player, block, heldItem);
 
-        quickFillContainer.transferToContainer(
-            player,
-            block,
-            heldItem
-        );
-
-        expect(blockInv.slots[0]?.amount).toBe(8);
-        expect(blockInv.slots[1]?.amount).toBe(3);
-        expect(playerInv.slots[0]).toBeUndefined();
-        expect(playerInv.slots[2]).toBeUndefined();
-        expect(playerInv.slots[1]?.typeId).toBe('minecraft:dirt');
+        expect(blockInv.getItem(0).amount).toBe(11);
+        expect(playerInv.getItem(0)).toBeUndefined();
+        expect(playerInv.getItem(2)).toBeUndefined();
+        expect(playerInv.getItem(1).typeId).toBe('minecraft:dirt');
+        expect(feedback).toHaveBeenCalledWith(true, player, block, heldItem, 1, false);
     });
 
     test('reverse QuickFill pulls matching items out of the container', () => {
-        const heldItem = makeItemStack();
-
-        const playerInv = makeContainer(4);
-        const blockInv = makeContainer(4, [
-            [0, makeItemStack({ amount: 5 })],
-            [1, makeItemStack({
-                typeId: 'minecraft:dirt',
-                amount: 32
-            })],
-            [2, makeItemStack({ amount: 7 })]
-        ]);
-
+        const heldItem = new ItemStack('minecraft:stone');
+        const playerInv = new Container({ size: 4 });
+        const blockInv = new Container({ size: 4, items: {
+            0: new ItemStack('minecraft:stone', 5),
+            1: new ItemStack('minecraft:dirt', 32),
+            2: new ItemStack('minecraft:stone', 7)
+        }});
         const player = makePlayer(playerInv);
         const block = makeBlock(blockInv);
 
-        vi.spyOn(
-            quickFillContainer,
-            'sendFeedbackMessage'
-        ).mockImplementation(() => {});
+        const feedback = vi.spyOn(quickFillContainer, 'sendFeedbackMessage').mockImplementation(() => {});
+        quickFillContainer.transferToPlayer(player, block, heldItem);
 
-        quickFillContainer.transferToPlayer(
-            player,
-            block,
-            heldItem
-        );
-
-        expect(playerInv.slots[0]?.amount).toBe(5);
-        expect(playerInv.slots[1]?.amount).toBe(7);
-        expect(blockInv.slots[0]).toBeUndefined();
-        expect(blockInv.slots[2]).toBeUndefined();
-        expect(blockInv.slots[1]?.typeId).toBe('minecraft:dirt');
+        expect(playerInv.getItem(0).amount).toBe(5);
+        expect(playerInv.getItem(1).amount).toBe(7);
+        expect(blockInv.getItem(0)).toBeUndefined();
+        expect(blockInv.getItem(2)).toBeUndefined();
+        expect(blockInv.getItem(1).typeId).toBe('minecraft:dirt');
+        expect(feedback).toHaveBeenCalledWith(false, player, block, heldItem, 2, false);
     });
 
-    test('creative QuickFill fills every container slot with the held item', () => {
-        const heldItem = makeItemStack({
-            typeId: 'minecraft:ender_pearl',
-            maxAmount: 16
-        });
-
-        const blockInv = makeContainer(3, [
-            [1, makeItemStack({
-                typeId: 'minecraft:dirt',
-                amount: 32
-            })]
-        ]);
-
-        const player = makePlayer(makeContainer(4));
-        const block = makeBlock(blockInv);
-
-        vi.spyOn(
-            quickFillContainer,
-            'sendFeedbackMessage'
-        ).mockImplementation(() => {});
-
-        quickFillContainer.fillCreative(
-            player,
-            block,
-            heldItem
-        );
-
-        expect(
-            blockInv.slots.every(
-                item => item?.typeId === 'minecraft:ender_pearl'
-            )
-        ).toBe(true);
-
-        expect(
-            blockInv.slots.every(item => item?.amount === 16)
-        ).toBe(true);
-    });
-
-    test('creative QuickFill does not consume the held item or player inventory', () => {
-        const heldItem = makeItemStack({ amount: 1 });
-
-        const ownedStack = makeItemStack({ amount: 12 });
-        const playerInv = makeContainer(4, [
-            [0, ownedStack]
-        ]);
-
-        const blockInv = makeContainer(3);
+    test('creative QuickFill fills available capacity without overwriting other items', () => {
+        const heldItem = new ItemStack('minecraft:ender_pearl');
+        heldItem.maxAmount = 16;
+        const matching = new ItemStack('minecraft:ender_pearl', 5);
+        matching.maxAmount = 16;
+        const dirt = new ItemStack('minecraft:dirt', 32);
+        const blockInv = new Container({ size: 3, items: { 0: matching, 1: dirt } });
+        const playerInv = new Container({ size: 4, items: { 0: new ItemStack('minecraft:stone', 12) } });
         const player = makePlayer(playerInv);
         const block = makeBlock(blockInv);
 
-        vi.spyOn(
-            quickFillContainer,
-            'sendFeedbackMessage'
-        ).mockImplementation(() => {});
+        const feedback = vi.spyOn(quickFillContainer, 'sendFeedbackMessage').mockImplementation(() => {});
+        quickFillContainer.fillCreative(player, block, heldItem);
 
-        quickFillContainer.fillCreative(
-            player,
-            block,
-            heldItem
-        );
-
+        expect(blockInv.getItem(0).amount).toBe(16);
+        expect(blockInv.getItem(1)).toBe(dirt);
+        expect(blockInv.getItem(2).typeId).toBe('minecraft:ender_pearl');
+        expect(blockInv.getItem(2).amount).toBe(16);
         expect(heldItem.amount).toBe(1);
-        expect(playerInv.slots[0]).toBe(ownedStack);
-        expect(playerInv.slots[0].amount).toBe(12);
+        expect(playerInv.getItem(0).amount).toBe(12);
+        expect(feedback).toHaveBeenCalledWith(true, player, block, heldItem, 2, false);
     });
 
     test('creative QuickFill skips a destination slot that rejects the item', () => {
-        const heldItem = makeItemStack();
-        const blockInv = makeContainer(3);
-
+        const heldItem = new ItemStack('minecraft:stone');
+        const blockInv = new Container({ size: 3 });
+        const setItem = blockInv.setItem.getMockImplementation();
         blockInv.setItem.mockImplementation((slot, item) => {
             if (slot === 1)
                 throw new Error('slot rejected item');
-
-            blockInv.slots[slot] = item;
+            setItem(slot, item);
         });
-
-        const player = makePlayer(makeContainer(4));
+        const player = makePlayer(new Container({ size: 4 }));
         const block = makeBlock(blockInv);
 
-        vi.spyOn(
-            quickFillContainer,
-            'sendFeedbackMessage'
-        ).mockImplementation(() => {});
+        vi.spyOn(quickFillContainer, 'sendFeedbackMessage').mockImplementation(() => {});
+        quickFillContainer.fillCreative(player, block, heldItem);
 
-        quickFillContainer.fillCreative(
-            player,
-            block,
-            heldItem
-        );
-
-        expect(blockInv.slots[0]?.amount).toBe(64);
-        expect(blockInv.slots[1]).toBeUndefined();
-        expect(blockInv.slots[2]?.amount).toBe(64);
+        expect(blockInv.getItem(0).amount).toBe(64);
+        expect(blockInv.getItem(1)).toBeUndefined();
+        expect(blockInv.getItem(2).amount).toBe(64);
     });
+
+    test.each([
+        'minecraft:furnace',
+        'minecraft:smoker',
+        'minecraft:blast_furnace',
+        'minecraft:brewing_stand'
+    ])('direct QuickFill does not intercept %s without a clipboard', typeId => {
+        const heldItem = new ItemStack('minecraft:stone');
+        const playerInv = new Container({ size: 4, items: { 0: new ItemStack('minecraft:stone', 64) } });
+        const blockInv = new Container({ size: typeId === 'minecraft:brewing_stand' ? 5 : 3 });
+        const player = makePlayer(playerInv);
+        const block = makeBlock(blockInv, typeId);
+
+        vi.spyOn(quickFillContainer, 'isEnabledForPlayer').mockReturnValue(true);
+        vi.spyOn(QuickFillClipboardController, 'get').mockReturnValue(undefined);
+        const event = { player, block, itemStack: heldItem, cancel: false };
+
+        quickFillContainer.onPlayerInteractWithBlock(event);
+
+        expect(event.cancel).toBe(false);
+        expect(blockInv.emptySlotsCount).toBe(blockInv.size);
+        expect(playerInv.getItem(0).amount).toBe(64);
+    });
+
+    test('direct reverse QuickFill is ignored for functional inventories', () => {
+        const heldItem = new ItemStack('minecraft:stone');
+        const playerInv = new Container({ size: 4 });
+        const blockInv = new Container({ size: 3, items: { 0: new ItemStack('minecraft:stone', 8) } });
+        const player = makePlayer(playerInv);
+        const block = makeBlock(blockInv, 'minecraft:furnace');
+
+        player.inputInfo.getButtonState.mockReturnValue(ButtonState.Pressed);
+        vi.spyOn(quickFillContainer, 'isEnabledForPlayer').mockReturnValue(true);
+        vi.spyOn(QuickFillClipboardController, 'get').mockReturnValue(undefined);
+        const event = { player, block, itemStack: heldItem, cancel: false };
+
+        quickFillContainer.onPlayerInteractWithBlock(event);
+
+        expect(event.cancel).toBe(false);
+        expect(blockInv.getItem(0).amount).toBe(8);
+        expect(playerInv.getItem(0)).toBeUndefined();
+    });
+
     test('empty-hand interaction is ignored by QuickFill', () => {
-        const player = makePlayer(makeContainer(4));
-        const block = makeBlock(makeContainer(27));
+        const player = makePlayer(new Container({ size: 4 }));
+        const block = makeBlock(new Container({ size: 27 }));
 
-        vi.spyOn(
-            quickFillContainer,
-            'isEnabledForPlayer'
-        ).mockReturnValue(true);
-
-        const event = {
-            player,
-            block,
-            itemStack: undefined,
-            cancel: false
-        };
-
+        vi.spyOn(quickFillContainer, 'isEnabledForPlayer').mockReturnValue(true);
+        const event = { player, block, itemStack: undefined, cancel: false };
         quickFillContainer.onPlayerInteractWithBlock(event);
 
         expect(event.cancel).toBe(false);
     });
 
     test('shulker boxes cannot be QuickFilled with another shulker box', () => {
-        const player = makePlayer(makeContainer(4));
-        const block = makeBlock(
-            makeContainer(27),
-            'minecraft:shulker_box'
-        );
+        const player = makePlayer(new Container({ size: 4 }));
+        const block = makeBlock(new Container({ size: 27 }), 'minecraft:shulker_box');
+        const heldItem = new ItemStack('minecraft:red_shulker_box');
 
-        const heldItem = makeItemStack({
-            typeId: 'minecraft:red_shulker_box'
-        });
-
-        vi.spyOn(
-            quickFillContainer,
-            'isEnabledForPlayer'
-        ).mockReturnValue(true);
-
-        const event = {
-            player,
-            block,
-            itemStack: heldItem,
-            cancel: false
-        };
-
+        vi.spyOn(quickFillContainer, 'isEnabledForPlayer').mockReturnValue(true);
+        const event = { player, block, itemStack: heldItem, cancel: false };
         quickFillContainer.onPlayerInteractWithBlock(event);
 
         expect(event.cancel).toBe(false);
     });
-    test('creative QuickFill does not blindly fill functional inventories', () => {
-        const heldItem = makeItemStack();
-        const blockInv = makeContainer(3);
-        const player = makePlayer(makeContainer(4));
-        const block = makeBlock(blockInv, 'minecraft:furnace');
 
-        vi.spyOn(
-            quickFillContainer,
-            'sendFeedbackMessage'
-        ).mockImplementation(() => {});
+    test('sneak + break deactivates an active clipboard regardless of target contents', () => {
+        const player = makePlayer(new Container({ size: 4 }));
+        const block = makeBlock(new Container({ size: 5, items: {
+            0: new ItemStack('minecraft:stone'),
+            1: new ItemStack('minecraft:stone'),
+            2: new ItemStack('minecraft:stone'),
+            3: new ItemStack('minecraft:stone'),
+            4: new ItemStack('minecraft:stone')
+        }}), 'minecraft:hopper');
 
-        quickFillContainer.fillCreative(
-            player,
-            block,
-            heldItem
-        );
-
-        expect(
-            blockInv.slots.every(slot => slot === undefined)
-        ).toBe(true);
-
-        expect(blockInv.setItem).not.toHaveBeenCalled();
-    });
-    test('sneak + break deactivates an active clipboard', () => {
-        const player = makePlayer(makeContainer(4));
-        const block = makeBlock(makeContainer(27));
-
-        player.inputInfo.getButtonState.mockReturnValue(
-            ButtonState.Pressed
-        );
-
-        vi.spyOn(
-            quickFillContainer,
-            'isEnabledForPlayer'
-        ).mockReturnValue(true);
-
-        vi.spyOn(
-            QuickFillClipboardController,
-            'get'
-        ).mockReturnValue({});
-
-        const deactivate = vi.spyOn(
-            QuickFillClipboardController,
-            'deactivate'
-        ).mockReturnValue(true);
-
-        const copy = vi.spyOn(
-            QuickFillClipboardController,
-            'copy'
-        ).mockImplementation(() => {});
-
+        player.inputInfo.getButtonState.mockReturnValue(ButtonState.Pressed);
+        vi.spyOn(quickFillContainer, 'isEnabledForPlayer').mockReturnValue(true);
+        vi.spyOn(QuickFillClipboardController, 'get').mockReturnValue({});
+        const deactivate = vi.spyOn(QuickFillClipboardController, 'deactivate').mockReturnValue(true);
+        const copy = vi.spyOn(QuickFillClipboardController, 'copy').mockImplementation(() => {});
         vi.spyOn(system, 'run').mockImplementation(callback => callback());
 
         const event = { player, block, cancel: false };
-
         quickFillContainer.onPlayerBreakBlock(event);
 
         expect(event.cancel).toBe(true);
@@ -362,37 +199,17 @@ describe('quickFillContainer', () => {
     });
 
     test('sneak + break is not intercepted without an active clipboard', () => {
-        const player = makePlayer(makeContainer(4));
-        const block = makeBlock(makeContainer(27));
+        const player = makePlayer(new Container({ size: 4 }));
+        const block = makeBlock(new Container({ size: 27 }));
 
-        player.inputInfo.getButtonState.mockReturnValue(
-            ButtonState.Pressed
-        );
-
-        vi.spyOn(
-            quickFillContainer,
-            'isEnabledForPlayer'
-        ).mockReturnValue(true);
-
-        vi.spyOn(
-            QuickFillClipboardController,
-            'get'
-        ).mockReturnValue(undefined);
-
-        const deactivate = vi.spyOn(
-            QuickFillClipboardController,
-            'deactivate'
-        ).mockImplementation(() => {});
-
-        const copy = vi.spyOn(
-            QuickFillClipboardController,
-            'copy'
-        ).mockImplementation(() => {});
-
+        player.inputInfo.getButtonState.mockReturnValue(ButtonState.Pressed);
+        vi.spyOn(quickFillContainer, 'isEnabledForPlayer').mockReturnValue(true);
+        vi.spyOn(QuickFillClipboardController, 'get').mockReturnValue(undefined);
+        const deactivate = vi.spyOn(QuickFillClipboardController, 'deactivate').mockImplementation(() => {});
+        const copy = vi.spyOn(QuickFillClipboardController, 'copy').mockImplementation(() => {});
         vi.spyOn(system, 'run').mockImplementation(callback => callback());
 
         const event = { player, block, cancel: false };
-
         quickFillContainer.onPlayerBreakBlock(event);
 
         expect(event.cancel).toBe(false);
@@ -400,35 +217,67 @@ describe('quickFillContainer', () => {
         expect(copy).not.toHaveBeenCalled();
     });
 
-    test('clipboard paste reports when nothing can be applied', () => {
-        const player = makePlayer(makeContainer(4));
+    test('direct QuickFill feedback reports no-op actions and singular slots', () => {
+        const player = makePlayer(new Container({ size: 4 }));
+        const block = makeBlock(new Container({ size: 27 }));
+        const item = new ItemStack('minecraft:stone');
 
-        QuickFillClipboardController.sendFeedback(
-            player,
-            { changedSlots: 0 },
-            false
-        );
+        quickFillContainer.sendFeedbackMessage(true, player, block, item, 0);
+        expect(player.onScreenDisplay.setActionBar).toHaveBeenLastCalledWith(expect.stringContaining('nothing to fill.'));
 
-        expect(
-            player.onScreenDisplay.setActionBar
-        ).toHaveBeenCalledWith(
-            '§7Quick Fill: nothing to apply.'
-        );
+        quickFillContainer.sendFeedbackMessage(false, player, block, item, 0);
+        expect(player.onScreenDisplay.setActionBar).toHaveBeenLastCalledWith(expect.stringContaining('nothing to remove.'));
+
+        quickFillContainer.sendFeedbackMessage(true, player, block, item, 1);
+        const feedback = player.onScreenDisplay.setActionBar.mock.calls.at(-1)[0];
+        expect(feedback.rawtext.at(-1).text).toContain('slot)');
+        expect(feedback.rawtext.at(-1).text).not.toContain('slots)');
     });
 
-    test('clipboard remove reports when nothing can be removed', () => {
-        const player = makePlayer(makeContainer(4));
+    test('direct QuickFill reports full destination inventories', () => {
+        const fillPlayer = makePlayer(new Container({ size: 2, items: { 0: new ItemStack('minecraft:stone', 64) } }));
+        const fullBlock = makeBlock(new Container({ size: 2, items: {
+            0: new ItemStack('minecraft:dirt', 64),
+            1: new ItemStack('minecraft:cobblestone', 64)
+        }}));
 
-        QuickFillClipboardController.sendFeedback(
-            player,
-            { changedSlots: 0 },
-            true
-        );
+        quickFillContainer.transferToContainer(fillPlayer, fullBlock, new ItemStack('minecraft:stone'));
+        expect(fillPlayer.onScreenDisplay.setActionBar).toHaveBeenLastCalledWith(expect.stringContaining('no available space in container.'));
 
-        expect(
-            player.onScreenDisplay.setActionBar
-        ).toHaveBeenCalledWith(
-            '§7Quick Fill: nothing to remove.'
-        );
+        const fullPlayer = makePlayer(new Container({ size: 2, items: {
+            0: new ItemStack('minecraft:dirt', 64),
+            1: new ItemStack('minecraft:cobblestone', 64)
+        }}));
+        const sourceBlock = makeBlock(new Container({ size: 2, items: { 0: new ItemStack('minecraft:stone', 8) } }));
+
+        quickFillContainer.transferToPlayer(fullPlayer, sourceBlock, new ItemStack('minecraft:stone'));
+        expect(fullPlayer.onScreenDisplay.setActionBar).toHaveBeenLastCalledWith(expect.stringContaining('player inventory is full.'));
+    });
+
+    test('clipboard copy feedback reports occupied slots rather than clipboard capacity', () => {
+        const player = makePlayer(new Container({ size: 4 }));
+        const furnace = makeBlock(new Container({ size: 3, items: { 0: new ItemStack('minecraft:iron_ore') } }), 'minecraft:furnace');
+
+        QuickFillClipboardController.copy(player, furnace);
+        expect(player.onScreenDisplay.setActionBar).toHaveBeenLastCalledWith('§7Quick Fill: copied §a1§7 occupied slot.');
+
+        const emptyFurnace = makeBlock(new Container({ size: 3 }), 'minecraft:furnace');
+        QuickFillClipboardController.copy(player, emptyFurnace);
+        expect(player.onScreenDisplay.setActionBar).toHaveBeenLastCalledWith(expect.stringContaining('copied empty clipboard.'));
+    });
+
+    test('clipboard feedback reports no-op actions and singular slots', () => {
+        const player = makePlayer(new Container({ size: 4 }));
+
+        QuickFillClipboardController.sendFeedback(player, { changedSlots: 0 }, false);
+        expect(player.onScreenDisplay.setActionBar).toHaveBeenLastCalledWith(expect.stringContaining('no changes applied.'));
+
+        QuickFillClipboardController.sendFeedback(player, { changedSlots: 0 }, true);
+        expect(player.onScreenDisplay.setActionBar).toHaveBeenLastCalledWith(expect.stringContaining('no matching items removed.'));
+
+        QuickFillClipboardController.sendFeedback(player, { changedSlots: 1 }, false);
+        const feedback = player.onScreenDisplay.setActionBar.mock.calls.at(-1)[0];
+        expect(feedback).toContain('slot).');
+        expect(feedback).not.toContain('slots).');
     });
 });
