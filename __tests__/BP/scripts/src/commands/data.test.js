@@ -23,7 +23,7 @@ describe('formatObject', () => {
     });
 
     it('should replace self-references with this', () => {
-        const target = { id: 1 };
+        const target = { typeId: "minecraft:player", id: 1 };
         expect(formatObject(target, { self: target, id: 1 })).toBe('{self=this, id=1}');
     });
 
@@ -81,14 +81,64 @@ describe('formatObject target identity', () => {
 });
 
 describe('formatObject memo', () => {
-    it('should replace an entity self-reference not involving the original target', () => {
+    it('should not memoize primitives', () => {
+        const entity = { id: '-4294967295', typeId: 'minecraft:snow_golem', nameTag: 'minecraft:snow_golem', location: { x: 0, y: 0, z: 1 }, viewDirection: { x: 0, y: 0, z: 1 }, dimension: { id: 'minecraft:overworld' } };
+
+        expect(formatObject(null, entity)).toBe('{id="-4294967295", typeId="minecraft:snow_golem", nameTag="minecraft:snow_golem", location={x=0, y=0, z=1}, viewDirection={x=0, y=0, z=1}, dimension={id="minecraft:overworld"}}');
+    });
+
+    it('should not memoize dimensions', () => {
         const snowGolem = { id: '-4294967295', typeId: 'minecraft:snow_golem', location: { x: 1, y: 2, z: 3 }, dimension: { id: 'minecraft:overworld' } };
         const silverfish = { id: '-4294967294', typeId: 'minecraft:silverfish', location: { x: 4, y: 2, z: 3 }, dimension: { id: 'minecraft:overworld' } };
-        const thirdPartyAggressor = { id: '-4294967293', typeId: 'minecraft:husk', location: { x: 1, y: 2, z: 5 }, dimension: { id: 'minecraft:overworld' } };
 
         snowGolem.target = silverfish;
         silverfish.target = snowGolem;
-        thirdPartyAggressor.target = snowGolem;
-        expect(formatObject(thirdPartyAggressor, silverfish)).toBe('{id="-4294967294", typeId="minecraft:silverfish", location={x=4, y=2, z=3}, dimension={id="minecraft:overworld"}, target={id="-4294967295", typeId="minecraft:snow_golem", location={x=1, y=2, z=3}, dimension=this, target=this}}');
+        expect(formatObject(null, silverfish)).toBe('{id="-4294967294", typeId="minecraft:silverfish", location={x=4, y=2, z=3}, dimension={id="minecraft:overworld"}, target={id="-4294967295", typeId="minecraft:snow_golem", location={x=1, y=2, z=3}, dimension={id="minecraft:overworld"}, target=this}}');
+    });
+
+    it('should replace a recursive reference not involving the original target', () => {
+        const snowGolem = { id: '-4294967295', typeId: 'minecraft:snow_golem', location: { x: 1, y: 2, z: 3 } };
+        const silverfish = { id: '-4294967294', typeId: 'minecraft:silverfish', location: { x: 4, y: 2, z: 3 } };
+        const husk = { id: '-4294967293', typeId: 'minecraft:husk', location: { x: 1, y: 2, z: 5 } };
+
+        snowGolem.target = silverfish;
+        silverfish.target = snowGolem;
+        husk.target = snowGolem;
+        expect(formatObject(husk, silverfish)).toBe('{id="-4294967294", typeId="minecraft:silverfish", location={x=4, y=2, z=3}, target={id="-4294967295", typeId="minecraft:snow_golem", location={x=1, y=2, z=3}, target=this}}');
+    });
+
+    it('should replace a recursive reference in an array not involving the original target', () => {
+        const player = { id: '-4294967295', typeId: 'minecraft:player', location: { x: 3, y: 2, z: 3 } };
+        const llama = { id: '-4294967295', typeId: 'minecraft:llama', location: { x: 3, y: 2, z: 3 } };
+        const boat = { id: '-4294967294', typeId: 'minecraft:boat', location: { x: 4, y: 2, z: 3 } };
+        const zombie = { id: '-4294967293', typeId: 'minecraft:zombie', location: { x: 5, y: 2, z: 3 } };
+
+        player.ride = boat;
+        llama.ride = boat;
+        boat.passengers = [player, llama];
+        zombie.target = player;
+        expect(formatObject(zombie, boat)).toBe('{id="-4294967294", typeId="minecraft:boat", location={x=4, y=2, z=3}, passengers={0={id="-4294967295", typeId="minecraft:player", location={x=3, y=2, z=3}, ride=this}, 1=this}}');
+    });
+
+    it('should replace a recursive reference not involving the original target, when the recursing property name changes', () => {
+        const player = { id: '-4294967295', typeId: 'minecraft:player', location: { x: 1, y: 3, z: 3 } };
+        const horse = { id: '-4294967294', typeId: 'minecraft:horse', location: { x: 1, y: 2, z: 3 } };
+        const zombie = { id: '-4294967293', typeId: 'minecraft:zombie', location: { x: 1, y: 2, z: 5 } };
+
+        player.ride = horse;
+        horse.passenger = player;
+        zombie.target = player;
+        expect(formatObject(zombie, horse)).toBe('{id="-4294967294", typeId="minecraft:horse", location={x=1, y=2, z=3}, passenger={id="-4294967295", typeId="minecraft:player", location={x=1, y=3, z=3}, ride=this}}');
+    });
+
+    it('should replace an entity/block recursive reference not involving the original target', () => {
+        const player = { id: '-4294967295', typeId: 'minecraft:player', location: { x: 1, y: 2, z: 3 } };
+        const bed = { typeId: 'minecraft:bed', location: { x: 1, y: 2, z: 30 }, dimension: { id: 'minecraft:overworld' } };
+        const zombie = { id: '-4294967293', typeId: 'minecraft:zombie', location: { x: 1, y: 2, z: 5 } };
+
+        player.bed = bed;
+        bed.owner = player;
+        zombie.target = player;
+        expect(formatObject(zombie, bed)).toBe('{typeId="minecraft:bed", location={x=1, y=2, z=30}, dimension={id="minecraft:overworld"}, owner={id="-4294967295", typeId="minecraft:player", location={x=1, y=2, z=3}, bed=this}}');
     });
 })

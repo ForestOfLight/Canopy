@@ -211,7 +211,7 @@ export function formatObject(target, object, shouldColorTopLevel = false, memo =
 function isMemoizableGameObject(value) {
     try {
         if (value === null || value === undefined) return false;
-        return value.id !== undefined || (value.location !== undefined && value.dimension !== undefined);
+        return (value.id !== undefined && value.typeId !== undefined) || (value.location !== undefined && value.dimension !== undefined);
     }
     catch {
         return false;
