@@ -215,7 +215,7 @@ export function formatObject(target, object, shouldColorTopLevel = false, memo =
 }
 
 function formatRecursiveDisambiguation(object, memo) {
-    let output = '§5(...)§7, ';
+    let output = '§5...§7, ';
     for (const key of DISAMBIGUATION_PROPERTIES) {
         try {
             const value = object[key];
