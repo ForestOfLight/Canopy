@@ -6,6 +6,12 @@ import { BlockComponentTypes, CommandPermissionLevel, CustomCommandParamType, Cu
 const TARGET_DISTANCE = 100;
 
 const THIS = "this";
+const DISAMBIGUATION_PROPERTIES = [
+    "id",
+    "typeId",
+    "location",
+    "dimension"
+]
 
 new VanillaCommand({
     name: 'canopy:data',
@@ -172,7 +178,7 @@ export function formatObject(target, object, shouldColorTopLevel = false, memo =
     if (isMemoizableGameObject(object)) {
         const objectHashValue = hashMemoizableGameObject(object);
         if (memo.has(objectHashValue)) 
-            return THIS;
+            return formatRecursiveDisambiguation(object, memo);
         
         memo.add(objectHashValue);
     }
@@ -206,6 +212,30 @@ export function formatObject(target, object, shouldColorTopLevel = false, memo =
     if (shouldColorTopLevel)
         return `§7{${output}}§r`;
     return `{${output}}`;
+}
+
+function formatRecursiveDisambiguation(object, memo) {
+    let output = '§5(...)§7, ';
+    for (const key of DISAMBIGUATION_PROPERTIES) {
+        try {
+            const value = object[key];
+            if (value === undefined) continue;
+
+            if (typeof value === 'function')
+                continue;
+            let formatted;
+            if (typeof value === 'object')
+                formatted = formatObject(null, value, false, memo);
+            else
+                formatted = JSON.stringify(value);
+
+            output += `§7${key}=§b${formatted}§7, `;
+        } catch(error) {
+            console.warn(error);
+        }
+    }
+    output = output.slice(0, -2);
+    return `§d{§7${output}§d}§r`;
 }
 
 function isMemoizableGameObject(value) {
