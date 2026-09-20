@@ -78,15 +78,17 @@ describe('formatObject target identity', () => {
         const hostile = { get id() { throw new Error('invalid entity'); } };
         expect(formatObject(entity, { hostile })).toBe('{hostile={}}');
     });
+});
 
-    it('should replace a self-reference not involving the original target', () => {
+describe('formatObject memo', () => {
+    it('should replace an entity self-reference not involving the original target', () => {
         const snowGolem = { id: '-4294967295', typeId: 'minecraft:snow_golem', location: { x: 1, y: 2, z: 3 }, dimension: { id: 'minecraft:overworld' } };
-        const silverfish = { id: '-4294967295', typeId: 'minecraft:snow_golem', location: { x: 4, y: 2, z: 3 }, dimension: { id: 'minecraft:overworld' } };
-        const thirdPartyAggressor = { id: '-4294967295', typeId: 'minecraft:husk', location: { x: 1, y: 2, z: 5 }, dimension: { id: 'minecraft:overworld' } };
+        const silverfish = { id: '-4294967294', typeId: 'minecraft:silverfish', location: { x: 4, y: 2, z: 3 }, dimension: { id: 'minecraft:overworld' } };
+        const thirdPartyAggressor = { id: '-4294967293', typeId: 'minecraft:husk', location: { x: 1, y: 2, z: 5 }, dimension: { id: 'minecraft:overworld' } };
 
         snowGolem.target = silverfish;
         silverfish.target = snowGolem;
         thirdPartyAggressor.target = snowGolem;
-        expect(formatObject(thirdPartyAggressor, silverfish)).toBe('{id="-4294967295", typeId="minecraft:snow_golem", location={x=4, y=2, z=3}, dimension={id="minecraft:overworld"}, target=this}');
+        expect(formatObject(thirdPartyAggressor, silverfish)).toBe('{id="-4294967294", typeId="minecraft:silverfish", location={x=4, y=2, z=3}, dimension={id="minecraft:overworld"}, target={id="-4294967295", typeId="minecraft:snow_golem", location={x=1, y=2, z=3}, dimension=this, target=this}}');
     });
-});
+})
