@@ -5,7 +5,6 @@ import { BlockComponentTypes, CommandPermissionLevel, CustomCommandParamType, Cu
 
 const TARGET_DISTANCE = 100;
 
-const THIS = "this";
 const DISAMBIGUATION_PROPERTIES = [
     "id",
     "typeId",
