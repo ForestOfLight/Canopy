@@ -337,6 +337,18 @@ commands.pos.dimension=§7Dimension: §7%s
 commands.pos.relative.overworld=§7Relative Overworld position: §a%s
 commands.pos.relative.nether=§7Relative Nether position: §c%s
 
+commands.quickfill=Manage saved Quick Fill clipboard presets.
+commands.quickfill.missingname=§cPlease provide a preset name.
+commands.quickfill.list.unexpectedname=§cThe list action does not take a preset name.
+commands.quickfill.noactive=§cThere is no active Quick Fill clipboard to save.
+commands.quickfill.noexist=§cQuick Fill preset '%s' not found.
+commands.quickfill.save.fail=§cQuick Fill preset could not be saved.
+commands.quickfill.save.success=§7Quick Fill preset '%s' has been saved.
+commands.quickfill.set.success=§7Quick Fill preset '%s' is now active.
+commands.quickfill.delete.success=§7Quick Fill preset '%s' has been deleted.
+commands.quickfill.list.empty=§7There are no saved Quick Fill presets.
+commands.quickfill.list.header=§7Saved Quick Fill presets:
+
 commands.retest=Resets spawn tracking, hopper counters, and hopper generators.
 commands.retest.success=§7Reset spawn counters, hopper counters, and hopper generators.
 

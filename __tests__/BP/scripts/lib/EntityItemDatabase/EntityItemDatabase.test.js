@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { world } from '@minecraft/server';
+import { InvalidStructureError, world } from '@minecraft/server';
 import { EntityItemDatabase } from '../../../../../Canopy[BP]/scripts/lib/EntityItemDatabase/EntityItemDatabase.js';
 
 describe('EntityItemDatabase', () => {
@@ -128,15 +128,33 @@ describe('EntityItemDatabase', () => {
         expect(liveEntities).toHaveLength(0);
     });
 
-    it('leaves no entity behind after a load', () => {
+    it('deletes a stored container structure', () => {
+        const database = new EntityItemDatabase();
+
+        database.deleteContainer(key);
+
+        expect(world.structureManager.delete).toHaveBeenCalledWith(key);
+    });
+
+    it('loads a stored container and leaves no entity behind', () => {
         world.structureManager.place.mockImplementation(() => {
             liveEntities.push(makeEntity([key]));
         });
         const database = new EntityItemDatabase();
 
-        database.loadContainer(key, sourceContainer);
+        const loaded = database.loadContainer(key, sourceContainer);
 
+        expect(loaded).toBe(true);
         expect(liveEntities).toHaveLength(0);
+    });
+
+    it('returns false when the stored structure does not exist', () => {
+        world.structureManager.place.mockImplementation(() => {
+            throw new InvalidStructureError();
+        });
+        const database = new EntityItemDatabase();
+
+        expect(database.loadContainer(key, sourceContainer)).toBe(false);
     });
 
     it('removes placed entities when the structure holds no entity for the key', () => {
