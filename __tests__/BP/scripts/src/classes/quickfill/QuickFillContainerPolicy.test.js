@@ -11,6 +11,10 @@ describe('QuickFillContainerPolicy', () => {
         expect(QuickFillContainerPolicy.getShape(makeBlock('minecraft:hopper'), new Container({ size: 5 }))).toBe('generic:5');
     });
 
+    test('generic inventories are compatible across slot counts', () => {
+        expect(QuickFillContainerPolicy.isCompatible('generic:5', 'generic:27')).toBe(true);
+        expect(QuickFillContainerPolicy.isCompatible('generic:54', 'generic:5')).toBe(true);
+    });
     test('furnace family uses separate semantic shapes', () => {
         const container = new Container({ size: 3 });
 

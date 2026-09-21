@@ -6,25 +6,42 @@ export class QuickFillClipboardExecutor {
             return { changedSlots: 0, incompatible: true };
 
         let changedSlots = 0;
-        for (let slot = 0; slot < clipboard.getSlotCount(); slot++) {
-            const desired = clipboard.resolveSlot(slot);
-            if (!desired || !QuickFillContainerPolicy.canInsertItem(block, desired, slot))
-                continue;
-            changedSlots += this.applyCreativeSlot(container, slot, desired);
+        let skippedSlots = this.getNarrowedSlotCount(container, clipboard);
+        const slotCount = Math.min(clipboard.getSlotCount(), container.size);
+        for (let slot = 0; slot < slotCount; slot++) {
+            const result = this.applyCreativeSlot(block, container, clipboard, slot);
+            changedSlots += result.changedSlots;
+            skippedSlots += result.skippedSlots;
         }
-        return { changedSlots };
+        return { changedSlots, skippedSlots };
     }
 
-    static applyCreativeSlot(container, slot, desired) {
+    static applyCreativeSlot(block, container, clipboard, slot) {
+        const desired = clipboard.resolveSlot(slot);
         const current = container.getItem(slot);
-        if (current && (!this.itemsMatch(current, desired) || current.amount >= desired.amount))
-            return 0;
+
+        if (!desired) {
+            if (!current)
+                return { changedSlots: 0, skippedSlots: 0 };
+
+            try {
+                container.setItem(slot, null);
+                return { changedSlots: 1, skippedSlots: 0 };
+            } catch {
+                return { changedSlots: 0, skippedSlots: 1 };
+            }
+        }
+
+        if (!QuickFillContainerPolicy.canInsertItem(block, desired, slot))
+            return { changedSlots: 0, skippedSlots: 1 };
+        if (current && this.itemsMatch(current, desired) && current.amount === desired.amount)
+            return { changedSlots: 0, skippedSlots: 0 };
 
         try {
             container.setItem(slot, desired.clone());
-            return 1;
+            return { changedSlots: 1, skippedSlots: 0 };
         } catch {
-            return 0;
+            return { changedSlots: 0, skippedSlots: 1 };
         }
     }
 
@@ -32,18 +49,43 @@ export class QuickFillClipboardExecutor {
         if (!playerContainer || !this.canApply(block, container, clipboard))
             return { changedSlots: 0, incompatible: true };
 
-        const requirements = this.getRequirements(block, container, clipboard);
-        if (!this.canSupply(playerContainer, requirements))
-            return { changedSlots: 0, insufficient: true };
-
-        return { changedSlots: this.applyRequirements(playerContainer, container, requirements) };
+        let changedSlots = 0;
+        let skippedSlots = this.getNarrowedSlotCount(container, clipboard);
+        const slotCount = Math.min(clipboard.getSlotCount(), container.size);
+        for (let slot = 0; slot < slotCount; slot++) {
+            const result = this.applySurvivalSlot(playerContainer, block, container, clipboard, slot);
+            changedSlots += result.changedSlots;
+            skippedSlots += result.skippedSlots;
+        }
+        return { changedSlots, skippedSlots };
     }
 
-    static applyRequirements(playerContainer, container, requirements) {
-        let changedSlots = 0;
-        for (const requirement of requirements)
-            changedSlots += this.applyRequirement(playerContainer, container, requirement);
-        return changedSlots;
+    static applySurvivalSlot(playerContainer, block, container, clipboard, slot) {
+        const desired = clipboard.resolveSlot(slot);
+        if (!desired)
+            return { changedSlots: 0, skippedSlots: 0 };
+        if (!QuickFillContainerPolicy.canInsertItem(block, desired, slot))
+            return { changedSlots: 0, skippedSlots: 1 };
+
+        const current = container.getItem(slot);
+        if (current && !this.itemsMatch(current, desired))
+            return { changedSlots: 0, skippedSlots: 1 };
+
+        const amount = desired.amount - (current?.amount ?? 0);
+        if (amount <= 0)
+            return { changedSlots: 0, skippedSlots: 0 };
+
+        const availableAmount = this.getAvailableAmount(playerContainer, desired);
+        if (!availableAmount)
+            return { changedSlots: 0, skippedSlots: 1 };
+
+        const suppliedAmount = Math.min(amount, availableAmount);
+        const requirement = { slot, itemStack: desired, amount: suppliedAmount };
+        const changedSlots = this.applyRequirement(playerContainer, container, requirement);
+        return {
+            changedSlots,
+            skippedSlots: changedSlots && suppliedAmount === amount ? 0 : 1
+        };
     }
 
     static applyRequirement(playerContainer, container, requirement) {
@@ -73,7 +115,7 @@ export class QuickFillClipboardExecutor {
             return { changedSlots: 0, incompatible: true };
 
         let changedSlots = 0;
-        for (let slot = 0; slot < clipboard.getSlotCount(); slot++)
+        for (let slot = 0; slot < Math.min(clipboard.getSlotCount(), container.size); slot++)
             changedSlots += this.removeSlot(playerContainer, block, container, clipboard, slot);
         return { changedSlots };
     }
@@ -110,48 +152,18 @@ export class QuickFillClipboardExecutor {
         return !!block && !!container && !!clipboard && clipboard.isCompatibleWith(block, container);
     }
 
-    static getRequirements(block, container, clipboard) {
-        const requirements = [];
-        for (let slot = 0; slot < clipboard.getSlotCount(); slot++) {
-            const desired = clipboard.resolveSlot(slot);
-            if (!desired || !QuickFillContainerPolicy.canInsertItem(block, desired, slot))
-                continue;
-
-            const current = container.getItem(slot);
-            if (current && !this.itemsMatch(current, desired))
-                continue;
-
-            const amount = desired.amount - (current?.amount ?? 0);
-            if (amount > 0)
-                requirements.push({ slot, itemStack: desired, amount });
-        }
-        return requirements;
+    static getNarrowedSlotCount(container, clipboard) {
+        return Math.max(clipboard.getSlotCount() - container.size, 0);
     }
 
-    static canSupply(container, requirements) {
-        const simulated = [];
+    static getAvailableAmount(container, template) {
+        let amount = 0;
         for (let slot = 0; slot < container.size; slot++) {
             const itemStack = container.getItem(slot);
-            if (itemStack)
-                simulated.push({ itemStack, amount: itemStack.amount });
+            if (itemStack && this.itemsMatch(itemStack, template))
+                amount += itemStack.amount;
         }
-
-        for (const requirement of requirements) {
-            let remaining = requirement.amount;
-            for (const source of simulated) {
-                if (!this.itemsMatch(source.itemStack, requirement.itemStack))
-                    continue;
-
-                const reserved = Math.min(source.amount, remaining);
-                source.amount -= reserved;
-                remaining -= reserved;
-                if (remaining === 0)
-                    break;
-            }
-            if (remaining > 0)
-                return false;
-        }
-        return true;
+        return amount;
     }
 
     static takeItems(container, template, amount) {

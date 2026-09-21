@@ -254,30 +254,30 @@ describe('quickFillContainer', () => {
         expect(fullPlayer.onScreenDisplay.setActionBar).toHaveBeenLastCalledWith(expect.stringContaining('player inventory is full.'));
     });
 
-    test('clipboard copy feedback reports occupied slots rather than clipboard capacity', () => {
+    test('clipboard copy feedback is content-agnostic', () => {
         const player = makePlayer(new Container({ size: 4 }));
-        const furnace = makeBlock(new Container({ size: 3, items: { 0: new ItemStack('minecraft:iron_ore') } }), 'minecraft:furnace');
+        const message = '§7Quick Fill: copied container to clipboard.';
 
-        QuickFillClipboardController.copy(player, furnace);
-        expect(player.onScreenDisplay.setActionBar).toHaveBeenLastCalledWith('§7Quick Fill: copied §a1§7 occupied slot.');
+        QuickFillClipboardController.copy(player, makeBlock(new Container({ size: 3, items: { 0: new ItemStack('minecraft:iron_ore') } }), 'minecraft:furnace'));
+        expect(player.onScreenDisplay.setActionBar).toHaveBeenLastCalledWith(message);
 
-        const emptyFurnace = makeBlock(new Container({ size: 3 }), 'minecraft:furnace');
-        QuickFillClipboardController.copy(player, emptyFurnace);
-        expect(player.onScreenDisplay.setActionBar).toHaveBeenLastCalledWith(expect.stringContaining('copied empty clipboard.'));
+        QuickFillClipboardController.copy(player, makeBlock(new Container({ size: 3 }), 'minecraft:furnace'));
+        expect(player.onScreenDisplay.setActionBar).toHaveBeenLastCalledWith(message);
     });
 
-    test('clipboard feedback reports no-op actions and singular slots', () => {
+    test('clipboard feedback reports paste outcomes', () => {
         const player = makePlayer(new Container({ size: 4 }));
 
-        QuickFillClipboardController.sendFeedback(player, { changedSlots: 0 }, false);
-        expect(player.onScreenDisplay.setActionBar).toHaveBeenLastCalledWith(expect.stringContaining('no changes applied.'));
+        QuickFillClipboardController.sendFeedback(player, { changedSlots: 0, skippedSlots: 2 }, false);
+        expect(player.onScreenDisplay.setActionBar).toHaveBeenLastCalledWith('§7Quick Fill: no clipboard items pasted.');
 
-        QuickFillClipboardController.sendFeedback(player, { changedSlots: 0 }, true);
-        expect(player.onScreenDisplay.setActionBar).toHaveBeenLastCalledWith(expect.stringContaining('no matching items removed.'));
+        QuickFillClipboardController.sendFeedback(player, { changedSlots: 1, skippedSlots: 1 }, false);
+        expect(player.onScreenDisplay.setActionBar).toHaveBeenLastCalledWith('§7Quick Fill: 1 clipboard slot not fully pasted.');
 
         QuickFillClipboardController.sendFeedback(player, { changedSlots: 1 }, false);
-        const feedback = player.onScreenDisplay.setActionBar.mock.calls.at(-1)[0];
-        expect(feedback).toContain('slot).');
-        expect(feedback).not.toContain('slots).');
+        expect(player.onScreenDisplay.setActionBar).toHaveBeenLastCalledWith('§7Quick Fill: pasted clipboard to container.');
+
+        QuickFillClipboardController.sendFeedback(player, { changedSlots: 0 }, true);
+        expect(player.onScreenDisplay.setActionBar).toHaveBeenLastCalledWith('§7Quick Fill: no matching items removed.');
     });
 });

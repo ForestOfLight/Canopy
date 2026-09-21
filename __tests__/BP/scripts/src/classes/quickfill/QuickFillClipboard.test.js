@@ -13,7 +13,7 @@ describe('QuickFillClipboard', () => {
 
         expect(clipboard.shape).toBe('generic:5');
         expect(clipboard.slots).toHaveLength(5);
-        expect(clipboard.getOccupiedSlotCount()).toBe(2);
+
         expect(clipboard.slots[0]).toBeUndefined();
         expect(clipboard.slots[1]).not.toBe(stone);
         expect(clipboard.slots[1].amount).toBe(17);

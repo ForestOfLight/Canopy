@@ -16,7 +16,11 @@ export class QuickFillContainerPolicy {
     }
 
     static isCompatible(sourceShape, targetShape) {
-        return !!sourceShape && sourceShape === targetShape;
+        if (!sourceShape || !targetShape)
+            return false;
+        if (sourceShape.startsWith('generic:') && targetShape.startsWith('generic:'))
+            return true;
+        return sourceShape === targetShape;
     }
 
     static FurnaceShapes = new Set(['furnace:3', 'smoker:3', 'blast_furnace:3']);

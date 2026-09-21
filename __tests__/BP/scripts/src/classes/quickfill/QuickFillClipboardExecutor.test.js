@@ -25,13 +25,15 @@ describe('QuickFillClipboardExecutor', () => {
         expect(target.getItem(4).amount).toBe(1);
     });
 
-    test('creative paste does not overwrite a different item', () => {
+    test('creative paste overwrites target contents exactly', () => {
+        const block = makeBlock();
         const source = new Container({ size: 5, items: { 1: new ItemStack('minecraft:stone', 17) } });
-        const dirt = new ItemStack('minecraft:dirt', 32);
-        const target = new Container({ size: 5, items: { 1: dirt } });
+        const target = new Container({ size: 5, items: { 0: new ItemStack('minecraft:dirt'), 1: new ItemStack('minecraft:dirt') } });
 
-        QuickFillClipboardExecutor.applyCreative(makeBlock(), target, makeClipboard(makeBlock(), source));
-        expect(target.getItem(1)).toBe(dirt);
+        QuickFillClipboardExecutor.applyCreative(block, target, makeClipboard(block, source));
+        expect(target.getItem(0)).toBeUndefined();
+        expect(target.getItem(1).typeId).toBe('minecraft:stone');
+        expect(target.getItem(1).amount).toBe(17);
     });
 
     test('creative paste tops up matching slots to clipboard amount', () => {
@@ -42,6 +44,20 @@ describe('QuickFillClipboardExecutor', () => {
         expect(target.getItem(1).amount).toBe(17);
     });
 
+    test('generic paste uses overlapping slots across different sizes', () => {
+        const hopper = makeBlock('minecraft:hopper');
+        const chest = makeBlock('minecraft:chest');
+        const widerTarget = new Container({ size: 27, items: { 10: new ItemStack('minecraft:dirt') } });
+        const wider = QuickFillClipboardExecutor.applyCreative(chest, widerTarget, makeClipboard(hopper,
+            new Container({ size: 5, items: { 0: new ItemStack('minecraft:stone') } })));
+
+        expect(wider.skippedSlots).toBe(0);
+        expect(widerTarget.getItem(10).typeId).toBe('minecraft:dirt');
+
+        const narrowed = QuickFillClipboardExecutor.applyCreative(hopper, new Container({ size: 5 }), makeClipboard(chest,
+            new Container({ size: 27, items: { 0: new ItemStack('minecraft:stone') } })));
+        expect(narrowed.skippedSlots).toBe(22);
+    });
     test('creative paste skips nested shulker boxes without blocking other slots', () => {
         const sourceBlock = makeBlock('minecraft:chest');
         const targetBlock = makeBlock('minecraft:shulker_box');
@@ -114,18 +130,23 @@ describe('QuickFillClipboardExecutor', () => {
         expect(player.getItem(0)).toBeUndefined();
     });
 
-    test('survival paste makes no changes when resources are insufficient', () => {
+    test('survival paste uses available resources best-effort', () => {
         const block = makeBlock();
-        const source = new Container({ size: 5, items: { 1: new ItemStack('minecraft:stone', 20) } });
+        const source = new Container({ size: 5, items: {
+            0: new ItemStack('minecraft:deepslate', 64),
+            1: new ItemStack('minecraft:deepslate', 64)
+        }});
         const target = new Container({ size: 5 });
-        const player = new Container({ size: 9, items: { 0: new ItemStack('minecraft:stone', 19) } });
+        const player = new Container({ size: 9, items: {
+            0: new ItemStack('minecraft:deepslate', 64),
+            1: new ItemStack('minecraft:deepslate', 54)
+        }});
         const result = QuickFillClipboardExecutor.applySurvival(player, block, target, makeClipboard(block, source));
 
-        expect(result.insufficient).toBe(true);
-        expect(player.getItem(0).amount).toBe(19);
-        expect(target.getItem(1)).toBeUndefined();
+        expect(result).toEqual({ changedSlots: 2, skippedSlots: 1 });
+        expect(target.getItem(0).amount).toBe(64);
+        expect(target.getItem(1).amount).toBe(54);
     });
-
     test('survival paste ignores prohibited shulker slots when checking resources', () => {
         const sourceBlock = makeBlock('minecraft:chest');
         const targetBlock = makeBlock('minecraft:shulker_box');

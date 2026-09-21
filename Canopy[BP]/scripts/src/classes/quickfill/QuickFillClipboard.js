@@ -34,9 +34,6 @@ export class QuickFillClipboard {
         return this.slots.length;
     }
 
-    getOccupiedSlotCount() {
-        return this.slots.filter(Boolean).length;
-    }
 
     clone() {
         return new QuickFillClipboard({

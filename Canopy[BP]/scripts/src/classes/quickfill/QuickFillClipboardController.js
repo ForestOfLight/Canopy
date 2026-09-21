@@ -18,14 +18,7 @@ export class QuickFillClipboardController {
             return;
 
         QuickFillClipboardStore.set(player, clipboard);
-        const occupiedSlots = clipboard.getOccupiedSlotCount();
-        if (!occupiedSlots) {
-            player.onScreenDisplay.setActionBar('§7Quick Fill: copied empty clipboard.');
-            return;
-        }
-
-        const slotText = occupiedSlots === 1 ? 'slot' : 'slots';
-        player.onScreenDisplay.setActionBar(`§7Quick Fill: copied §a${occupiedSlots}§7 occupied ${slotText}.`);
+        player.onScreenDisplay.setActionBar('§7Quick Fill: copied container to clipboard.');
     }
 
     static apply(player, block, clipboard, isSneaking) {
@@ -60,18 +53,29 @@ export class QuickFillClipboardController {
             player.onScreenDisplay.setActionBar('§cQuick Fill: incompatible container.');
             return;
         }
-        if (result?.insufficient) {
-            player.onScreenDisplay.setActionBar('§cQuick Fill: insufficient resources.');
-            return;
-        }
-        if (!result?.changedSlots) {
-            player.onScreenDisplay.setActionBar(isRemoving
-                ? '§7Quick Fill: no matching items removed.'
-                : '§7Quick Fill: no changes applied.');
+
+        if (isRemoving) {
+            if (!result?.changedSlots) {
+                player.onScreenDisplay.setActionBar('§7Quick Fill: no matching items removed.');
+                return;
+            }
+
+            const slotText = result.changedSlots === 1 ? 'slot' : 'slots';
+            player.onScreenDisplay.setActionBar(`§7Quick Fill: removed clipboard (§a${result.changedSlots}§7 ${slotText}).`);
             return;
         }
 
-        const slotText = result.changedSlots === 1 ? 'slot' : 'slots';
-        player.onScreenDisplay.setActionBar(`§7Quick Fill: ${isRemoving ? 'removed' : 'applied'} clipboard (§a${result.changedSlots}§7 ${slotText}).`);
+        if (!result?.changedSlots) {
+            player.onScreenDisplay.setActionBar('§7Quick Fill: no clipboard items pasted.');
+            return;
+        }
+
+        if (result?.skippedSlots) {
+            const slotText = result.skippedSlots === 1 ? 'slot' : 'slots';
+            player.onScreenDisplay.setActionBar(`§7Quick Fill: ${result.skippedSlots} clipboard ${slotText} not fully pasted.`);
+            return;
+        }
+
+        player.onScreenDisplay.setActionBar('§7Quick Fill: pasted clipboard to container.');
     }
 }
