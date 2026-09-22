@@ -156,6 +156,18 @@ class QuickFillContainer extends AbilityRule {
     }
 
     addItemToBlock(block, container, itemStack, changedSlots) {
+        let remainingAmount = this.addToExistingStacks(block, container, itemStack, changedSlots);
+        remainingAmount = this.addToEmptySlots(block, container, itemStack, changedSlots, remainingAmount);
+
+        if (!remainingAmount)
+            return;
+
+        const remaining = itemStack.clone();
+        remaining.amount = remainingAmount;
+        return remaining;
+    }
+
+    addToExistingStacks(block, container, itemStack, changedSlots) {
         let remainingAmount = itemStack.amount;
         for (let slot = 0; slot < container.size && remainingAmount > 0; slot++) {
             if (!QuickFillContainerPolicy.canInsertItem(block, itemStack, slot))
@@ -176,7 +188,10 @@ class QuickFillContainer extends AbilityRule {
                 continue;
             }
         }
+        return remainingAmount;
+    }
 
+    addToEmptySlots(block, container, itemStack, changedSlots, remainingAmount) {
         for (let slot = 0; slot < container.size && remainingAmount > 0; slot++) {
             if (container.getItem(slot) || !QuickFillContainerPolicy.canInsertItem(block, itemStack, slot))
                 continue;
@@ -191,12 +206,7 @@ class QuickFillContainer extends AbilityRule {
                 continue;
             }
         }
-
-        if (remainingAmount === 0)
-            return;
-        const remaining = itemStack.clone();
-        remaining.amount = remainingAmount;
-        return remaining;
+        return remainingAmount;
     }
 
     sendFeedbackMessage(isFilling, player, block, itemStack, changedSlots, destinationFull = false) {

@@ -1,3 +1,4 @@
+import { InventoryUtils } from "../InventoryUtils";
 import { QuickFillContainerPolicy } from "./QuickFillContainerPolicy";
 
 export class QuickFillClipboardExecutor {
@@ -34,7 +35,7 @@ export class QuickFillClipboardExecutor {
 
         if (!QuickFillContainerPolicy.canInsertItem(block, desired, slot))
             return { changedSlots: 0, skippedSlots: 1 };
-        if (current && this.itemsMatch(current, desired) && current.amount === desired.amount)
+        if (current && InventoryUtils.itemsMatch(current, desired) && current.amount === desired.amount)
             return { changedSlots: 0, skippedSlots: 0 };
 
         try {
@@ -68,14 +69,14 @@ export class QuickFillClipboardExecutor {
             return { changedSlots: 0, skippedSlots: 1 };
 
         const current = container.getItem(slot);
-        if (current && !this.itemsMatch(current, desired))
+        if (current && !InventoryUtils.itemsMatch(current, desired))
             return { changedSlots: 0, skippedSlots: 1 };
 
         const amount = desired.amount - (current?.amount ?? 0);
         if (amount <= 0)
             return { changedSlots: 0, skippedSlots: 0 };
 
-        const availableAmount = this.getAvailableAmount(playerContainer, desired);
+        const availableAmount = InventoryUtils.getAvailableAmount(playerContainer, desired);
         if (!availableAmount)
             return { changedSlots: 0, skippedSlots: 1 };
 
@@ -89,12 +90,12 @@ export class QuickFillClipboardExecutor {
     }
 
     static applyRequirement(playerContainer, container, requirement) {
-        const supplied = this.takeItems(playerContainer, requirement.itemStack, requirement.amount);
+        const supplied = InventoryUtils.takeItems(playerContainer, requirement.itemStack, requirement.amount);
         if (!supplied)
             return 0;
 
         const current = container.getItem(requirement.slot);
-        const replacement = current ? this.mergeStacks(current, supplied) : supplied;
+        const replacement = current ? InventoryUtils.mergeStacks(current, supplied) : supplied;
         try {
             container.setItem(requirement.slot, replacement);
             return 1;
@@ -102,12 +103,6 @@ export class QuickFillClipboardExecutor {
             playerContainer.addItem(supplied);
             return 0;
         }
-    }
-
-    static mergeStacks(current, supplied) {
-        const replacement = current.clone();
-        replacement.amount += supplied.amount;
-        return replacement;
     }
 
     static remove(playerContainer, block, container, clipboard) {
@@ -126,7 +121,7 @@ export class QuickFillClipboardExecutor {
 
         const desired = clipboard.resolveSlot(slot);
         const current = container.getItem(slot);
-        if (!desired || !current || !this.itemsMatch(current, desired))
+        if (!desired || !current || !InventoryUtils.itemsMatch(current, desired))
             return 0;
 
         const requestedAmount = Math.min(current.amount, desired.amount);
@@ -154,48 +149,5 @@ export class QuickFillClipboardExecutor {
 
     static getNarrowedSlotCount(container, clipboard) {
         return Math.max(clipboard.getSlotCount() - container.size, 0);
-    }
-
-    static getAvailableAmount(container, template) {
-        let amount = 0;
-        for (let slot = 0; slot < container.size; slot++) {
-            const itemStack = container.getItem(slot);
-            if (itemStack && this.itemsMatch(itemStack, template))
-                amount += itemStack.amount;
-        }
-        return amount;
-    }
-
-    static takeItems(container, template, amount) {
-        let remaining = amount;
-        let result;
-        for (let slot = 0; slot < container.size && remaining > 0; slot++) {
-            const source = container.getItem(slot);
-            if (!source || !this.itemsMatch(source, template))
-                continue;
-
-            const taken = Math.min(source.amount, remaining);
-            if (!result)
-                result = source.clone();
-            result.amount = amount - remaining + taken;
-            remaining -= taken;
-
-            if (source.amount === taken) {
-                container.setItem(slot, null);
-            } else {
-                const replacement = source.clone();
-                replacement.amount -= taken;
-                container.setItem(slot, replacement);
-            }
-        }
-        return remaining === 0 ? result : undefined;
-    }
-
-    static itemsMatch(first, second) {
-        if (!first || !second)
-            return false;
-        if (typeof first.isStackableWith === 'function')
-            return first.isStackableWith(second);
-        return first.typeId === second.typeId;
     }
 }

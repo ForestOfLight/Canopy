@@ -50,9 +50,13 @@ describe('QuickFillContainerPolicy', () => {
         expect(QuickFillContainerPolicy.getClipboardSlotCount(block, container)).toBe(2);
     });
 
-    test('functional inventories are clipboard-only', () => {
-        for (const typeId of ['minecraft:furnace', 'minecraft:smoker', 'minecraft:blast_furnace', 'minecraft:brewing_stand'])
-            expect(QuickFillContainerPolicy.isClipboardOnly(makeBlock(typeId))).toBe(true);
-        expect(QuickFillContainerPolicy.isClipboardOnly(makeBlock('minecraft:chest'))).toBe(false);
+    test.each([
+        ['minecraft:furnace', true],
+        ['minecraft:smoker', true],
+        ['minecraft:blast_furnace', true],
+        ['minecraft:brewing_stand', true],
+        ['minecraft:chest', false]
+    ])('%s clipboard-only = %s', (typeId, expected) => {
+        expect(QuickFillContainerPolicy.isClipboardOnly(makeBlock(typeId))).toBe(expected);
     });
 });

@@ -30,7 +30,9 @@ describe('QuickFillClipboardExecutor', () => {
         const source = new Container({ size: 5, items: { 1: new ItemStack('minecraft:stone', 17) } });
         const target = new Container({ size: 5, items: { 0: new ItemStack('minecraft:dirt'), 1: new ItemStack('minecraft:dirt') } });
 
-        QuickFillClipboardExecutor.applyCreative(block, target, makeClipboard(block, source));
+        const result = QuickFillClipboardExecutor.applyCreative(block, target, makeClipboard(block, source));
+
+        expect(result).toEqual({ changedSlots: 2, skippedSlots: 0 });
         expect(target.getItem(0)).toBeUndefined();
         expect(target.getItem(1).typeId).toBe('minecraft:stone');
         expect(target.getItem(1).amount).toBe(17);
