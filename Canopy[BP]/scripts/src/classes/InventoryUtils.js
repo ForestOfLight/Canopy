@@ -96,4 +96,53 @@ export class InventoryUtils {
     static #isSlotAvailableForStacking(slot, itemStack) {
         return slot.hasItem() && slot.isStackableWith(itemStack) && slot.amount !== slot.maxAmount;
     }
+
+    static itemsMatch(first, second) {
+        if (!first || !second)
+            return false;
+        if (typeof first.isStackableWith === 'function')
+            return first.isStackableWith(second);
+        return first.typeId === second.typeId;
+    }
+
+    static mergeStacks(current, supplied) {
+        const replacement = current.clone();
+        replacement.amount += supplied.amount;
+        return replacement;
+    }
+
+    static getAvailableAmount(container, template) {
+        let amount = 0;
+        for (let slot = 0; slot < container.size; slot++) {
+            const itemStack = container.getItem(slot);
+            if (itemStack && InventoryUtils.itemsMatch(itemStack, template))
+                amount += itemStack.amount;
+        }
+        return amount;
+    }
+
+    static takeItems(container, template, amount) {
+        let remaining = amount;
+        let result;
+        for (let slot = 0; slot < container.size && remaining > 0; slot++) {
+            const source = container.getItem(slot);
+            if (!source || !InventoryUtils.itemsMatch(source, template))
+                continue;
+
+            const taken = Math.min(source.amount, remaining);
+            if (!result)
+                result = source.clone();
+            result.amount = amount - remaining + taken;
+            remaining -= taken;
+
+            if (source.amount === taken) {
+                container.setItem(slot, null);
+            } else {
+                const replacement = source.clone();
+                replacement.amount -= taken;
+                container.setItem(slot, replacement);
+            }
+        }
+        return remaining === 0 ? result : undefined;
+    }
 }
