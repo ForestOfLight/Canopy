@@ -8,8 +8,7 @@ export class QuickFillClipboardController {
         return QuickFillClipboardStore.get(player);
     }
 
-    static copy(player, block) {
-        const blockInv = block.getComponent(BlockComponentTypes.Inventory)?.container;
+    static copy(player, block, blockInv = block.getComponent(BlockComponentTypes.Inventory)?.container) {
         if (!blockInv)
             return;
 
@@ -21,9 +20,8 @@ export class QuickFillClipboardController {
         player.onScreenDisplay.setActionBar('§7Quick Fill: copied container to clipboard.');
     }
 
-    static apply(player, block, clipboard, isSneaking) {
+    static apply(player, block, clipboard, isSneaking, blockInv = block.getComponent(BlockComponentTypes.Inventory)?.container) {
         const playerInv = player.getComponent(EntityComponentTypes.Inventory)?.container;
-        const blockInv = block.getComponent(BlockComponentTypes.Inventory)?.container;
         if (!playerInv || !blockInv)
             return;
 
