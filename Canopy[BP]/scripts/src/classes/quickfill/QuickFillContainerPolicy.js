@@ -1,3 +1,4 @@
+import { EntityComponentTypes } from "@minecraft/server";
 export class QuickFillContainerPolicy {
     static SpecialShapes = Object.freeze({
         'minecraft:furnace': 'furnace:3',
@@ -8,6 +9,26 @@ export class QuickFillContainerPolicy {
         'minecraft:lit_blast_furnace': 'blast_furnace:3',
         'minecraft:brewing_stand': 'brewing:5'
     });
+
+    static SupportedEntityStorageTypes = new Set([
+        'minecraft:donkey',
+        'minecraft:mule',
+        'minecraft:llama',
+        'minecraft:trader_llama'
+    ]);
+
+    static getEntityContainer(entity) {
+        if (!this.SupportedEntityStorageTypes.has(entity?.typeId))
+            return;
+
+        const inventory = entity.getComponent(EntityComponentTypes.Inventory);
+        if (!inventory?.container || inventory.containerType !== 'horse')
+            return;
+        if (!entity.hasComponent(EntityComponentTypes.IsChested))
+            return;
+
+        return inventory.container;
+    }
 
     static getShape(block, container) {
         if (!block || !container)

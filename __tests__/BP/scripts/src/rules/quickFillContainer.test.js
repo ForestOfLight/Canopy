@@ -1,5 +1,6 @@
 import { BlockComponentTypes, ButtonState, Container, EntityComponentTypes, ItemStack, Player, system } from "@minecraft/server";
 import { QuickFillClipboardController } from "../../../../../Canopy[BP]/scripts/src/classes/quickfill/QuickFillClipboardController";
+import { QuickFillContainerPolicy } from "../../../../../Canopy[BP]/scripts/src/classes/quickfill/QuickFillContainerPolicy";
 import { quickFillContainer } from "../../../../../Canopy[BP]/scripts/src/rules/quickFillContainer";
 import { afterEach, describe, expect, test, vi } from "vitest";
 
@@ -19,6 +20,17 @@ function makeBlock(container, typeId = 'minecraft:chest') {
         typeId,
         localizationKey: `tile.${typeId}`,
         getComponent: vi.fn(component => component === BlockComponentTypes.Inventory ? { container } : undefined)
+    };
+}
+
+function makeEntity(container, typeId = 'minecraft:llama', isChested = true) {
+    return {
+        typeId,
+        localizationKey: `entity.${typeId}`,
+        getComponent: vi.fn(component => component === EntityComponentTypes.Inventory
+            ? { container, containerType: 'horse' }
+            : undefined),
+        hasComponent: vi.fn(component => component === EntityComponentTypes.IsChested && isChested)
     };
 }
 
@@ -259,6 +271,98 @@ describe('quickFillContainer', () => {
 
         expect(apply).toHaveBeenCalledWith(player, block, clipboard, false, enderInv);
         expect(copy).toHaveBeenCalledWith(player, block, enderInv);
+    });
+
+    test('entity storage accepts chested pack animals only', () => {
+        const donkey = makeEntity(new Container({ size: 15 }), 'minecraft:donkey');
+        const mule = makeEntity(new Container({ size: 15 }), 'minecraft:mule');
+        const llama = makeEntity(new Container({ size: 9 }), 'minecraft:llama');
+        const traderLlama = makeEntity(new Container({ size: 15 }), 'minecraft:trader_llama');
+        const horse = makeEntity(new Container({ size: 15 }), 'minecraft:horse');
+        const unchestedLlama = makeEntity(new Container({ size: 9 }), 'minecraft:llama', false);
+
+        expect(QuickFillContainerPolicy.getEntityContainer(donkey)?.size).toBe(15);
+        expect(QuickFillContainerPolicy.getEntityContainer(mule)?.size).toBe(15);
+        expect(QuickFillContainerPolicy.getEntityContainer(llama)?.size).toBe(9);
+        expect(QuickFillContainerPolicy.getEntityContainer(traderLlama)?.size).toBe(15);
+        expect(QuickFillContainerPolicy.getEntityContainer(horse)).toBeUndefined();
+        expect(QuickFillContainerPolicy.getEntityContainer(unchestedLlama)).toBeUndefined();
+    });
+
+    test('direct QuickFill works with supported entity storage', () => {
+        const heldItem = new ItemStack('minecraft:stone');
+        const playerInv = new Container({ size: 4, items: { 0: new ItemStack('minecraft:stone', 8) } });
+        const entityInv = new Container({ size: 15 });
+        const player = makePlayer(playerInv);
+        const entity = makeEntity(entityInv, 'minecraft:llama');
+
+        vi.spyOn(quickFillContainer, 'isEnabledForPlayer').mockReturnValue(true);
+        vi.spyOn(QuickFillClipboardController, 'get').mockReturnValue(undefined);
+        vi.spyOn(system, 'run').mockImplementation(callback => callback());
+
+        const event = { player, target: entity, itemStack: heldItem, cancel: false };
+        quickFillContainer.onPlayerInteractWithEntity(event);
+
+        expect(event.cancel).toBe(true);
+        expect(entityInv.getItem(0).amount).toBe(8);
+        expect(playerInv.getItem(0)).toBeUndefined();
+    });
+
+    test('clipboard paste routes through supported entity storage', () => {
+        const player = makePlayer(new Container({ size: 4 }));
+        const entityInv = new Container({ size: 15 });
+        const entity = makeEntity(entityInv, 'minecraft:mule');
+        const clipboard = {};
+
+        vi.spyOn(quickFillContainer, 'isEnabledForPlayer').mockReturnValue(true);
+        vi.spyOn(QuickFillClipboardController, 'get').mockReturnValue(clipboard);
+        const apply = vi.spyOn(QuickFillClipboardController, 'apply').mockImplementation(() => {});
+        vi.spyOn(system, 'run').mockImplementation(callback => callback());
+
+        const event = { player, target: entity, cancel: false };
+        quickFillContainer.onPlayerInteractWithEntity(event);
+
+        expect(event.cancel).toBe(true);
+        expect(apply).toHaveBeenCalledWith(player, entity, clipboard, false, entityInv);
+    });
+
+    test('attacking supported entity storage copies it without applying damage', () => {
+        const player = makePlayer(new Container({ size: 4 }));
+        const entityInv = new Container({ size: 15 });
+        const entity = makeEntity(entityInv, 'minecraft:llama');
+
+        vi.spyOn(quickFillContainer, 'isEnabledForPlayer').mockReturnValue(true);
+        const copy = vi.spyOn(QuickFillClipboardController, 'copy').mockImplementation(() => {});
+        vi.spyOn(system, 'run').mockImplementation(callback => callback());
+
+        const event = {
+            hurtEntity: entity,
+            damageSource: { damagingEntity: player },
+            cancel: false
+        };
+
+        quickFillContainer.onEntityHurt(event);
+
+        expect(event.cancel).toBe(true);
+        expect(copy).toHaveBeenCalledWith(player, entity, entityInv);
+    });
+
+    test('projectile damage does not trigger entity clipboard copy', () => {
+        const player = makePlayer(new Container({ size: 4 }));
+        const entity = makeEntity(new Container({ size: 15 }), 'minecraft:donkey');
+
+        const copy = vi.spyOn(QuickFillClipboardController, 'copy').mockImplementation(() => {});
+
+        const event = {
+            hurtEntity: entity,
+            damageSource: { damagingEntity: player, damagingProjectile: {} },
+            cancel: false
+        };
+
+        quickFillContainer.onEntityHurt(event);
+
+        expect(event.cancel).toBe(false);
+        expect(copy).not.toHaveBeenCalled();
     });
 
     test('direct QuickFill feedback reports no-op actions and singular slots', () => {

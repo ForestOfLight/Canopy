@@ -111,6 +111,14 @@ export class InventoryUtils {
         return replacement;
     }
 
+    static hasItemType(container, itemTypeId) {
+        for (let slot = 0; slot < container.size; slot++) {
+            if (container.getItem(slot)?.typeId === itemTypeId)
+                return true;
+        }
+        return false;
+    }
+
     static getAvailableAmount(container, template) {
         let amount = 0;
         for (let slot = 0; slot < container.size; slot++) {
