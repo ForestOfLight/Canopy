@@ -26,7 +26,8 @@ export class QuickFillPresetStore {
             name: normalizedName,
             storageId,
             shape: clipboard.shape,
-            slotCount
+            slotCount,
+            wildcardGroups: [...clipboard.wildcardGroups]
         };
 
         const database = new EntityItemDatabase();
@@ -68,7 +69,8 @@ export class QuickFillPresetStore {
 
         return new QuickFillClipboard({
             shape: preset.shape,
-            slots
+            slots,
+            wildcardGroups: preset.wildcardGroups
         });
     }
 
@@ -186,6 +188,19 @@ export class QuickFillPresetStore {
             typeof preset.shape === 'string' &&
             Number.isInteger(preset.slotCount) &&
             preset.slotCount >= 0 &&
-            preset.slotCount <= EntityItemDatabase.MAX_CONTAINER_SIZE;
+            preset.slotCount <= EntityItemDatabase.MAX_CONTAINER_SIZE &&
+            this.#isValidWildcardGroups(preset.wildcardGroups, preset.slotCount);
+    }
+
+    static #isValidWildcardGroups(wildcardGroups, slotCount) {
+        if (wildcardGroups === void 0)
+            return true;
+        if (!Array.isArray(wildcardGroups) || wildcardGroups.length > slotCount)
+            return false;
+
+        return wildcardGroups.every(group =>
+            group === null ||
+            (Number.isSafeInteger(group) && group >= 0)
+        );
     }
 }

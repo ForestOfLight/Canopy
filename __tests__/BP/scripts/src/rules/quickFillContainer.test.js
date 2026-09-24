@@ -178,6 +178,38 @@ describe('quickFillContainer', () => {
         expect(event.cancel).toBe(false);
     });
 
+    test('clipboard interaction passes the held item to the clipboard controller', () => {
+        const heldItem = new ItemStack('minecraft:dirt');
+        const player = makePlayer(new Container({ size: 4 }));
+        const blockInv = new Container({ size: 27 });
+        const block = makeBlock(blockInv);
+        const clipboard = {};
+
+        vi.spyOn(quickFillContainer, 'isEnabledForPlayer').mockReturnValue(true);
+        vi.spyOn(QuickFillClipboardController, 'get').mockReturnValue(clipboard);
+        const apply = vi.spyOn(QuickFillClipboardController, 'apply').mockImplementation(() => {});
+        vi.spyOn(system, 'run').mockImplementation(callback => callback());
+
+        const event = {
+            player,
+            block,
+            itemStack: heldItem,
+            cancel: false
+        };
+
+        quickFillContainer.onPlayerInteractWithBlock(event);
+
+        expect(event.cancel).toBe(true);
+        expect(apply).toHaveBeenCalledWith(
+            player,
+            block,
+            clipboard,
+            false,
+            blockInv,
+            heldItem
+        );
+    });
+
     test('sneak + break deactivates an active clipboard regardless of target contents', () => {
         const player = makePlayer(new Container({ size: 4 }));
         const block = makeBlock(new Container({ size: 5, items: {
@@ -253,11 +285,12 @@ describe('quickFillContainer', () => {
         vi.spyOn(system, 'run').mockImplementation(callback => callback());
 
         const enderInv = player.getComponent(EntityComponentTypes.EnderInventory).container;
+        const heldItem = new ItemStack('minecraft:stone');
 
-        quickFillContainer.onPlayerInteractWithBlock({ player, block, itemStack: new ItemStack('minecraft:stone'), cancel: false });
+        quickFillContainer.onPlayerInteractWithBlock({ player, block, itemStack: heldItem, cancel: false });
         quickFillContainer.onPlayerBreakBlock({ player, block, cancel: false });
 
-        expect(apply).toHaveBeenCalledWith(player, block, clipboard, false, enderInv);
+        expect(apply).toHaveBeenCalledWith(player, block, clipboard, false, enderInv, heldItem);
         expect(copy).toHaveBeenCalledWith(player, block, enderInv);
     });
 

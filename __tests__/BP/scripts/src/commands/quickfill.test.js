@@ -55,6 +55,32 @@ describe('QuickFillCommand', () => {
         expect(remove).toHaveBeenCalledWith(player, 'rockets');
     });
 
+    test('wildcard replaces the preset wildcard group using the selected item', () => {
+        const player = createPlayer();
+        const clipboard = createClipboard();
+
+        vi.spyOn(QuickFillPresetStore, 'load').mockReturnValue(clipboard);
+        const save = vi.spyOn(QuickFillPresetStore, 'save').mockReturnValue(true);
+
+        quickFillCommand.wildcardPreset(player, 'filters', { id: 'minecraft:stone' });
+
+        expect(clipboard.wildcardGroups).toEqual([0]);
+        expect(save).toHaveBeenCalledWith(player, 'filters', clipboard);
+    });
+
+    test('wildcard does not save when the selected item is absent from the preset', () => {
+        const player = createPlayer();
+        const clipboard = createClipboard();
+
+        vi.spyOn(QuickFillPresetStore, 'load').mockReturnValue(clipboard);
+        const save = vi.spyOn(QuickFillPresetStore, 'save').mockReturnValue(true);
+
+        quickFillCommand.wildcardPreset(player, 'filters', { id: 'minecraft:dirt' });
+
+        expect(clipboard.wildcardGroups).toEqual([null]);
+        expect(save).not.toHaveBeenCalled();
+    });
+
     test('list uses the existing Canopy header and per-line item style', () => {
         const player = createPlayer();
 

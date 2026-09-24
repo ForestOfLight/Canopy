@@ -96,6 +96,59 @@ describe('QuickFillPresetStore', () => {
         expect(loaded.slots[4].typeId).toBe('minecraft:dirt');
     });
 
+    test('preserves wildcard groups when saving and loading a preset', () => {
+        const player = createPlayer();
+        const clipboard = createClipboard();
+
+        clipboard.setWildcardGroup('minecraft:stone');
+
+        expect(QuickFillPresetStore.save(player, 'wildcard', clipboard)).toBe(true);
+
+        const loaded = QuickFillPresetStore.load(player, 'wildcard');
+
+        expect(loaded.wildcardGroups).toEqual([0, null, null, null, null]);
+        expect(loaded.slots[0].typeId).toBe('minecraft:stone');
+        expect(loaded.slots[0].amount).toBe(17);
+    });
+
+    test('loads presets without wildcard metadata as literal clipboards', () => {
+        const player = createPlayer();
+        const clipboard = createClipboard();
+
+        QuickFillPresetStore.save(player, 'legacy', clipboard);
+
+        const catalog = JSON.parse(player.getDynamicProperty('quickFillPresets'));
+        delete catalog.presets[0].wildcardGroups;
+        player.setDynamicProperty('quickFillPresets', JSON.stringify(catalog));
+
+        const loaded = QuickFillPresetStore.load(player, 'legacy');
+
+        expect(loaded.wildcardGroups).toEqual([null, null, null, null, null]);
+        expect(loaded.slots[0].typeId).toBe('minecraft:stone');
+        expect(loaded.slots[0].amount).toBe(17);
+    });
+    test('keeps wildcard preset state isolated per player', () => {
+        const firstPlayer = createPlayer();
+        const secondPlayer = createPlayer();
+
+        const firstClipboard = createClipboard('minecraft:stone');
+        firstClipboard.setWildcardGroup('minecraft:stone');
+
+        const secondClipboard = createClipboard('minecraft:deepslate');
+        secondClipboard.setWildcardGroup('minecraft:dirt');
+
+        QuickFillPresetStore.save(firstPlayer, 'layout', firstClipboard);
+        QuickFillPresetStore.save(secondPlayer, 'layout', secondClipboard);
+
+        const firstLoaded = QuickFillPresetStore.load(firstPlayer, 'layout');
+        const secondLoaded = QuickFillPresetStore.load(secondPlayer, 'layout');
+
+        expect(firstLoaded.slots[0].typeId).toBe('minecraft:stone');
+        expect(firstLoaded.wildcardGroups).toEqual([0, null, null, null, null]);
+
+        expect(secondLoaded.slots[0].typeId).toBe('minecraft:deepslate');
+        expect(secondLoaded.wildcardGroups).toEqual([null, null, null, null, 0]);
+    });
     test('overwriting a named preset keeps its storage identity and replaces its clipboard', () => {
         const player = createPlayer();
 

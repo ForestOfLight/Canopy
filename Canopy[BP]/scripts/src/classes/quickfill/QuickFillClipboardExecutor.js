@@ -1,8 +1,9 @@
 import { InventoryUtils } from "../InventoryUtils";
 import { QuickFillContainerPolicy } from "./QuickFillContainerPolicy";
+import { QuickFillWildcardResolver } from "./QuickFillWildcardResolver";
 
 export class QuickFillClipboardExecutor {
-    static applyCreative(block, container, clipboard) {
+    static applyCreative(block, container, clipboard, wildcardItems = []) {
         if (!this.canApply(block, container, clipboard))
             return { changedSlots: 0, incompatible: true };
 
@@ -10,15 +11,17 @@ export class QuickFillClipboardExecutor {
         let skippedSlots = this.getNarrowedSlotCount(container, clipboard);
         const slotCount = Math.min(clipboard.getSlotCount(), container.size);
         for (let slot = 0; slot < slotCount; slot++) {
-            const result = this.applyCreativeSlot(block, container, clipboard, slot);
+            const result = this.applyCreativeSlot(block, container, clipboard, slot, wildcardItems);
             changedSlots += result.changedSlots;
             skippedSlots += result.skippedSlots;
         }
         return { changedSlots, skippedSlots };
     }
 
-    static applyCreativeSlot(block, container, clipboard, slot) {
-        const desired = clipboard.resolveSlot(slot);
+    static applyCreativeSlot(block, container, clipboard, slot, wildcardItems = []) {
+        const { itemStack: desired, unresolved } = QuickFillWildcardResolver.resolveSlot(clipboard, slot, wildcardItems);
+        if (unresolved)
+            return { changedSlots: 0, skippedSlots: 1 };
         const current = container.getItem(slot);
 
         if (!desired) {
@@ -46,7 +49,7 @@ export class QuickFillClipboardExecutor {
         }
     }
 
-    static applySurvival(playerContainer, block, container, clipboard) {
+    static applySurvival(playerContainer, block, container, clipboard, wildcardItems = []) {
         if (!playerContainer || !this.canApply(block, container, clipboard))
             return { changedSlots: 0, incompatible: true };
 
@@ -54,15 +57,17 @@ export class QuickFillClipboardExecutor {
         let skippedSlots = this.getNarrowedSlotCount(container, clipboard);
         const slotCount = Math.min(clipboard.getSlotCount(), container.size);
         for (let slot = 0; slot < slotCount; slot++) {
-            const result = this.applySurvivalSlot(playerContainer, block, container, clipboard, slot);
+            const result = this.applySurvivalSlot(playerContainer, block, container, clipboard, slot, wildcardItems);
             changedSlots += result.changedSlots;
             skippedSlots += result.skippedSlots;
         }
         return { changedSlots, skippedSlots };
     }
 
-    static applySurvivalSlot(playerContainer, block, container, clipboard, slot) {
-        const desired = clipboard.resolveSlot(slot);
+    static applySurvivalSlot(playerContainer, block, container, clipboard, slot, wildcardItems = []) {
+        const { itemStack: desired, unresolved } = QuickFillWildcardResolver.resolveSlot(clipboard, slot, wildcardItems);
+        if (unresolved)
+            return { changedSlots: 0, skippedSlots: 1 };
         if (!desired)
             return { changedSlots: 0, skippedSlots: 0 };
         if (!QuickFillContainerPolicy.canInsertItem(block, desired, slot))
@@ -105,21 +110,23 @@ export class QuickFillClipboardExecutor {
         }
     }
 
-    static remove(playerContainer, block, container, clipboard) {
+    static remove(playerContainer, block, container, clipboard, wildcardItems = []) {
         if (!playerContainer || !this.canApply(block, container, clipboard))
             return { changedSlots: 0, incompatible: true };
 
         let changedSlots = 0;
         for (let slot = 0; slot < Math.min(clipboard.getSlotCount(), container.size); slot++)
-            changedSlots += this.removeSlot(playerContainer, block, container, clipboard, slot);
+            changedSlots += this.removeSlot(playerContainer, block, container, clipboard, slot, wildcardItems);
         return { changedSlots };
     }
 
-    static removeSlot(playerContainer, block, container, clipboard, slot) {
+    static removeSlot(playerContainer, block, container, clipboard, slot, wildcardItems = []) {
         if (!QuickFillContainerPolicy.canUseSlot(block, slot))
             return 0;
 
-        const desired = clipboard.resolveSlot(slot);
+        const { itemStack: desired, unresolved } = QuickFillWildcardResolver.resolveSlot(clipboard, slot, wildcardItems);
+        if (unresolved)
+            return 0;
         const current = container.getItem(slot);
         if (!desired || !current || !InventoryUtils.itemsMatch(current, desired))
             return 0;
