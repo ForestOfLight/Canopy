@@ -59,6 +59,17 @@ describe('InfoDisplayRule', () => {
             rule.getValue(player);
             expect(player.getDynamicProperty).toHaveBeenCalledWith('test_rule');
         });
+
+        it('should use the default value when the player property is undefined', () => {
+            const defaultRule = new InfoDisplayRule({
+                identifier: 'default_rule',
+                description: 'Default rule',
+                defaultValue: true
+            });
+            const player = { getDynamicProperty: vi.fn(() => undefined) };
+
+            expect(defaultRule.getValue(player)).toBe(true);
+        });
     });
 
     describe('setValue', () => {

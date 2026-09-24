@@ -15,7 +15,7 @@ class InfoDisplayRule extends BooleanRule {
     }
 
     getValue(player) {
-        return player.getDynamicProperty(super.getID());
+        return player.getDynamicProperty(super.getID()) ?? this.getDefaultValue();
     }
 
     setValue(player, value) {
