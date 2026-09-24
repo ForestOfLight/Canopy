@@ -27,7 +27,8 @@ export class AnalyzeAreaCommand extends VanillaCommand {
                 + 'Example expressions:\n'
                 + "- Stone block: `typeId == 'minecraft:stone'`\n"
                 + "- Immovable block: `getComponent('minecraft:movable').movementType == 'Immovable'`\n"
-                + "- Liquid source block: `permutation.getState('liquid_depth') == 0`",
+                + "- Liquid source block: `permutation.getState('liquid_depth') == 0`"
+                + "- Unlocked hopper: `typeId == 'minecraft:hopper' && getRedstonePower() == 0`",
             subCommandWikiDescription: {
                 '': {
                     description: 'Open the area analyses menu.'
