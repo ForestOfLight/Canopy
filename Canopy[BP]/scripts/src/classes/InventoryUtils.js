@@ -1,8 +1,8 @@
-import { EntityComponentTypes, ItemStack } from "@minecraft/server";
+import { BlockComponentTypes, EntityComponentTypes, ItemStack } from "@minecraft/server";
 
 export class InventoryUtils {
     static getInventory(block) {
-        const container = block.getComponent('inventory')?.container;
+        const container = block.getComponent(BlockComponentTypes.Inventory)?.container;
         if (container === undefined) return {};
         const items = {};
         for (let i = 0; i < container.size; i++) {
@@ -14,7 +14,7 @@ export class InventoryUtils {
     }
     
     static restoreInventory(block, items) {
-        const container = block.getComponent('inventory')?.container;
+        const container = block.getComponent(BlockComponentTypes.Inventory)?.container;
         if (container === undefined)
             return;
         for (let i = 0; i < container.size; i++) {

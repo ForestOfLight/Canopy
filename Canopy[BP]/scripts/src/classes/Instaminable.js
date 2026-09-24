@@ -1,4 +1,4 @@
-import { system, world } from "@minecraft/server";
+import { ItemComponentTypes, system, world } from "@minecraft/server";
 
 const beaconRefreshOffset = {};
 const BEACON_REFRESH_RATE = 80;
@@ -58,7 +58,8 @@ export class Instaminable {
 
     isEfficiencyFiveNetheritePick(itemStack) {
         if (itemStack && itemStack.typeId === 'minecraft:netherite_pickaxe') {
-            const enchants = itemStack.getComponent('minecraft:enchantable').getEnchantments();
+            const enchantableComponent = itemStack.getComponent(ItemComponentTypes.Enchantable);
+            const enchants = enchantableComponent.getEnchantments();
             return enchants.some(enchant => enchant.type.id === 'efficiency' && enchant.level === 5);
         }
         return false;

@@ -1,4 +1,4 @@
-import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, Player, system } from "@minecraft/server";
+import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, EntityComponentTypes, Player, system } from "@minecraft/server";
 import { BooleanRule, VanillaCommand } from "../../lib/canopy/Canopy";
 
 const CLAIM_RADIUS = 25;
@@ -45,7 +45,7 @@ function getProjectilesInRange(source, radius) {
     const radiusProjectiles = [];
     const radiusEntities = source.dimension.getEntities({ location: source.location, maxDistance: radius });
     for (const entity of radiusEntities) {
-        if (entity?.hasComponent('minecraft:projectile'))
+        if (entity?.hasComponent(EntityComponentTypes.Projectile))
             radiusProjectiles.push(entity);
     }
     return radiusProjectiles;
@@ -56,7 +56,7 @@ function changeOwner(projectiles, targetPlayer) {
         system.run(() => {
             if (!projectile)
                 return;
-            projectile.getComponent('minecraft:projectile').owner = targetPlayer;
+            projectile.getComponent(EntityComponentTypes.Projectile).owner = targetPlayer;
         });
     }
     return projectiles.length;

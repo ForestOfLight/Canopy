@@ -1,5 +1,5 @@
 import { BooleanRule } from "lib/canopy/Canopy";
-import { system, world, DimensionTypes, ItemStack, FluidType, BlockComponentTypes } from "@minecraft/server";
+import { system, world, DimensionTypes, ItemStack, FluidType, BlockComponentTypes, EntityComponentTypes } from "@minecraft/server";
 
 const CONVERSION_TIME = 20*7;
 const CURRENT_CONVERSIONS = {};
@@ -29,8 +29,9 @@ new BooleanRule({
 });
 
 function onEntitySpawn(event) {
-    if (!event.entity.isValid || event.entity?.typeId !== "minecraft:item" || !event.entity.hasComponent('item')) return;
-    const itemStack = event.entity.getComponent('item').itemStack;
+    if (!event.entity.isValid || event.entity?.typeId !== "minecraft:item")
+        return;
+    const itemStack = event.entity.getComponent(EntityComponentTypes.Item).itemStack;
     if (itemStack && itemStack.typeId.includes('concrete_powder')) 
         event.entity.addTag('concrete_powder');
 }
@@ -74,7 +75,7 @@ function isDoneConverting(itemEntity) {
 }
 
 function convertToConcrete(dimension, itemEntity) {
-    const itemStack = itemEntity.getComponent('item').itemStack;
+    const itemStack = itemEntity.getComponent(EntityComponentTypes.Item).itemStack;
     const concreteType = itemStack.typeId.replace('_powder', '');
     const amount = itemStack.amount;
     const location = itemEntity.location;

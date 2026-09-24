@@ -1,5 +1,5 @@
 import { BooleanRule, Rules } from "../../lib/canopy/Canopy";
-import { system, world, StructureMirrorAxis, BlockPistonState, EquipmentSlot } from "@minecraft/server";
+import { system, world, StructureMirrorAxis, BlockPistonState, EquipmentSlot, EntityComponentTypes, BlockComponentTypes } from "@minecraft/server";
 import BlockRotator from "../classes/BlockRotator";
 import DirectionStateFinder from "../classes/DirectionState";
 
@@ -30,7 +30,8 @@ world.afterEvents.playerPlaceBlock.subscribe((event) => {
     if (!Rules.getNativeValue('flippinArrows')) return;
     const player = event.player;
     if (!player) return;
-    const offhandStack = player.getComponent('equippable').getEquipment(EquipmentSlot.Offhand);
+    const equippableComponent = player.getComponent(EntityComponentTypes.Equippable);
+    const offhandStack = equippableComponent.getEquipment(EquipmentSlot.Offhand);
     if (offhandStack?.typeId !== 'minecraft:arrow') return;
     
     const block = event.block;
@@ -164,9 +165,12 @@ function slabFlip(player, block) {
 }
 
 function checkForAbort(block, blockId) {
-    if (noInteractBlockIds.includes(blockId)) return true;
-    if (['piston', 'sticky_piston'].includes(blockId) && block.getComponent('piston').state !== BlockPistonState.Retracted) return true;
-    if (['chest', 'trapped_chest'].includes(blockId) && block.getComponent('inventory')?.container.size > 27) return true;
+    if (noInteractBlockIds.includes(blockId))
+        return true;
+    if (block.getComponent(BlockComponentTypes.Piston)?.state !== BlockPistonState.Retracted)
+        return true;
+    if (block.getComponent(BlockComponentTypes.Inventory)?.container.size > 27)
+        return true;
     return false;
 }
 

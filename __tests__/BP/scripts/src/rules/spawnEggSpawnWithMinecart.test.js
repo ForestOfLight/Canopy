@@ -1,3 +1,4 @@
+import { EntityComponentTypes } from "@minecraft/server";
 import { spawnEggSpawnWithMinecart } from "../../../../../Canopy[BP]/scripts/src/rules/spawnEggSpawnWithMinecart";
 import { expect, describe, vi, afterEach, it } from "vitest";
 
@@ -79,7 +80,7 @@ describe('spawnEggSpawnWithMinecart', () => {
             }
         };
         spawnEggSpawnWithMinecart.onSpawnEggSpawn(mockEvent);
-        expect(mockEvent.entity.getComponent('riding')?.entityRidingOn).toBe(mockMinecart);
+        expect(mockEvent.entity.getComponent(EntityComponentTypes.Riding)?.entityRidingOn).toBe(mockMinecart);
     });
 
     it('should do nothing if the entity is not spawned on a rail', () => {
@@ -99,6 +100,6 @@ describe('spawnEggSpawnWithMinecart', () => {
             }
         };
         spawnEggSpawnWithMinecart.onSpawnEggSpawn(mockEvent);
-        expect(mockEvent.entity.getComponent('riding')?.entityRidingOn).not.toBe(mockMinecart);
+        expect(mockEvent.entity.getComponent(EntityComponentTypes.Riding)?.entityRidingOn).not.toBe(mockMinecart);
     });
 });

@@ -1,4 +1,4 @@
-import { EntityComponentTypes, world } from "@minecraft/server";
+import { EntityComponentTypes, ItemComponentTypes, world } from "@minecraft/server";
 import { autoItemPickup } from "../rules/autoItemPickup";
 import { carefulBreak } from "../rules/carefulBreak";
 import { InventoryUtils } from "./InventoryUtils";
@@ -31,7 +31,8 @@ export class FastMine {
 
     isEfficiencyFiveNetheritePick(itemStack) {
         if (itemStack && itemStack.typeId === 'minecraft:netherite_pickaxe') {
-            const enchants = itemStack.getComponent('minecraft:enchantable').getEnchantments();
+            const enchantableComponent = itemStack.getComponent(ItemComponentTypes.Enchantable);
+            const enchants = enchantableComponent.getEnchantments();
             return enchants.some(enchant => enchant.type.id === 'efficiency' && enchant.level === 5);
         }
         return false;
