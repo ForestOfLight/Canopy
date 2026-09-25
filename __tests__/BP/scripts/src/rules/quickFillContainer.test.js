@@ -254,7 +254,7 @@ describe('quickFillContainer', () => {
 
         const enderInv = player.getComponent(EntityComponentTypes.EnderInventory).container;
 
-        quickFillContainer.onPlayerInteractWithBlock({ player, block, cancel: false });
+        quickFillContainer.onPlayerInteractWithBlock({ player, block, itemStack: new ItemStack('minecraft:stone'), cancel: false });
         quickFillContainer.onPlayerBreakBlock({ player, block, cancel: false });
 
         expect(apply).toHaveBeenCalledWith(player, block, clipboard, false, enderInv);
