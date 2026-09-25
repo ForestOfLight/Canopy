@@ -16,6 +16,11 @@ export class QuickFillContainerPolicy {
         'minecraft:llama',
         'minecraft:trader_llama'
     ]);
+    static NonAliveEntityStorageContainerTypes = new Set([
+        'minecart_chest',
+        'minecart_hopper',
+        'chest_boat'
+    ]);
 
     static #getEntityInventoryComponent(entity) {
         if (!this.SupportedEntityStorageTypes.has(entity?.typeId))
@@ -48,6 +53,17 @@ export class QuickFillContainerPolicy {
             return 0;
 
         return Math.min(strength * inventory.additionalSlotsPerStrength, maxCargoSlots);
+    }
+    static getInteractableEntityContainer(entity) {
+        const aliveContainer = this.getEntityContainer(entity);
+        if (aliveContainer)
+            return aliveContainer;
+
+        const inventory = entity?.getComponent(EntityComponentTypes.Inventory);
+        if (!inventory?.container || !this.NonAliveEntityStorageContainerTypes.has(inventory.containerType))
+            return;
+
+        return inventory.container;
     }
 
     static getShape(block, container) {

@@ -83,7 +83,7 @@ class QuickFillContainer extends AbilityRule {
         if (!player || !this.isEnabledForPlayer(player))
             return;
 
-        const entityInv = QuickFillContainerPolicy.getEntityContainer(entity);
+        const entityInv = QuickFillContainerPolicy.getInteractableEntityContainer(entity);
         const playerInv = player.getComponent(EntityComponentTypes.Inventory)?.container;
         if (!playerInv || !entityInv)
             return;
