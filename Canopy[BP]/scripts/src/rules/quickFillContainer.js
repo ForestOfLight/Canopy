@@ -29,29 +29,31 @@ class QuickFillContainer extends AbilityRule {
         if (!player || !this.isEnabledForPlayer(player) || this.bannedContainers.includes(block?.typeId))
             return;
 
-        const blockInv = block.getComponent(BlockComponentTypes.Inventory)?.container;
+        const blockInv = block.typeId === 'minecraft:ender_chest'
+            ? player.getComponent(EntityComponentTypes.EnderInventory)?.container
+            : block.getComponent(BlockComponentTypes.Inventory)?.container;
         const playerInv = player.getComponent(EntityComponentTypes.Inventory)?.container;
         if (!playerInv || !blockInv)
             return;
 
         const handItemStack = event.itemStack;
         const clipboard = QuickFillClipboardController.get(player);
-        if (!clipboard && (QuickFillContainerPolicy.isClipboardOnly(block) || !handItemStack || !QuickFillContainerPolicy.canInsertItem(block, handItemStack)))
+        if ((!clipboard || !handItemStack) && (QuickFillContainerPolicy.isClipboardOnly(block) || !QuickFillContainerPolicy.canInsertItem(block, handItemStack)))
             return;
         event.cancel = true;
 
         const playerIsSneaking = player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed;
         system.run(() => {
             if (clipboard) {
-                QuickFillClipboardController.apply(player, block, clipboard, playerIsSneaking);
+                QuickFillClipboardController.apply(player, block, clipboard, playerIsSneaking, blockInv);
                 return;
             }
             if (playerIsSneaking)
-                this.transferToPlayer(player, block, handItemStack);
+                this.transferToPlayer(player, block, handItemStack, blockInv);
             else if (player.getGameMode() === GameMode.Creative)
-                this.fillCreative(player, block, handItemStack);
+                this.fillCreative(player, block, handItemStack, blockInv);
             else
-                this.transferToContainer(player, block, handItemStack);
+                this.transferToContainer(player, block, handItemStack, blockInv);
         });
     }
 
@@ -60,7 +62,10 @@ class QuickFillContainer extends AbilityRule {
         const block = event.block;
         if (!player || !this.isEnabledForPlayer(player) || this.bannedContainers.includes(block?.typeId))
             return;
-        if (!block.getComponent(BlockComponentTypes.Inventory)?.container)
+        const blockInv = block.typeId === 'minecraft:ender_chest'
+            ? player.getComponent(EntityComponentTypes.EnderInventory)?.container
+            : block.getComponent(BlockComponentTypes.Inventory)?.container;
+        if (!blockInv)
             return;
 
         const playerIsSneaking = player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed;
@@ -73,12 +78,11 @@ class QuickFillContainer extends AbilityRule {
                 QuickFillClipboardController.deactivate(player);
                 return;
             }
-            QuickFillClipboardController.copy(player, block);
+            QuickFillClipboardController.copy(player, block, blockInv);
         });
     }
 
-    fillCreative(player, block, itemStack) {
-        const blockInv = block.getComponent(BlockComponentTypes.Inventory)?.container;
+    fillCreative(player, block, itemStack, blockInv = block.getComponent(BlockComponentTypes.Inventory)?.container) {
         if (!blockInv)
             return;
 
@@ -108,8 +112,7 @@ class QuickFillContainer extends AbilityRule {
         this.sendFeedbackMessage(true, player, block, itemStack, filledSlots, destinationFull);
     }
 
-    transferToPlayer(player, block, itemStack) {
-        const blockInv = block.getComponent(BlockComponentTypes.Inventory)?.container;
+    transferToPlayer(player, block, itemStack, blockInv = block.getComponent(BlockComponentTypes.Inventory)?.container) {
         const playerInv = player.getComponent(EntityComponentTypes.Inventory)?.container;
         if (!blockInv || !playerInv)
             return;
@@ -118,8 +121,7 @@ class QuickFillContainer extends AbilityRule {
         this.sendFeedbackMessage(false, player, block, itemStack, changedSlots, destinationFull);
     }
 
-    transferToContainer(player, block, itemStack) {
-        const blockInv = block.getComponent(BlockComponentTypes.Inventory)?.container;
+    transferToContainer(player, block, itemStack, blockInv = block.getComponent(BlockComponentTypes.Inventory)?.container) {
         const playerInv = player.getComponent(EntityComponentTypes.Inventory)?.container;
         if (!blockInv || !playerInv)
             return;

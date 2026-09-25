@@ -3,9 +3,14 @@ import { QuickFillClipboardController } from "../../../../../Canopy[BP]/scripts/
 import { quickFillContainer } from "../../../../../Canopy[BP]/scripts/src/rules/quickFillContainer";
 import { afterEach, describe, expect, test, vi } from "vitest";
 
-function makePlayer(container) {
+function makePlayer(container, enderContainer) {
     const player = new Player();
-    player.getComponent.mockImplementation(component => component === EntityComponentTypes.Inventory ? { container } : undefined);
+    player.getComponent.mockImplementation(component => {
+        if (component === EntityComponentTypes.Inventory)
+            return { container };
+        if (component === EntityComponentTypes.EnderInventory && enderContainer)
+            return { container: enderContainer };
+    });
     return player;
 }
 
@@ -215,6 +220,45 @@ describe('quickFillContainer', () => {
         expect(event.cancel).toBe(false);
         expect(deactivate).not.toHaveBeenCalled();
         expect(copy).not.toHaveBeenCalled();
+    });
+
+    test('direct QuickFill uses the player ender inventory for ender chests', () => {
+        const heldItem = new ItemStack('minecraft:stone');
+        const playerInv = new Container({ size: 4, items: { 0: new ItemStack('minecraft:stone', 8) } });
+        const enderInv = new Container({ size: 27 });
+        const player = makePlayer(playerInv, enderInv);
+        const block = makeBlock(undefined, 'minecraft:ender_chest');
+
+        vi.spyOn(quickFillContainer, 'isEnabledForPlayer').mockReturnValue(true);
+        vi.spyOn(QuickFillClipboardController, 'get').mockReturnValue(undefined);
+        vi.spyOn(system, 'run').mockImplementation(callback => callback());
+
+        const event = { player, block, itemStack: heldItem, cancel: false };
+        quickFillContainer.onPlayerInteractWithBlock(event);
+
+        expect(event.cancel).toBe(true);
+        expect(enderInv.getItem(0).amount).toBe(8);
+        expect(playerInv.getItem(0)).toBeUndefined();
+    });
+
+    test('ender chest clipboard actions use the player ender inventory', () => {
+        const player = makePlayer(new Container({ size: 4 }), new Container({ size: 27 }));
+        const block = makeBlock(undefined, 'minecraft:ender_chest');
+        const clipboard = {};
+
+        vi.spyOn(quickFillContainer, 'isEnabledForPlayer').mockReturnValue(true);
+        vi.spyOn(QuickFillClipboardController, 'get').mockReturnValue(clipboard);
+        const apply = vi.spyOn(QuickFillClipboardController, 'apply').mockImplementation(() => {});
+        const copy = vi.spyOn(QuickFillClipboardController, 'copy').mockImplementation(() => {});
+        vi.spyOn(system, 'run').mockImplementation(callback => callback());
+
+        const enderInv = player.getComponent(EntityComponentTypes.EnderInventory).container;
+
+        quickFillContainer.onPlayerInteractWithBlock({ player, block, itemStack: new ItemStack('minecraft:stone'), cancel: false });
+        quickFillContainer.onPlayerBreakBlock({ player, block, cancel: false });
+
+        expect(apply).toHaveBeenCalledWith(player, block, clipboard, false, enderInv);
+        expect(copy).toHaveBeenCalledWith(player, block, enderInv);
     });
 
     test('direct QuickFill feedback reports no-op actions and singular slots', () => {
