@@ -1,10 +1,54 @@
-import { Container, ItemStack } from "@minecraft/server";
+import { Container, EntityComponentTypes, ItemStack } from "@minecraft/server";
 import { QuickFillContainerPolicy } from "../../../../../../Canopy[BP]/scripts/src/classes/quickfill/QuickFillContainerPolicy";
 import { describe, expect, test } from "vitest";
 
 const makeBlock = typeId => ({ typeId });
 
+const makeEntity = (typeId = 'minecraft:llama', strength = 5, isChested = true) => {
+    const container = new Container({ size: 16 });
+    return {
+        typeId,
+        getComponent(component) {
+            if (component === EntityComponentTypes.Inventory)
+                return { container, containerType: 'horse', additionalSlotsPerStrength: 3 };
+            if (component === EntityComponentTypes.Strength)
+                return { value: strength };
+        },
+        hasComponent: component => component === EntityComponentTypes.IsChested && isChested
+    };
+};
+
 describe('QuickFillContainerPolicy', () => {
+    test('entity storage requires a supported chested pack animal', () => {
+        for (const typeId of ['minecraft:donkey', 'minecraft:mule', 'minecraft:llama', 'minecraft:trader_llama'])
+            expect(QuickFillContainerPolicy.getEntityContainer(makeEntity(typeId))?.size).toBe(16);
+
+        expect(QuickFillContainerPolicy.getEntityContainer(makeEntity('minecraft:horse'))).toBeUndefined();
+        expect(QuickFillContainerPolicy.getEntityContainer(makeEntity('minecraft:llama', 5, false))).toBeUndefined();
+    });
+
+    test.each([
+        ['minecraft:donkey', 5, 15],
+        ['minecraft:mule', 5, 15],
+        ['minecraft:llama', 1, 3],
+        ['minecraft:llama', 2, 6],
+        ['minecraft:llama', 5, 15],
+        ['minecraft:trader_llama', 2, 6]
+    ])('%s exposes only its cargo slots', (typeId, strength, cargoSlots) => {
+        const entity = makeEntity(typeId, strength);
+        const container = QuickFillContainerPolicy.getEntityContainer(entity);
+
+        expect(QuickFillContainerPolicy.getEntityCargoSlotCount(entity)).toBe(cargoSlots);
+        expect(QuickFillContainerPolicy.canUseSlot(entity)).toBe(true);
+        expect(QuickFillContainerPolicy.canUseSlot(entity, 0)).toBe(false);
+        expect(QuickFillContainerPolicy.canUseSlot(entity, 1)).toBe(true);
+        expect(QuickFillContainerPolicy.canUseSlot(entity, cargoSlots)).toBe(true);
+        expect(QuickFillContainerPolicy.canUseSlot(entity, cargoSlots + 1)).toBe(false);
+        expect(QuickFillContainerPolicy.getClipboardSlotCount(entity, container)).toBe(cargoSlots);
+        expect(QuickFillContainerPolicy.getClipboardContainerSlot(entity, 0)).toBe(1);
+        expect(QuickFillContainerPolicy.getClipboardContainerSlot(entity, cargoSlots - 1)).toBe(cargoSlots);
+    });
+
     test('generic inventories are identified by slot count', () => {
         expect(QuickFillContainerPolicy.getShape(makeBlock('minecraft:chest'), new Container({ size: 27 }))).toBe('generic:27');
         expect(QuickFillContainerPolicy.getShape(makeBlock('minecraft:barrel'), new Container({ size: 27 }))).toBe('generic:27');
@@ -15,6 +59,7 @@ describe('QuickFillContainerPolicy', () => {
         expect(QuickFillContainerPolicy.isCompatible('generic:5', 'generic:27')).toBe(true);
         expect(QuickFillContainerPolicy.isCompatible('generic:54', 'generic:5')).toBe(true);
     });
+
     test('furnace family uses separate semantic shapes', () => {
         const container = new Container({ size: 3 });
 

@@ -90,7 +90,7 @@ class QuickFillContainer extends AbilityRule {
 
         const handItemStack = event.itemStack;
         const clipboard = QuickFillClipboardController.get(player);
-        if (!clipboard && (!handItemStack || !QuickFillContainerPolicy.canInsertItem(entity, handItemStack)))
+        if (!handItemStack || (!clipboard && !QuickFillContainerPolicy.canInsertItem(entity, handItemStack)))
             return;
         event.cancel = true;
 
@@ -163,7 +163,7 @@ class QuickFillContainer extends AbilityRule {
             }
         }
 
-        const destinationFull = !filledSlots && blockInv.emptySlotsCount === 0;
+        const destinationFull = !filledSlots && !InventoryUtils.hasAvailableSpace(blockInv, itemStack, slot => QuickFillContainerPolicy.canInsertItem(block, itemStack, slot));
         this.sendFeedbackMessage(true, player, block, itemStack, filledSlots, destinationFull);
     }
 
@@ -171,8 +171,8 @@ class QuickFillContainer extends AbilityRule {
         const playerInv = player.getComponent(EntityComponentTypes.Inventory)?.container;
         if (!blockInv || !playerInv)
             return;
-        const changedSlots = this.transferAllItemType(blockInv, playerInv, itemStack.typeId);
-        const destinationFull = !changedSlots && playerInv.emptySlotsCount === 0 && InventoryUtils.hasItemType(blockInv, itemStack.typeId);
+        const changedSlots = this.transferAllItemType(blockInv, playerInv, itemStack.typeId, undefined, block);
+        const destinationFull = !changedSlots && playerInv.emptySlotsCount === 0 && InventoryUtils.hasItemType(blockInv, itemStack.typeId, slot => QuickFillContainerPolicy.canUseSlot(block, slot));
         this.sendFeedbackMessage(false, player, block, itemStack, changedSlots, destinationFull);
     }
 
@@ -181,14 +181,17 @@ class QuickFillContainer extends AbilityRule {
         if (!blockInv || !playerInv)
             return;
         const changedSlots = this.transferAllItemType(playerInv, blockInv, itemStack.typeId, block);
-        const destinationFull = !changedSlots && blockInv.emptySlotsCount === 0;
+        const destinationFull = !changedSlots && !InventoryUtils.hasAvailableSpace(blockInv, itemStack, slot => QuickFillContainerPolicy.canInsertItem(block, itemStack, slot));
         this.sendFeedbackMessage(true, player, block, itemStack, changedSlots, destinationFull);
     }
 
-    transferAllItemType(fromContainer, toContainer, itemTypeId, block) {
+    transferAllItemType(fromContainer, toContainer, itemTypeId, block, sourceTarget) {
         const changedTargetSlots = block ? new Set() : undefined;
         let changedSourceSlots = 0;
         for (let slotIndex = 0; slotIndex < fromContainer.size; slotIndex++) {
+            if (sourceTarget && !QuickFillContainerPolicy.canUseSlot(sourceTarget, slotIndex))
+                continue;
+
             const currFromItem = fromContainer.getItem(slotIndex);
             if (currFromItem?.typeId !== itemTypeId)
                 continue;

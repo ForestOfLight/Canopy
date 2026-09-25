@@ -111,9 +111,23 @@ export class InventoryUtils {
         return replacement;
     }
 
-    static hasItemType(container, itemTypeId) {
+    static hasItemType(container, itemTypeId, slotFilter) {
         for (let slot = 0; slot < container.size; slot++) {
+            if (slotFilter && !slotFilter(slot))
+                continue;
             if (container.getItem(slot)?.typeId === itemTypeId)
+                return true;
+        }
+        return false;
+    }
+
+    static hasAvailableSpace(container, itemStack, slotFilter) {
+        for (let slot = 0; slot < container.size; slot++) {
+            if (slotFilter && !slotFilter(slot))
+                continue;
+
+            const current = container.getItem(slot);
+            if (!current || (InventoryUtils.itemsMatch(current, itemStack) && current.amount < current.maxAmount))
                 return true;
         }
         return false;

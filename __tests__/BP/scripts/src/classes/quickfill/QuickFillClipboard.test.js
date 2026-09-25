@@ -1,8 +1,19 @@
-import { Container, ItemStack } from "@minecraft/server";
+import { Container, EntityComponentTypes, ItemStack } from "@minecraft/server";
 import { QuickFillClipboard } from "../../../../../../Canopy[BP]/scripts/src/classes/quickfill/QuickFillClipboard";
 import { describe, expect, test } from "vitest";
 
 const makeBlock = (typeId = 'minecraft:chest') => ({ typeId });
+
+const makeEntity = (container, strength = 2) => ({
+    typeId: 'minecraft:llama',
+    getComponent(component) {
+        if (component === EntityComponentTypes.Inventory)
+            return { container, containerType: 'horse', additionalSlotsPerStrength: 3 };
+        if (component === EntityComponentTypes.Strength)
+            return { value: strength };
+    },
+    hasComponent: component => component === EntityComponentTypes.IsChested
+});
 
 describe('QuickFillClipboard', () => {
     test('copy creates a literal clipboard with the source inventory shape', () => {
@@ -41,5 +52,22 @@ describe('QuickFillClipboard', () => {
         expect(copy.slots).not.toBe(clipboard.slots);
         expect(copy.slots[0]).not.toBe(clipboard.slots[0]);
         expect(copy.slots[0].amount).toBe(17);
+    });
+
+    test('entity copy stores only cargo as logical clipboard slots', () => {
+        const container = new Container({ size: 16, items: {
+            0: new ItemStack('minecraft:red_carpet'),
+            1: new ItemStack('minecraft:stone', 5),
+            6: new ItemStack('minecraft:dirt', 3),
+            7: new ItemStack('minecraft:diamond', 2)
+        }});
+        const clipboard = QuickFillClipboard.copy(makeEntity(container), container);
+
+        expect(clipboard.slots).toHaveLength(6);
+        expect(clipboard.slots[0].typeId).toBe('minecraft:stone');
+        expect(clipboard.slots[0].amount).toBe(5);
+        expect(clipboard.slots[5].typeId).toBe('minecraft:dirt');
+        expect(clipboard.slots.some(item => item?.typeId === 'minecraft:red_carpet')).toBe(false);
+        expect(clipboard.slots.some(item => item?.typeId === 'minecraft:diamond')).toBe(false);
     });
 });
