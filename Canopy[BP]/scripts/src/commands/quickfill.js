@@ -132,7 +132,7 @@ export class QuickFillCommand extends VanillaCommand {
             return;
         }
 
-        QuickFillClipboardStore.set(player, clipboard);
+        QuickFillClipboardStore.set(player, clipboard, name);
         player.sendMessage({ translate: 'commands.quickfill.set.success', with: [name] });
     }
 
@@ -168,6 +168,9 @@ export class QuickFillCommand extends VanillaCommand {
             player.sendMessage({ translate: 'commands.quickfill.wildcard.fail', with: [name] });
             return;
         }
+
+        if (QuickFillClipboardStore.getPresetName(player) === name)
+            QuickFillClipboardStore.set(player, clipboard, name);
 
         player.sendMessage({
             translate: 'commands.quickfill.wildcard.success',
