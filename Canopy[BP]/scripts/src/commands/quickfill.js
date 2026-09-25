@@ -8,7 +8,8 @@ const QUICK_FILL_ACTIONS = Object.freeze({
     SAVE: 'save',
     SET: 'set',
     DELETE: 'delete',
-    LIST: 'list'
+    LIST: 'list',
+    WILDCARD: 'wildcard'
 });
 
 export class QuickFillCommand extends VanillaCommand {
@@ -24,14 +25,20 @@ export class QuickFillCommand extends VanillaCommand {
                 name: 'canopy:quickFillAction',
                 type: CustomCommandParamType.Enum
             }],
-            optionalParameters: [{
-                name: 'name',
-                type: CustomCommandParamType.String
-            }],
+            optionalParameters: [
+                {
+                    name: 'name',
+                    type: CustomCommandParamType.String
+                },
+                {
+                    name: 'item',
+                    type: CustomCommandParamType.ItemType
+                }
+            ],
             permissionLevel: CommandPermissionLevel.Any,
             allowedSources: [PlayerCommandOrigin],
             callback: (origin, ...args) => this.quickFillCommand(origin, ...args),
-            wikiDescription: 'Saves, selects, deletes, and lists persistent Quick Fill clipboard presets.',
+            wikiDescription: 'Saves, selects, deletes, lists, and configures persistent Quick Fill clipboard presets.',
             subCommandWikiDescription: {
                 save: {
                     description: 'Saves the active container clipboard as a named preset.',
@@ -48,12 +55,16 @@ export class QuickFillCommand extends VanillaCommand {
                 list: {
                     description: 'Lists saved clipboard preset names.',
                     params: []
+                },
+                wildcard: {
+                    description: 'Sets matching item slots in a saved preset as wildcards.',
+                    params: ['name', 'item']
                 }
             }
         });
     }
 
-    quickFillCommand(origin, action, name) {
+    quickFillCommand(origin, action, name, itemType) {
         if (!Object.values(QUICK_FILL_ACTIONS).includes(action))
             return this.failure('commands.generic.invalidaction');
 
@@ -64,17 +75,20 @@ export class QuickFillCommand extends VanillaCommand {
             return this.failure('commands.quickfill.missingname');
         }
 
+        if (action === QUICK_FILL_ACTIONS.WILDCARD && !itemType)
+            return this.failure('commands.quickfill.wildcard.missingitem');
+
         const player = origin.getSource();
         const normalizedName = name?.trim();
 
         system.run(() => {
-            this.runAction(player, action, normalizedName);
+            this.runAction(player, action, normalizedName, itemType);
         });
 
         return { status: CustomCommandStatus.Success };
     }
 
-    runAction(player, action, name) {
+    runAction(player, action, name, itemType) {
         switch (action) {
             case QUICK_FILL_ACTIONS.SAVE:
                 this.savePreset(player, name);
@@ -87,6 +101,9 @@ export class QuickFillCommand extends VanillaCommand {
                 break;
             case QUICK_FILL_ACTIONS.LIST:
                 this.listPresets(player);
+                break;
+            case QUICK_FILL_ACTIONS.WILDCARD:
+                this.wildcardPreset(player, name, itemType);
                 break;
             default:
                 break;
@@ -115,7 +132,7 @@ export class QuickFillCommand extends VanillaCommand {
             return;
         }
 
-        QuickFillClipboardStore.set(player, clipboard);
+        QuickFillClipboardStore.set(player, clipboard, name);
         player.sendMessage({ translate: 'commands.quickfill.set.success', with: [name] });
     }
 
@@ -130,6 +147,35 @@ export class QuickFillCommand extends VanillaCommand {
 
     listPresets(player) {
         player.sendMessage(this.getPresetListMessage(player));
+    }
+
+    wildcardPreset(player, name, itemType) {
+        const clipboard = QuickFillPresetStore.load(player, name);
+        if (!clipboard) {
+            player.sendMessage({ translate: 'commands.quickfill.noexist', with: [name] });
+            return;
+        }
+
+        if (!clipboard.setWildcardGroup(itemType.id)) {
+            player.sendMessage({
+                translate: 'commands.quickfill.wildcard.nomatch',
+                with: [name, itemType.id]
+            });
+            return;
+        }
+
+        if (!QuickFillPresetStore.save(player, name, clipboard)) {
+            player.sendMessage({ translate: 'commands.quickfill.wildcard.fail', with: [name] });
+            return;
+        }
+
+        if (QuickFillClipboardStore.getPresetName(player) === name)
+            QuickFillClipboardStore.set(player, clipboard, name);
+
+        player.sendMessage({
+            translate: 'commands.quickfill.wildcard.success',
+            with: [itemType.id, name]
+        });
     }
 
     getPresetListMessage(player) {

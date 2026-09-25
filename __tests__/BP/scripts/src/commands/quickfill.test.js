@@ -43,7 +43,7 @@ describe('QuickFillCommand', () => {
 
         quickFillCommand.setPreset(player, 'rockets');
 
-        expect(set).toHaveBeenCalledWith(player, clipboard);
+        expect(set).toHaveBeenCalledWith(player, clipboard, 'rockets');
     });
 
     test('delete removes the requested preset', () => {
@@ -53,6 +53,49 @@ describe('QuickFillCommand', () => {
         quickFillCommand.deletePreset(player, 'rockets');
 
         expect(remove).toHaveBeenCalledWith(player, 'rockets');
+    });
+
+    test('wildcard replaces the preset wildcard group using the selected item', () => {
+        const player = createPlayer();
+        const clipboard = createClipboard();
+
+        vi.spyOn(QuickFillPresetStore, 'load').mockReturnValue(clipboard);
+        const save = vi.spyOn(QuickFillPresetStore, 'save').mockReturnValue(true);
+        vi.spyOn(QuickFillClipboardStore, 'getPresetName').mockReturnValue('filters');
+        const set = vi.spyOn(QuickFillClipboardStore, 'set').mockReturnValue(true);
+
+        quickFillCommand.wildcardPreset(player, 'filters', { id: 'minecraft:stone' });
+
+        expect(clipboard.wildcardGroups).toEqual([0]);
+        expect(save).toHaveBeenCalledWith(player, 'filters', clipboard);
+        expect(set).toHaveBeenCalledWith(player, clipboard, 'filters');
+    });
+
+    test('wildcard does not replace the active clipboard when editing another preset', () => {
+        const player = createPlayer();
+        const clipboard = createClipboard();
+
+        vi.spyOn(QuickFillPresetStore, 'load').mockReturnValue(clipboard);
+        vi.spyOn(QuickFillPresetStore, 'save').mockReturnValue(true);
+        vi.spyOn(QuickFillClipboardStore, 'getPresetName').mockReturnValue('active');
+        const set = vi.spyOn(QuickFillClipboardStore, 'set').mockReturnValue(true);
+
+        quickFillCommand.wildcardPreset(player, 'filters', { id: 'minecraft:stone' });
+
+        expect(set).not.toHaveBeenCalled();
+    });
+
+    test('wildcard does not save when the selected item is absent from the preset', () => {
+        const player = createPlayer();
+        const clipboard = createClipboard();
+
+        vi.spyOn(QuickFillPresetStore, 'load').mockReturnValue(clipboard);
+        const save = vi.spyOn(QuickFillPresetStore, 'save').mockReturnValue(true);
+
+        quickFillCommand.wildcardPreset(player, 'filters', { id: 'minecraft:dirt' });
+
+        expect(clipboard.wildcardGroups).toEqual([null]);
+        expect(save).not.toHaveBeenCalled();
     });
 
     test('list uses the existing Canopy header and per-line item style', () => {

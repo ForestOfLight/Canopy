@@ -348,6 +348,10 @@ commands.quickfill.set.success=§7Quick Fill preset '%s' is now active.
 commands.quickfill.delete.success=§7Quick Fill preset '%s' has been deleted.
 commands.quickfill.list.empty=§7There are no saved Quick Fill presets.
 commands.quickfill.list.header=§7Saved Quick Fill presets:
+commands.quickfill.wildcard.missingitem=§cPlease provide an item type to use as the wildcard selector.
+commands.quickfill.wildcard.nomatch=§cQuick Fill preset '%s' does not contain %s.
+commands.quickfill.wildcard.fail=§cQuick Fill preset '%s' wildcard could not be updated.
+commands.quickfill.wildcard.success=§7Set %s as the wildcard selector for Quick Fill preset '%s'.
 
 commands.retest=Resets spawn tracking, hopper counters, and hopper generators.
 commands.retest.success=§7Reset spawn counters, hopper counters, and hopper generators.

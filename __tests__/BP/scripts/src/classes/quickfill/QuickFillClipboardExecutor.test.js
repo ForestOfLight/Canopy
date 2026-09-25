@@ -193,4 +193,103 @@ describe('QuickFillClipboardExecutor', () => {
 
         expect(result.incompatible).toBe(true);
     });
+
+    test('creative paste resolves a wildcard using the supplied group item', () => {
+        const block = makeBlock();
+        const clipboard = new QuickFillClipboard({
+            shape: 'generic:5',
+            slots: [new ItemStack('minecraft:stone', 17)],
+            wildcardGroups: [0]
+        });
+        const target = new Container({ size: 5 });
+
+        const result = QuickFillClipboardExecutor.applyCreative(
+            block,
+            target,
+            clipboard,
+            [new ItemStack('minecraft:dirt')]
+        );
+
+        expect(result).toEqual({ changedSlots: 1, skippedSlots: 0 });
+        expect(target.getItem(0).typeId).toBe('minecraft:dirt');
+        expect(target.getItem(0).amount).toBe(17);
+    });
+
+    test('creative paste leaves an unresolved wildcard slot untouched', () => {
+        const block = makeBlock();
+        const clipboard = new QuickFillClipboard({
+            shape: 'generic:5',
+            slots: [new ItemStack('minecraft:stone', 17)],
+            wildcardGroups: [0]
+        });
+        const target = new Container({
+            size: 5,
+            items: { 0: new ItemStack('minecraft:dirt', 8) }
+        });
+
+        const result = QuickFillClipboardExecutor.applyCreative(
+            block,
+            target,
+            clipboard
+        );
+
+        expect(result).toEqual({ changedSlots: 0, skippedSlots: 1 });
+        expect(target.getItem(0).typeId).toBe('minecraft:dirt');
+        expect(target.getItem(0).amount).toBe(8);
+    });
+
+    test('survival paste consumes the resolved wildcard item type', () => {
+        const block = makeBlock();
+        const clipboard = new QuickFillClipboard({
+            shape: 'generic:5',
+            slots: [new ItemStack('minecraft:stone', 17)],
+            wildcardGroups: [0]
+        });
+        const target = new Container({ size: 5 });
+        const player = new Container({
+            size: 9,
+            items: { 0: new ItemStack('minecraft:dirt', 17) }
+        });
+
+        const result = QuickFillClipboardExecutor.applySurvival(
+            player,
+            block,
+            target,
+            clipboard,
+            [new ItemStack('minecraft:dirt')]
+        );
+
+        expect(result).toEqual({ changedSlots: 1, skippedSlots: 0 });
+        expect(target.getItem(0).typeId).toBe('minecraft:dirt');
+        expect(target.getItem(0).amount).toBe(17);
+        expect(player.getItem(0)).toBeUndefined();
+    });
+
+    test('remove uses the resolved wildcard item type', () => {
+        const block = makeBlock();
+        const clipboard = new QuickFillClipboard({
+            shape: 'generic:5',
+            slots: [new ItemStack('minecraft:stone', 4)],
+            wildcardGroups: [0]
+        });
+        const target = new Container({
+            size: 5,
+            items: { 0: new ItemStack('minecraft:dirt', 10) }
+        });
+        const player = new Container({ size: 9 });
+
+        const result = QuickFillClipboardExecutor.remove(
+            player,
+            block,
+            target,
+            clipboard,
+            [new ItemStack('minecraft:dirt')]
+        );
+
+        expect(result.changedSlots).toBe(1);
+        expect(target.getItem(0).typeId).toBe('minecraft:dirt');
+        expect(target.getItem(0).amount).toBe(6);
+        expect(player.getItem(0).typeId).toBe('minecraft:dirt');
+        expect(player.getItem(0).amount).toBe(4);
+    });
 });
