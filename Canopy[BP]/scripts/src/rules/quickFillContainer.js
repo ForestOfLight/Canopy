@@ -10,7 +10,7 @@ class QuickFillContainer extends AbilityRule {
     constructor() {
         super({
             identifier: 'quickFillContainer',
-            wikiDescription: 'With an arrow in the top left of your inventory (slot 9), interact with a container while holding an item to move matching items into it; sneak to reverse. Break a block container or attack a supported storage entity to copy it. With the clipboard active, interact to paste, sneak + interact to remove, and sneak + break/attack to deactivate it.',
+            wikiDescription: 'With an arrow in the top left of your inventory (slot 9), interact with a container while holding an item to move matching items into it; sneak to reverse, or sneak + interact with an empty hand to remove all. Break a block container or attack a supported storage entity to copy it. With the clipboard active, interact to paste, sneak + interact to remove, and sneak + break/attack to deactivate it.',
             onEnableCallback: () => {
                 world.beforeEvents.playerInteractWithBlock.subscribe(this.onPlayerInteractWithBlockBound);
                 world.beforeEvents.playerBreakBlock.subscribe(this.onPlayerBreakBlockBound);
@@ -45,7 +45,11 @@ class QuickFillContainer extends AbilityRule {
 
         const handItemStack = event.itemStack;
         const clipboard = QuickFillClipboardController.get(player);
-        if ((!clipboard || !handItemStack) && (QuickFillContainerPolicy.isClipboardOnly(block) || !QuickFillContainerPolicy.canInsertItem(block, handItemStack)))
+        const playerIsSneaking = player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed;
+        const removeAll = !clipboard && !handItemStack && playerIsSneaking;
+        if (removeAll && QuickFillContainerPolicy.isClipboardOnly(block))
+            return;
+        if (!removeAll && ((!clipboard || !handItemStack) && (QuickFillContainerPolicy.isClipboardOnly(block) || !QuickFillContainerPolicy.canInsertItem(block, handItemStack))))
             return;
         event.cancel = true;
 
@@ -90,7 +94,9 @@ class QuickFillContainer extends AbilityRule {
 
         const handItemStack = event.itemStack;
         const clipboard = QuickFillClipboardController.get(player);
-        if (!handItemStack || (!clipboard && !QuickFillContainerPolicy.canInsertItem(entity, handItemStack)))
+        const playerIsSneaking = player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed;
+        const removeAll = !clipboard && !handItemStack && playerIsSneaking;
+        if (!removeAll && (!handItemStack || (!clipboard && !QuickFillContainerPolicy.canInsertItem(entity, handItemStack))))
             return;
         event.cancel = true;
 
@@ -104,9 +110,13 @@ class QuickFillContainer extends AbilityRule {
                 QuickFillClipboardController.apply(player, target, clipboard, playerIsSneaking, targetInv);
                 return;
             }
-            if (playerIsSneaking)
+            if (playerIsSneaking) {
+                if (!handItemStack) {
+                    this.transferAllToPlayer(player, target, targetInv);
+                    return;
+                }
                 this.transferToPlayer(player, target, handItemStack, targetInv);
-            else if (player.getGameMode() === GameMode.Creative)
+            } else if (player.getGameMode() === GameMode.Creative)
                 this.fillCreative(player, target, handItemStack, targetInv);
             else
                 this.transferToContainer(player, target, handItemStack, targetInv);
@@ -174,6 +184,40 @@ class QuickFillContainer extends AbilityRule {
         const changedSlots = this.transferAllItemType(blockInv, playerInv, itemStack.typeId, undefined, block);
         const destinationFull = !changedSlots && playerInv.emptySlotsCount === 0 && InventoryUtils.hasItemType(blockInv, itemStack.typeId, slot => QuickFillContainerPolicy.canUseSlot(block, slot));
         this.sendFeedbackMessage(false, player, block, itemStack, changedSlots, destinationFull);
+    }
+
+    transferAllToPlayer(player, target, targetInv) {
+        const playerInv = player.getComponent(EntityComponentTypes.Inventory)?.container;
+        if (!targetInv || !playerInv)
+            return;
+
+        let changedSlots = 0;
+        for (let slot = 0; slot < targetInv.size; slot++) {
+            if (!QuickFillContainerPolicy.canUseSlot(target, slot))
+                continue;
+
+            const itemStack = targetInv.getItem(slot);
+            if (!itemStack)
+                continue;
+
+            const originalAmount = itemStack.amount;
+            const untransferred = playerInv.addItem(itemStack);
+            if (originalAmount === (untransferred?.amount ?? 0))
+                continue;
+
+            targetInv.setItem(slot, untransferred ?? null);
+            changedSlots++;
+        }
+
+        let itemsRemain = false;
+        for (let slot = 0; slot < targetInv.size; slot++) {
+            if (QuickFillContainerPolicy.canUseSlot(target, slot) && targetInv.getItem(slot)) {
+                itemsRemain = true;
+                break;
+            }
+        }
+
+        this.sendRemoveAllFeedback(player, changedSlots, itemsRemain);
     }
 
     transferToContainer(player, block, itemStack, blockInv = block.getComponent(BlockComponentTypes.Inventory)?.container) {
@@ -259,6 +303,21 @@ class QuickFillContainer extends AbilityRule {
             }
         }
         return remainingAmount;
+    }
+
+    sendRemoveAllFeedback(player, changedSlots, itemsRemain) {
+        if (!changedSlots) {
+            player.onScreenDisplay.setActionBar(itemsRemain
+                ? '§7Quick Fill: player inventory is full.'
+                : '§7Quick Fill: nothing to remove.');
+            return;
+        }
+
+        const slotText = changedSlots === 1 ? 'slot' : 'slots';
+        const action = itemsRemain
+            ? 'removed items until player inventory was full'
+            : 'removed all items';
+        player.onScreenDisplay.setActionBar(`§7Quick Fill: ${action}. (§a${changedSlots}§7 ${slotText})`);
     }
 
     sendFeedbackMessage(isFilling, player, block, itemStack, changedSlots, destinationFull = false) {
