@@ -6,6 +6,7 @@ import { EntityItemDatabaseKeyNotFoundError } from "./Errors/EntityItemDatabaseK
 export class EntityItemDatabase {
     static #ENTITY_TYPEID = "canopy:nbt_item_database";
     static #ENTITY_TAG_MAX_CHARS = 255;
+    static MAX_CONTAINER_SIZE = 54;
     static #dimension;
     static #location;
     
@@ -43,7 +44,7 @@ export class EntityItemDatabase {
             world.structureManager.place(key, EntityItemDatabase.#dimension, EntityItemDatabase.#location, { includeBlocks: false, includeEntities: true });
         } catch (error) {
             if (error instanceof InvalidStructureError)
-                return void 0;
+                return false;
             throw error;
         }
         try {
@@ -53,6 +54,12 @@ export class EntityItemDatabase {
         } finally {
             WorkingRegion.clearEntitiesInside();
         }
+        return true;
+    }
+
+    deleteContainer(key) {
+        this.#assertValid(key);
+        return world.structureManager.delete(key);
     }
 
     #getEntity(key) {
