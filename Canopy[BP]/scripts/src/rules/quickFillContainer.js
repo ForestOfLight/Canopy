@@ -38,7 +38,7 @@ class QuickFillContainer extends AbilityRule {
 
         const handItemStack = event.itemStack;
         const clipboard = QuickFillClipboardController.get(player);
-        if (!clipboard && (QuickFillContainerPolicy.isClipboardOnly(block) || !handItemStack || !QuickFillContainerPolicy.canInsertItem(block, handItemStack)))
+        if ((!clipboard || !handItemStack) && (QuickFillContainerPolicy.isClipboardOnly(block) || !QuickFillContainerPolicy.canInsertItem(block, handItemStack)))
             return;
         event.cancel = true;
 
