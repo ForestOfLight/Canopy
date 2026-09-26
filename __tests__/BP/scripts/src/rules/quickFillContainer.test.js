@@ -1,5 +1,6 @@
 import { BlockComponentTypes, ButtonState, Container, EntityComponentTypes, ItemStack, Player, system } from "@minecraft/server";
 import { QuickFillClipboardController } from "../../../../../Canopy[BP]/scripts/src/classes/quickfill/QuickFillClipboardController";
+import { QuickFillContainerPolicy } from "../../../../../Canopy[BP]/scripts/src/classes/quickfill/QuickFillContainerPolicy";
 import { quickFillContainer } from "../../../../../Canopy[BP]/scripts/src/rules/quickFillContainer";
 import { afterEach, describe, expect, test, vi } from "vitest";
 
@@ -22,13 +23,13 @@ function makeBlock(container, typeId = 'minecraft:chest') {
     };
 }
 
-function makeEntity(container, typeId = 'minecraft:llama', isChested = true, strength = 5) {
+function makeEntity(container, typeId = 'minecraft:llama', isChested = true, strength = 5, containerType = 'horse') {
     return {
         typeId,
         localizationKey: `entity.${typeId}`,
         getComponent: vi.fn(component => {
             if (component === EntityComponentTypes.Inventory)
-                return { container, containerType: 'horse', additionalSlotsPerStrength: 3 };
+                return { container, containerType, additionalSlotsPerStrength: 3 };
             if (component === EntityComponentTypes.Strength)
                 return { value: strength };
         }),
@@ -417,11 +418,63 @@ describe('quickFillContainer', () => {
             itemStack: new ItemStack('minecraft:stone'),
             cancel: false
         };
+        quickFillContainer.onPlayerInteractWithEntity(event);
+
+        expect(event.cancel).toBe(true);
+        expect(apply).toHaveBeenCalledWith(player, entity, clipboard, false, entityInv);
+    });
+
+    test.each([
+        ['minecart_chest', 'minecraft:chest_minecart'],
+        ['minecart_hopper', 'minecraft:hopper_minecart'],
+        ['chest_boat', 'minecraft:chest_boat']
+    ])('non-alive %s storage supports interaction', (containerType, typeId) => {
+        const entityInv = new Container({ size: 27 });
+        const entity = makeEntity(entityInv, typeId, false, 5, containerType);
+
+        expect(QuickFillContainerPolicy.getInteractableEntityContainer(entity)).toBe(entityInv);
+        expect(QuickFillContainerPolicy.getEntityContainer(entity)).toBeUndefined();
+    });
+
+    test('clipboard paste routes through non-alive entity storage', () => {
+        const player = makePlayer(new Container({ size: 4 }));
+        const entityInv = new Container({ size: 27 });
+        const entity = makeEntity(entityInv, 'minecraft:chest_minecart', false, 5, 'minecart_chest');
+        const clipboard = {};
+
+        vi.spyOn(quickFillContainer, 'isEnabledForPlayer').mockReturnValue(true);
+        vi.spyOn(QuickFillClipboardController, 'get').mockReturnValue(clipboard);
+        const apply = vi.spyOn(QuickFillClipboardController, 'apply').mockImplementation(() => {});
+        vi.spyOn(system, 'run').mockImplementation(callback => callback());
+
+        const event = {
+            player,
+            target: entity,
+            itemStack: new ItemStack('minecraft:stone'),
+            cancel: false
+        };
 
         quickFillContainer.onPlayerInteractWithEntity(event);
 
         expect(event.cancel).toBe(true);
         expect(apply).toHaveBeenCalledWith(player, entity, clipboard, false, entityInv);
+    });
+
+    test('empty-hand interaction with non-alive storage is ignored by QuickFill', () => {
+        const player = makePlayer(new Container({ size: 4 }));
+        const entity = makeEntity(new Container({ size: 27 }), 'minecraft:chest_minecart', false, 5, 'minecart_chest');
+        const clipboard = {};
+
+        vi.spyOn(quickFillContainer, 'isEnabledForPlayer').mockReturnValue(true);
+        vi.spyOn(QuickFillClipboardController, 'get').mockReturnValue(clipboard);
+        const apply = vi.spyOn(QuickFillClipboardController, 'apply').mockImplementation(() => {});
+
+        const event = { player, target: entity, cancel: false };
+
+        quickFillContainer.onPlayerInteractWithEntity(event);
+
+        expect(event.cancel).toBe(false);
+        expect(apply).not.toHaveBeenCalled();
     });
 
     test('attacking supported entity storage copies it without applying damage', () => {
