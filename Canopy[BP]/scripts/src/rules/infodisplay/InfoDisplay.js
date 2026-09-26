@@ -1,4 +1,5 @@
 import { system, world } from '@minecraft/server';
+import { InfoDisplayRule } from '../../../lib/canopy/Canopy';
 import { InfoDisplayTextElement } from './InfoDisplayTextElement';
 import { InfoDisplayShapeElement } from './InfoDisplayShapeElement';
 
@@ -37,12 +38,15 @@ import { RenderSignalStrength } from './RenderSignalStrength';
 import { NoFog } from './NoFog';
 import { Ping } from './Ping';
 import { RenderLightLevel } from './RenderLightLevel';
+import { QuickFillClipboardStore } from '../../classes/quickfill/QuickFillClipboardStore';
+import { quickFillContainer } from '../quickFillContainer';
 
 class InfoDisplay {
 	player;
 	elements = [];
 	infoMessage = { rawtext: [] };
 	clearedPreviousMessage = false;
+	lastStatusMessage = '';
 	static playerToInfoDisplayMap = {};
 	static currentTickWorldwideElementData = {};
 
@@ -84,13 +88,25 @@ class InfoDisplay {
 		[NoFog, (player) => [player]]
 	];
 
+	static statusRuleSpecs = [
+		{ identifier: 'quickFillStatus', description: { translate: 'rules.infoDisplay.quickFillStatus' }, defaultValue: true },
+		{ identifier: 'clipboardStatus', description: { translate: 'rules.infoDisplay.clipboardStatus' }, defaultValue: true }
+	];
+
 	static getRuleIdentifiers() {
-		return InfoDisplay.elementSpecs.map(([ElementClass]) => ElementClass.getRuleIdentifier());
+		return [
+			...InfoDisplay.elementSpecs.map(([ElementClass]) => ElementClass.getRuleIdentifier()),
+			...InfoDisplay.statusRuleSpecs.map(({ identifier }) => identifier)
+		];
 	}
 
 	constructor(player) {
 		this.player = player;
 		this.elements = InfoDisplay.elementSpecs.map(([ElementClass, makeArgs]) => new ElementClass(...makeArgs(player)));
+		for (const ruleData of InfoDisplay.statusRuleSpecs) {
+			if (!InfoDisplayRule.get(ruleData.identifier))
+				new InfoDisplayRule(ruleData);
+		}
 		InfoDisplay.playerToInfoDisplayMap[player.id] = this;
 		this.enableEnabledRules();
 	}
@@ -162,9 +178,40 @@ class InfoDisplay {
 
 	sendInfoMessage() {
 		this.prepInfoMessage();
-		if (this.infoMessage.rawtext?.length === 0)
+		const statusMessage = this.getStatusMessage();
+		const hasInfoMessage = this.infoMessage.rawtext?.length > 0;
+		const isClearingInfoMessage = this.infoMessage === '';
+		if (!hasInfoMessage && !isClearingInfoMessage && !statusMessage && !this.lastStatusMessage)
 			return;
-		this.player.onScreenDisplay.setTitle(this.infoMessage);
+
+		if (statusMessage && !this.lastStatusMessage) {
+			this.player.onScreenDisplay.setTitle(hasInfoMessage ? this.infoMessage : '', {
+				subtitle: statusMessage,
+				fadeInDuration: 0,
+				stayDuration: 2,
+				fadeOutDuration: 0
+			});
+		} else {
+			if (hasInfoMessage || isClearingInfoMessage)
+				this.player.onScreenDisplay.setTitle(hasInfoMessage ? this.infoMessage : '');
+			if (statusMessage || this.lastStatusMessage)
+				this.player.onScreenDisplay.updateSubtitle(statusMessage);
+		}
+		this.lastStatusMessage = statusMessage;
+	}
+
+	getStatusMessage() {
+		const quickFillActive = quickFillContainer.isEnabledForPlayer(this.player);
+		const clipboardActive = QuickFillClipboardStore.has(this.player);
+		if (!quickFillActive && !clipboardActive)
+			return '';
+
+		const lines = [];
+		if (quickFillActive && InfoDisplayRule.getValue(this.player, 'quickFillStatus'))
+			lines.push('Quick Fill: \u00A7aActive\u00A7r');
+		if (clipboardActive && InfoDisplayRule.getValue(this.player, 'clipboardStatus'))
+			lines.push('Clipboard: \u00A7aActive\u00A7r');
+		return lines.join('\n');
 	}
 
 	prepInfoMessage() {

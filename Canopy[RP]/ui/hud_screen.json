@@ -29,5 +29,84 @@
 				}
 			}
 		]
+	},
+
+	"quick_fill_status_display": {
+		"type": "panel",
+		"size": [ "100%c + 6px", "100%c + 2px" ],
+		"controls": [
+			{
+				"status_text": {
+					"type": "label",
+					"anchor_from": "bottom_middle",
+					"anchor_to": "bottom_middle",
+					"layer": 1,
+					"color": "$chat_text_color",
+					"text": "#text",
+					"localize": false,
+					"font_size": "normal",
+					"font_scale_factor": 0.85,
+					"text_alignment": "left",
+					"shadow": true,
+					"bindings": [
+						{
+							"binding_name": "#hud_subtitle_text_string",
+							"binding_name_override": "#text",
+							"binding_condition": "always_when_visible",
+							"binding_type": "global"
+						}
+					]
+				}
+			}
+		],
+		"bindings": [
+			{
+				"binding_name": "(not (#hud_subtitle_text_string = ''))",
+				"binding_name_override": "#visible",
+				"binding_type": "global"
+			}
+		]
+	},
+
+	"root_panel/chat_stack": {
+		"modifications": [
+			{
+				"control_name": "number_of_days_played",
+				"operation": "insert_after",
+				"value": [
+					{
+						"quick_fill_status_padding": {
+							"type": "panel",
+							"size": [ "100%", 2 ],
+							"bindings": [
+								{
+									"binding_name": "#player_position_visible",
+									"binding_condition": "always",
+									"binding_type": "global"
+								},
+								{
+									"binding_name": "#number_of_days_played_visible",
+									"binding_condition": "always",
+									"binding_type": "global"
+								},
+								{
+									"binding_name": "#hud_subtitle_text_string",
+									"binding_condition": "always",
+									"binding_type": "global"
+								},
+								{
+									"binding_type": "view",
+									"source_property_name": "((not #player_position_visible) and (not #number_of_days_played_visible) and (not (#hud_subtitle_text_string = '')))",
+									"target_property_name": "#visible"
+								}
+							]
+						}
+					},
+					{
+						"quick_fill_status_display@hud.quick_fill_status_display": {}
+					}
+				]
+			}
+		]
 	}
 }
