@@ -170,6 +170,51 @@ describe('quickFillContainer', () => {
         expect(playerInv.getItem(0)).toBeUndefined();
     });
 
+    test('empty-hand sneak removes all items from a container', () => {
+        const playerInv = new Container({ size: 6 });
+        const blockInv = new Container({ size: 4, items: {
+            0: new ItemStack('minecraft:stone', 5),
+            1: new ItemStack('minecraft:dirt', 32),
+            3: new ItemStack('minecraft:oak_log', 4)
+        }});
+        const player = makePlayer(playerInv);
+        const block = makeBlock(blockInv);
+
+        player.inputInfo.getButtonState.mockReturnValue(ButtonState.Pressed);
+        vi.spyOn(quickFillContainer, 'isEnabledForPlayer').mockReturnValue(true);
+        vi.spyOn(QuickFillClipboardController, 'get').mockReturnValue(undefined);
+        vi.spyOn(system, 'run').mockImplementation(callback => callback());
+
+        const event = { player, block, itemStack: undefined, cancel: false };
+        quickFillContainer.onPlayerInteractWithBlock(event);
+
+        expect(event.cancel).toBe(true);
+        expect(blockInv.emptySlotsCount).toBe(4);
+        expect(playerInv.getItem(0).typeId).toBe('minecraft:stone');
+        expect(playerInv.getItem(1).typeId).toBe('minecraft:dirt');
+        expect(playerInv.getItem(2).typeId).toBe('minecraft:oak_log');
+    });
+
+    test('empty-hand sneak remove-all is ignored for functional inventories', () => {
+        const playerInv = new Container({ size: 4 });
+        const blockInv = new Container({ size: 3, items: {
+            0: new ItemStack('minecraft:iron_ore', 8)
+        }});
+        const player = makePlayer(playerInv);
+        const block = makeBlock(blockInv, 'minecraft:furnace');
+
+        player.inputInfo.getButtonState.mockReturnValue(ButtonState.Pressed);
+        vi.spyOn(quickFillContainer, 'isEnabledForPlayer').mockReturnValue(true);
+        vi.spyOn(QuickFillClipboardController, 'get').mockReturnValue(undefined);
+
+        const event = { player, block, itemStack: undefined, cancel: false };
+        quickFillContainer.onPlayerInteractWithBlock(event);
+
+        expect(event.cancel).toBe(false);
+        expect(blockInv.getItem(0).amount).toBe(8);
+        expect(playerInv.getItem(0)).toBeUndefined();
+    });
+
     test('empty-hand interaction is ignored by QuickFill', () => {
         const player = makePlayer(new Container({ size: 4 }));
         const block = makeBlock(new Container({ size: 27 }));
@@ -401,6 +446,31 @@ describe('quickFillContainer', () => {
         expect(apply).not.toHaveBeenCalled();
     });
 
+    test('remove all uses only entity cargo slots', () => {
+        const playerInv = new Container({ size: 6 });
+        const entityInv = new Container({ size: 16, items: {
+            0: new ItemStack('minecraft:red_carpet'),
+            1: new ItemStack('minecraft:dirt', 8),
+            7: new ItemStack('minecraft:stone', 4)
+        }});
+        const player = makePlayer(playerInv);
+        const entity = makeEntity(entityInv, 'minecraft:llama', true, 2);
+
+        player.inputInfo.getButtonState.mockReturnValue(ButtonState.Pressed);
+        vi.spyOn(quickFillContainer, 'isEnabledForPlayer').mockReturnValue(true);
+        vi.spyOn(QuickFillClipboardController, 'get').mockReturnValue(undefined);
+        vi.spyOn(system, 'run').mockImplementation(callback => callback());
+
+        const event = { player, target: entity, itemStack: undefined, cancel: false };
+
+        quickFillContainer.onPlayerInteractWithEntity(event);
+
+        expect(event.cancel).toBe(true);
+        expect(entityInv.getItem(0).typeId).toBe('minecraft:red_carpet');
+        expect(entityInv.getItem(1)).toBeUndefined();
+        expect(entityInv.getItem(7).amount).toBe(4);
+        expect(playerInv.getItem(0).typeId).toBe('minecraft:dirt');
+    });
     test('clipboard paste routes through supported entity storage', () => {
         const player = makePlayer(new Container({ size: 4 }));
         const entityInv = new Container({ size: 16 });
@@ -458,6 +528,29 @@ describe('quickFillContainer', () => {
 
         expect(event.cancel).toBe(true);
         expect(apply).toHaveBeenCalledWith(player, entity, clipboard, false, entityInv);
+    });
+
+    test('empty-hand sneak removes all items from non-alive entity storage', () => {
+        const playerInv = new Container({ size: 6 });
+        const entityInv = new Container({ size: 27, items: {
+            0: new ItemStack('minecraft:stone', 8),
+            1: new ItemStack('minecraft:dirt', 16)
+        }});
+        const player = makePlayer(playerInv);
+        const entity = makeEntity(entityInv, 'minecraft:chest_minecart', false, 5, 'minecart_chest');
+
+        player.inputInfo.getButtonState.mockReturnValue(ButtonState.Pressed);
+        vi.spyOn(quickFillContainer, 'isEnabledForPlayer').mockReturnValue(true);
+        vi.spyOn(QuickFillClipboardController, 'get').mockReturnValue(undefined);
+        vi.spyOn(system, 'run').mockImplementation(callback => callback());
+
+        const event = { player, target: entity, itemStack: undefined, cancel: false };
+        quickFillContainer.onPlayerInteractWithEntity(event);
+
+        expect(event.cancel).toBe(true);
+        expect(entityInv.emptySlotsCount).toBe(27);
+        expect(playerInv.getItem(0).typeId).toBe('minecraft:stone');
+        expect(playerInv.getItem(1).typeId).toBe('minecraft:dirt');
     });
 
     test('empty-hand interaction with non-alive storage is ignored by QuickFill', () => {
