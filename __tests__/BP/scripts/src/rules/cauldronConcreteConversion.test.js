@@ -29,7 +29,6 @@ describe('cauldronConcreteConversion', () => {
             const cauldronMock = new Block('minecraft:cauldron');
             cauldronMock.getComponent.mockReturnValue({ getFluidType: () => FluidType.Water, fillLevel: 6 });
             const overworld = world.getDimension('overworld');
-            itemEntityMock.remove = () => overworld.removeEntity(itemEntityMock);
             overworld.addEntity(itemEntityMock);
             cauldronConcreteConversion.onEntitySpawn({ entity: itemEntityMock });
             overworld.getBlock.mockReturnValue(cauldronMock);
@@ -43,7 +42,6 @@ describe('cauldronConcreteConversion', () => {
             const cauldronMock = new Block('minecraft:cauldron');
             cauldronMock.getComponent.mockReturnValue({ getFluidType: () => FluidType.Water, fillLevel: 6 });
             const overworld = world.getDimension('overworld');
-            itemEntityMock.remove = () => overworld.removeEntity(itemEntityMock);
             overworld.addEntity(itemEntityMock);
             cauldronConcreteConversion.onEntitySpawn({ entity: itemEntityMock });
             overworld.getBlock.mockReturnValue(cauldronMock);
@@ -81,7 +79,6 @@ describe('cauldronConcreteConversion', () => {
             const cauldronMock = new Block('minecraft:cauldron');
             cauldronMock.getComponent.mockReturnValue({ getFluidType: () => FluidType.Water, fillLevel: 5 });
             const overworld = world.getDimension('overworld');
-            itemEntityMock.remove = () => overworld.removeEntity(itemEntityMock);
             overworld.addEntity(itemEntityMock);
             cauldronConcreteConversion.onEntitySpawn({ entity: itemEntityMock });
             overworld.getBlock.mockReturnValue(cauldronMock);
@@ -118,7 +115,6 @@ describe('cauldronConcreteConversion', () => {
             const cauldronMock = new Block('minecraft:cauldron');
             cauldronMock.getComponent.mockReturnValue({ getFluidType: () => FluidType.Water, fillLevel: 6 });
             const overworld = world.getDimension('overworld');
-            itemEntityMock.remove = () => overworld.removeEntity(itemEntityMock);
             overworld.addEntity(itemEntityMock);
             cauldronConcreteConversion.onEntitySpawn({ entity: itemEntityMock });
             overworld.getBlock.mockReturnValue(cauldronMock);
