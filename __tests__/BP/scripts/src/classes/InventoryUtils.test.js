@@ -64,3 +64,26 @@ describe('getInventory()', () => {
 		});
 	});
 });
+
+describe('slot-filtered inventory queries', () => {
+    it('limits item and capacity checks to allowed slots', () => {
+        const items = [
+            { typeId: 'minecraft:stone', amount: 64, maxAmount: 64 },
+            undefined,
+            { typeId: 'minecraft:stone', amount: 63, maxAmount: 64 }
+        ];
+        const container = {
+            size: items.length,
+            getItem: vi.fn(slot => items[slot])
+        };
+        const stone = { typeId: 'minecraft:stone' };
+
+        expect(InventoryUtils.hasItemType(container, 'minecraft:stone')).toBe(true);
+        expect(InventoryUtils.hasItemType(container, 'minecraft:stone', slot => slot === 1)).toBe(false);
+        expect(InventoryUtils.hasItemType(container, 'minecraft:stone', slot => slot === 2)).toBe(true);
+
+        expect(InventoryUtils.hasAvailableSpace(container, stone, slot => slot === 0)).toBe(false);
+        expect(InventoryUtils.hasAvailableSpace(container, stone, slot => slot === 1)).toBe(true);
+        expect(InventoryUtils.hasAvailableSpace(container, stone, slot => slot === 2)).toBe(true);
+    });
+});

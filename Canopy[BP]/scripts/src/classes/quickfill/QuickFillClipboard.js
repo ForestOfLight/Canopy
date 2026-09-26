@@ -16,8 +16,10 @@ export class QuickFillClipboard {
 
         const slots = [];
         const slotCount = QuickFillContainerPolicy.getClipboardSlotCount(block, container);
-        for (let slot = 0; slot < slotCount; slot++)
-            slots.push(container.getItem(slot)?.clone());
+        for (let slot = 0; slot < slotCount; slot++) {
+            const containerSlot = QuickFillContainerPolicy.getClipboardContainerSlot(block, slot);
+            slots.push(container.getItem(containerSlot)?.clone());
+        }
 
         return new QuickFillClipboard({ shape, slots });
     }
