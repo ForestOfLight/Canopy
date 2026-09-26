@@ -3,7 +3,7 @@ import { world, ItemStack, BlockComponentTypes } from "@minecraft/server";
 
 class CounterChannel extends ItemCounterChannel {
     constructor(color) {
-        super(color, `${color}CounterChannel`, `Counter - ${color}`);
+        super(color, `${color}CounterChannel`);
     }
 
     getQueryOutput(useRealTime = false) {

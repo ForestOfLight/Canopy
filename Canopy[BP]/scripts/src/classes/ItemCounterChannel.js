@@ -1,10 +1,9 @@
 import { system, world, ItemStack } from "@minecraft/server";
 import { formatColorStr, getColorCode } from "../../include/utils";
 import ItemCounterChannels from "./ItemCounterChannels";
-import { DiagnosticsChartDisplayType, diagnosticsManager } from "@minecraft/debug-utilities";
 
 class ItemCounterChannel {
-    constructor(color, dpIdentifier, diagnosticsTabName) {
+    constructor(color, dpIdentifier) {
         if (this.constructor === ItemCounterChannel)
             throw new Error("Cannot instantiate abstract class 'ItemCounterChannel'");
         this.color = color;
@@ -15,10 +14,6 @@ class ItemCounterChannel {
         this.startTickTime = system.currentTick;
         this.startRealTime = Date.now();
         this.mode = 'count';
-        this.diagnosticsTab = diagnosticsManager.createTab(diagnosticsTabName);
-        diagnosticsManager.addTab(this.diagnosticsTab);
-        this.diagnosticsView = diagnosticsManager.createView(dpIdentifier, { chartType: DiagnosticsChartDisplayType.LineChart, tickRange: 2000, yAxisLabel: 'Items' });
-        this.diagnosticsTab.addView(this.diagnosticsView);
     }
 
     getData() {
@@ -189,8 +184,6 @@ class ItemCounterChannel {
             this.itemMap[itemName] = (this.itemMap[itemName] || 0) + itemStack.amount;
             this.totalCount += itemStack.amount;
         }
-        const stat = { name: this.dpIdentifier, values: [this.totalCount] };
-        this.diagnosticsView.pushStats([stat]);
         this.#updateData();
     }
 
