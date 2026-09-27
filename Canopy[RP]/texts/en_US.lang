@@ -77,7 +77,7 @@ commands.butcher=Instantly remove selected entities or the one you are targeting
 commands.butcher.fail.player=§cCannot remove players.
 commands.butcher.fail.noneremoved=§cNo entities removed.
 commands.butcher.success=§7Removed %1.
-commands.butcher.success.many=§7Removed %1 entities: 
+commands.butcher.success.many=§7Removed %1 entities:
 
 commands.camera=Place a camera, toggle viewing your placed camera, or toggle a survival-friendly spectator mode.
 commands.camera.spectate=Toggle a survival-friendly spectator mode.
@@ -160,8 +160,8 @@ commands.data.other=§aOther:§r head location: %1, rotation: [%2, %3], velocity
 commands.debugentity=Displays debug information about entities.
 commands.debugentity.invalidProperty=§cInvalid debug property.
 commands.debugentity.invalidAction=§cInvalid action.
-commands.debugentity.added=§7Added '%1' to the debug display for %2 entities: 
-commands.debugentity.removed=§7Removed '%1' from the debug display for %2 entities: 
+commands.debugentity.added=§7Added '%1' to the debug display for %2 entities:
+commands.debugentity.removed=§7Removed '%1' from the debug display for %2 entities:
 
 commands.distance=Calculates the distance between two locations. (Alias: d)
 commands.distance.target=Calculates distance between you and the block or entity you are targeting.
@@ -220,7 +220,7 @@ commands.hss.stopped=§7Stopped displaying hardcoded spawn spots.
 commands.hss.alreadyrunning=§cYou are already finding fortress hardcoded spawn spots.
 commands.hss.notrunning=§cYou are not currently finding fortress hardcoded spawn spots.
 
-commands.info=Toggle InfoDisplay rules.
+commands.info=Lists, queries, or toggles InfoDisplay rules.
 commands.info.menu=Displays a menu to toggle InfoDisplay rules.
 commands.info.single=Toggle a single InfoDisplay rule.
 commands.info.canopyRule=§cThe rule '%1' is global rule, and must be toggled using %2canopy. Use %2help for more information.
@@ -457,7 +457,7 @@ rules.generic.nochange=§7%1 is already §l
 rules.generic.updated=§7%1 is now §l
 rules.generic.enabled=§aenabled
 rules.generic.disabled=§cdisabled
-rules.generic.ability=§7Ability 
+rules.generic.ability=§7Ability
 rules.generic.defaultvalue=(Default: %s)
 
 rules.commandCamera=Enables cam command.
@@ -564,7 +564,7 @@ rules.infoDisplay.slimeChunk=Shows whether the chunk you are in is a slime chunk
 rules.infoDisplay.slimeChunk.display=Slime Chunk: %s
 rules.infoDisplay.speed=Shows your current speed in meters per second.
 rules.infoDisplay.structures=Shows naturally generated structures at your location.
-rules.infoDisplay.structures.display=Structures: 
+rules.infoDisplay.structures.display=Structures:
 rules.infoDisplay.structures.display.none=None
 rules.infoDisplay.target=Shows the identifier of the block or entity you are targeting.
 rules.infoDisplay.timeOfDay=Shows the Minecraft day-cycle time as a 12-hour digital clock time.
