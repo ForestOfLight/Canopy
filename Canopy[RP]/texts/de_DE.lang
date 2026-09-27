@@ -19,13 +19,7 @@ commands.generic.invalidsource=§c dieser Befehl kann nicht von dieser quelle ge
 commands.generic.invalidaction=§c ungültige Aktion. Nutze /help <Befehl> für weitere Informationen.
 
 commands.help=Zeigt Hilfe Seiten an.
-commands.help.search.noresult=§cKeine ergebnisse für '%s'gefunden.
-commands.help.search.results=§l§aCanopy§r §2Hilfe Suchergebnisse '§r%1§2':%2
 commands.help.page.header=§l§aCanopy§r§2 Hilfe Seite: §f%1
-commands.help.infodisplay=Umschaltbare Regeln für deine Info Anzeige.
-commands.help.rules=Umschaltbare globale Regeln.
-commands.help.extension.rules=Umschaltbare Regeln §o§a%s§r§8.
-commands.help.extension.commands=Befehle für §o§a%s§r§2.
 
 commands.biomeedges=Findet und zeigt Biomgrenzen ine einer Region.
 commands.biomeedges.finderadded=§7Analysiert Biomgrenzen...
@@ -66,7 +60,6 @@ commands.canopy.menu.timeout=§8Das Formular ist nach %s Ticks abgelaufen.
 commands.canopy.menu.canceled=§8Das Formular wurde abgebrochen. Die Regeln wurden nicht aktualisiert.
 commands.canopy.menu.submit=§aAnwenden
 commands.canopy.single=Aktiviert oder deaktiviert eine bestimmte Regel.
-commands.canopy.infodisplayRule=§cDie Regel '%1' ist ein Teil des Info Displays, und muss mit %2info umgeschaltet werden. Nutze %2help für mehr Informationen.
 
 commands.changedimension=Telepotiert dich zur angegebenen Diemension.
 commands.changedimension.notfound=§cUngültige Dimension. Bitte nutze eine dieser Optionen: %s
@@ -181,7 +174,7 @@ commands.info.single=Schalted eine bestimmte Info Display Regel um.
 commands.info.multiple=Schalted angegebene Info Display Regeln um.
 commands.info.all=Schalted alle Info Display Regeln um.
 commands.info.allupdated=%s§r§7 alle Info Anzeige Regeln sin nun §1.
-commands.info.canopyRule=§cDie Regel '%1' ist eine globale Regel, und muss mit %2canopy umgeschaltet werden. Nutze %2help für mehr Informationen.
+commands.info.canopyRule=§cDie Regel '%1' ist eine globale Regel, und muss mit /rules umgeschaltet werden. Nutze ./help für mehr Informationen.
 
 commands.jump=Teleportiert Sie zu dem Block, den Sie gerade betrachten. (Alias: j)
 commands.jump.fail.noblock=§cKein Block gefunden, zu dem gesprungen werden kann.

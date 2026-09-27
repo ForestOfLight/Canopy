@@ -19,13 +19,7 @@ commands.generic.invalidsource=§cこのコマンドはこのソースからは�
 commands.generic.invalidaction=§c無効なアクションです。詳細は /help <command> を参照してください。
 
 commands.help=ヘルプページを表示します。
-commands.help.search.noresult=§c「%s」に一致する内容は見つかりませんでした。
-commands.help.search.results=§l§aCanopy§r §2「§r%1§2」のヘルプ検索結果:
 commands.help.page.header=§l§aCanopy§r§2 ヘルプページ: §f%1
-commands.help.infodisplay=設定可能なInfoDisplayのルール。
-commands.help.rules=設定可能なグローバルルール。
-commands.help.extension.rules=§o§a%s§r§8 用の切り替え可能なルール。
-commands.help.extension.commands=§o§a%s§r§2 用のコマンド。
 
 commands.analyzearea=ブロックの範囲を分析し、JavaScript式の結果を表示します。
 commands.analyzearea.overcapacity=§c指定範囲のブロック数が多すぎます (>2^32 ブロック)。
@@ -106,7 +100,6 @@ commands.canopy.menu.timeout=§8%s ティック経過したためフォームが
 commands.canopy.menu.canceled=§8フォームがキャンセルされました。ルールは更新されていません。
 commands.canopy.menu.submit=§a適用
 commands.canopy.single=単一のルールの値を変更します。
-commands.canopy.infodisplayRule=§cルール '%1' はInfoDisplayのルールであり、切り替えるには %2info を使用する必要があります。詳細は %2help を参照してください。
 
 commands.changedimension=エンティティを指定のディメンションにテレポートします。
 commands.changedimension.notfound=§c無効なディメンションです。
@@ -223,7 +216,7 @@ commands.hss.notrunning=§c固定スポーン地点の捜索は現在実行中�
 commands.info=InfoDisplayルールを設定します。
 commands.info.menu=InfoDisplayルール設定用のメニューフォームを表示します。
 commands.info.single=単一のInfoDisplayルールを設定します。
-commands.info.canopyRule=§cルール '%1' はグローバルルールであり、切り替えるには %2canopy を使用する必要があります。詳細は %2help を参照してください。
+commands.info.canopyRule=§cルール '%1' はグローバルルールであり、切り替えるには /rules を使用する必要があります。詳細は ./help を参照してください。
 
 commands.jump=ターゲット中のブロックにテレポートします。(エイリアス: j)
 commands.jump.fail.noblock=§cジャンプ先のブロックが見つかりません。

@@ -18,14 +18,8 @@ commands.generic.blocked.survival=§cThis command cannot be used in survival mod
 commands.generic.invalidsource=§cThis command cannot be run from this source.
 commands.generic.invalidaction=§cInvalid action. Use /help <command> for more information.
 
-commands.help=Displays help pages.
-commands.help.search.noresult=§cNo results found for '%s'.
-commands.help.search.results=§l§aCanopy§r §2Help search results for '§r%1§2':
+commands.help=Displays Canopy help.
 commands.help.page.header=§l§aCanopy§r§2 Help Page: §f%1
-commands.help.infodisplay=Togglable rules for your InfoDisplay.
-commands.help.rules=Togglable global rules.
-commands.help.extension.rules=Togglable rules for §o§a%s§r§8.
-commands.help.extension.commands=Commands for §o§a%s§r§2.
 
 commands.analyzearea=Analyzes a region of blocks and displays results for a JavaScript expression.
 commands.analyzearea.overcapacity=§cToo many blocks in the specified area (>2^32 blocks).
@@ -106,7 +100,6 @@ commands.canopy.menu.timeout=§8Form timed out after %s ticks.
 commands.canopy.menu.canceled=§8Form canceled. Rules were not updated.
 commands.canopy.menu.submit=§aApply
 commands.canopy.single=Modifies the value of a single rule.
-commands.canopy.infodisplayRule=§cThe rule '%1' is part of the InfoDisplay, and must be toggled using %2info. Use %2help for more information.
 
 commands.changedimension=Teleports entities to the specified dimension.
 commands.changedimension.notfound=§cInvalid dimension.
@@ -223,7 +216,7 @@ commands.hss.notrunning=§cYou are not currently finding fortress hardcoded spaw
 commands.info=Toggle InfoDisplay rules.
 commands.info.menu=Displays a menu to toggle InfoDisplay rules.
 commands.info.single=Toggle a single InfoDisplay rule.
-commands.info.canopyRule=§cThe rule '%1' is global rule, and must be toggled using %2canopy. Use %2help for more information.
+commands.info.canopyRule=§cThe rule '%1' is a global rule and must be managed using /rules. Use ./help for more information.
 
 commands.jump=Teleport to the block you are targeting. (Alias: j)
 commands.jump.fail.noblock=§cNo block found to jump to.

@@ -1,197 +1,204 @@
-import { Command } from "../../lib/canopy/Canopy";
-import { DimensionTypes, world } from "@minecraft/server";
-import { isNumeric, getColoredDimensionName } from "../../include/utils";
+import { PlayerCommandOrigin, VanillaCommand } from "../../lib/canopy/Canopy";
+import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, system, world } from "@minecraft/server";
+import { getColoredDimensionName } from "../../include/utils";
+import { SimulationMapUtils } from "../classes/SimulationMapUtils";
+import { Dimension } from "./CommandEnums";
 
-const DEFAULT_CHUNK_DISTANCE = 7;
 const MAX_CHUNK_DISTANCE = 30;
 
+const SIMMAP_ACTIONS = Object.freeze([
+    'show',
+    'display',
+    'follow'
+]);
+
 const validDimensions = {
-    'o': DimensionTypes.get('overworld'),
-    'overworld': DimensionTypes.get('overworld'),
-    'minecraft:overworld': DimensionTypes.get('overworld'),
-    'n': DimensionTypes.get('nether'),
-    'nether': DimensionTypes.get('nether'),
-    'minecraft:nether': DimensionTypes.get('nether'),
-    'e': DimensionTypes.get('the_end'),
-    'end': DimensionTypes.get('the_end'),
-    'the_end': DimensionTypes.get('the_end'),
-    'minecraft:the_end': DimensionTypes.get('the_end')
+    [Dimension.OverworldShort]: Dimension.Overworld,
+    [Dimension.Overworld]: Dimension.Overworld,
+    [Dimension.NetherShort]: Dimension.Nether,
+    [Dimension.Nether]: Dimension.Nether,
+    [Dimension.TheEndShort]: Dimension.TheEnd,
+    [Dimension.End]: Dimension.TheEnd
 };
 
-const cmd = new Command({
-    name: 'simmap',
-    description: { translate: 'commands.simmap' },
-    usage: 'simmap [distance] [dimension x z] [display <distance / dimension x z / here>]',
-    args: [
-        { type: 'float|string', name: 'argOne' },
-        { type: 'string|float', name: 'argTwo' },
-        { type: 'float', name: 'argThree' },
-        { type: 'float', name: 'argFour' }
+const SIMMAP_USAGE = '/canopy:simmap [show|display|follow] [distance] [dimension] [x] [z]';
+
+new VanillaCommand({
+    name: 'canopy:simmap',
+    description: 'commands.simmap',
+    enums: [
+        {
+            name: 'canopy:simmapAction',
+            values: SIMMAP_ACTIONS
+        },
+        {
+            name: 'canopy:simmapDimension',
+            values: Object.keys(validDimensions)
+        }
     ],
-    callback: simmapCommand,
-    helpEntries: [
-        { usage: 'simmap <distance>', description: { translate: 'commands.simmap.help.distance' } },
-        { usage: 'simmap [distance] <dimension x z>', description: { translate: 'commands.simmap.help.location' } },
-        { usage: 'simmap display <distance / dimension x z>', description: { translate: 'commands.simmap.help.display.set' } },
-        { usage: 'simmap display here', description: { translate: 'commands.simmap.help.display.reset' } }
-    ]
+    optionalParameters: [
+        {
+            name: 'canopy:simmapAction',
+            type: CustomCommandParamType.Enum
+        },
+        {
+            name: 'distance',
+            type: CustomCommandParamType.Integer
+        },
+        {
+            name: 'canopy:simmapDimension',
+            type: CustomCommandParamType.Enum
+        },
+        {
+            name: 'x',
+            type: CustomCommandParamType.Float
+        },
+        {
+            name: 'z',
+            type: CustomCommandParamType.Float
+        }
+    ],
+    permissionLevel: CommandPermissionLevel.Any,
+    allowedSources: [PlayerCommandOrigin],
+    callback: (origin, action, distance, dimension, x, z) => {
+        const sender = origin.getSource();
+        system.run(() => simmapCommand(sender, {
+            action: action ?? null,
+            distance: distance ?? null,
+            dimension: dimension ?? null,
+            x: x ?? null,
+            z: z ?? null
+        }));
+        return { status: CustomCommandStatus.Success };
+    },
+    wikiDescription: 'Displays a map showing the simulation status of chunks in an area and configures the Simulation Map InfoDisplay element.'
 });
 
 function simmapCommand(sender, args) {
-    const { argOne } = args;
-    if (argOne === 'display') 
-        handleInfoDisplayConfig(sender, args);
-     else 
-        handleChatCommand(sender, args);
-    
+    const { action, distance } = args;
+
+    if (distance !== null && (distance < 1 || distance > MAX_CHUNK_DISTANCE))
+        return sendInvalidDistance(sender, distance);
+    if (action === null || action === 'show')
+        return handleChatCommand(sender, args);
+    if (action === 'display')
+        return handleInfoDisplayConfig(sender, args);
+    if (action === 'follow')
+        return handleFollowConfig(sender, args);
+
+    sendSimmapUsage(sender);
+}
+
+function handleChatCommand(sender, args) {
+    const { distance, dimension, x, z } = args;
+    const mapDistance = distance ?? SimulationMapUtils.DEFAULT_CHUNK_DISTANCE;
+    const dimensionLocation = {
+        dimension: sender.dimension,
+        location: sender.location
+    };
+
+    if (dimension === null) {
+        if (x !== null || z !== null)
+            return sendSimmapUsage(sender);
+        return printLoadedChunks(sender, dimensionLocation, mapDistance);
+    }
+
+    if (x === null || z === null)
+        return sendSimmapUsage(sender);
+
+    dimensionLocation.dimension = world.getDimension(validDimensions[dimension]);
+    dimensionLocation.location = { x, z };
+    printLoadedChunks(sender, dimensionLocation, mapDistance);
 }
 
 function handleInfoDisplayConfig(sender, args) {
-    const { argTwo, argThree: x, argFour: z } = args;
-    if (isNumeric(argTwo) && (argTwo < 1 || argTwo > MAX_CHUNK_DISTANCE)) {
-        sender.sendMessage({ translate: 'commands.simmap.invalidDistance', with: [String(argTwo), String(MAX_CHUNK_DISTANCE)] });
-        return;
+    const { distance, dimension, x, z } = args;
+
+    if (distance === null)
+        return sendSimmapUsage(sender);
+
+    if (dimension === null) {
+        if (x !== null || z !== null)
+            return sendSimmapUsage(sender);
+        return updateDistance(sender, distance);
     }
 
-    if (isNumeric(argTwo)) {
-        updateDistance(sender, argTwo);
-    } else if (validDimensions[argTwo] && x !== null && z !== null) {
-        const dimensionLocation = { dimension: validDimensions[argTwo].typeId, x, z };
-        updateLocation(sender, dimensionLocation);
-    } else if (argTwo === 'here') {
-        resetLocation(sender);
-    } else {
-        cmd.sendUsage(sender);
-    }
+    if (x === null || z === null)
+        return sendSimmapUsage(sender);
+
+    updateDistance(sender, distance);
+    updateLocation(sender, {
+        dimension: validDimensions[dimension],
+        x,
+        z
+    });
+}
+
+function handleFollowConfig(sender, args) {
+    const { distance, dimension, x, z } = args;
+
+    if (dimension !== null || x !== null || z !== null)
+        return sendSimmapUsage(sender);
+
+    if (distance !== null)
+        updateDistance(sender, distance);
+
+    resetLocation(sender);
 }
 
 function updateDistance(sender, distance) {
-    const config = getConfig(sender);
-    config.distance = distance;
-    sender.setDynamicProperty('simulationMapConfig', JSON.stringify(config));
-    sender.sendMessage({ translate: 'commands.simmap.config.distance', with: [String(distance)] });
+    SimulationMapUtils.setDistance(sender, distance);
+    sender.sendMessage({
+        translate: 'commands.simmap.config.distance',
+        with: [String(distance)]
+    });
 }
 
 function updateLocation(sender, dimensionLocation) {
     const { dimension, x, z } = dimensionLocation;
-    const config = getConfig(sender);
-    config.isLocked = true;
-    config.dimension = dimension;
-    config.location = { x, z };
-    sender.setDynamicProperty('simulationMapConfig', JSON.stringify(config));
-    sender.sendMessage({ translate: 'commands.simmap.config.location', with: [`[${x}, ${z}]`, getColoredDimensionName(dimension)] });
+    SimulationMapUtils.setLocation(sender, dimensionLocation);
+    sender.sendMessage({
+        translate: 'commands.simmap.config.location',
+        with: [`[${x}, ${z}]`, getColoredDimensionName(dimension)]
+    });
 }
 
 function resetLocation(sender) {
-    const config = getConfig(sender);
-    config.isLocked = false;
-    config.dimension = sender.dimension.id;
-    config.location = { x: 0, z: 0 };
-    sender.setDynamicProperty('simulationMapConfig', JSON.stringify(config));
+    SimulationMapUtils.followPlayer(sender);
     sender.sendMessage({ translate: 'commands.simmap.config.reset' });
-}
-
-function getConfig(player) {
-    const dynamicConfig = player.getDynamicProperty('simulationMapConfig');
-    if (dynamicConfig) 
-        return JSON.parse(dynamicConfig);
-    
-    const config = {
-        isLocked: false,
-        dimension: DimensionTypes.get('overworld'),
-        location: { x: 0, z: 0 },
-        distance: 7
-    };
-    player.setDynamicProperty('simulationMapConfig', JSON.stringify(config));
-    return config;
-}
-
-function handleChatCommand(sender, args) {
-    const { argOne, argTwo, argThree, argFour } = args;
-    if (isNumeric(argOne) && (argOne < 1 || argOne > MAX_CHUNK_DISTANCE)) {
-        sender.sendMessage({ translate: 'commands.simmap.invalidDistance', with: [String(argOne), String(MAX_CHUNK_DISTANCE)] });
-        return;
-    }
-
-    const dimensionLocation = { dimension: sender.dimension, location: sender.location };
-    if (argOne === null) {
-        printLoadedChunks(sender, dimensionLocation, DEFAULT_CHUNK_DISTANCE);
-    } else if (isNumeric(argOne) && argTwo === null) {
-        printLoadedChunks(sender, dimensionLocation, argOne);
-    } else if (argOne !== null && argTwo !== null && argThree === null) {
-        cmd.sendUsage(sender);
-    } else if (isNumeric(argOne) && argTwo !== null && argThree !== null && argFour !== null) {
-        dimensionLocation.dimension = world.getDimension(validDimensions[argTwo]);
-        dimensionLocation.location = { x: argThree, z: argFour };
-        printLoadedChunks(sender, dimensionLocation, argOne);
-    } else if (!isNumeric(argOne) && isNumeric(argTwo) && argThree !== null) {
-        dimensionLocation.dimension = world.getDimension(validDimensions[argOne]);
-        dimensionLocation.location = { x: argTwo, z: argThree };
-        printLoadedChunks(sender, dimensionLocation, DEFAULT_CHUNK_DISTANCE);
-    } else {
-        cmd.sendUsage(sender);
-    }
 }
 
 function printLoadedChunks(player, dimensionLocation, distance) {
     const { dimension, location } = dimensionLocation;
-    const chunkLocation = coordsToChunkLocation(location);
-    const dimensionChunkLocation = { dimension, ...chunkLocation };
-    const loadedChunks = getNearbyLoadedChunks(dimensionChunkLocation, distance);
-    const message = formatChunkMapHeader(dimensionChunkLocation, distance, loadedChunks);
-    message.rawtext.push(getLoadedChunksMessage(dimension, location, distance));
+    const mapData = SimulationMapUtils.getMapData(dimension, location, distance);
+    const message = formatChunkMapHeader(mapData.dimensionChunkLocation, distance, mapData.loadedChunkCount);
+    message.rawtext.push(mapData.map);
     player.sendMessage(message);
 }
 
-function formatChunkMapHeader(dimensionChunkLocation, distance, loadedChunks) {
+function formatChunkMapHeader(dimensionChunkLocation, distance, loadedChunkCount) {
     return { rawtext: [
-        { translate: 'commands.simmap.header', with: [getColoredDimensionName(dimensionChunkLocation.dimension.id), `[${dimensionChunkLocation.x.toFixed(0)}, ${dimensionChunkLocation.z.toFixed(0)}]`] },
-        { text: ` §7(r${distance}): §a${loadedChunks.length}\n` }
+        {
+            translate: 'commands.simmap.header',
+            with: [
+                getColoredDimensionName(dimensionChunkLocation.dimension.id),
+                `[${dimensionChunkLocation.x.toFixed(0)}, ${dimensionChunkLocation.z.toFixed(0)}]`
+            ]
+        },
+        { text: ` §7(r${distance}): §a${loadedChunkCount}\n` }
     ] };
 }
 
-function getLoadedChunksMessage(dimension, location, distance) {
-    const chunkLocation = coordsToChunkLocation(location);
-    const dimensionChunkLocation = { dimension, ...chunkLocation };
-    const loadedChunks = getNearbyLoadedChunks(dimensionChunkLocation, distance);
-    return formatVisualChunkMap(loadedChunks, dimensionChunkLocation, distance);
+function sendInvalidDistance(sender, distance) {
+    sender.sendMessage({
+        translate: 'commands.simmap.invalidDistance',
+        with: [String(distance), String(MAX_CHUNK_DISTANCE)]
+    });
 }
 
-function coordsToChunkLocation(location) {
-    return { x: Math.floor(location.x / 16), z: Math.floor(location.z / 16) };
+function sendSimmapUsage(sender) {
+    sender.sendMessage({
+        translate: 'commands.generic.usage',
+        with: [SIMMAP_USAGE]
+    });
 }
-
-function getNearbyLoadedChunks(dimensionChunkLocation, distance) {
-    const loadedChunks = [];
-    for (let x = dimensionChunkLocation.x - distance; x <= dimensionChunkLocation.x + distance; x++) {
-        for (let z = dimensionChunkLocation.z - distance; z <= dimensionChunkLocation.z + distance; z++) {
-            if (isChunkLoaded(dimensionChunkLocation.dimension, x, z))
-                loadedChunks.push({ x, z });
-        }
-    }
-    return loadedChunks;
-}
-
-function formatVisualChunkMap(loadedChunks, dimensionChunkLocation, distance) {
-    const message = { rawtext: [] };
-    const loadedSet = new Set(loadedChunks.map(chunk => `${chunk.x},${chunk.z}`));
-    for (let x = dimensionChunkLocation.x - distance; x <= dimensionChunkLocation.x + distance; x++) {
-        message.rawtext.push({ text: '§7[' });
-        for (let z = dimensionChunkLocation.z - distance; z <= dimensionChunkLocation.z + distance; z++) {
-            if (loadedSet.has(`${x},${z}`))
-                message.rawtext.push({ text: '§a▒' });
-            else
-                message.rawtext.push({ text: '§c▒' });
-        }
-        message.rawtext.push({ text: '§7]' });
-        if (x !== dimensionChunkLocation.x + distance)
-            message.rawtext.push({ text: '\n' });
-    }
-    return message;
-}
-
-function isChunkLoaded(dimension, x, z) {
-    return dimension.isChunkLoaded({ x: x*16, y: 100, z: z*16 })
-}
-
-export { getConfig, getLoadedChunksMessage };

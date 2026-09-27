@@ -19,13 +19,7 @@ commands.generic.invalidsource=§cPerintah ini tidak dapat dijalankan dari sumbe
 commands.generic.invalidaction=§cAksi tidak valid. Gunakan /help <perintah> untuk informasi lebih lanjut.
 
 commands.help=Menampilkan halaman bantuan.
-commands.help.search.noresult=§cTidak ditemukan hasil untuk '%s'.
-commands.help.search.results=§l§aCanopy§r §2Hasil pencarian untuk '§r%1§2':
 commands.help.page.header=§l§aCanopy§r§2 Halaman Bantuan: §f%1
-commands.help.infodisplay=Aturan yang bisa diubah² untuk InfoDisplay Anda.
-commands.help.rules=Aturan global yang bisa diubah².
-commands.help.extension.rules=Aturan yang dapat diubah² untuk §o§a%s§r§8.
-commands.help.extension.commands=Perintah untuk §o§a%s§r§2.
 
 commands.biomeedges=Temukan dan menampilkan batas bioma di suatu wilayah.
 commands.biomeedges.finderadded=§7Menganalisis batas bioma...
@@ -68,7 +62,6 @@ commands.canopy.menu.timeout=§8Menu habis masa berlakunya setelah %s tick.
 commands.canopy.menu.canceled=§8Menu dibatalkan. Aturan tidak diperbarui.
 commands.canopy.menu.submit=§aMenerapkan
 commands.canopy.single=Mengaktifkan atau menonaktifkan satu aturan.
-commands.canopy.infodisplayRule=§cAturan '%1' adalah bagian dari InfoDisplay, dan harus diubah menggunakan %2info. Ketik %2help untuk informasi lebih lanjut.
 
 commands.changedimension=Menteleportasi entitas ke dimensi yang ditentukan.
 commands.changedimension.notfound=§cDimensi tidak valid.
@@ -188,7 +181,7 @@ commands.info.single=Mengaktifkan atau menonaktifkan satu aturan InfoDisplay.
 commands.info.multiple=Mengaktifkan atau menonaktifkan beberapa aturan InfoDisplay.
 commands.info.all=Mengaktifkan atau menonaktifkan semua aturan InfoDisplay.
 commands.info.allupdated=§7Semua aturan InfoDisplay sekarang §l
-commands.info.canopyRule=§cAturan '%1' adalah aturan global, dan harus diubah menggunakan %2canopy. Ketik %2help untuk informasi lebih lanjut.
+commands.info.canopyRule=§cAturan '%1' adalah aturan global, dan harus diubah menggunakan /rules. Ketik ./help untuk informasi lebih lanjut.
 
 commands.jump=Teleportasi ke blok yang sedang Anda lihat. (Alias: j)
 commands.jump.fail.noblock=§cTidak ada blok yang ditemukan untuk melompat ke.

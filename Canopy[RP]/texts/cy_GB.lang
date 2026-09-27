@@ -19,13 +19,7 @@ commands.generic.invalidsource=§cNi ellir rhedeg y gorchymyn hwn o'r ffynhonnel
 commands.generic.invalidaction=§cGweithredu annilys. Defnyddio /help <gorchymyn> am ragor o wybodaeth.
 
 commands.help=Mae arddangosfeydd yn helpu tudalennau.
-commands.help.search.noresult=§cNi chanfuwyd unrhyw ganlyniadau ar gyfer '%s'.
-commands.help.search.results=§l§aCanopy§r §2Helpu canlyniadau chwilio am '§r%1§2':%2
 commands.help.page.header=§l§aCanopy§r§2 Tudalen Gymorth: §f%1
-commands.help.infodisplay=Rheolau Togglable ar gyfer eich GwybodaethArddangos.
-commands.help.rules=Rheolau byd-eang y gellir eu newid.
-commands.help.extension.rules=Rheolau y gellir eu newid ar gyfer §o§a%s§r§8.
-commands.help.extension.commands=Gorchmynion ar gyfer §o§a%s§r§2.
 
 commands.biomeedges=Yn canfod ac yn arddangos ymylon biom mewn rhanbarth.
 commands.biomeedges.finderadded=§7Dadansoddi ymylon biom...
@@ -67,7 +61,6 @@ commands.canopy.menu.timeout=§8Daeth amser y ffurflen allan ar ôl %s ticiau.
 commands.canopy.menu.canceled=§8Ffurflen wedi'i chanslo. Ni ddiweddarwyd y rheolau.
 commands.canopy.menu.submit=§aYmgeisiwch
 commands.canopy.single=Yn addasu gwerth rheol sengl.
-commands.canopy.infodisplayRule=§cMae'r rheol '%1' yn rhan o'r GwybodaethArddangos, a rhaid ei newid gan ddefnyddio %2info. Defnyddiwch %2help am ragor o wybodaeth.
 
 commands.changedimension=Yn teleportio endidau i'r dimensiwn penodedig.
 commands.changedimension.notfound=§cDimensiwn annilys.
@@ -185,7 +178,7 @@ commands.info.single=Togglo rheol ArddangosGwybodaeth sengl.
 commands.info.multiple=Togglo lluosog ArddangosGwybodaeth rheolau.
 commands.info.all=Togglo popeth ArddangosGwybodaeth rheolau.
 commands.info.allupdated=§7Pawb ArddangosGwybodaeth rheolau bellach yw §l
-commands.info.canopyRule=§cMae'r rheol '%1' yn rheol fyd-eang, a rhaid ei newid gan ddefnyddio %2canopy. Defnyddiwch %2help am ragor o wybodaeth.
+commands.info.canopyRule=§cMae'r rheol '%1' yn rheol fyd-eang, a rhaid ei newid gan ddefnyddio /rules. Defnyddiwch ./help am ragor o wybodaeth.
 commands.jump=Teleportio i'r bloc rydych chi'n ei dargedu. (Alias: j)
 commands.jump.fail.noblock=§cNi chanfuwyd bloc i neidio iddo.
 

@@ -34,34 +34,6 @@ describe('Canopy module', () => {
         expect(Canopy.AbilityRule).toBeDefined();
     });
 
-    it('should export RuleHelpEntry', () => {
-        expect(Canopy.RuleHelpEntry).toBeDefined();
-    });
-
-    it('should export CommandHelpEntry', () => {
-        expect(Canopy.CommandHelpEntry).toBeDefined();
-    });
-
-    it('should export InfoDisplayRuleHelpEntry', () => {
-        expect(Canopy.InfoDisplayRuleHelpEntry).toBeDefined();
-    });
-
-    it('should export RuleHelpPage', () => {
-        expect(Canopy.RuleHelpPage).toBeDefined();
-    });
-
-    it('should export CommandHelpPage', () => {
-        expect(Canopy.CommandHelpPage).toBeDefined();
-    });
-
-    it('should export InfoDisplayRuleHelpPage', () => {
-        expect(Canopy.InfoDisplayRuleHelpPage).toBeDefined();
-    });
-
-    it('should export HelpBook', () => {
-        expect(Canopy.HelpBook).toBeDefined();
-    });
-
     it('should export Extensions', () => {
         expect(Canopy.Extensions).toBeDefined();
     });
