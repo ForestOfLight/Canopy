@@ -105,6 +105,7 @@ import './src/rules/fastMineGlass'
 // Simulated Player Rules
 import './src/rules/simplayer/simplayerSaving'
 import './src/rules/simplayer/simplayerRejoining'
+import './src/rules/simplayer/simplayerActionInfo'
 
 // Load Time Processes
 import './src/onStart'

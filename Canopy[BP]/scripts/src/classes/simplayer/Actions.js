@@ -2,6 +2,8 @@ import { system, TextPrimitive, world } from "@minecraft/server";
 import { RepeatableAction } from "./RepeatableAction";
 import { simplayerActionInfo } from "../../rules/simplayer/simplayerActionInfo";
 
+const VANILLA_NAMEPLATE_RENDER_DISTANCE = 64;
+
 export class Actions {
     #singleActions = [];
     #repeatingActions = [];
@@ -20,6 +22,8 @@ export class Actions {
             repeatingAction.onTick();
         if (simplayerActionInfo.getNativeValue())
             this.#tickActionInfo();
+        else
+            this.#disableActionInfo();
     }
 
     once(type, afterTicks = void 0) {
@@ -99,6 +103,6 @@ export class Actions {
             this.#actionInfoDebugShape = void 0;
         }
         const simplayer = this.understudy.simulatedPlayer;
-        simplayer.nameplateRenderDistance = this.#vanillaNameplateRenderDistance || 64;
+        simplayer.nameplateRenderDistance = this.#vanillaNameplateRenderDistance || VANILLA_NAMEPLATE_RENDER_DISTANCE;
     }
 }
