@@ -1,5 +1,5 @@
-import { BooleanRule, Command, Rules } from "../../lib/canopy/Canopy";
-import { GameMode } from "@minecraft/server";
+import { BooleanRule, PlayerCommandOrigin, Rules, VanillaCommand } from "../../lib/canopy/Canopy";
+import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, GameMode, system } from "@minecraft/server";
 import Warps from '../classes/Warps';
 
 new BooleanRule({
@@ -17,41 +17,52 @@ new BooleanRule({
     wikiDescription: 'Determines whether the `./warp` command can be used while in Survival mode.'
 });
 
-const cmd = new Command({
-    name: 'warp',
-    description: { translate: 'commands.warp' },
-    usage: 'warp <add/remove/name> [name]',
-    args: [
-        { type: 'string|float', name: 'action' },
-        { type: 'string|float', name: 'name' }
+const WARP_USAGE = '/canopy:warp <add/remove/name> [warp-name]';
+
+new VanillaCommand({
+    name: 'canopy:warp',
+    description: 'commands.warp',
+    mandatoryParameters: [
+        {
+            name: 'add/remove/name',
+            type: CustomCommandParamType.String
+        }
     ],
-    callback: warpActionCommand,
+    optionalParameters: [
+        {
+            name: 'warp-name',
+            type: CustomCommandParamType.String
+        }
+    ],
+    permissionLevel: CommandPermissionLevel.Any,
+    allowedSources: [PlayerCommandOrigin],
     contingentRules: ['commandWarp'],
-    helpEntries: [
-        { usage: 'warp <add/remove> <name>', description: { translate: 'commands.warp.edit' }, wikiDescription: 'Adds or removes a warp. Alias: **`./w <add|remove> <name>`**' },
-        { usage: 'warp <name>', description: { translate: 'commands.warp.tp' }, wikiDescription: 'Teleports you to a warp. Alias: **`./w <name>`**' }
-    ]
+    aliases: ['canopy:w'],
+    callback: (origin, action, name) => {
+        const sender = origin.getSource();
+
+        system.run(() => warpActionCommand(sender, {
+            action: action ?? null,
+            name: name ?? null
+        }));
+
+        return { status: CustomCommandStatus.Success };
+    }
 });
 
-new Command({
-    name: 'w',
-    description: { translate: 'commands.warp' },
-    usage: 'w',
-    args: [
-        { type: 'string|float', name: 'action' },
-        { type: 'string|float', name: 'name' }
-    ],
-    callback: warpActionCommand,
+new VanillaCommand({
+    name: 'canopy:warps',
+    description: 'commands.warp.list',
+    permissionLevel: CommandPermissionLevel.Any,
+    allowedSources: [PlayerCommandOrigin],
     contingentRules: ['commandWarp'],
-    helpHidden: true
-});
+    callback: (origin) => {
+        const sender = origin.getSource();
 
-new Command({
-    name: 'warps',
-    description: { translate: 'commands.warp.list' },
-    usage: 'warps',
-    callback: warpListCommand,
-    contingentRules: ['commandWarp']
+        system.run(() => warpListCommand(sender));
+
+        return { status: CustomCommandStatus.Success };
+    }
 });
 
 function warpActionCommand(sender, args) {
@@ -62,17 +73,24 @@ function warpActionCommand(sender, args) {
     if (Number.isInteger(action)) action = action.toString();
     if (Number.isInteger(name)) name = name.toString();
 
-    if (action === 'add') 
+    if (action === 'add')
         addWarp(sender, name);
-    else if (action === 'remove') 
+    else if (action === 'remove')
         removeWarp(sender, name);
-    else if (Warps.has(action)) 
+    else if (Warps.has(action))
         warpTP(sender, action);
-    else if (action !== null && !Warps.has(action)) 
+    else if (action !== null && !Warps.has(action))
         sender.sendMessage({ translate: 'commands.warp.noexist', with: [action] });
-    else 
-        cmd.sendUsage(sender);
-    
+    else
+        sendWarpUsage(sender);
+
+}
+
+function sendWarpUsage(sender) {
+    sender.sendMessage({
+        translate: 'commands.generic.usage',
+        with: [WARP_USAGE]
+    });
 }
 
 function addWarp(sender, name) {
