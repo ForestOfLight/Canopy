@@ -23,7 +23,6 @@ export class PlayerJoinCommand extends VanillaCommand {
         system.run(() => {
             const understudy = Understudies.create(playername);
             understudy.join(getLocationInfoFromSource(origin.getSource()));
-            Understudies.addNametagPrefix(understudy);
         });
     }
 }

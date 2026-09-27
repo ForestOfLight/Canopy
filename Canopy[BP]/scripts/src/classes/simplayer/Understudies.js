@@ -23,10 +23,10 @@ class Understudies {
             }
         });
         Understudies.#entityDieHandle = Understudies.onEntityDie.bind(Understudies);
-        world.afterEvents.entityDie.subscribe(Understudies.#entityDieHandle);
         Understudies.#playerGameModeChangeHandle = Understudies.onPlayerGameModeChange.bind(Understudies);
-        world.afterEvents.playerGameModeChange.subscribe(Understudies.#playerGameModeChangeHandle);
         Understudies.#playerInventoryItemChangeHandle = Understudies.onPlayerInventoryItemChange.bind(Understudies);
+        world.afterEvents.entityDie.subscribe(Understudies.#entityDieHandle);
+        world.afterEvents.playerGameModeChange.subscribe(Understudies.#playerGameModeChangeHandle);
         world.afterEvents.playerInventoryItemChange.subscribe(Understudies.#playerInventoryItemChangeHandle);
     }
 
@@ -83,14 +83,7 @@ class Understudies {
                 continue;
             const understudy = Understudies.create(player.name);
             understudy.adopt(player);
-            Understudies.addNametagPrefix(understudy);
         }
-    }
-
-    static addNametagPrefix(understudy) {
-        const prefix = world.getDynamicProperty('nametagPrefix');
-        if (prefix)
-            understudy.simulatedPlayer.nameTag = Understudies.#formatNametagWithPrefix(understudy.name, prefix);
     }
 
     static get(name) {
@@ -124,16 +117,16 @@ class Understudies {
         return Understudies.understudies.length;
     }
 
-    static setNametagPrefix(prefix) {
-        world.setDynamicProperty('nametagPrefix', prefix);
-        for (const understudy of Understudies.understudies)
-            understudy.simulatedPlayer.nameTag = Understudies.#formatNametagWithPrefix(understudy.name, prefix);
+    static getNametagPrefix() {
+        return world.getDynamicProperty('nametagPrefix') ?? '';
     }
 
-    static #formatNametagWithPrefix(name, prefix) {
-        if (prefix === '')
-            return name;
-        return `§r[${prefix}§r] ${name}`;
+    static setNametagPrefix(prefix) {
+        world.setDynamicProperty('nametagPrefix', prefix);
+        for (const understudy of Understudies.understudies) {
+            if (understudy.isConnected())
+                understudy.updateNameTag();
+        }
     }
 
     static isOnline(name) {

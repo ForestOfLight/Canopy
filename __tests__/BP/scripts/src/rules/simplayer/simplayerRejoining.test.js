@@ -6,7 +6,6 @@ vi.mock('../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies
     default: {
         create: vi.fn(),
         isOnline: vi.fn(() => false),
-        addNametagPrefix: vi.fn(),
         understudies: []
     }
 }));

@@ -9,7 +9,6 @@ vi.mock('../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies
         isOnline: vi.fn(() => false),
         create: vi.fn(),
         remove: vi.fn(),
-        addNametagPrefix: vi.fn(),
         getNotOnlineMessage: vi.fn(name => `§cSimplayer '${name}' is not online.`),
         getAlreadyOnlineMessage: vi.fn(name => ({ translate: 'simplayer.alreadyonline', with: [name] })),
     }

@@ -270,34 +270,27 @@ describe('setNametagPrefix', () => {
         expect(u.simulatedPlayer.nameTag).toBe('Alice');
     });
 
+    it('returns the stored prefix', () => {
+        Understudies.setNametagPrefix('Bot');
+        expect(Understudies.getNametagPrefix()).toBe('Bot');
+    });
+
+    it('returns an empty prefix when none is stored', () => {
+        worldDynamicPropertyStore.delete('nametagPrefix');
+        expect(Understudies.getNametagPrefix()).toBe('');
+    });
+
+    it('skips understudies that are not connected', () => {
+        Understudies.create('Bob');
+        expect(() => Understudies.setNametagPrefix('Bot')).not.toThrow();
+    });
+
     it('stores the prefix in world dynamic property', () => {
         Understudies.setNametagPrefix('Bot');
         expect(world.setDynamicProperty).toHaveBeenCalledWith('nametagPrefix', 'Bot');
     });
 });
 
-describe('addNametagPrefix', () => {
-    let u;
-
-    beforeEach(() => {
-        u = Understudies.create('Alice');
-        Understudies.onConnect();
-        u.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
-    });
-
-    it('sets nameTag when a prefix is stored in world properties', () => {
-        world.getDynamicProperty.mockReturnValueOnce('Bot');
-        Understudies.addNametagPrefix(u);
-        expect(u.simulatedPlayer.nameTag).toBe('§r[Bot§r] Alice');
-    });
-
-    it('does not change nameTag when no prefix is stored', () => {
-        world.getDynamicProperty.mockReturnValueOnce(undefined);
-        const before = u.simulatedPlayer.nameTag;
-        Understudies.addNametagPrefix(u);
-        expect(u.simulatedPlayer.nameTag).toBe(before);
-    });
-});
 
 describe('message helpers', () => {
     it('returns the correct not-online message', () => {

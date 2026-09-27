@@ -62,6 +62,13 @@ class Understudy {
         return this.#actions;
     }
 
+    get nameTag() {
+        const prefix = Understudies.getNametagPrefix();
+        if (prefix === '')
+            return this.name;
+        return `§r[${prefix}§r] ${this.name}`;
+    }
+
     get lookTarget() {
         this.#assertConnected();
         return this.#lookTarget;
@@ -106,6 +113,7 @@ class Understudy {
         const updatedGameMode = portOldGameModeToNewUpdate(gameMode);
         this.#simulatedPlayer = spawnSimulatedPlayer({ ...location, dimension }, this.name, updatedGameMode);
         this.#isConnected = true;
+        this.updateNameTag();
         this.#teleportFacing(location, dimension, rotation);
         try {
             this.#playerInfoSaver.loadInventoryAndProjectileOwnership();
@@ -122,6 +130,7 @@ class Understudy {
         Understudies.onConnect();
         this.#simulatedPlayer = simulatedPlayer;
         this.#isConnected = true;
+        this.updateNameTag();
     }
 
     leave() {
@@ -272,6 +281,10 @@ class Understudy {
 
     refreshHeldItem() {
         this.#simulatedPlayer.selectedSlotIndex = this.simulatedPlayer.selectedSlotIndex;
+    }
+
+    updateNameTag() {
+        this.simulatedPlayer.nameTag = this.nameTag;
     }
 
     #assertConnected() {
