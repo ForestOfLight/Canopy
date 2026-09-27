@@ -19,13 +19,7 @@ commands.generic.invalidsource=§c这个命令不能从这个来源执行.
 commands.generic.invalidaction=§c无效的操作. 使用 ./help <command> 获取更多信息.
 
 commands.help=显示指令帮助信息.
-commands.help.search.noresult=§c没有与此相关的结果: '%s'
-commands.help.search.results=§l§aCanopy§r §2指令帮助页面找到此结果 '§r%1§2':
 commands.help.page.header=§l§aCanopy§r§2 指令帮助 页数: §f%1
-commands.help.infodisplay=开关游戏中的信息显示.
-commands.help.rules=开关全局规则.
-commands.help.extension.rules=开关扩展 §a%s§2 的规则.
-commands.help.extension.commands=扩展 §a%s§2 的指令.
 
 commands.analyzearea=分析一个区域的方块, 并为JavaScript表达式显示结果.
 commands.analyzearea.overcapacity=§c指定区域内的方块过多 (>2^32 个方块).
@@ -106,7 +100,6 @@ commands.canopy.menu.timeout=§8窗口在 %s 个刻度后超时.
 commands.canopy.menu.canceled=§8更改已放弃(规则不会更新).
 commands.canopy.menu.submit=§a确认(提交)
 commands.canopy.single=修改单个规则的值.
-commands.canopy.infodisplayRule=§c规则 '%1' 是 信息显示 的一部分, 并且必须使用%2信息进行切换. 有关详细信息, 请使用%2帮助.
 
 commands.changedimension=传送你到指定的维度.
 commands.changedimension.notfound=§c无效的维度.

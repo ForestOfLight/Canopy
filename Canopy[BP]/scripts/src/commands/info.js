@@ -54,7 +54,7 @@ export class InfoDisplayCommand extends VanillaCommand {
     async handleRuleChange(player, ruleID, enable) {
         if (!InfoDisplayRule.exists(ruleID)) {
             if (Rules.exists(ruleID))
-                return player.sendMessage({ translate: 'commands.info.canopyRule', with: [ruleID, Commands.getPrefix()] });
+                return player.sendMessage({ translate: 'commands.info.canopyRule', with: [ruleID] });
             return player.sendMessage({ rawtext: [ { translate: 'rules.generic.unknown', with: [ruleID, Commands.getPrefix()] } ] });
         }
 
