@@ -1,34 +1,93 @@
-import { Command, Commands } from "../../lib/canopy/Canopy";
-import { world, DimensionTypes, CommandPermissionLevel } from "@minecraft/server";
+import { PlayerCommandOrigin, VanillaCommand } from "../../lib/canopy/Canopy";
+import { world, DimensionTypes, CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, system } from "@minecraft/server";
 import { getColoredDimensionName, stringifyLocation, broadcastActionBar } from "../../include/utils";
 import WorldSpawns from "../classes/WorldSpawns";
 import { categoryToMobMap } from "../../include/data";
 
-const cmd = new Command({
-    name: 'spawn',
-    description: { translate: 'commands.spawn' },
-    usage: 'spawn [action1] [action2] [x1 y1 z1] [x2 y2 z2]',
-    args: [
-        { type: 'string', name: 'action' },
-        { type: 'string|float|boolean', name: 'actionTwo' },
-        { type: 'float', name: 'x1' },
-        { type: 'float', name: 'y1' },
-        { type: 'float', name: 'z1' },
-        { type: 'float', name: 'x2' },
-        { type: 'float', name: 'y2' },
-        { type: 'float', name: 'z2' }
+const SPAWN_ACTIONS = Object.freeze([
+    'entities',
+    'mocking',
+    'test',
+    'recent',
+    'tracking'
+]);
+
+const SPAWN_USAGE = '/canopy:spawn [action] [actionTwo] [x1 y1 z1] [x2 y2 z2]';
+const SPAWN_TRACKING_USAGE = '/canopy:spawn tracking <start/stop/mobname> [x1 y1 z1] [x2 y2 z2]';
+const SPAWN_MOCKING_USAGE = '/canopy:spawn mocking <true/false>';
+
+new VanillaCommand({
+    name: 'canopy:spawn',
+    description: 'commands.spawn',
+    enums: [
+        {
+            name: 'canopy:spawnAction',
+            values: SPAWN_ACTIONS
+        }
     ],
-    callback: spawnCommand,
-    helpEntries: [
-        { usage: 'spawn entities', description: { translate: 'commands.spawn.entities' } },
-        { usage: 'spawn recent [mobName]', description: { translate: 'commands.spawn.recent' } },
-        { usage: 'spawn tracking start [x1 y1 z1] [x2 y2 z2]', description: { translate: 'commands.spawn.tracking.start' } },
-        { usage: 'spawn tracking <mobName> [x1 y1 z1] [x2 y2 z2]', description: { translate: 'commands.spawn.tracking.mob' }, wikiDescription: 'Starts spawn tracking for a specific mob. Specify coordinates to track a specific area. Run this command again with a new mob name to track multiple mobs types at once.' },
-        { usage: 'spawn tracking', description: { translate: 'commands.spawn.tracking.query' }, wikiDescription: 'Displays statistics about mob spawning since spawn tracking started. Mob categories are based on population control.' },
-        { usage: 'spawn tracking stop', description: { translate: 'commands.spawn.tracking.stop' }, wikiDescription: 'Displays statistics about mob spawning since spawn tracking started and then stops spawn tracking.' },
-        { usage: 'spawn mocking <true/false>', description: { translate: 'commands.spawn.mocking' }, wikiDescription: 'Allows the spawning algorithm to continue running while no mobs spawn. Useful for getting an upper bound on your farm\'s rates while tracking spawns. Requires OP.' }
-    ]
+    optionalParameters: [
+        {
+            name: 'canopy:spawnAction',
+            type: CustomCommandParamType.Enum
+        },
+        {
+            name: 'actionTwo',
+            type: CustomCommandParamType.String
+        },
+        {
+            name: 'x1',
+            type: CustomCommandParamType.Float
+        },
+        {
+            name: 'y1',
+            type: CustomCommandParamType.Float
+        },
+        {
+            name: 'z1',
+            type: CustomCommandParamType.Float
+        },
+        {
+            name: 'x2',
+            type: CustomCommandParamType.Float
+        },
+        {
+            name: 'y2',
+            type: CustomCommandParamType.Float
+        },
+        {
+            name: 'z2',
+            type: CustomCommandParamType.Float
+        }
+    ],
+    permissionLevel: CommandPermissionLevel.Any,
+    allowedSources: [PlayerCommandOrigin],
+    callback: (origin, action, actionTwo, x1, y1, z1, x2, y2, z2) => {
+        const sender = origin.getSource();
+
+        system.run(() => spawnCommand(sender, {
+            action: action ?? null,
+            actionTwo: normalizeSpawnActionTwo(action, actionTwo),
+            x1: x1 ?? null,
+            y1: y1 ?? null,
+            z1: z1 ?? null,
+            x2: x2 ?? null,
+            y2: y2 ?? null,
+            z2: z2 ?? null
+        }));
+
+        return { status: CustomCommandStatus.Success };
+    }
 });
+
+function normalizeSpawnActionTwo(action, actionTwo) {
+    if (action !== 'mocking')
+        return actionTwo ?? null;
+    if (actionTwo === 'true')
+        return true;
+    if (actionTwo === 'false')
+        return false;
+    return actionTwo ?? null;
+}
 
 let worldSpawns = null;
 let isMocking = false;
@@ -73,7 +132,7 @@ function spawnCommand(sender, args) {
     else if (action === 'tracking' && actionTwo === null)
         printTrackingStatus(sender);
     else if (action === 'tracking' && actionTwo !== null && x1 !== null && z2 === null)
-        sender.sendMessage({ translate: 'commands.generic.usage', with: [`${Commands.getPrefix()}spawn tracking <start/stop/mobname> [x1 y1 z1] [x2 y2 z2]`] });
+        sender.sendMessage({ translate: 'commands.generic.usage', with: [SPAWN_TRACKING_USAGE] });
     else if (action === 'tracking' && actionTwo === 'start')
         startTracking(sender, area);
     else if (action === 'tracking' && actionTwo === 'stop')
@@ -81,7 +140,14 @@ function spawnCommand(sender, args) {
     else if (action === 'tracking' && actionTwo !== null)
         trackMob(sender, actionTwo, area);
     else
-        return cmd.sendUsage(sender);
+        return sendSpawnUsage(sender);
+}
+
+function sendSpawnUsage(sender) {
+    sender.sendMessage({
+        translate: 'commands.generic.usage',
+        with: [SPAWN_USAGE]
+    });
 }
 
 function printAllEntities(sender) {
@@ -99,7 +165,7 @@ function handleMockingCmd(sender, enable) {
     if (sender.commandPermissionLevel === CommandPermissionLevel.Any)
         return sender.sendMessage({ translate: 'commands.generic.nopermission' });
     if (enable === null)
-        return sender.sendMessage({ translate: 'commands.generic.usage', with: [`${Commands.getPrefix()}spawn mocking <true/false>`] });
+        return sender.sendMessage({ translate: 'commands.generic.usage', with: [SPAWN_MOCKING_USAGE] });
     isMocking = enable;
     if (enable) {
         sender.sendMessage({ translate: 'commands.spawn.mocking.enable' });
@@ -168,9 +234,9 @@ function stopTracking(sender) {
 function trackMob(sender, mobName, area) {
     const { posOne, posTwo } = area;
     let isTrackable = false;
-    for (const category in categoryToMobMap) 
+    for (const category in categoryToMobMap)
         if (categoryToMobMap[category].includes(mobName)) isTrackable = true;
-    
+
     if (!isTrackable)
         return sender.sendMessage({ translate: 'commands.spawn.tracking.mob.invalid', with: [String(mobName)] });
     if (!currMobIds.includes(mobName))
