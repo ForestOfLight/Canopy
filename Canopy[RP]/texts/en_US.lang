@@ -457,6 +457,7 @@ rules.generic.nochange=§7%1 is already §l
 rules.generic.updated=§7%1 is now §l
 rules.generic.enabled=§aenabled
 rules.generic.disabled=§cdisabled
+rules.generic.updateerror=§cFailed to update the rule. Please check the content log for more details and report this issue.
 rules.generic.ability=§7Ability 
 rules.generic.defaultvalue=(Default: %s)
 

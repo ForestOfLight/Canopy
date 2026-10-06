@@ -78,9 +78,14 @@ export class InfoDisplayCommand extends VanillaCommand {
     updateRule(player, ruleID, enable) {
         const ruleValue = InfoDisplayRule.getValue(player, ruleID);
         if (ruleValue === enable) return;
-        InfoDisplayRule.setValue(player, ruleID, enable);
-        const enabledRawText = enable ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' };
-        player.sendMessage({ rawtext: [ { translate: 'rules.generic.updated', with: [ruleID] }, enabledRawText, { text: '§r§7.' } ] });
+        try {
+            InfoDisplayRule.setValue(player, ruleID, enable);
+            const enabledRawText = enable ? { translate: 'rules.generic.enabled' } : { translate: 'rules.generic.disabled' };
+            player.sendMessage({ rawtext: [ { translate: 'rules.generic.updated', with: [ruleID] }, enabledRawText, { text: '§r§7.' } ] });
+        } catch (error) {
+            player.sendMessage({ translate: 'rules.generic.updateerror' });
+            throw error;
+        }
     }
 
     updateRules(player, ruleIDs, enable) {
