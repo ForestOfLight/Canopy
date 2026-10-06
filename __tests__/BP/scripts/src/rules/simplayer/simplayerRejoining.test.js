@@ -120,6 +120,24 @@ describe('simplayerRejoining', () => {
             expect(mockPlayer.rejoin).toHaveBeenCalledTimes(1);
         });
 
+        it('logs an error and continues when a name is claimed by another pack', () => {
+            worldDynamicPropertyStore.set('simplayerRejoining', true);
+            worldDynamicPropertyStore.set('simplayersToRejoin', JSON.stringify(['Alice', 'Bob']));
+            const bobPlayer = { rejoin: vi.fn() };
+            vi.mocked(Understudies.create).mockImplementation(name => {
+                if (name === 'Alice')
+                    throw new Error('name claimed by another pack');
+                return bobPlayer;
+            });
+            const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+            simplayerRejoining.onStartup();
+
+            expect(bobPlayer.rejoin).toHaveBeenCalledTimes(1);
+            expect(errorSpy).toHaveBeenCalled();
+            errorSpy.mockRestore();
+        });
+
         it('logs an error and continues when a player fails to rejoin', () => {
             worldDynamicPropertyStore.set('simplayerRejoining', true);
             worldDynamicPropertyStore.set('simplayersToRejoin', JSON.stringify(['Alice', 'Bob']));

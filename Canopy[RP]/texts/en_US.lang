@@ -581,6 +581,7 @@ rules.infoDisplay.worldDay.display=Day: %s
 ## simplayer
 simplayer.notonline=§cSimplayer '%s' is not online.
 simplayer.alreadyonline=§cSimplayer '%s' is already online.
+simplayer.nameclaimed=§cThe name '%s' belongs to a simulated player that Canopy did not create.
 simplayer.leave.broadcast=§e%s left the game
 simplayer.swapheld.error=§cError while swapping items: %s
 simplayer.editor.tip=§7Interact: §fHotbar & Armor§r\n§7Sneak + Interact: §fInventory

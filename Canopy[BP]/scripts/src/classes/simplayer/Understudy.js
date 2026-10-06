@@ -10,6 +10,8 @@ import { UnderstudySaveInfoError } from "../errors/UnderstudySaveInfoError";
 import Understudies from "./Understudies";
 
 class Understudy {
+    static OWNERSHIP_TAG = 'canopy:owned';
+
     name;
     #simulatedPlayer = null;
     #createdTick;
@@ -18,6 +20,10 @@ class Understudy {
     #actions;
     #playerInfoSaver;
     #isUnloaded = false;
+
+    static isCanopyOwned(simulatedPlayer) {
+        return simulatedPlayer?.hasTag(Understudy.OWNERSHIP_TAG) === true;
+    }
 
     constructor(name) {
         this.name = name;
@@ -112,6 +118,7 @@ class Understudy {
         Understudies.onConnect();
         const updatedGameMode = portOldGameModeToNewUpdate(gameMode);
         this.#simulatedPlayer = spawnSimulatedPlayer({ ...location, dimension }, this.name, updatedGameMode);
+        this.#simulatedPlayer.addTag(Understudy.OWNERSHIP_TAG);
         this.#isConnected = true;
         this.updateNameTag();
         this.#teleportFacing(location, dimension, rotation);

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { system, world, Player } from '@minecraft/server';
-import { SimulatedPlayer } from '@minecraft/server-gametest';
+import { SimulatedPlayer, spawnSimulatedPlayer } from '@minecraft/server-gametest';
 import { scheduler, worldDynamicPropertyStore } from '@forestoflight/minecraft-vitest-mocks';
 
 vi.mock('@minecraft/server', async () => await import('@forestoflight/minecraft-vitest-mocks/server'));
@@ -12,6 +12,12 @@ vi.mock('../../../../../../Canopy[BP]/scripts/src/rules/simplayer/simplayerSavin
 let Understudies;
 
 function simulatedPlayer(name) {
+    const player = foreignSimulatedPlayer(name);
+    player.addTag('canopy:owned');
+    return player;
+}
+
+function foreignSimulatedPlayer(name) {
     const player = new SimulatedPlayer();
     player.name = name;
     return player;
@@ -28,6 +34,8 @@ function invalidatedPlayer() {
 
 beforeEach(async () => {
     vi.resetModules();
+    world.getAllPlayers.mockReturnValue([]);
+    spawnSimulatedPlayer.mockImplementation((_locationInfo, name) => foreignSimulatedPlayer(name));
     system.runInterval.mockImplementation((cb, interval) => scheduler.scheduleInterval(cb, interval ?? 1));
     system.clearRun.mockImplementation(id => scheduler.delete(id));
     system.run.mockImplementation(cb => scheduler.scheduleDelay(cb, 1));
@@ -83,6 +91,39 @@ describe('create and get', () => {
     it('throws when creating a duplicate name that is already online', () => {
         Understudies.create('Dave');
         expect(() => Understudies.create('Dave')).toThrow();
+    });
+
+    it('throws when a simulated player from another pack already holds that name', () => {
+        world.getAllPlayers.mockReturnValue([foreignSimulatedPlayer('Alice')]);
+        expect(() => Understudies.create('Alice')).toThrow();
+    });
+
+    it('creates normally when another pack has a simulated player under a different name', () => {
+        world.getAllPlayers.mockReturnValue([foreignSimulatedPlayer('Bob')]);
+        expect(Understudies.create('Alice').name).toBe('Alice');
+    });
+
+    it('does not treat a real player of the same name as a clash', () => {
+        const steve = new Player();
+        steve.name = 'Steve';
+        world.getAllPlayers.mockReturnValue([steve]);
+        expect(Understudies.create('Steve').name).toBe('Steve');
+    });
+});
+
+describe('hasForeignSimulatedPlayer', () => {
+    it('reports a simulated player another pack spawned under that name', () => {
+        world.getAllPlayers.mockReturnValue([foreignSimulatedPlayer('Alice')]);
+        expect(Understudies.hasForeignSimulatedPlayer('Alice')).toBe(true);
+    });
+
+    it('does not report a simulated player Canopy spawned under that name', () => {
+        world.getAllPlayers.mockReturnValue([simulatedPlayer('Alice')]);
+        expect(Understudies.hasForeignSimulatedPlayer('Alice')).toBe(false);
+    });
+
+    it('reports nothing when the world is empty', () => {
+        expect(Understudies.hasForeignSimulatedPlayer('Alice')).toBe(false);
     });
 });
 
@@ -141,6 +182,39 @@ describe('adoptExisting', () => {
         world.getAllPlayers.mockReturnValue([]);
         Understudies.adoptExisting();
         expect(Understudies.length()).toBe(0);
+    });
+
+    it('ignores a simulated player another pack spawned', () => {
+        world.getAllPlayers.mockReturnValue([foreignSimulatedPlayer('Alice')]);
+        Understudies.adoptExisting();
+        expect(Understudies.isOnline('Alice')).toBe(false);
+    });
+
+    it('leaves the nametag of a simulated player another pack spawned alone', () => {
+        worldDynamicPropertyStore.set('nametagPrefix', 'Bot');
+        const alice = foreignSimulatedPlayer('Alice');
+        alice.nameTag = 'Foreign Alice';
+        world.getAllPlayers.mockReturnValue([alice]);
+        Understudies.adoptExisting();
+        expect(alice.nameTag).toBe('Foreign Alice');
+    });
+
+    it('adopts a Canopy-spawned player standing next to one another pack spawned', () => {
+        world.getAllPlayers.mockReturnValue([foreignSimulatedPlayer('Alice'), simulatedPlayer('Bob')]);
+        Understudies.adoptExisting();
+        expect(Understudies.isOnline('Alice')).toBe(false);
+        expect(Understudies.get('Bob')?.isConnected()).toBe(true);
+    });
+
+    it('re-adopts a player Canopy spawned itself, as it would after a reload', () => {
+        const u = Understudies.create('Alice');
+        Understudies.onConnect();
+        u.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
+        const spawned = u.simulatedPlayer;
+        Understudies.understudies.length = 0;
+        world.getAllPlayers.mockReturnValue([spawned]);
+        Understudies.adoptExisting();
+        expect(Understudies.get('Alice')?.simulatedPlayer).toBe(spawned);
     });
 });
 

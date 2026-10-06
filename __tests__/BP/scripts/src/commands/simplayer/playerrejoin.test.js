@@ -10,6 +10,8 @@ vi.mock('../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies
         create: vi.fn(),
         getNotOnlineMessage: vi.fn(name => `§cSimplayer '${name}' is not online.`),
         getAlreadyOnlineMessage: vi.fn(name => ({ translate: 'simplayer.alreadyonline', with: [name] })),
+        getNameClaimedMessage: vi.fn(name => ({ translate: 'simplayer.nameclaimed', with: [name] })),
+        hasForeignSimulatedPlayer: vi.fn(() => false),
     }
 }));
 
@@ -36,6 +38,18 @@ describe('playerrejoinCommand', () => {
             })),
             sendMessage: vi.fn()
         };
+    });
+
+    it('refuses when another pack already has a simulated player with that name', () => {
+        vi.mocked(Understudies.hasForeignSimulatedPlayer).mockReturnValue(true);
+        playerrejoinCommand.playerrejoinCommand(mockOrigin, 'TestBot');
+        expect(mockOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.nameclaimed', with: ['TestBot'] });
+    });
+
+    it('does not spawn anything when another pack already has that name', () => {
+        vi.mocked(Understudies.hasForeignSimulatedPlayer).mockReturnValue(true);
+        playerrejoinCommand.playerrejoinCommand(mockOrigin, 'TestBot');
+        expect(system.run).not.toHaveBeenCalled();
     });
 
     it('returns failure when the simplayer is already online', () => {

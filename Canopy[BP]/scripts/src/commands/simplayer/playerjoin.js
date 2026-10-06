@@ -20,6 +20,10 @@ export class PlayerJoinCommand extends VanillaCommand {
             origin.sendMessage(Understudies.getAlreadyOnlineMessage(playername));
             return;
         }
+        if (Understudies.hasForeignSimulatedPlayer(playername)) {
+            origin.sendMessage(Understudies.getNameClaimedMessage(playername));
+            return;
+        }
         system.run(() => {
             const understudy = Understudies.create(playername);
             understudy.join(getLocationInfoFromSource(origin.getSource()));
