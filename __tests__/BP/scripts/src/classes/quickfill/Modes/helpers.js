@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { Container, EntityComponentTypes, ItemStack, Player } from "@minecraft/server";
 
 export const stack = (typeId, amount = 1) => new ItemStack(`minecraft:${typeId}`, amount);
@@ -26,3 +27,11 @@ export const playerWith = (gameMode, items = {}) => {
     Object.entries(items).forEach(([slot, itemStack]) => inventory.setItem(Number(slot), itemStack));
     return { player, inventory };
 };
+
+export const lastActionBar = (player) => player.onScreenDisplay.setActionBar.mock.calls.at(-1)?.[0];
+
+export const actionBarCount = (player) => player.onScreenDisplay.setActionBar.mock.calls.length;
+
+const enLang = readFileSync(new URL("../../../../../../../Canopy[RP]/texts/en_US.lang", import.meta.url), 'utf8');
+
+export const langKeys = new Set(enLang.split('\n').map(line => line.split('=')[0].trim()));

@@ -1,11 +1,12 @@
 import { EntityComponentTypes, GameMode } from "@minecraft/server";
 import { ItemClipboard } from "../ItemClipboard";
+import { InventoryUtils } from "../../InventoryUtils";
 import { CustomForm, ObservableNumber } from "@minecraft/server-ui";
 
 export class ClipboardMode {
     player;
     clipboard;
-    grabCopies = 0;
+    takeCopies = 0;
 
     constructor(player) {
         this.player = player;
@@ -15,31 +16,43 @@ export class ClipboardMode {
 
     destroy() {}
 
-    onFillInteraction(container, heldItemStack) {
+    onFillInteraction(container, heldItemStack, blockLocalizationKey) {
+        const countBefore = InventoryUtils.getTotalItemCount(container);
         if (this.player.getGameMode() === GameMode.Creative)
             this.clipboard.insertIntoEmptySlotsWithoutCost(container, heldItemStack);
         else
             this.clipboard.transfer(this.playerContainer, container, heldItemStack);
+        if (InventoryUtils.getTotalItemCount(container) === countBefore)
+            this.sendNothingFilledFeedback(blockLocalizationKey);
+        else
+            this.sendFilledFeedback(container, blockLocalizationKey);
     }
 
-    onGrabInteraction(container, heldItemStack) {
-        if (this.clipboard.isEmpty)
+    onTakeInteraction(container, heldItemStack, blockLocalizationKey) {
+        if (this.clipboard.isEmpty) {
+            this.sendNothingTakenFeedback(blockLocalizationKey);
             return;
-        if (this.grabCopies === 0) {
+        }
+        const countBefore = InventoryUtils.getTotalItemCount(container);
+        if (this.takeCopies === 0) {
             let lastTransferSuccessful = true;
             while (lastTransferSuccessful)
                 lastTransferSuccessful = this.clipboard.transferLikeVanilla(container, this.playerContainer, heldItemStack);
         } else {
-            for (let i = 0; i < this.grabCopies; i++)
+            for (let i = 0; i < this.takeCopies; i++)
                 this.clipboard.transferLikeVanilla(container, this.playerContainer, heldItemStack);
         }
+        if (InventoryUtils.getTotalItemCount(container) === countBefore)
+            this.sendNothingTakenFeedback(blockLocalizationKey);
+        else
+            this.sendTakenFeedback(container, blockLocalizationKey);
     }
 
     hasConfigureInteraction() {
         return true;
     }
 
-    onConfigureInteraction(container) {
+    onConfigureInteraction(container, blockLocalizationKey) {
         const form = new CustomForm(this.player, 'rules.quickFillContainer.menu.title');
 
         const observableWildcard = new ObservableNumber(0, { clientWritable: true });
@@ -49,15 +62,18 @@ export class ClipboardMode {
         const dropdownItems = this.getDropdownItems(container);
         form.dropdown('rules.quickFillContainer.menu.wildcard', observableWildcard, dropdownItems, dropdownOptions);
 
-        const observableGrabCopies = new ObservableNumber(0, { clientWritable: true });
+        const observableTakeCopies = new ObservableNumber(0, { clientWritable: true });
         const sliderOptions = {
-            description: 'rules.quickFillContainer.menu.grabcopies.description',
+            description: 'rules.quickFillContainer.menu.takecopies.description',
             step: 1
         };
-        form.slider('rules.quickFillContainer.menu.grabcopies', observableGrabCopies, 0, 64, sliderOptions);
+        form.slider('rules.quickFillContainer.menu.takecopies', observableTakeCopies, 0, 64, sliderOptions);
 
         form.spacer();
-        form.button('rules.quickFillContainer.menu.apply', () => this.#onAppliedCopy(form, container, observableWildcard, observableGrabCopies, dropdownItems));
+        form.button('rules.quickFillContainer.menu.apply', () => {
+            form.close();
+            this.#onAppliedCopy(container, { observableWildcard, observableTakeCopies, dropdownItems }, blockLocalizationKey)
+        });
         form.closeButton();
         form.show();
     }
@@ -76,12 +92,47 @@ export class ClipboardMode {
         }, [{ label: 'None', value: 0 }]);
     }
 
-    #onAppliedCopy(form, container, observableWildcard, observableGrabCopies, dropdownItems) {
-        form.close();
+    #onAppliedCopy(container, { observableWildcard, observableTakeCopies, dropdownItems }, blockLocalizationKey) {
         this.clipboard.copy(container);
         const selectedOption = dropdownItems.find(option => option.value === observableWildcard.getData());
         const wildcardTypeId = selectedOption?.value === 0 ? void 0 : selectedOption?.label;
         this.clipboard.setWildcardTypeId(wildcardTypeId);
-        this.grabCopies = observableGrabCopies.getData();
+        this.takeCopies = observableTakeCopies.getData();
+        this.sendCopiedFeedback(container, blockLocalizationKey);
+    }
+
+    sendFilledFeedback(container, blockLocalizationKey) {
+        const fullSlotsCount = container.size - container.emptySlotsCount;
+        this.player.onScreenDisplay.setActionBar({ rawtext: [
+            { translate: 'rules.quickFillContainer.filled.clipboard', with: [blockLocalizationKey] },
+            { text: ` (${fullSlotsCount}/${container.size})`}
+        ]});
+    }
+
+    sendTakenFeedback(container, blockLocalizationKey) {
+        const fullSlotsCount = container.size - container.emptySlotsCount;
+        this.player.onScreenDisplay.setActionBar({ rawtext: [
+            { translate: 'rules.quickFillContainer.taken.clipboard', with: [blockLocalizationKey] },
+            { text: ` (${fullSlotsCount}/${container.size})`}
+        ]});
+    }
+
+    sendCopiedFeedback(container, blockLocalizationKey) {
+        this.player.onScreenDisplay.setActionBar({ rawtext: [
+            { translate: 'rules.quickFillContainer.saved.clipboard', with: [blockLocalizationKey] },
+            { text: ` (${container.size}/${container.size})`}
+        ]});
+    }
+
+    sendNothingFilledFeedback(blockLocalizationKey) {
+        this.player.onScreenDisplay.setActionBar({ rawtext: [
+            { translate: 'rules.quickFillContainer.filled.empty', with: [blockLocalizationKey] }
+        ]});
+    }
+
+    sendNothingTakenFeedback(blockLocalizationKey) {
+        this.player.onScreenDisplay.setActionBar({ rawtext: [
+            { translate: 'rules.quickFillContainer.taken.empty', with: [blockLocalizationKey] }
+        ]});
     }
 }

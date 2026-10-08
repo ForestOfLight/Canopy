@@ -23,7 +23,8 @@ export class QuickFillPlayer {
     onInteractWithBlock(event) {
         if (this.#bannedContainers.includes(event.block.typeId))
             return;
-        const container = this.#getContainer(event.block);
+        const block = event.block;
+        const container = this.#getContainer(block);
         if (!container)
             return;
         const heldItemStack = event.itemStack;
@@ -34,9 +35,9 @@ export class QuickFillPlayer {
             if (this.#isSneaking() && this.player.getGameMode() === GameMode.Creative)
                 container.clearAll();
             else if (this.#isSneaking())
-                this.mode.onGrabInteraction(container, heldItemStack);
+                this.mode.onTakeInteraction(container, heldItemStack, block.localizationKey);
             else
-                this.mode.onFillInteraction(container, heldItemStack);
+                this.mode.onFillInteraction(container, heldItemStack, block.localizationKey);
         });
     }
 
@@ -45,7 +46,8 @@ export class QuickFillPlayer {
             return;
         if (this.#bannedContainers.includes(event.block.typeId))
             return;
-        const container = this.#getContainer(event.block);
+        const block = event.block;
+        const container = this.#getContainer(block);
         if (!container)
             return;
         if (event.itemStack === void 0)
@@ -53,7 +55,7 @@ export class QuickFillPlayer {
         if (this.mode.hasConfigureInteraction()) {
             event.cancel = true;
             system.run(() => {
-                this.mode.onConfigureInteraction(container)
+                this.mode.onConfigureInteraction(container, block.localizationKey)
             });
         }
     }
@@ -63,15 +65,16 @@ export class QuickFillPlayer {
             return;
         if (this.#bannedContainers.includes(event.block.typeId))
             return;
-        const container = this.#getContainer(event.block);
+        const block = event.block;
+        const container = this.#getContainer(block);
         if (!container)
             return;
         if (this.mode.hasConfigureInteraction())
-            this.mode.onConfigureInteraction(container);
+            this.mode.onConfigureInteraction(container, block.localizationKey);
     }
 
     #getContainer(block) {
-        return block.getComponent(BlockComponentTypes.Inventory)?.container;
+        return block?.getComponent(BlockComponentTypes.Inventory)?.container;
     }
 
     #isSneaking() {

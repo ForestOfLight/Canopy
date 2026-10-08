@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { GameMode } from "@minecraft/server";
 import { BulkMode } from "../../../../../../../Canopy[BP]/scripts/src/classes/quickfill/Modes/BulkMode";
-import { containerOf, contents, countOf, playerWith, stack } from "./helpers";
+import { actionBarCount, containerOf, contents, countOf, langKeys, lastActionBar, playerWith, stack } from "./helpers";
 
 describe('BulkMode', () => {
     test('has no configure interaction', () => {
@@ -81,12 +81,12 @@ describe('BulkMode', () => {
         });
     });
 
-    describe('onGrabInteraction()', () => {
+    describe('onTakeInteraction()', () => {
         test('moves every stack of the held item type from the container to the player', () => {
             const { player, inventory } = playerWith(GameMode.Survival);
             const container = containerOf(4, { 0: stack('oak_log', 64), 1: stack('dirt', 20), 3: stack('oak_log', 12) });
 
-            new BulkMode(player).onGrabInteraction(container, stack('oak_log'));
+            new BulkMode(player).onTakeInteraction(container, stack('oak_log'));
 
             expect(countOf(inventory, 'oak_log')).toBe(76);
             expect(contents(container)).toEqual([void 0, ['dirt', 20], void 0, void 0]);
@@ -96,7 +96,7 @@ describe('BulkMode', () => {
             const { player, inventory } = playerWith(GameMode.Survival, { 5: stack('oak_log', 60) });
             const container = containerOf(1, { 0: stack('oak_log', 10) });
 
-            new BulkMode(player).onGrabInteraction(container, stack('oak_log'));
+            new BulkMode(player).onTakeInteraction(container, stack('oak_log'));
 
             expect(inventory.getItem(5).amount).toBe(64);
             expect(countOf(inventory, 'oak_log')).toBe(70);
@@ -109,7 +109,7 @@ describe('BulkMode', () => {
             mode.playerContainer = crowdedInventory;
             const container = containerOf(1, { 0: stack('oak_log', 10) });
 
-            mode.onGrabInteraction(container, stack('oak_log'));
+            mode.onTakeInteraction(container, stack('oak_log'));
 
             expect(contents(container)).toEqual([['oak_log', 10]]);
             expect(contents(crowdedInventory)).toEqual([['dirt', 64]]);
@@ -119,7 +119,7 @@ describe('BulkMode', () => {
             const { player, inventory } = playerWith(GameMode.Creative);
             const container = containerOf(1, { 0: stack('oak_log', 10) });
 
-            new BulkMode(player).onGrabInteraction(container, stack('oak_log'));
+            new BulkMode(player).onTakeInteraction(container, stack('oak_log'));
 
             expect(countOf(inventory, 'oak_log')).toBe(10);
             expect(contents(container)).toEqual([void 0]);
@@ -129,10 +129,109 @@ describe('BulkMode', () => {
             const { player, inventory } = playerWith(GameMode.Survival);
             const container = containerOf(1, { 0: stack('dirt', 10) });
 
-            new BulkMode(player).onGrabInteraction(container, stack('oak_log'));
+            new BulkMode(player).onTakeInteraction(container, stack('oak_log'));
 
             expect(contents(container)).toEqual([['dirt', 10]]);
             expect(countOf(inventory, 'dirt')).toBe(0);
+        });
+    });
+
+    describe('action bar feedback', () => {
+        test('names the container and the held item after filling, with the slots now in use', () => {
+            const { player } = playerWith(GameMode.Creative);
+            const container = containerOf(3);
+
+            new BulkMode(player).onFillInteraction(container, stack('oak_log'), 'tile.chest.name');
+
+            expect(lastActionBar(player)).toEqual({ rawtext: [
+                { translate: 'rules.quickFillContainer.filled.bulk', with: ['tile.chest.name', 'item.oak_log.name'] },
+                { text: ' (3/3)' }
+            ]});
+        });
+
+        test('counts only the slots that were actually filled', () => {
+            const { player } = playerWith(GameMode.Survival, { 0: stack('oak_log', 10) });
+            const container = containerOf(3);
+
+            new BulkMode(player).onFillInteraction(container, stack('oak_log'), 'tile.chest.name');
+
+            expect(lastActionBar(player).rawtext[1]).toEqual({ text: ' (1/3)' });
+        });
+
+        test('says nothing was filled when the player has none of the held item', () => {
+            const { player } = playerWith(GameMode.Survival, { 0: stack('dirt', 64) });
+            const container = containerOf(3);
+
+            new BulkMode(player).onFillInteraction(container, stack('oak_log'), 'tile.chest.name');
+
+            expect(lastActionBar(player)).toEqual({ rawtext: [
+                { translate: 'rules.quickFillContainer.filled.empty', with: ['tile.chest.name'] }
+            ]});
+        });
+
+        test('says nothing was filled when the container has no room for the held item', () => {
+            const { player } = playerWith(GameMode.Survival, { 0: stack('oak_log', 10) });
+            const container = containerOf(1, { 0: stack('oak_log', 64) });
+
+            new BulkMode(player).onFillInteraction(container, stack('oak_log'), 'tile.chest.name');
+
+            expect(lastActionBar(player).rawtext[0].translate).toBe('rules.quickFillContainer.filled.empty');
+        });
+
+        test('names the held item before the container after taking, with the slots left in use', () => {
+            const { player } = playerWith(GameMode.Survival);
+            const container = containerOf(2, { 0: stack('oak_log', 10), 1: stack('dirt', 5) });
+
+            new BulkMode(player).onTakeInteraction(container, stack('oak_log'), 'tile.chest.name');
+
+            expect(lastActionBar(player)).toEqual({ rawtext: [
+                { translate: 'rules.quickFillContainer.taken.bulk', with: ['item.oak_log.name', 'tile.chest.name'] },
+                { text: ' (1/2)' }
+            ]});
+        });
+
+        test('says nothing was taken when the container has none of the held item', () => {
+            const { player } = playerWith(GameMode.Survival);
+            const container = containerOf(2, { 0: stack('dirt', 5) });
+
+            new BulkMode(player).onTakeInteraction(container, stack('oak_log'), 'tile.chest.name');
+
+            expect(lastActionBar(player)).toEqual({ rawtext: [
+                { translate: 'rules.quickFillContainer.taken.empty', with: ['tile.chest.name'] }
+            ]});
+        });
+
+        test('says nothing was taken when the player has no room for the items', () => {
+            const { player } = playerWith(GameMode.Survival);
+            const mode = new BulkMode(player);
+            mode.playerContainer = containerOf(1, { 0: stack('dirt', 64) });
+            const container = containerOf(1, { 0: stack('oak_log', 10) });
+
+            mode.onTakeInteraction(container, stack('oak_log'), 'tile.chest.name');
+
+            expect(lastActionBar(player).rawtext[0].translate).toBe('rules.quickFillContainer.taken.empty');
+        });
+
+        test('sends exactly one action bar message per interaction', () => {
+            const { player } = playerWith(GameMode.Creative);
+            const container = containerOf(2);
+            const mode = new BulkMode(player);
+
+            mode.onFillInteraction(container, stack('oak_log'), 'tile.chest.name');
+            mode.onTakeInteraction(container, stack('oak_log'), 'tile.chest.name');
+
+            expect(actionBarCount(player)).toBe(2);
+        });
+
+        test('every message it can send has an English localization entry', () => {
+            const keys = [
+                'rules.quickFillContainer.filled.bulk',
+                'rules.quickFillContainer.taken.bulk',
+                'rules.quickFillContainer.filled.empty',
+                'rules.quickFillContainer.taken.empty'
+            ];
+            for (const key of keys)
+                expect(langKeys.has(key), key).toBe(true);
         });
     });
 });

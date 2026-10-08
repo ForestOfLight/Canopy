@@ -8,13 +8,14 @@ import { containerOf, stack } from "./Modes/helpers";
 
 const blockWith = (container, typeId = 'minecraft:chest') => ({
     typeId,
+    localizationKey: `tile.${typeId.replace('minecraft:', '')}.name`,
     getComponent: vi.fn(type => type === BlockComponentTypes.Inventory && container ? { container } : void 0)
 });
 
 const fakeMode = ({ configurable = false } = {}) => ({
     destroy: vi.fn(),
     onFillInteraction: vi.fn(),
-    onGrabInteraction: vi.fn(),
+    onTakeInteraction: vi.fn(),
     onConfigureInteraction: vi.fn(),
     hasConfigureInteraction: vi.fn(() => configurable)
 });
@@ -114,7 +115,7 @@ describe('QuickFillPlayer', () => {
 
             expect(event.cancel).toBe(false);
             expect(quickFillPlayer.mode.onFillInteraction).not.toHaveBeenCalled();
-            expect(quickFillPlayer.mode.onGrabInteraction).not.toHaveBeenCalled();
+            expect(quickFillPlayer.mode.onTakeInteraction).not.toHaveBeenCalled();
         });
 
         test('cancels the interaction so the container does not open', () => {
@@ -140,40 +141,40 @@ describe('QuickFillPlayer', () => {
             interact(quickFillPlayer, { itemStack: heldItemStack });
             flushScheduledRuns();
 
-            expect(quickFillPlayer.mode.onFillInteraction).toHaveBeenCalledWith(container, heldItemStack);
-            expect(quickFillPlayer.mode.onGrabInteraction).not.toHaveBeenCalled();
+            expect(quickFillPlayer.mode.onFillInteraction).toHaveBeenCalledWith(container, heldItemStack, 'tile.chest.name');
+            expect(quickFillPlayer.mode.onTakeInteraction).not.toHaveBeenCalled();
         });
 
-        test('grabs with the held item when sneaking in survival', () => {
+        test('takes with the held item when sneaking in survival', () => {
             const quickFillPlayer = makeQuickFillPlayer({ sneaking: true });
             const heldItemStack = stack('oak_log');
 
             interact(quickFillPlayer, { itemStack: heldItemStack });
             flushScheduledRuns();
 
-            expect(quickFillPlayer.mode.onGrabInteraction).toHaveBeenCalledWith(container, heldItemStack);
+            expect(quickFillPlayer.mode.onTakeInteraction).toHaveBeenCalledWith(container, heldItemStack, 'tile.chest.name');
             expect(quickFillPlayer.mode.onFillInteraction).not.toHaveBeenCalled();
             expect(container.clearAll).not.toHaveBeenCalled();
         });
 
-        test('grabs when sneaking in adventure mode', () => {
+        test('takes when sneaking in adventure mode', () => {
             const quickFillPlayer = makeQuickFillPlayer({ gameMode: GameMode.Adventure, sneaking: true });
 
             interact(quickFillPlayer);
             flushScheduledRuns();
 
-            expect(quickFillPlayer.mode.onGrabInteraction).toHaveBeenCalledTimes(1);
+            expect(quickFillPlayer.mode.onTakeInteraction).toHaveBeenCalledTimes(1);
             expect(container.clearAll).not.toHaveBeenCalled();
         });
 
-        test('clears the container instead of grabbing when sneaking in creative', () => {
+        test('clears the container instead of taking when sneaking in creative', () => {
             const quickFillPlayer = makeQuickFillPlayer({ gameMode: GameMode.Creative, sneaking: true });
 
             interact(quickFillPlayer);
             flushScheduledRuns();
 
             expect(container.clearAll).toHaveBeenCalledTimes(1);
-            expect(quickFillPlayer.mode.onGrabInteraction).not.toHaveBeenCalled();
+            expect(quickFillPlayer.mode.onTakeInteraction).not.toHaveBeenCalled();
             expect(quickFillPlayer.mode.onFillInteraction).not.toHaveBeenCalled();
         });
 
@@ -194,7 +195,7 @@ describe('QuickFillPlayer', () => {
             quickFillPlayer.player.inputInfo.getButtonState.mockReturnValue(ButtonState.Pressed);
             flushScheduledRuns();
 
-            expect(quickFillPlayer.mode.onGrabInteraction).toHaveBeenCalledTimes(1);
+            expect(quickFillPlayer.mode.onTakeInteraction).toHaveBeenCalledTimes(1);
         });
 
         test('uses the player\'s current mode', () => {
@@ -233,7 +234,7 @@ describe('QuickFillPlayer', () => {
             flushScheduledRuns();
 
             expect(event.cancel).toBe(true);
-            expect(quickFillPlayer.mode.onConfigureInteraction).toHaveBeenCalledWith(container);
+            expect(quickFillPlayer.mode.onConfigureInteraction).toHaveBeenCalledWith(container, 'tile.chest.name');
         });
 
         test('lets the break happen when the mode has no configure interaction', () => {
@@ -299,7 +300,7 @@ describe('QuickFillPlayer', () => {
 
             quickFillPlayer.onStartBreakingBlock({ block: blockWith(container) });
 
-            expect(quickFillPlayer.mode.onConfigureInteraction).toHaveBeenCalledWith(container);
+            expect(quickFillPlayer.mode.onConfigureInteraction).toHaveBeenCalledWith(container, 'tile.chest.name');
         });
 
         test('opens the configure interaction in adventure', () => {
@@ -307,7 +308,7 @@ describe('QuickFillPlayer', () => {
 
             quickFillPlayer.onStartBreakingBlock({ block: blockWith(container) });
 
-            expect(quickFillPlayer.mode.onConfigureInteraction).toHaveBeenCalledWith(container);
+            expect(quickFillPlayer.mode.onConfigureInteraction).toHaveBeenCalledWith(container, 'tile.chest.name');
         });
 
         test('does nothing in creative, where onBreakBlock handles it instead', () => {

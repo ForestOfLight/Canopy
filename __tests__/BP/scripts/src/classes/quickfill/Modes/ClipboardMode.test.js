@@ -2,16 +2,16 @@ import { beforeEach, describe, expect, test } from "vitest";
 import { GameMode } from "@minecraft/server";
 import { CustomForm } from "@minecraft/server-ui";
 import { ClipboardMode } from "../../../../../../../Canopy[BP]/scripts/src/classes/quickfill/Modes/ClipboardMode";
-import { containerOf, contents, countOf, playerWith, stack } from "./helpers";
+import { actionBarCount, containerOf, contents, countOf, langKeys, lastActionBar, playerWith, stack } from "./helpers";
 
 const configure = (mode, container) => {
     mode.onConfigureInteraction(container);
     return CustomForm.instances.at(-1);
 };
 
-const apply = (form, { wildcardValue = 0, grabCopies = 0 } = {}) => {
+const apply = (form, { wildcardValue = 0, takeCopies = 0 } = {}) => {
     form.getControl('dropdown').observable.setData(wildcardValue);
-    form.getControl('slider').observable.setData(grabCopies);
+    form.getControl('slider').observable.setData(takeCopies);
     form.getControl('button').onClick();
 };
 
@@ -20,12 +20,12 @@ describe('ClipboardMode', () => {
         CustomForm.instances.length = 0;
     });
 
-    test('starts with an empty clipboard and no grab copies', () => {
+    test('starts with an empty clipboard and no take copies', () => {
         const { player } = playerWith(GameMode.Survival);
         const mode = new ClipboardMode(player);
 
         expect(mode.clipboard.isEmpty).toBe(true);
-        expect(mode.grabCopies).toBe(0);
+        expect(mode.takeCopies).toBe(0);
     });
 
     test('has a configure interaction', () => {
@@ -76,12 +76,12 @@ describe('ClipboardMode', () => {
             expect(dropdown.observable.getData()).toBe(0);
         });
 
-        test('offers a grab copies slider from 0 to 64 in whole steps, starting at 0', () => {
+        test('offers a take copies slider from 0 to 64 in whole steps, starting at 0', () => {
             const { player } = playerWith(GameMode.Survival);
 
             const slider = configure(new ClipboardMode(player), containerOf(1)).getControl('slider');
 
-            expect(slider.label).toBe('rules.quickFillContainer.menu.grabcopies');
+            expect(slider.label).toBe('rules.quickFillContainer.menu.takecopies');
             expect([slider.min, slider.max, slider.options.step]).toEqual([0, 64, 1]);
             expect(slider.observable.getData()).toBe(0);
         });
@@ -124,14 +124,14 @@ describe('ClipboardMode', () => {
             expect(mode.clipboard.items.map(item => item && [item.typeId, item.amount])).toEqual([['minecraft:stone', 5], void 0, ['minecraft:dirt', 2]]);
         });
 
-        test('Apply stores the chosen grab copies', () => {
+        test('Apply stores the chosen take copies', () => {
             const { player } = playerWith(GameMode.Survival);
             const mode = new ClipboardMode(player);
             const form = configure(mode, containerOf(1, { 0: stack('stone') }));
 
-            apply(form, { grabCopies: 7 });
+            apply(form, { takeCopies: 7 });
 
-            expect(mode.grabCopies).toBe(7);
+            expect(mode.takeCopies).toBe(7);
         });
 
         test('Apply with a wildcard type makes later fills substitute the held item for it', () => {
@@ -158,17 +158,17 @@ describe('ClipboardMode', () => {
             expect(contents(target)).toEqual([['stone', 4], ['dirt', 2]]);
         });
 
-        test('re-applying replaces the previous clipboard, wildcard and grab copies', () => {
+        test('re-applying replaces the previous clipboard, wildcard and take copies', () => {
             const { player } = playerWith(GameMode.Creative);
             const mode = new ClipboardMode(player);
-            apply(configure(mode, containerOf(1, { 0: stack('stone', 4) })), { wildcardValue: 1, grabCopies: 5 });
+            apply(configure(mode, containerOf(1, { 0: stack('stone', 4) })), { wildcardValue: 1, takeCopies: 5 });
 
-            apply(configure(mode, containerOf(1, { 0: stack('dirt', 2) })), { wildcardValue: 0, grabCopies: 1 });
+            apply(configure(mode, containerOf(1, { 0: stack('dirt', 2) })), { wildcardValue: 0, takeCopies: 1 });
             const target = containerOf(2);
             mode.onFillInteraction(target, stack('oak_log'));
 
             expect(contents(target)).toEqual([['dirt', 2], void 0]);
-            expect(mode.grabCopies).toBe(1);
+            expect(mode.takeCopies).toBe(1);
         });
 
         test('an empty container produces an empty clipboard', () => {
@@ -241,7 +241,7 @@ describe('ClipboardMode', () => {
         });
     });
 
-    describe('onGrabInteraction()', () => {
+    describe('onTakeInteraction()', () => {
         const modeWithClipboard = (player, clipboardItems) => {
             const mode = new ClipboardMode(player);
             mode.clipboard.copy(containerOf(clipboardItems.length, { ...clipboardItems }));
@@ -252,64 +252,64 @@ describe('ClipboardMode', () => {
             const { player, inventory } = playerWith(GameMode.Survival);
             const container = containerOf(1, { 0: stack('stone', 10) });
 
-            new ClipboardMode(player).onGrabInteraction(container, stack('stone'));
+            new ClipboardMode(player).onTakeInteraction(container, stack('stone'));
 
             expect(contents(container)).toEqual([['stone', 10]]);
             expect(countOf(inventory, 'stone')).toBe(0);
         });
 
-        test('with grab copies 0, keeps grabbing whole copies until the container runs out', () => {
+        test('with take copies 0, keeps taking whole copies until the container runs out', () => {
             const { player, inventory } = playerWith(GameMode.Survival);
             const mode = modeWithClipboard(player, [stack('stone', 2)]);
             const container = containerOf(2, { 0: stack('stone', 4), 1: stack('dirt', 3) });
 
-            mode.onGrabInteraction(container, stack('stone'));
+            mode.onTakeInteraction(container, stack('stone'));
 
             expect(countOf(inventory, 'stone')).toBe(4);
             expect(contents(container)).toEqual([void 0, ['dirt', 3]]);
         });
 
-        test('with grab copies 0, also takes the final partial copy', () => {
+        test('with take copies 0, also takes the final partial copy', () => {
             const { player, inventory } = playerWith(GameMode.Survival);
             const mode = modeWithClipboard(player, [stack('stone', 2)]);
             const container = containerOf(1, { 0: stack('stone', 5) });
 
-            mode.onGrabInteraction(container, stack('stone'));
+            mode.onTakeInteraction(container, stack('stone'));
 
             expect(countOf(inventory, 'stone')).toBe(5);
             expect(contents(container)).toEqual([void 0]);
         });
 
-        test('with grab copies 0, stops when the clipboard\'s item is not in the container', () => {
+        test('with take copies 0, stops when the clipboard\'s item is not in the container', () => {
             const { player, inventory } = playerWith(GameMode.Survival);
             const mode = modeWithClipboard(player, [stack('stone', 2)]);
             const container = containerOf(1, { 0: stack('dirt', 3) });
 
-            mode.onGrabInteraction(container, stack('stone'));
+            mode.onTakeInteraction(container, stack('stone'));
 
             expect(countOf(inventory, 'stone')).toBe(0);
             expect(contents(container)).toEqual([['dirt', 3]]);
         });
 
-        test('with a fixed number of grab copies, takes exactly that many copies', () => {
+        test('with a fixed number of take copies, takes exactly that many copies', () => {
             const { player, inventory } = playerWith(GameMode.Survival);
             const mode = modeWithClipboard(player, [stack('stone', 2)]);
-            mode.grabCopies = 3;
+            mode.takeCopies = 3;
             const container = containerOf(1, { 0: stack('stone', 20) });
 
-            mode.onGrabInteraction(container, stack('stone'));
+            mode.onTakeInteraction(container, stack('stone'));
 
             expect(countOf(inventory, 'stone')).toBe(6);
             expect(contents(container)).toEqual([['stone', 14]]);
         });
 
-        test('with a fixed number of grab copies, takes less when the container has less', () => {
+        test('with a fixed number of take copies, takes less when the container has less', () => {
             const { player, inventory } = playerWith(GameMode.Survival);
             const mode = modeWithClipboard(player, [stack('stone', 2)]);
-            mode.grabCopies = 10;
+            mode.takeCopies = 10;
             const container = containerOf(1, { 0: stack('stone', 5) });
 
-            mode.onGrabInteraction(container, stack('stone'));
+            mode.onTakeInteraction(container, stack('stone'));
 
             expect(countOf(inventory, 'stone')).toBe(5);
             expect(contents(container)).toEqual([void 0]);
@@ -319,14 +319,129 @@ describe('ClipboardMode', () => {
             const { player, inventory } = playerWith(GameMode.Survival);
             const mode = modeWithClipboard(player, [stack('stone', 2)]);
             mode.clipboard.setWildcardTypeId('minecraft:stone');
-            mode.grabCopies = 1;
+            mode.takeCopies = 1;
             const container = containerOf(2, { 0: stack('stone', 10), 1: stack('oak_log', 10) });
 
-            mode.onGrabInteraction(container, stack('oak_log'));
+            mode.onTakeInteraction(container, stack('oak_log'));
 
             expect(countOf(inventory, 'oak_log')).toBe(2);
             expect(countOf(inventory, 'stone')).toBe(0);
             expect(contents(container)).toEqual([['stone', 10], ['oak_log', 8]]);
+        });
+    });
+
+    describe('action bar feedback', () => {
+        test('names the container after filling, with the slots now in use', () => {
+            const { player } = playerWith(GameMode.Creative);
+            const mode = new ClipboardMode(player);
+            mode.clipboard.copy(containerOf(2, { 0: stack('stone', 10), 1: stack('dirt', 2) }));
+            const container = containerOf(3);
+
+            mode.onFillInteraction(container, stack('stone'), 'tile.chest.name');
+
+            expect(lastActionBar(player)).toEqual({ rawtext: [
+                { translate: 'rules.quickFillContainer.filled.clipboard', with: ['tile.chest.name'] },
+                { text: ' (2/3)' }
+            ]});
+        });
+
+        test('says nothing was filled when the clipboard is empty', () => {
+            const { player } = playerWith(GameMode.Survival, { 0: stack('stone', 30) });
+            const container = containerOf(2);
+
+            new ClipboardMode(player).onFillInteraction(container, stack('stone'), 'tile.chest.name');
+
+            expect(lastActionBar(player)).toEqual({ rawtext: [
+                { translate: 'rules.quickFillContainer.filled.empty', with: ['tile.chest.name'] }
+            ]});
+        });
+
+        test('says nothing was filled when the player has none of the clipboard\'s items', () => {
+            const { player } = playerWith(GameMode.Survival, { 0: stack('dirt', 30) });
+            const mode = new ClipboardMode(player);
+            mode.clipboard.copy(containerOf(1, { 0: stack('stone', 10) }));
+            const container = containerOf(2);
+
+            mode.onFillInteraction(container, stack('stone'), 'tile.chest.name');
+
+            expect(lastActionBar(player).rawtext[0].translate).toBe('rules.quickFillContainer.filled.empty');
+        });
+
+        test('names the container after taking, with the slots left in use', () => {
+            const { player } = playerWith(GameMode.Survival);
+            const mode = new ClipboardMode(player);
+            mode.clipboard.copy(containerOf(1, { 0: stack('stone', 2) }));
+            mode.takeCopies = 1;
+            const container = containerOf(2, { 0: stack('stone', 2), 1: stack('dirt', 5) });
+
+            mode.onTakeInteraction(container, stack('stone'), 'tile.chest.name');
+
+            expect(lastActionBar(player)).toEqual({ rawtext: [
+                { translate: 'rules.quickFillContainer.taken.clipboard', with: ['tile.chest.name'] },
+                { text: ' (1/2)' }
+            ]});
+        });
+
+        test('says nothing was taken when the clipboard is empty', () => {
+            const { player } = playerWith(GameMode.Survival);
+            const container = containerOf(1, { 0: stack('stone', 10) });
+
+            new ClipboardMode(player).onTakeInteraction(container, stack('stone'), 'tile.chest.name');
+
+            expect(lastActionBar(player)).toEqual({ rawtext: [
+                { translate: 'rules.quickFillContainer.taken.empty', with: ['tile.chest.name'] }
+            ]});
+        });
+
+        test('says nothing was taken when the container lacks the clipboard\'s items', () => {
+            const { player } = playerWith(GameMode.Survival);
+            const mode = new ClipboardMode(player);
+            mode.clipboard.copy(containerOf(1, { 0: stack('stone', 2) }));
+            const container = containerOf(1, { 0: stack('dirt', 10) });
+
+            mode.onTakeInteraction(container, stack('stone'), 'tile.chest.name');
+
+            expect(lastActionBar(player)).toEqual({ rawtext: [
+                { translate: 'rules.quickFillContainer.taken.empty', with: ['tile.chest.name'] }
+            ]});
+        });
+
+        test('names the container after copying it, reporting it as full', () => {
+            const { player } = playerWith(GameMode.Survival);
+            const mode = new ClipboardMode(player);
+            const container = containerOf(3, { 0: stack('stone', 10) });
+
+            mode.onConfigureInteraction(container, 'tile.chest.name');
+            apply(CustomForm.instances.at(-1));
+
+            expect(lastActionBar(player)).toEqual({ rawtext: [
+                { translate: 'rules.quickFillContainer.saved.clipboard', with: ['tile.chest.name'] },
+                { text: ' (3/3)' }
+            ]});
+        });
+
+        test('sends exactly one action bar message per interaction', () => {
+            const { player } = playerWith(GameMode.Creative);
+            const mode = new ClipboardMode(player);
+            mode.clipboard.copy(containerOf(1, { 0: stack('stone', 2) }));
+            const container = containerOf(2);
+
+            mode.onFillInteraction(container, stack('stone'), 'tile.chest.name');
+            mode.onTakeInteraction(container, stack('stone'), 'tile.chest.name');
+
+            expect(actionBarCount(player)).toBe(2);
+        });
+
+        test('every message it can send has an English localization entry', () => {
+            const keys = [
+                'rules.quickFillContainer.filled.clipboard',
+                'rules.quickFillContainer.taken.clipboard',
+                'rules.quickFillContainer.saved.clipboard',
+                'rules.quickFillContainer.filled.empty',
+                'rules.quickFillContainer.taken.empty'
+            ];
+            for (const key of keys)
+                expect(langKeys.has(key), key).toBe(true);
         });
     });
 });

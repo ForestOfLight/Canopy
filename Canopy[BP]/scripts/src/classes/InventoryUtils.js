@@ -107,6 +107,13 @@ export class InventoryUtils {
         return replacement;
     }
 
+    static getTotalItemCount(container) {
+        let total = 0;
+        for (let i = 0; i < container.size; i++)
+            total += container.getItem(i)?.amount ?? 0;
+        return total;
+    }
+
     static hasItemType(container, itemTypeId, slotFilter) {
         for (let slot = 0; slot < container.size; slot++) {
             if (slotFilter && !slotFilter(slot))

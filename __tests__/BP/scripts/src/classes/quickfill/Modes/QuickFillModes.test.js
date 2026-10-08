@@ -25,7 +25,7 @@ describe('quickFillModes', () => {
 
     test('every mode implements the interface QuickFillPlayer relies on', () => {
         for (const mode of modes) {
-            for (const method of ['destroy', 'onFillInteraction', 'onGrabInteraction', 'hasConfigureInteraction'])
+            for (const method of ['destroy', 'onFillInteraction', 'onTakeInteraction', 'hasConfigureInteraction'])
                 expect(mode.class.prototype[method], `${mode.name}.${method}`).toBeTypeOf('function');
         }
     });

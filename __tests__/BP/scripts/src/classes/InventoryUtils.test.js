@@ -129,3 +129,27 @@ describe('pickupItemEntity()', () => {
         expect(itemEntity.dimension.spawnItem).toHaveBeenCalledWith(expect.objectContaining({ amount: 6 }), itemEntity.location);
     });
 });
+
+describe('getTotalItemCount()', () => {
+    it('sums the amounts of every stack in the container', () => {
+        const container = new Container({ size: 3, items: {
+            0: new ItemStack('minecraft:stone', 10),
+            2: new ItemStack('minecraft:dirt', 5)
+        }});
+
+        expect(InventoryUtils.getTotalItemCount(container)).toBe(15);
+    });
+
+    it('counts an empty container as zero', () => {
+        expect(InventoryUtils.getTotalItemCount(new Container({ size: 3 }))).toBe(0);
+    });
+
+    it('counts stacks of the same type separately', () => {
+        const container = new Container({ size: 2, items: {
+            0: new ItemStack('minecraft:stone', 64),
+            1: new ItemStack('minecraft:stone', 64)
+        }});
+
+        expect(InventoryUtils.getTotalItemCount(container)).toBe(128);
+    });
+});
