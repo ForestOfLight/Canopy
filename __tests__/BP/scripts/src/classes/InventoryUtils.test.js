@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { Container, ItemStack } from "@minecraft/server";
 import { InventoryUtils } from "../../../../../Canopy[BP]/scripts/src/classes/InventoryUtils";
 
 describe('getInventory()', () => {
@@ -85,5 +86,46 @@ describe('slot-filtered inventory queries', () => {
         expect(InventoryUtils.hasAvailableSpace(container, stone, slot => slot === 0)).toBe(false);
         expect(InventoryUtils.hasAvailableSpace(container, stone, slot => slot === 1)).toBe(true);
         expect(InventoryUtils.hasAvailableSpace(container, stone, slot => slot === 2)).toBe(true);
+    });
+});
+describe('pickupItemEntity()', () => {
+    const setup = (inventoryItems, droppedItemStack) => {
+        const container = new Container({ size: inventoryItems.length, items: inventoryItems });
+        const player = { getComponent: vi.fn(() => ({ container })) };
+        const itemEntity = {
+            location: { x: 0, y: 0, z: 0 },
+            getComponent: vi.fn(() => ({ itemStack: droppedItemStack })),
+            remove: vi.fn(),
+            dimension: { spawnItem: vi.fn() }
+        };
+        return { container, player, itemEntity };
+    };
+
+    it('leaves the item entity untouched when the inventory is full', () => {
+        const { player, itemEntity } = setup([new ItemStack('minecraft:dirt', 64)], new ItemStack('minecraft:stone', 1));
+
+        InventoryUtils.pickupItemEntity(player, itemEntity);
+
+        expect(itemEntity.remove).not.toHaveBeenCalled();
+        expect(itemEntity.dimension.spawnItem).not.toHaveBeenCalled();
+    });
+
+    it('removes the item entity when it fits entirely', () => {
+        const { container, player, itemEntity } = setup([void 0], new ItemStack('minecraft:stone', 5));
+
+        InventoryUtils.pickupItemEntity(player, itemEntity);
+
+        expect(container.getItem(0).amount).toBe(5);
+        expect(itemEntity.remove).toHaveBeenCalled();
+        expect(itemEntity.dimension.spawnItem).not.toHaveBeenCalled();
+    });
+
+    it('respawns only the remainder when the item partially fits', () => {
+        const { player, itemEntity } = setup([new ItemStack('minecraft:stone', 60)], new ItemStack('minecraft:stone', 10));
+
+        InventoryUtils.pickupItemEntity(player, itemEntity);
+
+        expect(itemEntity.remove).toHaveBeenCalled();
+        expect(itemEntity.dimension.spawnItem).toHaveBeenCalledWith(expect.objectContaining({ amount: 6 }), itemEntity.location);
     });
 });

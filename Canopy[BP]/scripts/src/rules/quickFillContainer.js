@@ -1,151 +1,67 @@
-import { BlockComponentTypes, ButtonState, EntityComponentTypes, GameMode, InputButton, system, world } from "@minecraft/server";
+import { world } from "@minecraft/server";
 import { AbilityRule } from "../../lib/canopy/Canopy";
-import { QuickFillClipboardController } from "../classes/quickfill/QuickFillClipboardController";
-import { QuickFillContainerPolicy } from "../classes/quickfill/QuickFillContainerPolicy";
-import { QuickFillDirectExecutor } from "../classes/quickfill/QuickFillDirectExecutor";
+import { QuickFillPlayer } from "../classes/quickfillnew/QuickFillPlayer";
 
 class QuickFillContainer extends AbilityRule {
-    bannedContainers = ['minecraft:beacon', 'minecraft:jukebox', 'minecraft:lectern'];
-    
+    #quickFillPlayers = [];
+
     constructor() {
         super({
             identifier: 'quickFillContainer',
-            wikiDescription: 'With an arrow in the top left of your inventory (slot 9), interact with a container while holding an item to move matching items into it; sneak to reverse, or sneak + interact with an empty hand to remove all. Break a block container or attack a supported storage entity to copy it. With the clipboard active, interact to paste, sneak + interact to remove, and sneak + break/attack to deactivate it.',
+            wikiDescription: 'With an arrow in the top left of your inventory (slot 9), interact with a container while holding an item to move matching items into it; sneak to reverse, or sneak + interact with an empty hand to remove all. Use /quickfillmode to customize item movement.',
             onEnableCallback: () => {
                 world.beforeEvents.playerInteractWithBlock.subscribe(this.onPlayerInteractWithBlockBound);
                 world.beforeEvents.playerBreakBlock.subscribe(this.onPlayerBreakBlockBound);
-                world.beforeEvents.playerInteractWithEntity.subscribe(this.onPlayerInteractWithEntityBound);
-                world.beforeEvents.entityHurt.subscribe(this.onEntityHurtBound);
+                world.afterEvents.playerStartBreakingBlock.subscribe(this.onPlayerStartBreakingBlockBound);
             },
             onDisableCallback: () => {
                 world.beforeEvents.playerInteractWithBlock.unsubscribe(this.onPlayerInteractWithBlockBound);
                 world.beforeEvents.playerBreakBlock.unsubscribe(this.onPlayerBreakBlockBound);
-                world.beforeEvents.playerInteractWithEntity.unsubscribe(this.onPlayerInteractWithEntityBound);
-                world.beforeEvents.entityHurt.unsubscribe(this.onEntityHurtBound);
+                world.afterEvents.playerStartBreakingBlock.unsubscribe(this.onPlayerStartBreakingBlockBound);
+                for (const quickFillPlayer of this.#quickFillPlayers)
+                    quickFillPlayer.destroy();
+                this.#quickFillPlayers.length = 0;
             }
-        }, { slotNumber: 9 });
+        }, {
+            slotNumber: 9,
+            onPlayerEnableCallback: (player) => this.#enableQuickFillPlayer(player),
+            onPlayerDisableCallback: (player) => this.#disableQuickFillPlayer(player)
+        });
         this.onPlayerInteractWithBlockBound = this.onPlayerInteractWithBlock.bind(this);
         this.onPlayerBreakBlockBound = this.onPlayerBreakBlock.bind(this);
-        this.onPlayerInteractWithEntityBound = this.onPlayerInteractWithEntity.bind(this);
-        this.onEntityHurtBound = this.onEntityHurt.bind(this);
+        this.onPlayerStartBreakingBlockBound = this.onPlayerStartBreakingBlock.bind(this);
     }
 
     onPlayerInteractWithBlock(event) {
-        const player = event.player;
-        const block = event.block;
-        if (!player || !this.isEnabledForPlayer(player) || this.bannedContainers.includes(block?.typeId))
-            return;
-
-        const blockInv = block.typeId === 'minecraft:ender_chest'
-            ? player.getComponent(EntityComponentTypes.EnderInventory)?.container
-            : block.getComponent(BlockComponentTypes.Inventory)?.container;
-        const playerInv = player.getComponent(EntityComponentTypes.Inventory)?.container;
-        if (!playerInv || !blockInv)
-            return;
-
-        const handItemStack = event.itemStack;
-        const clipboard = QuickFillClipboardController.get(player);
-        const playerIsSneaking = player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed;
-        const removeAll = !clipboard && !handItemStack && playerIsSneaking;
-        if (removeAll && QuickFillContainerPolicy.isClipboardOnly(block))
-            return;
-        if (!removeAll && ((!clipboard || !handItemStack) && (QuickFillContainerPolicy.isClipboardOnly(block) || !QuickFillContainerPolicy.canInsertItem(block, handItemStack))))
-            return;
-        event.cancel = true;
-
-        this.handleQuickFillInteraction(player, block, blockInv, handItemStack, clipboard);
+        this.getActiveQuickFillPlayer(event.player)?.onInteractWithBlock(event);
     }
 
     onPlayerBreakBlock(event) {
-        const player = event.player;
-        const block = event.block;
-        if (!player || !this.isEnabledForPlayer(player) || this.bannedContainers.includes(block?.typeId))
-            return;
-        const blockInv = block.typeId === 'minecraft:ender_chest'
-            ? player.getComponent(EntityComponentTypes.EnderInventory)?.container
-            : block.getComponent(BlockComponentTypes.Inventory)?.container;
-        if (!blockInv)
-            return;
-
-        const playerIsSneaking = player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed;
-        if (playerIsSneaking && !QuickFillClipboardController.get(player))
-            return;
-
-        event.cancel = true;
-        system.run(() => {
-            if (playerIsSneaking) {
-                QuickFillClipboardController.deactivate(player);
-                return;
-            }
-            QuickFillClipboardController.copy(player, block, blockInv);
-        });
+        this.getActiveQuickFillPlayer(event.player)?.onBreakBlock(event);
     }
 
-    onPlayerInteractWithEntity(event) {
-        const player = event.player;
-        const entity = event.target;
-        if (!player || !this.isEnabledForPlayer(player))
-            return;
-
-        const entityInv = QuickFillContainerPolicy.getInteractableEntityContainer(entity);
-        const playerInv = player.getComponent(EntityComponentTypes.Inventory)?.container;
-        if (!playerInv || !entityInv)
-            return;
-
-        const handItemStack = event.itemStack;
-        const clipboard = QuickFillClipboardController.get(player);
-        const playerIsSneaking = player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed;
-        const removeAll = !clipboard && !handItemStack && playerIsSneaking;
-        if (!removeAll && (!handItemStack || (!clipboard && !QuickFillContainerPolicy.canInsertItem(entity, handItemStack))))
-            return;
-        event.cancel = true;
-
-        this.handleQuickFillInteraction(player, entity, entityInv, handItemStack, clipboard);
+    onPlayerStartBreakingBlock(event) {
+        this.getActiveQuickFillPlayer(event.player)?.onStartBreakingBlock(event);
     }
 
-    handleQuickFillInteraction(player, target, targetInv, handItemStack, clipboard) {
-        const playerIsSneaking = player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed;
-        system.run(() => {
-            if (clipboard) {
-                QuickFillClipboardController.apply(player, target, clipboard, playerIsSneaking, targetInv, handItemStack);
-                return;
-            }
-            if (playerIsSneaking) {
-                if (!handItemStack) {
-                    QuickFillDirectExecutor.transferAllToPlayer(player, target, targetInv);
-                    return;
-                }
-                QuickFillDirectExecutor.transferToPlayer(player, target, handItemStack, targetInv);
-            } else if (player.getGameMode() === GameMode.Creative) {
-                QuickFillDirectExecutor.fillCreative(player, target, handItemStack, targetInv);
-            } else {
-                QuickFillDirectExecutor.transferToContainer(player, target, handItemStack, targetInv);
-            }
-        });
+    getActiveQuickFillPlayer(player) {
+        return this.#quickFillPlayers.find(quickFillPlayer => quickFillPlayer.player.id === player?.id);
     }
 
-    onEntityHurt(event) {
-        const player = event.damageSource?.damagingEntity;
-        const entity = event.hurtEntity;
-        if (player?.typeId !== 'minecraft:player' || event.damageSource?.damagingProjectile || !this.isEnabledForPlayer(player))
-            return;
+    #enableQuickFillPlayer(player) {
+        let quickFillPlayer = this.getActiveQuickFillPlayer(player);
+        if (!quickFillPlayer) {
+            quickFillPlayer = new QuickFillPlayer(player);
+            this.#quickFillPlayers.push(quickFillPlayer);
+        }
+    }
 
-        const entityInv = QuickFillContainerPolicy.getEntityContainer(entity);
-        if (!entityInv)
+    #disableQuickFillPlayer(player) {
+        const quickFillPlayer = this.getActiveQuickFillPlayer(player);
+        if (!quickFillPlayer)
             return;
-
-        const playerIsSneaking = player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed;
-        if (playerIsSneaking && !QuickFillClipboardController.get(player))
-            return;
-
-        event.cancel = true;
-        system.run(() => {
-            if (playerIsSneaking) {
-                QuickFillClipboardController.deactivate(player);
-                return;
-            }
-            QuickFillClipboardController.copy(player, entity, entityInv);
-        });
+        this.#quickFillPlayers.splice(this.#quickFillPlayers.indexOf(quickFillPlayer), 1);
+        quickFillPlayer.destroy();
     }
 }
 

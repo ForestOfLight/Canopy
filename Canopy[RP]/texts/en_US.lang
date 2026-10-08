@@ -353,6 +353,9 @@ commands.quickfill.wildcard.nomatch=§cQuick Fill preset '%s' does not contain %
 commands.quickfill.wildcard.fail=§cQuick Fill preset '%s' wildcard could not be updated.
 commands.quickfill.wildcard.success=§7Set %s as the wildcard selector for Quick Fill preset '%s'.
 
+commands.quickfillmode=Changes your current Quick Fill mode.
+commands.quickfillmode.invalidmode=§cInvalid Quick Fill mode.
+
 commands.retest=Resets spawn tracking, hopper counters, and hopper generators.
 commands.retest.success=§7Reset spawn counters, hopper counters, and hopper generators.
 
@@ -505,6 +508,15 @@ rules.potionBoostedBreeding=Reintroduces the behavior that allows speed potions 
 rules.quickFillContainer=Using an item on a container with an arrow in inventory slot 9 (top left) will deposit all of that item into the container.
 rules.quickFillContainer.filled=§7Filled %1 with all %2
 rules.quickFillContainer.taken=§7Took all %1 from %2
+rules.quickFillContainer.mode.bulk=Bulk
+rules.quickFillContainer.mode.clipboard=Clipboard
+rules.quickFillContainer.mode.logicalbulk=Logical Bulk
+rules.quickFillContainer.menu.title=§2Quick Fill Menu
+rules.quickFillContainer.menu.wildcard=Wildcard Item Type
+rules.quickFillContainer.menu.wildcard.description=The item type to replace with whatever is in your hand when you interact with a container.
+rules.quickFillContainer.menu.grabcopies=Copies to Grab
+rules.quickFillContainer.menu.grabcopies.description=The number of copies of the clipboard to take when grabbing items.
+rules.quickFillContainer.menu.apply=Apply
 rules.refillHand=Refills your hand with items from your inventory when you run out. Put an arrow in inventory slot 10 (next to the top left) to use.
 rules.renderEndGatewayExits=Renders the exit locations of end gateways after passing through them.
 rules.renewableElytraDropChance=Gives phantoms a chance to drop elytra when killed by a shulker bullet.

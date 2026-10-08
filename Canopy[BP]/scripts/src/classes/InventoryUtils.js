@@ -32,65 +32,61 @@ export class InventoryUtils {
         const inventory = playerInventoryComponent.container;
         if (!itemStack || !inventory)
             return;
-        const canAdd = InventoryUtils.tryAddItemLikeVanilla(inventory, itemStack);
-        if (canAdd)
-            itemEntity.remove();
+        const remainderItemStck = InventoryUtils.addItemLikeVanilla(inventory, itemStack);
+        if (remainderItemStck?.amount === itemStack.amount)
+            return;
+        if (remainderItemStck !== void 0)
+            itemEntity.dimension.spawnItem(remainderItemStck, itemEntity.location);
+        itemEntity.remove();
     }
 
-    static tryAddItemLikeVanilla(inventory, itemStack) {
-        if (InventoryUtils.canAddItem(inventory, itemStack)) {
-            InventoryUtils.#addItemLikeVanilla(inventory, itemStack);
-            return true;
-        }
-        return false;
-    }
-
-    static canAddItem(inventory, itemStack) {
-        if (inventory.emptySlotsCount !== 0)
-            return true;
-        for (let i = 0; i < inventory.size; i++) {
-            const slot = inventory.getSlot(i);
-            if (InventoryUtils.#itemFitsInPartiallyFilledSlot(slot, itemStack))
-                return true;
-        }
-        return false;
-    }
-
-    static #itemFitsInPartiallyFilledSlot(slot, itemStack) {
-        return slot.hasItem() && slot.isStackableWith(itemStack) && slot.amount + itemStack.amount <= slot.maxAmount;
-    }
-
-    static #addItemLikeVanilla(inventory, itemStack) {
-        const isItemDeposited = InventoryUtils.#partiallyFilledSlotPass(inventory, itemStack);
-        if (!isItemDeposited)
-            InventoryUtils.#emptySlotPass(inventory, itemStack);
+    static addItemLikeVanilla(inventory, itemStack) {
+        const remainderItemStack = InventoryUtils.#partiallyFilledSlotPass(inventory, itemStack);
+        if (remainderItemStack === void 0)
+            return void 0;
+        return InventoryUtils.#emptySlotPass(inventory, remainderItemStack);
     }
 
     static #partiallyFilledSlotPass(inventory, itemStack) {
-        for (let slotNum = 0; slotNum < inventory.size; slotNum++) {
-            const slot = inventory.getSlot(slotNum);
-            if (InventoryUtils.#isSlotAvailableForStacking(slot, itemStack)) {
-                const remainderAmount = Math.max(0, (slot.amount + itemStack.amount) - slot.maxAmount);
-                slot.amount += itemStack.amount - remainderAmount;
-                if (remainderAmount > 0) {
-                    const remainderStack = new ItemStack(itemStack.typeId, remainderAmount);
-                    InventoryUtils.#addItemLikeVanilla(inventory, remainderStack);
-                }
-                return true;
-            }
+        let remainingAmount = itemStack.amount;
+        for (let i = 0; i < inventory.size && remainingAmount > 0; i++) {
+            const slot = inventory.getSlot(i);
+            if (!InventoryUtils.#isSlotAvailableForStacking(slot, itemStack))
+                continue;
+
+            const amountToAdd = Math.min(remainingAmount, slot.maxAmount - slot.amount);
+            slot.amount += amountToAdd;
+            remainingAmount -= amountToAdd;
         }
-        return false;
+
+        if (remainingAmount === 0)
+            return void 0;
+
+        const remainderItemStack = itemStack.clone();
+        remainderItemStack.amount = remainingAmount;
+        return remainderItemStack;
     }
 
     static #emptySlotPass(inventory, itemStack) {
-        for (let slotNum = 0; slotNum < inventory.size; slotNum++) {
-            const slot = inventory.getSlot(slotNum);
-            if (!slot.hasItem()) {
-                slot.setItem(itemStack);
-                return true;
-            }
+        let remainingAmount = itemStack.amount;
+        for (let i = 0; i < inventory.size && remainingAmount > 0; i++) {
+            const slot = inventory.getSlot(i);
+            if (slot.hasItem())
+                continue;
+
+            const amountToAdd = Math.min(remainingAmount, itemStack.maxAmount);
+            const stackToAdd = itemStack.clone();
+            stackToAdd.amount = amountToAdd;
+            slot.setItem(stackToAdd);
+            remainingAmount -= amountToAdd;
         }
-        return false;
+
+        if (remainingAmount === 0)
+            return undefined;
+
+        const remainder = itemStack.clone();
+        remainder.amount = remainingAmount;
+        return remainder;
     }
 
     static #isSlotAvailableForStacking(slot, itemStack) {
