@@ -53,24 +53,24 @@ export class ClipboardMode {
     }
 
     onConfigureInteraction(container, blockLocalizationKey) {
-        const form = new CustomForm(this.player, 'rules.quickFillContainer.menu.title');
+        const form = new CustomForm(this.player, { translate: 'rules.quickFillContainer.menu.title' });
 
         const observableWildcard = new ObservableNumber(0, { clientWritable: true });
         const dropdownOptions = {
-            description: 'rules.quickFillContainer.menu.wildcard.description'
+            description: { translate: 'rules.quickFillContainer.menu.wildcard.description' }
         };
         const dropdownItems = this.getDropdownItems(container);
-        form.dropdown('rules.quickFillContainer.menu.wildcard', observableWildcard, dropdownItems, dropdownOptions);
+        form.dropdown({ translate: 'rules.quickFillContainer.menu.wildcard' }, observableWildcard, dropdownItems, dropdownOptions);
 
         const observableTakeCopies = new ObservableNumber(0, { clientWritable: true });
         const sliderOptions = {
-            description: 'rules.quickFillContainer.menu.takecopies.description',
+            description: { translate: 'rules.quickFillContainer.menu.takecopies.description' },
             step: 1
         };
-        form.slider('rules.quickFillContainer.menu.takecopies', observableTakeCopies, 0, 64, sliderOptions);
+        form.slider({ translate: 'rules.quickFillContainer.menu.takecopies' }, observableTakeCopies, 0, 64, sliderOptions);
 
         form.spacer();
-        form.button('rules.quickFillContainer.menu.apply', () => {
+        form.button({ translate: 'rules.quickFillContainer.menu.apply' }, () => {
             form.close();
             this.#onAppliedCopy(container, { observableWildcard, observableTakeCopies, dropdownItems }, blockLocalizationKey)
         });
@@ -104,7 +104,7 @@ export class ClipboardMode {
     sendFilledFeedback(container, blockLocalizationKey) {
         const fullSlotsCount = container.size - container.emptySlotsCount;
         this.player.onScreenDisplay.setActionBar({ rawtext: [
-            { translate: 'rules.quickFillContainer.filled.clipboard', with: [blockLocalizationKey] },
+            { translate: 'rules.quickFillContainer.filled.clipboard', with: { rawtext: [{ translate: blockLocalizationKey }] } },
             { text: ` (${fullSlotsCount}/${container.size})`}
         ]});
     }
@@ -112,27 +112,27 @@ export class ClipboardMode {
     sendTakenFeedback(container, blockLocalizationKey) {
         const fullSlotsCount = container.size - container.emptySlotsCount;
         this.player.onScreenDisplay.setActionBar({ rawtext: [
-            { translate: 'rules.quickFillContainer.taken.clipboard', with: [blockLocalizationKey] },
+            { translate: 'rules.quickFillContainer.taken.clipboard', with: { rawtext: [{ translate: blockLocalizationKey }] } },
             { text: ` (${fullSlotsCount}/${container.size})`}
         ]});
     }
 
     sendCopiedFeedback(container, blockLocalizationKey) {
         this.player.onScreenDisplay.setActionBar({ rawtext: [
-            { translate: 'rules.quickFillContainer.saved.clipboard', with: [blockLocalizationKey] },
+            { translate: 'rules.quickFillContainer.saved.clipboard', with: { rawtext: [{ translate: blockLocalizationKey }] } },
             { text: ` (${container.size}/${container.size})`}
         ]});
     }
 
     sendNothingFilledFeedback(blockLocalizationKey) {
         this.player.onScreenDisplay.setActionBar({ rawtext: [
-            { translate: 'rules.quickFillContainer.filled.empty', with: [blockLocalizationKey] }
+            { translate: 'rules.quickFillContainer.filled.empty', with: { rawtext: [{ translate: blockLocalizationKey }] } }
         ]});
     }
 
     sendNothingTakenFeedback(blockLocalizationKey) {
         this.player.onScreenDisplay.setActionBar({ rawtext: [
-            { translate: 'rules.quickFillContainer.taken.empty', with: [blockLocalizationKey] }
+            { translate: 'rules.quickFillContainer.taken.empty', with: { rawtext: [{ translate: blockLocalizationKey }] } }
         ]});
     }
 }

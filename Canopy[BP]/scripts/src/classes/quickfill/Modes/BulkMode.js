@@ -51,7 +51,7 @@ export class BulkMode {
     sendFilledFeedback(container, blockLocalizationKey, itemStackLocalizationKey) {
         const fullSlotsCount = container.size - container.emptySlotsCount;
         this.player.onScreenDisplay.setActionBar({ rawtext: [
-            { translate: 'rules.quickFillContainer.filled.bulk', with: [blockLocalizationKey, itemStackLocalizationKey] },
+            { translate: 'rules.quickFillContainer.filled.bulk', with: { rawtext: [{ translate: blockLocalizationKey }, { translate: itemStackLocalizationKey }] } },
             { text: ` (${fullSlotsCount}/${container.size})`}
         ]});
     }
@@ -59,20 +59,20 @@ export class BulkMode {
     sendTakenFeedback(container, blockLocalizationKey, itemStackLocalizationKey) {
         const fullSlotsCount = container.size - container.emptySlotsCount;
         this.player.onScreenDisplay.setActionBar({ rawtext: [
-            { translate: 'rules.quickFillContainer.taken.bulk', with: [itemStackLocalizationKey, blockLocalizationKey] },
+            { translate: 'rules.quickFillContainer.taken.bulk', with: { rawtext: [{ translate: itemStackLocalizationKey }, { translate: blockLocalizationKey }] } },
             { text: ` (${fullSlotsCount}/${container.size})`}
         ]});
     }
 
     sendNothingFilledFeedback(blockLocalizationKey) {
         this.player.onScreenDisplay.setActionBar({ rawtext: [
-            { translate: 'rules.quickFillContainer.filled.empty', with: [blockLocalizationKey] }
+            { translate: 'rules.quickFillContainer.filled.empty', with: { rawtext: [{ translate: blockLocalizationKey }] } }
         ]});
     }
 
     sendNothingTakenFeedback(blockLocalizationKey) {
         this.player.onScreenDisplay.setActionBar({ rawtext: [
-            { translate: 'rules.quickFillContainer.taken.empty', with: [blockLocalizationKey] }
+            { translate: 'rules.quickFillContainer.taken.empty', with: { rawtext: [{ translate: blockLocalizationKey }] } }
         ]});
     }
 }

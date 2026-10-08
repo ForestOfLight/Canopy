@@ -32,12 +32,14 @@ export class QuickFillPlayer {
             return;
         event.cancel = true;
         system.run(() => {
-            if (this.#isSneaking() && this.player.getGameMode() === GameMode.Creative)
+            if (this.#isSneaking() && this.player.getGameMode() === GameMode.Creative) {
                 container.clearAll();
-            else if (this.#isSneaking())
+                this.player.onScreenDisplay.setActionBar({ rawtext: [{ translate: 'rules.quickFillContainer.cleared', with: { rawtext: [{ translate: block.localizationKey }] } }]});
+            } else if (this.#isSneaking()) {
                 this.mode.onTakeInteraction(container, heldItemStack, block.localizationKey);
-            else
+            } else {
                 this.mode.onFillInteraction(container, heldItemStack, block.localizationKey);
+            }
         });
     }
 
