@@ -340,6 +340,97 @@ describe('ItemClipboard', () => {
             expect(clipboard.transferLikeVanilla(from, to)).toBe(true);
             expect(contents(to)).toEqual([['dirt', 1], ['stone', 4], ['stone', 64]]);
         });
+
+        test('moves only the copied amount from a larger source stack', () => {
+            clipboard.copy(containerOf(1, { 0: stack('stone', 3) }));
+            const from = containerOf(1, { 0: stack('stone', 20) });
+            const to = containerOf(2);
+
+            expect(clipboard.transferLikeVanilla(from, to)).toBe(true);
+            expect(contents(from)).toEqual([['stone', 17]]);
+            expect(contents(to)).toEqual([['stone', 3], void 0]);
+        });
+
+        test('pulls from several source stacks to reach the copied amount', () => {
+            clipboard.copy(containerOf(1, { 0: stack('stone', 10) }));
+            const from = containerOf(3, { 0: stack('stone', 4), 2: stack('stone', 20) });
+            const to = containerOf(2);
+
+            expect(clipboard.transferLikeVanilla(from, to)).toBe(true);
+            expect(contents(from)).toEqual([void 0, void 0, ['stone', 14]]);
+            expect(contents(to)).toEqual([['stone', 10], void 0]);
+        });
+
+        test('moves what it can and returns false when the source runs short', () => {
+            clipboard.copy(containerOf(1, { 0: stack('stone', 10) }));
+            const from = containerOf(1, { 0: stack('stone', 4) });
+            const to = containerOf(1);
+
+            expect(clipboard.transferLikeVanilla(from, to)).toBe(false);
+            expect(contents(from)).toEqual([void 0]);
+            expect(contents(to)).toEqual([['stone', 4]]);
+        });
+
+        test('keeps the items that do not fit in the source and returns false', () => {
+            clipboard.copy(containerOf(1, { 0: stack('stone', 10) }));
+            const from = containerOf(1, { 0: stack('stone', 10) });
+            const to = containerOf(1, { 0: stack('stone', 60) });
+
+            expect(clipboard.transferLikeVanilla(from, to)).toBe(false);
+            expect(contents(to)).toEqual([['stone', 64]]);
+            expect(contents(from)).toEqual([['stone', 6]]);
+        });
+
+        test('leaves the source untouched when the destination has no room', () => {
+            clipboard.copy(containerOf(1, { 0: stack('stone', 5) }));
+            const from = containerOf(1, { 0: stack('stone', 10) });
+            const to = containerOf(1, { 0: stack('dirt', 64) });
+
+            expect(clipboard.transferLikeVanilla(from, to)).toBe(false);
+            expect(contents(from)).toEqual([['stone', 10]]);
+            expect(contents(to)).toEqual([['dirt', 64]]);
+        });
+
+        test('skips items missing from the source and returns false', () => {
+            clipboard.copy(containerOf(2, { 0: stack('stone'), 1: stack('dirt') }));
+            const from = containerOf(2, { 0: stack('dirt') });
+            const to = containerOf(2);
+
+            expect(clipboard.transferLikeVanilla(from, to)).toBe(false);
+            expect(contents(from)).toEqual([void 0, void 0]);
+            expect(contents(to)).toEqual([['dirt', 1], void 0]);
+        });
+
+        test('moves the copied amount of the wildcard item for wildcarded entries', () => {
+            clipboard.copy(containerOf(2, { 0: stack('stone', 6), 1: stack('dirt') }));
+            clipboard.setWildcardTypeId('minecraft:stone');
+            const from = containerOf(3, { 0: stack('stone', 64), 1: stack('oak_log', 64), 2: stack('dirt') });
+            const to = containerOf(3);
+
+            expect(clipboard.transferLikeVanilla(from, to, stack('oak_log'))).toBe(true);
+            expect(contents(from)).toEqual([['stone', 64], ['oak_log', 58], void 0]);
+            expect(contents(to)).toEqual([['oak_log', 6], ['dirt', 1], void 0]);
+        });
+
+        test('moves the copied item when no wildcard item is given', () => {
+            clipboard.copy(containerOf(1, { 0: stack('stone') }));
+            clipboard.setWildcardTypeId('minecraft:stone');
+            const from = containerOf(2, { 0: stack('stone'), 1: stack('oak_log') });
+            const to = containerOf(1);
+
+            expect(clipboard.transferLikeVanilla(from, to)).toBe(true);
+            expect(contents(to)).toEqual([['stone', 1]]);
+            expect(contents(from)).toEqual([void 0, ['oak_log', 1]]);
+        });
+
+        test('an empty clipboard moves nothing and returns true', () => {
+            const from = containerOf(1, { 0: stack('stone') });
+            const to = containerOf(1);
+
+            expect(clipboard.transferLikeVanilla(from, to)).toBe(true);
+            expect(contents(from)).toEqual([['stone', 1]]);
+            expect(contents(to)).toEqual([void 0]);
+        });
     });
 
     describe('transferMultiple()', () => {
