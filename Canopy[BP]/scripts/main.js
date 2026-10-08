@@ -35,7 +35,6 @@ import './src/commands/lifetimequery'
 import './src/commands/lifetimequeryitem'
 import './src/commands/velocity'
 import './src/commands/analyzearea'
-import './src/commands/quickfill'
 import './src/commands/quickfillmode'
 
 // Simulated Player Commands

@@ -1,6 +1,6 @@
 import { world } from "@minecraft/server";
 import { AbilityRule } from "../../lib/canopy/Canopy";
-import { QuickFillPlayer } from "../classes/quickfillnew/QuickFillPlayer";
+import { QuickFillPlayer } from "../classes/quickfill/QuickFillPlayer";
 
 class QuickFillContainer extends AbilityRule {
     #quickFillPlayers = [];

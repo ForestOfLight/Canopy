@@ -1,6 +1,6 @@
 import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus } from "@minecraft/server";
 import { PlayerCommandOrigin, VanillaCommand } from "../../lib/canopy/Canopy";
-import { quickFillModes } from "../classes/quickfillnew/Modes/QuickFillModes";
+import { quickFillModes } from "../classes/quickfill/Modes/QuickFillModes";
 import { quickFillContainer } from "../rules/quickFillContainer";
 
 export class QuickFillModeCommand extends VanillaCommand {

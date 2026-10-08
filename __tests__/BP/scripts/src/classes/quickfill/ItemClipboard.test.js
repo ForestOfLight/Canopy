@@ -1,5 +1,5 @@
 import { Container, ItemStack } from "@minecraft/server";
-import { ItemClipboard } from "../../../../../../Canopy[BP]/scripts/src/classes/quickfillnew/ItemClipboard";
+import { ItemClipboard } from "../../../../../../Canopy[BP]/scripts/src/classes/quickfill/ItemClipboard";
 import { beforeEach, describe, expect, test } from "vitest";
 
 const stack = (typeId, amount = 1) => new ItemStack(`minecraft:${typeId}`, amount);
