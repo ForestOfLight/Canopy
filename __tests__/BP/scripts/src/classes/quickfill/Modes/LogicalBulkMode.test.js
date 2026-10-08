@@ -147,7 +147,7 @@ describe('LogicalBulkMode', () => {
             new LogicalBulkMode(player).onFillInteraction(container, stack('oak_log'), 'tile.chest.name');
 
             expect(lastActionBar(player)).toEqual({ rawtext: [
-                { translate: 'rules.quickFillContainer.filled.empty', with: ['tile.chest.name'] }
+                { translate: 'rules.quickFillContainer.filled.noitem', with: { rawtext: [{ translate: 'tile.chest.name' }, { translate: 'item.stone.name' }] } }
             ]});
         });
 
@@ -166,7 +166,7 @@ describe('LogicalBulkMode', () => {
             const keys = [
                 'rules.quickFillContainer.filled.bulk',
                 'rules.quickFillContainer.taken.bulk',
-                'rules.quickFillContainer.filled.empty',
+                'rules.quickFillContainer.filled.noitem',
                 'rules.quickFillContainer.taken.empty'
             ];
             for (const key of keys)

@@ -1,7 +1,7 @@
 import { EntityComponentTypes, GameMode } from "@minecraft/server";
 import { ItemClipboard } from "../ItemClipboard";
-import { InventoryUtils } from "../../InventoryUtils";
 import { CustomForm, ObservableNumber } from "@minecraft/server-ui";
+import { quickFillModes } from "./QuickFillModes";
 
 export class ClipboardMode {
     player;
@@ -16,13 +16,17 @@ export class ClipboardMode {
 
     destroy() {}
 
+    get name() {
+        return quickFillModes.CLIPBOARD.name;
+    }
+
     onFillInteraction(container, heldItemStack, blockLocalizationKey) {
-        const countBefore = InventoryUtils.getTotalItemCount(container);
-        if (this.player.getGameMode() === GameMode.Creative)
-            this.clipboard.insertIntoEmptySlotsWithoutCost(container, heldItemStack);
-        else
-            this.clipboard.transfer(this.playerContainer, container, heldItemStack);
-        if (InventoryUtils.getTotalItemCount(container) === countBefore)
+        const transferredAmount = this.player.getGameMode() === GameMode.Creative
+            ? this.clipboard.insertIntoEmptySlotsWithoutCost(container, heldItemStack)
+            : this.clipboard.transfer(this.playerContainer, container, heldItemStack).transferredAmount;
+        if (transferredAmount === 0 && container.emptySlotsCount === 0)
+            this.sendContainerFullFeedback(blockLocalizationKey);
+        else if (transferredAmount === 0)
             this.sendNothingFilledFeedback(blockLocalizationKey);
         else
             this.sendFilledFeedback(container, blockLocalizationKey);
@@ -33,16 +37,19 @@ export class ClipboardMode {
             this.sendNothingTakenFeedback(blockLocalizationKey);
             return;
         }
-        const countBefore = InventoryUtils.getTotalItemCount(container);
+        let transferredAmount = 0;
         if (this.takeCopies === 0) {
-            let lastTransferSuccessful = true;
-            while (lastTransferSuccessful)
-                lastTransferSuccessful = this.clipboard.transferLikeVanilla(container, this.playerContainer, heldItemStack);
+            let lastTransferCompleted = true;
+            while (lastTransferCompleted) {
+                const result = this.clipboard.transferLikeVanilla(container, this.playerContainer, heldItemStack);
+                transferredAmount += result.transferredAmount;
+                lastTransferCompleted = result.completed;
+            }
         } else {
             for (let i = 0; i < this.takeCopies; i++)
-                this.clipboard.transferLikeVanilla(container, this.playerContainer, heldItemStack);
+                transferredAmount += this.clipboard.transferLikeVanilla(container, this.playerContainer, heldItemStack).transferredAmount;
         }
-        if (InventoryUtils.getTotalItemCount(container) === countBefore)
+        if (transferredAmount === 0)
             this.sendNothingTakenFeedback(blockLocalizationKey);
         else
             this.sendTakenFeedback(container, blockLocalizationKey);
@@ -121,6 +128,12 @@ export class ClipboardMode {
         this.player.onScreenDisplay.setActionBar({ rawtext: [
             { translate: 'rules.quickFillContainer.saved.clipboard', with: { rawtext: [{ translate: blockLocalizationKey }] } },
             { text: ` (${container.size}/${container.size})`}
+        ]});
+    }
+
+    sendContainerFullFeedback(blockLocalizationKey) {
+        this.player.onScreenDisplay.setActionBar({ rawtext: [
+            { translate: 'rules.quickFillContainer.filled.full', with: { rawtext: [{ translate: blockLocalizationKey }] } }
         ]});
     }
 

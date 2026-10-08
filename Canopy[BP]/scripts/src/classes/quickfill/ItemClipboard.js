@@ -20,31 +20,35 @@ export class ItemClipboard {
     }
 
     transfer(fromContainer, toContainer, wildcardItemStack = void 0) {
-        let hasTransferredAll = true;
+        const result = { completed: true, transferredAmount: 0 };
         for (let i = 0; i < this.#items.length; i++) {
             if (!this.#items[i])
                 continue;
             const itemStackToFind = this.#wildcardMask[i] && wildcardItemStack ? wildcardItemStack : this.#items[i];
-            const completedTransfer = this.#transferToSlot(fromContainer, toContainer, i, itemStackToFind, this.#items[i].amount);
-            if (!completedTransfer)
-                hasTransferredAll = false;
+            const slotResult = this.#transferToSlot(fromContainer, toContainer, i, itemStackToFind, this.#items[i].amount);
+            result.transferredAmount += slotResult.transferredAmount;
+            if (!slotResult.completed)
+                result.completed = false;
         }
-        return hasTransferredAll;
+        return result;
     }
 
     #transferToSlot(fromContainer, toContainer, slotIndex, itemStack, amount) {
+        if (slotIndex >= toContainer.size)
+            return { completed: false, transferredAmount: 0 };
         let remainingAmount = amount;
+        let totalTransferred = 0;
         while (remainingAmount > 0) {
             const sourceIndex = fromContainer.find(itemStack);
             if (sourceIndex === void 0)
-                return false;
+                return { completed: false, transferredAmount: totalTransferred };
             const sourceItemStack = fromContainer.getItem(sourceIndex);
             const targetItemStack = toContainer.getItem(slotIndex);
             if (targetItemStack && !InventoryUtils.itemsMatch(targetItemStack, sourceItemStack))
-                return false;
+                return { completed: false, transferredAmount: totalTransferred };
             const space = sourceItemStack.maxAmount - (targetItemStack?.amount ?? 0);
             if (space <= 0)
-                return false;
+                return { completed: false, transferredAmount: totalTransferred };
             const transferredAmount = Math.min(remainingAmount, sourceItemStack.amount, space);
             const newTargetItemStack = (targetItemStack ?? sourceItemStack).clone();
             newTargetItemStack.amount = (targetItemStack?.amount ?? 0) + transferredAmount;
@@ -56,29 +60,32 @@ export class ItemClipboard {
                 fromContainer.setItem(sourceIndex, sourceItemStack);
             }
             remainingAmount -= transferredAmount;
+            totalTransferred += transferredAmount;
         }
-        return true;
+        return { completed: true, transferredAmount: totalTransferred };
     }
 
     transferLikeVanilla(fromContainer, toContainer, wildcardItemStack = void 0) {
-        let hasTransferredAll = true;
+        const result = { completed: true, transferredAmount: 0 };
         for (let i = 0; i < this.#items.length; i++) {
             if (!this.#items[i])
                 continue;
             const itemStackToFind = this.#wildcardMask[i] && wildcardItemStack ? wildcardItemStack : this.#items[i];
-            const completedTransfer = this.#transferAmountLikeVanilla(fromContainer, toContainer, itemStackToFind, this.#items[i].amount);
-            if (!completedTransfer)
-                hasTransferredAll = false;
+            const amountResult = this.#transferAmountLikeVanilla(fromContainer, toContainer, itemStackToFind, this.#items[i].amount);
+            result.transferredAmount += amountResult.transferredAmount;
+            if (!amountResult.completed)
+                result.completed = false;
         }
-        return hasTransferredAll;
+        return result;
     }
 
     #transferAmountLikeVanilla(fromContainer, toContainer, itemStack, amount) {
         let remainingAmount = amount;
+        let totalTransferred = 0;
         while (remainingAmount > 0) {
             const sourceIndex = fromContainer.find(itemStack);
             if (sourceIndex === void 0)
-                return false;
+                return { completed: false, transferredAmount: totalTransferred };
             const sourceItemStack = fromContainer.getItem(sourceIndex);
             const itemStackToTransfer = sourceItemStack.clone();
             itemStackToTransfer.amount = Math.min(remainingAmount, sourceItemStack.amount);
@@ -90,27 +97,36 @@ export class ItemClipboard {
                 sourceItemStack.amount -= transferredAmount;
                 fromContainer.setItem(sourceIndex, sourceItemStack);
             }
+            totalTransferred += transferredAmount;
             if (remainderItemStack)
-                return false;
+                return { completed: false, transferredAmount: totalTransferred };
             remainingAmount -= transferredAmount;
         }
-        return true;
+        return { completed: true, transferredAmount: totalTransferred };
     }
 
     insertWithoutCost(container, wildcardItemStack = void 0) {
+        let insertedAmount = 0;
         for (let i = 0; i < this.#items.length; i++) {
             if (!this.#items[i])
                 continue;
-            InventoryUtils.addItemLikeVanilla(container, this.#resolveInsertedItem(i, wildcardItemStack));
+            const itemStack = this.#resolveInsertedItem(i, wildcardItemStack);
+            const remainderItemStack = InventoryUtils.addItemLikeVanilla(container, itemStack);
+            insertedAmount += itemStack.amount - (remainderItemStack?.amount ?? 0);
         }
+        return insertedAmount;
     }
 
     insertIntoEmptySlotsWithoutCost(container, wildcardItemStack = void 0) {
+        let insertedAmount = 0;
         for (let i = 0; i < this.#items.length; i++) {
             if (!this.#items[i])
                 continue;
-            this.#insertIntoEmptySlot(container, this.#resolveInsertedItem(i, wildcardItemStack));
+            const itemStack = this.#resolveInsertedItem(i, wildcardItemStack);
+            if (this.#insertIntoEmptySlot(container, itemStack))
+                insertedAmount += itemStack.amount;
         }
+        return insertedAmount;
     }
 
     #resolveInsertedItem(index, wildcardItemStack) {
@@ -127,15 +143,16 @@ export class ItemClipboard {
             if (container.getItem(i))
                 continue;
             container.setItem(i, itemStack);
-            return;
+            return true;
         }
+        return false;
     }
 
     transferMultiple(fromContainer, toContainer, numCopies, wildcardItemStack = void 0) {
         let i;
         for (i = 0; i < numCopies; i++) {
-            const success = this.transfer(fromContainer, toContainer, wildcardItemStack);
-            if (!success)
+            const { completed } = this.transfer(fromContainer, toContainer, wildcardItemStack);
+            if (!completed)
                 break;
         }
         return i;

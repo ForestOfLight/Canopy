@@ -1,7 +1,7 @@
 import { EntityComponentTypes, GameMode } from "@minecraft/server";
 import { BulkContainer } from "../BulkContainer";
 import { ItemClipboard } from "../ItemClipboard";
-import { InventoryUtils } from "../../InventoryUtils";
+import { quickFillModes } from "./QuickFillModes";
 
 export class BulkMode {
     player;
@@ -15,6 +15,10 @@ export class BulkMode {
 
     destroy() {}
 
+    get name() {
+        return quickFillModes.BULK.name;
+    }
+
     #getBulkClipboard() {
         const clipboard = new ItemClipboard();
         const bulkContainer = new BulkContainer();
@@ -24,21 +28,20 @@ export class BulkMode {
     }
 
     onFillInteraction(container, heldItemStack, blockLocalizationKey) {
-        const countBefore = InventoryUtils.getTotalItemCount(container);
-        if (this.player.getGameMode() === GameMode.Creative)
-            this.clipboard.insertWithoutCost(container, heldItemStack);
-        else
-            this.clipboard.transfer(this.playerContainer, container, heldItemStack);
-        if (InventoryUtils.getTotalItemCount(container) === countBefore)
-            this.sendNothingFilledFeedback(blockLocalizationKey);
+        const transferredAmount = this.player.getGameMode() === GameMode.Creative
+            ? this.clipboard.insertWithoutCost(container, heldItemStack)
+            : this.clipboard.transfer(this.playerContainer, container, heldItemStack).transferredAmount;
+        if (transferredAmount === 0 && container.emptySlotsCount === 0)
+            this.sendContainerFullFeedback(blockLocalizationKey);
+        else if (transferredAmount === 0)
+            this.sendNothingFilledFeedback(blockLocalizationKey, heldItemStack.localizationKey);
         else
             this.sendFilledFeedback(container, blockLocalizationKey, heldItemStack.localizationKey);
     }
 
     onTakeInteraction(container, heldItemStack, blockLocalizationKey) {
-        const countBefore = InventoryUtils.getTotalItemCount(container);
-        this.clipboard.transferLikeVanilla(container, this.playerContainer, heldItemStack);
-        if (InventoryUtils.getTotalItemCount(container) === countBefore)
+        const { transferredAmount } = this.clipboard.transferLikeVanilla(container, this.playerContainer, heldItemStack);
+        if (transferredAmount === 0)
             this.sendNothingTakenFeedback(blockLocalizationKey);
         else
             this.sendTakenFeedback(container, blockLocalizationKey, heldItemStack.localizationKey);
@@ -64,9 +67,15 @@ export class BulkMode {
         ]});
     }
 
-    sendNothingFilledFeedback(blockLocalizationKey) {
+    sendContainerFullFeedback(blockLocalizationKey) {
         this.player.onScreenDisplay.setActionBar({ rawtext: [
-            { translate: 'rules.quickFillContainer.filled.empty', with: { rawtext: [{ translate: blockLocalizationKey }] } }
+            { translate: 'rules.quickFillContainer.filled.full', with: { rawtext: [{ translate: blockLocalizationKey }] } }
+        ]});
+    }
+
+    sendNothingFilledFeedback(blockLocalizationKey, itemStackLocalizationKey) {
+        this.player.onScreenDisplay.setActionBar({ rawtext: [
+            { translate: 'rules.quickFillContainer.filled.noitem', with: { rawtext: [{ translate: blockLocalizationKey }, { translate: itemStackLocalizationKey }] } }
         ]});
     }
 

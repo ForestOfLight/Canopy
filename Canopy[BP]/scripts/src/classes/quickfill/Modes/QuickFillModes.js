@@ -7,3 +7,7 @@ export const quickFillModes = Object.freeze({
     CLIPBOARD: { name: 'clipboard', localizationKey: 'rules.quickFillContainer.mode.clipboard', class: ClipboardMode },
     LOGICAL_BULK: { name: 'logicalBulk', localizationKey: 'rules.quickFillContainer.mode.logicalbulk', class: LogicalBulkMode },
 });
+
+export function getQuickFillModeConfigFromName(name) {
+    return Object.values(quickFillModes).find((m => m.name === name));
+}

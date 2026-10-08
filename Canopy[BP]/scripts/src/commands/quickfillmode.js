@@ -1,6 +1,6 @@
 import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus } from "@minecraft/server";
 import { PlayerCommandOrigin, VanillaCommand } from "../../lib/canopy/Canopy";
-import { quickFillModes } from "../classes/quickfill/Modes/QuickFillModes";
+import { getQuickFillModeConfigFromName, quickFillModes } from "../classes/quickfill/Modes/QuickFillModes";
 import { quickFillContainer } from "../rules/quickFillContainer";
 
 export class QuickFillModeCommand extends VanillaCommand {
@@ -26,7 +26,7 @@ export class QuickFillModeCommand extends VanillaCommand {
                     params: []
                 },
                 clipboard: {
-                    description: "Sets the active mode to Clipboard. Clipboard mode allows you to copy a container's contents to your clipboard and move items matching your clipboard.",
+                    description: "Sets the active mode to Clipboard. Clipboard mode allows you to copy a container's contents to your clipboard and move items that match your clipboard. Clipboards also support wildcards items (decided with the UI at copy time), which will be replaced by the item in your hand when you paste the clipboard.",
                     params: []
                 },
                 logicalBulk: {
@@ -38,11 +38,11 @@ export class QuickFillModeCommand extends VanillaCommand {
     }
 
     quickFillCommand(origin, mode) {
-        const quickFillPlayer = quickFillContainer.getActiveQuickFillPlayer(origin.getSource());
-        const modeConfig = Object.values(quickFillModes).find((m => m.name === mode));
+        const modeConfig = getQuickFillModeConfigFromName(mode);
         if (!modeConfig)
             return { status: CustomCommandStatus.Failure, message: 'commands.quickfillmode.invalidmode' };
-        quickFillPlayer.setMode(modeConfig.class);
+        quickFillContainer.setQuickFillPlayerMode(origin.getSource(), mode);
+        origin.sendMessage({ translate: 'commands.quickfillmode.updated', with: [mode] });
     }
 }
 

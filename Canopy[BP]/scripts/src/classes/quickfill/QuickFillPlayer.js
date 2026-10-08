@@ -1,27 +1,31 @@
 import { BlockComponentTypes, ButtonState, GameMode, InputButton, system } from "@minecraft/server";
 import { BulkMode } from "./Modes/BulkMode";
+import { getQuickFillModeConfigFromName } from "./Modes/QuickFillModes";
 
 export class QuickFillPlayer {
-    #bannedContainers = ['minecraft:beacon', 'minecraft:jukebox', 'minecraft:lectern'];
+    static MODE_DP_IDENTIFIER = 'quickFillModeName';
+    #BANNED_CONTAINERS = ['minecraft:beacon', 'minecraft:jukebox', 'minecraft:lectern'];
+    #mode;
     player;
-    mode;
 
     constructor(player) {
         this.player = player;
-        this.mode = new BulkMode(this.player);
+        const ModeClass = this.#getModeClassFromDP();
+        this.setMode(ModeClass ?? BulkMode);
     }
 
     destroy() {
-        this.mode.destroy();
+        this.#mode.destroy();
     }
 
     setMode(ModeClass) {
-        this.mode.destroy();
-        this.mode = new ModeClass(this.player);
+        this.#mode?.destroy();
+        this.#mode = new ModeClass(this.player);
+        this.player.setDynamicProperty(QuickFillPlayer.MODE_DP_IDENTIFIER, this.#mode.name);
     }
 
     onInteractWithBlock(event) {
-        if (this.#bannedContainers.includes(event.block.typeId))
+        if (this.#BANNED_CONTAINERS.includes(event.block.typeId))
             return;
         const block = event.block;
         const container = this.#getContainer(block);
@@ -36,9 +40,9 @@ export class QuickFillPlayer {
                 container.clearAll();
                 this.player.onScreenDisplay.setActionBar({ rawtext: [{ translate: 'rules.quickFillContainer.cleared', with: { rawtext: [{ translate: block.localizationKey }] } }]});
             } else if (this.#isSneaking()) {
-                this.mode.onTakeInteraction(container, heldItemStack, block.localizationKey);
+                this.#mode.onTakeInteraction(container, heldItemStack, block.localizationKey);
             } else {
-                this.mode.onFillInteraction(container, heldItemStack, block.localizationKey);
+                this.#mode.onFillInteraction(container, heldItemStack, block.localizationKey);
             }
         });
     }
@@ -46,7 +50,7 @@ export class QuickFillPlayer {
     onBreakBlock(event) {
         if (this.player.getGameMode() !== GameMode.Creative)
             return;
-        if (this.#bannedContainers.includes(event.block.typeId))
+        if (this.#BANNED_CONTAINERS.includes(event.block.typeId))
             return;
         const block = event.block;
         const container = this.#getContainer(block);
@@ -54,10 +58,10 @@ export class QuickFillPlayer {
             return;
         if (event.itemStack === void 0)
             return;
-        if (this.mode.hasConfigureInteraction()) {
+        if (this.#mode.hasConfigureInteraction()) {
             event.cancel = true;
             system.run(() => {
-                this.mode.onConfigureInteraction(container, block.localizationKey)
+                this.#mode.onConfigureInteraction(container, block.localizationKey)
             });
         }
     }
@@ -65,14 +69,14 @@ export class QuickFillPlayer {
     onStartBreakingBlock(event) {
         if (this.player.getGameMode() === GameMode.Creative)
             return;
-        if (this.#bannedContainers.includes(event.block.typeId))
+        if (this.#BANNED_CONTAINERS.includes(event.block.typeId))
             return;
         const block = event.block;
         const container = this.#getContainer(block);
         if (!container)
             return;
-        if (this.mode.hasConfigureInteraction())
-            this.mode.onConfigureInteraction(container, block.localizationKey);
+        if (this.#mode.hasConfigureInteraction())
+            this.#mode.onConfigureInteraction(container, block.localizationKey);
     }
 
     #getContainer(block) {
@@ -81,5 +85,11 @@ export class QuickFillPlayer {
 
     #isSneaking() {
         return this.player.inputInfo.getButtonState(InputButton.Sneak) === ButtonState.Pressed;
+    }
+
+    #getModeClassFromDP() {
+        const modeName = this.player.getDynamicProperty(QuickFillPlayer.MODE_DP_IDENTIFIER);
+        const modeConfig = getQuickFillModeConfigFromName(modeName);
+        return modeConfig?.class;
     }
 }

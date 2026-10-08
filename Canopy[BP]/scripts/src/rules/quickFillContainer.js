@@ -1,6 +1,7 @@
 import { world } from "@minecraft/server";
 import { AbilityRule } from "../../lib/canopy/Canopy";
 import { QuickFillPlayer } from "../classes/quickfill/QuickFillPlayer";
+import { getQuickFillModeConfigFromName } from "../classes/quickfill/Modes/QuickFillModes";
 
 class QuickFillContainer extends AbilityRule {
     #quickFillPlayers = [];
@@ -46,6 +47,16 @@ class QuickFillContainer extends AbilityRule {
 
     getActiveQuickFillPlayer(player) {
         return this.#quickFillPlayers.find(quickFillPlayer => quickFillPlayer.player.id === player?.id);
+    }
+
+    setQuickFillPlayerMode(player, modeName) {
+        const quickFillPlayer = this.getActiveQuickFillPlayer(player);
+        if (quickFillPlayer) {
+            const modeConfig = getQuickFillModeConfigFromName(modeName);
+            quickFillPlayer.setMode(modeConfig.class);
+        } else {
+            player.setDynamicProperty(QuickFillPlayer.MODE_DP_IDENTIFIER, modeName);
+        }
     }
 
     #enableQuickFillPlayer(player) {

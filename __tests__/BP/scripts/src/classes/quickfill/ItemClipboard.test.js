@@ -196,7 +196,7 @@ describe('ItemClipboard', () => {
             const from = containerOf(4, { 1: stack('dirt'), 3: stack('stone') });
             const to = containerOf(2);
 
-            expect(clipboard.transfer(from, to)).toBe(true);
+            expect(clipboard.transfer(from, to).completed).toBe(true);
             expect(contents(from)).toEqual([void 0, void 0, void 0, void 0]);
             expect(contents(to)).toEqual([['stone', 1], ['dirt', 1]]);
         });
@@ -206,7 +206,7 @@ describe('ItemClipboard', () => {
             const from = containerOf(2, { 1: stack('stone', 20) });
             const to = containerOf(1);
 
-            expect(clipboard.transfer(from, to)).toBe(true);
+            expect(clipboard.transfer(from, to).completed).toBe(true);
             expect(contents(from)).toEqual([void 0, ['stone', 17]]);
             expect(contents(to)).toEqual([['stone', 3]]);
         });
@@ -216,7 +216,7 @@ describe('ItemClipboard', () => {
             const from = containerOf(3, { 0: stack('stone', 4), 2: stack('stone', 20) });
             const to = containerOf(2);
 
-            expect(clipboard.transfer(from, to)).toBe(true);
+            expect(clipboard.transfer(from, to).completed).toBe(true);
             expect(contents(from)).toEqual([void 0, void 0, ['stone', 14]]);
             expect(contents(to)).toEqual([['stone', 10], void 0]);
         });
@@ -226,7 +226,7 @@ describe('ItemClipboard', () => {
             const from = containerOf(1, { 0: stack('stone', 8) });
             const to = containerOf(2, { 0: stack('stone', 50) });
 
-            expect(clipboard.transfer(from, to)).toBe(true);
+            expect(clipboard.transfer(from, to).completed).toBe(true);
             expect(contents(to)).toEqual([['stone', 58], void 0]);
         });
 
@@ -235,7 +235,7 @@ describe('ItemClipboard', () => {
             const from = containerOf(1, { 0: stack('stone', 8) });
             const to = containerOf(2, { 0: stack('stone', 60) });
 
-            expect(clipboard.transfer(from, to)).toBe(false);
+            expect(clipboard.transfer(from, to).completed).toBe(false);
             expect(contents(to)).toEqual([['stone', 64], void 0]);
             expect(contents(from)).toEqual([['stone', 4]]);
         });
@@ -245,7 +245,7 @@ describe('ItemClipboard', () => {
             const from = containerOf(2, { 0: stack('stone', 2), 1: stack('dirt', 3) });
             const to = containerOf(2, { 0: stack('oak_log', 5) });
 
-            expect(clipboard.transfer(from, to)).toBe(false);
+            expect(clipboard.transfer(from, to).completed).toBe(false);
             expect(contents(to)).toEqual([['oak_log', 5], ['dirt', 3]]);
             expect(contents(from)).toEqual([['stone', 2], void 0]);
         });
@@ -255,7 +255,7 @@ describe('ItemClipboard', () => {
             const from = containerOf(1, { 0: stack('stone', 4) });
             const to = containerOf(1);
 
-            expect(clipboard.transfer(from, to)).toBe(false);
+            expect(clipboard.transfer(from, to).completed).toBe(false);
             expect(contents(from)).toEqual([void 0]);
             expect(contents(to)).toEqual([['stone', 4]]);
         });
@@ -265,7 +265,7 @@ describe('ItemClipboard', () => {
             const from = containerOf(2, { 0: stack('dirt') });
             const to = containerOf(2);
 
-            expect(clipboard.transfer(from, to)).toBe(false);
+            expect(clipboard.transfer(from, to).completed).toBe(false);
             expect(contents(to)).toEqual([void 0, ['dirt', 1]]);
         });
 
@@ -274,7 +274,7 @@ describe('ItemClipboard', () => {
             const from = containerOf(3, { 2: stack('stone', 10) });
             const to = containerOf(1, { 0: stack('stone', 62) });
 
-            expect(clipboard.transfer(from, to)).toBe(false);
+            expect(clipboard.transfer(from, to).completed).toBe(false);
             expect(contents(from)).toEqual([void 0, void 0, ['stone', 8]]);
             expect(contents(to)).toEqual([['stone', 64]]);
         });
@@ -284,7 +284,7 @@ describe('ItemClipboard', () => {
             const from = containerOf(1, { 0: stack('stone', 10) });
             const to = containerOf(1, { 0: stack('dirt', 64) });
 
-            expect(clipboard.transfer(from, to)).toBe(false);
+            expect(clipboard.transfer(from, to).completed).toBe(false);
             expect(contents(from)).toEqual([['stone', 10]]);
             expect(contents(to)).toEqual([['dirt', 64]]);
         });
@@ -295,7 +295,7 @@ describe('ItemClipboard', () => {
             const from = containerOf(3, { 0: stack('stone', 64), 1: stack('oak_log', 64), 2: stack('dirt') });
             const to = containerOf(2);
 
-            expect(clipboard.transfer(from, to, stack('oak_log'))).toBe(true);
+            expect(clipboard.transfer(from, to, stack('oak_log')).completed).toBe(true);
             expect(contents(from)).toEqual([['stone', 64], ['oak_log', 58], void 0]);
             expect(contents(to)).toEqual([['oak_log', 6], ['dirt', 1]]);
         });
@@ -306,7 +306,7 @@ describe('ItemClipboard', () => {
             const from = containerOf(1, { 0: stack('stone') });
             const to = containerOf(1);
 
-            expect(clipboard.transfer(from, to, stack('oak_log'))).toBe(false);
+            expect(clipboard.transfer(from, to, stack('oak_log')).completed).toBe(false);
             expect(contents(from)).toEqual([['stone', 1]]);
             expect(contents(to)).toEqual([void 0]);
         });
@@ -317,7 +317,7 @@ describe('ItemClipboard', () => {
             const from = containerOf(1, { 0: stack('stone') });
             const to = containerOf(1);
 
-            expect(clipboard.transfer(from, to)).toBe(true);
+            expect(clipboard.transfer(from, to).completed).toBe(true);
             expect(contents(to)).toEqual([['stone', 1]]);
         });
 
@@ -325,7 +325,7 @@ describe('ItemClipboard', () => {
             const from = containerOf(1, { 0: stack('stone') });
             const to = containerOf(1);
 
-            expect(clipboard.transfer(from, to)).toBe(true);
+            expect(clipboard.transfer(from, to).completed).toBe(true);
             expect(contents(from)).toEqual([['stone', 1]]);
             expect(contents(to)).toEqual([void 0]);
         });
@@ -337,7 +337,7 @@ describe('ItemClipboard', () => {
             const from = containerOf(1, { 0: stack('stone', 8) });
             const to = containerOf(3, { 0: stack('dirt', 1), 2: stack('stone', 60) });
 
-            expect(clipboard.transferLikeVanilla(from, to)).toBe(true);
+            expect(clipboard.transferLikeVanilla(from, to).completed).toBe(true);
             expect(contents(to)).toEqual([['dirt', 1], ['stone', 4], ['stone', 64]]);
         });
 
@@ -346,7 +346,7 @@ describe('ItemClipboard', () => {
             const from = containerOf(1, { 0: stack('stone', 20) });
             const to = containerOf(2);
 
-            expect(clipboard.transferLikeVanilla(from, to)).toBe(true);
+            expect(clipboard.transferLikeVanilla(from, to).completed).toBe(true);
             expect(contents(from)).toEqual([['stone', 17]]);
             expect(contents(to)).toEqual([['stone', 3], void 0]);
         });
@@ -356,7 +356,7 @@ describe('ItemClipboard', () => {
             const from = containerOf(3, { 0: stack('stone', 4), 2: stack('stone', 20) });
             const to = containerOf(2);
 
-            expect(clipboard.transferLikeVanilla(from, to)).toBe(true);
+            expect(clipboard.transferLikeVanilla(from, to).completed).toBe(true);
             expect(contents(from)).toEqual([void 0, void 0, ['stone', 14]]);
             expect(contents(to)).toEqual([['stone', 10], void 0]);
         });
@@ -366,7 +366,7 @@ describe('ItemClipboard', () => {
             const from = containerOf(1, { 0: stack('stone', 4) });
             const to = containerOf(1);
 
-            expect(clipboard.transferLikeVanilla(from, to)).toBe(false);
+            expect(clipboard.transferLikeVanilla(from, to).completed).toBe(false);
             expect(contents(from)).toEqual([void 0]);
             expect(contents(to)).toEqual([['stone', 4]]);
         });
@@ -376,7 +376,7 @@ describe('ItemClipboard', () => {
             const from = containerOf(1, { 0: stack('stone', 10) });
             const to = containerOf(1, { 0: stack('stone', 60) });
 
-            expect(clipboard.transferLikeVanilla(from, to)).toBe(false);
+            expect(clipboard.transferLikeVanilla(from, to).completed).toBe(false);
             expect(contents(to)).toEqual([['stone', 64]]);
             expect(contents(from)).toEqual([['stone', 6]]);
         });
@@ -386,7 +386,7 @@ describe('ItemClipboard', () => {
             const from = containerOf(1, { 0: stack('stone', 10) });
             const to = containerOf(1, { 0: stack('dirt', 64) });
 
-            expect(clipboard.transferLikeVanilla(from, to)).toBe(false);
+            expect(clipboard.transferLikeVanilla(from, to).completed).toBe(false);
             expect(contents(from)).toEqual([['stone', 10]]);
             expect(contents(to)).toEqual([['dirt', 64]]);
         });
@@ -396,7 +396,7 @@ describe('ItemClipboard', () => {
             const from = containerOf(2, { 0: stack('dirt') });
             const to = containerOf(2);
 
-            expect(clipboard.transferLikeVanilla(from, to)).toBe(false);
+            expect(clipboard.transferLikeVanilla(from, to).completed).toBe(false);
             expect(contents(from)).toEqual([void 0, void 0]);
             expect(contents(to)).toEqual([['dirt', 1], void 0]);
         });
@@ -407,7 +407,7 @@ describe('ItemClipboard', () => {
             const from = containerOf(3, { 0: stack('stone', 64), 1: stack('oak_log', 64), 2: stack('dirt') });
             const to = containerOf(3);
 
-            expect(clipboard.transferLikeVanilla(from, to, stack('oak_log'))).toBe(true);
+            expect(clipboard.transferLikeVanilla(from, to, stack('oak_log')).completed).toBe(true);
             expect(contents(from)).toEqual([['stone', 64], ['oak_log', 58], void 0]);
             expect(contents(to)).toEqual([['oak_log', 6], ['dirt', 1], void 0]);
         });
@@ -418,7 +418,7 @@ describe('ItemClipboard', () => {
             const from = containerOf(2, { 0: stack('stone'), 1: stack('oak_log') });
             const to = containerOf(1);
 
-            expect(clipboard.transferLikeVanilla(from, to)).toBe(true);
+            expect(clipboard.transferLikeVanilla(from, to).completed).toBe(true);
             expect(contents(to)).toEqual([['stone', 1]]);
             expect(contents(from)).toEqual([void 0, ['oak_log', 1]]);
         });
@@ -427,9 +427,45 @@ describe('ItemClipboard', () => {
             const from = containerOf(1, { 0: stack('stone') });
             const to = containerOf(1);
 
-            expect(clipboard.transferLikeVanilla(from, to)).toBe(true);
+            expect(clipboard.transferLikeVanilla(from, to).completed).toBe(true);
             expect(contents(from)).toEqual([['stone', 1]]);
             expect(contents(to)).toEqual([void 0]);
+        });
+    });
+
+    describe('transferred amounts', () => {
+        test('transfer reports the amount moved when only part fits', () => {
+            clipboard.copy(containerOf(1, { 0: stack('stone', 10) }));
+            const from = containerOf(1, { 0: stack('stone', 4) });
+            const to = containerOf(1);
+
+            expect(clipboard.transfer(from, to)).toEqual({ completed: false, transferredAmount: 4 });
+        });
+
+        test('transfer reports zero when nothing moves', () => {
+            clipboard.copy(containerOf(1, { 0: stack('stone', 10) }));
+
+            expect(clipboard.transfer(containerOf(1), containerOf(1))).toEqual({ completed: false, transferredAmount: 0 });
+        });
+
+        test('transferLikeVanilla reports the amount moved when the destination fills up', () => {
+            clipboard.copy(containerOf(1, { 0: stack('stone', 10) }));
+            const from = containerOf(1, { 0: stack('stone', 10) });
+            const to = containerOf(1, { 0: stack('stone', 60) });
+
+            expect(clipboard.transferLikeVanilla(from, to)).toEqual({ completed: false, transferredAmount: 4 });
+        });
+
+        test('insertWithoutCost reports the amount inserted', () => {
+            clipboard.copy(containerOf(2, { 0: stack('stone', 5), 1: stack('dirt', 3) }));
+
+            expect(clipboard.insertWithoutCost(containerOf(2))).toBe(8);
+        });
+
+        test('insertIntoEmptySlotsWithoutCost reports zero when no slot is free', () => {
+            clipboard.copy(containerOf(1, { 0: stack('stone', 5) }));
+
+            expect(clipboard.insertIntoEmptySlotsWithoutCost(containerOf(1, { 0: stack('dirt', 1) }))).toBe(0);
         });
     });
 

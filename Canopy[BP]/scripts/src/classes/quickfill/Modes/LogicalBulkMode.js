@@ -1,7 +1,7 @@
 import { EntityComponentTypes, GameMode } from "@minecraft/server";
 import { BulkContainer } from "../BulkContainer";
 import { ItemClipboard } from "../ItemClipboard";
-import { InventoryUtils } from "../../InventoryUtils";
+import { quickFillModes } from "./QuickFillModes";
 
 export class LogicalBulkMode {
     player;
@@ -15,6 +15,10 @@ export class LogicalBulkMode {
 
     destroy() {}
 
+    get name() {
+        return quickFillModes.LOGICAL_BULK.name;
+    }
+
     #getBulkClipboard() {
         const clipboard = new ItemClipboard();
         const bulkContainer = new BulkContainer();
@@ -25,22 +29,21 @@ export class LogicalBulkMode {
 
     onFillInteraction(container, heldItemStack, blockLocalizationKey) {
         const logicalItemStack = this.#getMostCommonItemStack(container) || heldItemStack;
-        const countBefore = InventoryUtils.getTotalItemCount(container);
-        if (this.player.getGameMode() === GameMode.Creative)
-            this.clipboard.insertWithoutCost(container, logicalItemStack);
-        else
-            this.clipboard.transfer(this.playerContainer, container, logicalItemStack);
-        if (InventoryUtils.getTotalItemCount(container) === countBefore)
-            this.sendNothingFilledFeedback(blockLocalizationKey);
+        const transferredAmount = this.player.getGameMode() === GameMode.Creative
+            ? this.clipboard.insertWithoutCost(container, logicalItemStack)
+            : this.clipboard.transfer(this.playerContainer, container, logicalItemStack).transferredAmount;
+        if (transferredAmount === 0 && container.emptySlotsCount === 0)
+            this.sendContainerFullFeedback(blockLocalizationKey);
+        else if (transferredAmount === 0)
+            this.sendNothingFilledFeedback(blockLocalizationKey, logicalItemStack.localizationKey);
         else
             this.sendFilledFeedback(container, blockLocalizationKey, logicalItemStack.localizationKey);
     }
 
     onTakeInteraction(container, heldItemStack, blockLocalizationKey) {
         const logicalItemStack = this.#getMostCommonItemStack(container) || heldItemStack;
-        const countBefore = InventoryUtils.getTotalItemCount(container);
-        this.clipboard.transferLikeVanilla(container, this.playerContainer, logicalItemStack);
-        if (InventoryUtils.getTotalItemCount(container) === countBefore)
+        const { transferredAmount } = this.clipboard.transferLikeVanilla(container, this.playerContainer, logicalItemStack);
+        if (transferredAmount === 0)
             this.sendNothingTakenFeedback(blockLocalizationKey);
         else
             this.sendTakenFeedback(container, blockLocalizationKey, logicalItemStack.localizationKey);
@@ -88,9 +91,15 @@ export class LogicalBulkMode {
         ]});
     }
 
-    sendNothingFilledFeedback(blockLocalizationKey) {
+    sendContainerFullFeedback(blockLocalizationKey) {
         this.player.onScreenDisplay.setActionBar({ rawtext: [
-            { translate: 'rules.quickFillContainer.filled.empty', with: { rawtext: [{ translate: blockLocalizationKey }] } }
+            { translate: 'rules.quickFillContainer.filled.full', with: { rawtext: [{ translate: blockLocalizationKey }] } }
+        ]});
+    }
+
+    sendNothingFilledFeedback(blockLocalizationKey, itemStackLocalizationKey) {
+        this.player.onScreenDisplay.setActionBar({ rawtext: [
+            { translate: 'rules.quickFillContainer.filled.noitem', with: { rawtext: [{ translate: blockLocalizationKey }, { translate: itemStackLocalizationKey }] } }
         ]});
     }
 

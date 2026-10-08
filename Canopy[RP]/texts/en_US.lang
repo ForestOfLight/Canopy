@@ -339,6 +339,7 @@ commands.pos.relative.nether=§7Relative Nether position: §c%s
 
 commands.quickfillmode=Changes your current Quick Fill mode.
 commands.quickfillmode.invalidmode=§cInvalid Quick Fill mode.
+commands.quickfillmode.updated=§7Quick Fill mode updated to §a%s§7.
 
 commands.retest=Resets spawn tracking, hopper counters, and hopper generators.
 commands.retest.success=§7Reset spawn counters, hopper counters, and hopper generators.
@@ -495,7 +496,9 @@ rules.quickFillContainer.taken.bulk=§7Took all §a%1§7 from §a%2§7
 rules.quickFillContainer.filled.clipboard=§7Added clipboard to §a%1§7
 rules.quickFillContainer.taken.clipboard=§7Took copies of clipboard from §a%1§7
 rules.quickFillContainer.saved.clipboard=§7Copied §a%1§7 to clipboard
+rules.quickFillContainer.filled.full=§a%1§7 is full
 rules.quickFillContainer.filled.empty=§7Nothing to fill §a%1§7 with
+rules.quickFillContainer.filled.noitem=§7No §a%2§7 to fill §a%1§7 with
 rules.quickFillContainer.taken.empty=§7Nothing to take from §a%1§7
 rules.quickFillContainer.cleared=§7Cleared §a%1§7
 rules.quickFillContainer.mode.bulk=Bulk
@@ -505,7 +508,7 @@ rules.quickFillContainer.menu.title=§2Quick Fill Clipboard Options
 rules.quickFillContainer.menu.wildcard=Wildcard Item Type
 rules.quickFillContainer.menu.wildcard.description=The item type to replace with whatever is in your hand when you interact with a container.
 rules.quickFillContainer.menu.takecopies=Copies to Take
-rules.quickFillContainer.menu.takecopies.description=The number of copies of the clipboard to take when taking items.
+rules.quickFillContainer.menu.takecopies.description=The number of copies of the clipboard to take when taking items. Leave at 0 to take as many as possible.
 rules.quickFillContainer.menu.apply=Apply
 rules.refillHand=Refills your hand with items from your inventory when you run out. Put an arrow in inventory slot 10 (next to the top left) to use.
 rules.renderEndGatewayExits=Renders the exit locations of end gateways after passing through them.

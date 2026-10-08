@@ -165,17 +165,26 @@ describe('BulkMode', () => {
             new BulkMode(player).onFillInteraction(container, stack('oak_log'), 'tile.chest.name');
 
             expect(lastActionBar(player)).toEqual({ rawtext: [
-                { translate: 'rules.quickFillContainer.filled.empty', with: ['tile.chest.name'] }
+                { translate: 'rules.quickFillContainer.filled.noitem', with: { rawtext: [{ translate: 'tile.chest.name' }, { translate: 'item.oak_log.name' }] } }
             ]});
         });
 
-        test('says nothing was filled when the container has no room for the held item', () => {
+        test('says the container is full when it has no room for the held item', () => {
             const { player } = playerWith(GameMode.Survival, { 0: stack('oak_log', 10) });
             const container = containerOf(1, { 0: stack('oak_log', 64) });
 
             new BulkMode(player).onFillInteraction(container, stack('oak_log'), 'tile.chest.name');
 
-            expect(lastActionBar(player).rawtext[0].translate).toBe('rules.quickFillContainer.filled.empty');
+            expect(lastActionBar(player).rawtext[0].translate).toBe('rules.quickFillContainer.filled.full');
+        });
+
+        test('says nothing was filled when the container has space but the player has none of the held item', () => {
+            const { player } = playerWith(GameMode.Survival);
+            const container = containerOf(2, { 0: stack('oak_log', 64) });
+
+            new BulkMode(player).onFillInteraction(container, stack('oak_log'), 'tile.chest.name');
+
+            expect(lastActionBar(player).rawtext[0].translate).toBe('rules.quickFillContainer.filled.noitem');
         });
 
         test('names the held item before the container after taking, with the slots left in use', () => {
@@ -227,7 +236,7 @@ describe('BulkMode', () => {
             const keys = [
                 'rules.quickFillContainer.filled.bulk',
                 'rules.quickFillContainer.taken.bulk',
-                'rules.quickFillContainer.filled.empty',
+                'rules.quickFillContainer.filled.noitem',
                 'rules.quickFillContainer.taken.empty'
             ];
             for (const key of keys)
