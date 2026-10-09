@@ -61,7 +61,7 @@ describe('ClipboardMode', () => {
             const form = configure(new ClipboardMode(player), containerOf(1, { 0: stack('stone') }));
 
             expect(form.player).toBe(player);
-            expect(form.title).toBe('rules.quickFillContainer.menu.title');
+            expect(form.title).toEqual({ translate: 'rules.quickFillContainer.menu.title' });
             expect(form.show).toHaveBeenCalledTimes(1);
         });
 
@@ -71,7 +71,7 @@ describe('ClipboardMode', () => {
             const form = configure(new ClipboardMode(player), containerOf(2, { 0: stack('stone'), 1: stack('dirt') }));
             const dropdown = form.getControl('dropdown');
 
-            expect(dropdown.label).toBe('rules.quickFillContainer.menu.wildcard');
+            expect(dropdown.label).toEqual({ translate: 'rules.quickFillContainer.menu.wildcard' });
             expect(dropdown.items.map(item => item.label)).toEqual(['None', 'minecraft:stone', 'minecraft:dirt']);
             expect(dropdown.observable.getData()).toBe(0);
         });
@@ -81,7 +81,7 @@ describe('ClipboardMode', () => {
 
             const slider = configure(new ClipboardMode(player), containerOf(1)).getControl('slider');
 
-            expect(slider.label).toBe('rules.quickFillContainer.menu.takecopies');
+            expect(slider.label).toEqual({ translate: 'rules.quickFillContainer.menu.takecopies' });
             expect([slider.min, slider.max, slider.options.step]).toEqual([0, 64, 1]);
             expect(slider.observable.getData()).toBe(0);
         });
@@ -186,7 +186,7 @@ describe('ClipboardMode', () => {
             const form = configure(new ClipboardMode(player), containerOf(1));
 
             expect(form.getControl('closeButton')).toBeDefined();
-            expect(form.getControl('button').label).toBe('rules.quickFillContainer.menu.apply');
+            expect(form.getControl('button').label).toEqual({ translate: 'rules.quickFillContainer.menu.apply' });
         });
     });
 
@@ -352,7 +352,7 @@ describe('ClipboardMode', () => {
             mode.onFillInteraction(container, stack('stone'), 'tile.chest.name');
 
             expect(lastActionBar(player)).toEqual({ rawtext: [
-                { translate: 'rules.quickFillContainer.filled.clipboard', with: ['tile.chest.name'] },
+                { translate: 'rules.quickFillContainer.filled.clipboard', with: { rawtext: [{ translate: 'tile.chest.name' }] } },
                 { text: ' (12)' }
             ]});
         });
@@ -364,7 +364,7 @@ describe('ClipboardMode', () => {
             new ClipboardMode(player).onFillInteraction(container, stack('stone'), 'tile.chest.name');
 
             expect(lastActionBar(player)).toEqual({ rawtext: [
-                { translate: 'rules.quickFillContainer.filled.empty', with: ['tile.chest.name'] }
+                { translate: 'rules.quickFillContainer.filled.empty', with: { rawtext: [{ translate: 'tile.chest.name' }] } }
             ]});
         });
 
@@ -389,7 +389,7 @@ describe('ClipboardMode', () => {
             mode.onTakeInteraction(container, stack('stone'), 'tile.chest.name');
 
             expect(lastActionBar(player)).toEqual({ rawtext: [
-                { translate: 'rules.quickFillContainer.taken.clipboard', with: { rawtext: [{ translate: 'tile.chest.name' }, { text: '1' }] } },
+                { translate: 'rules.quickFillContainer.taken.clipboard', with: { rawtext: [{ text: '1' }, { translate: 'tile.chest.name' }] } },
                 { text: ' (2)' }
             ]});
         });
@@ -404,7 +404,7 @@ describe('ClipboardMode', () => {
             mode.onTakeInteraction(container, stack('stone'), 'tile.chest.name');
 
             expect(lastActionBar(player)).toEqual({ rawtext: [
-                { translate: 'rules.quickFillContainer.taken.clipboard', with: { rawtext: [{ translate: 'tile.chest.name' }, { text: '3' }] } },
+                { translate: 'rules.quickFillContainer.taken.clipboard', with: { rawtext: [{ text: '3' }, { translate: 'tile.chest.name' }] } },
                 { text: ' (6)' }
             ]});
         });
@@ -416,7 +416,7 @@ describe('ClipboardMode', () => {
             new ClipboardMode(player).onTakeInteraction(container, stack('stone'), 'tile.chest.name');
 
             expect(lastActionBar(player)).toEqual({ rawtext: [
-                { translate: 'rules.quickFillContainer.taken.empty', with: ['tile.chest.name'] }
+                { translate: 'rules.quickFillContainer.taken.empty', with: { rawtext: [{ translate: 'tile.chest.name' }] } }
             ]});
         });
 
@@ -429,7 +429,7 @@ describe('ClipboardMode', () => {
             mode.onTakeInteraction(container, stack('stone'), 'tile.chest.name');
 
             expect(lastActionBar(player)).toEqual({ rawtext: [
-                { translate: 'rules.quickFillContainer.taken.empty', with: ['tile.chest.name'] }
+                { translate: 'rules.quickFillContainer.taken.empty', with: { rawtext: [{ translate: 'tile.chest.name' }] } }
             ]});
         });
 
@@ -442,7 +442,7 @@ describe('ClipboardMode', () => {
             apply(CustomForm.instances.at(-1));
 
             expect(lastActionBar(player)).toEqual({ rawtext: [
-                { translate: 'rules.quickFillContainer.saved.clipboard', with: ['tile.chest.name'] },
+                { translate: 'rules.quickFillContainer.saved.clipboard', with: { rawtext: [{ translate: 'tile.chest.name' }] } },
                 { text: ' (3)' }
             ]});
         });

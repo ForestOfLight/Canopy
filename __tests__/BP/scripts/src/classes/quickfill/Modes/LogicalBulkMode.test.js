@@ -93,7 +93,7 @@ describe('LogicalBulkMode', () => {
             new LogicalBulkMode(player).onFillInteraction(container, stack('oak_log'), 'tile.chest.name');
 
             expect(lastActionBar(player)).toEqual({ rawtext: [
-                { translate: 'rules.quickFillContainer.filled.bulk', with: ['tile.chest.name', 'item.oak_log.name'] },
+                { translate: 'rules.quickFillContainer.filled.bulk', with: { rawtext: [{ translate: 'tile.chest.name' }, { translate: 'item.oak_log.name' }] } },
                 { text: ' (192)' }
             ]});
         });
@@ -105,7 +105,7 @@ describe('LogicalBulkMode', () => {
             new LogicalBulkMode(player).onFillInteraction(container, stack('oak_log'), 'tile.chest.name');
 
             expect(countOf(container, 'stone')).toBe(128);
-            expect(lastActionBar(player).rawtext[0].with).toEqual(['tile.chest.name', 'item.stone.name']);
+            expect(lastActionBar(player).rawtext[0].with).toEqual({ rawtext: [{ translate: 'tile.chest.name' }, { translate: 'item.stone.name' }] });
         });
 
         test('counts only the items that were actually transferred', () => {
@@ -124,7 +124,7 @@ describe('LogicalBulkMode', () => {
             new LogicalBulkMode(player).onTakeInteraction(container, stack('oak_log'), 'tile.chest.name');
 
             expect(lastActionBar(player)).toEqual({ rawtext: [
-                { translate: 'rules.quickFillContainer.taken.bulk', with: ['item.stone.name', 'tile.chest.name'] },
+                { translate: 'rules.quickFillContainer.taken.bulk', with: { rawtext: [{ translate: 'item.stone.name' }, { translate: 'tile.chest.name' }] } },
                 { text: ' (10)' }
             ]});
         });

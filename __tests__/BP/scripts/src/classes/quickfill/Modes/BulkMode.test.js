@@ -144,7 +144,7 @@ describe('BulkMode', () => {
             new BulkMode(player).onFillInteraction(container, stack('oak_log'), 'tile.chest.name');
 
             expect(lastActionBar(player)).toEqual({ rawtext: [
-                { translate: 'rules.quickFillContainer.filled.bulk', with: ['tile.chest.name', 'item.oak_log.name'] },
+                { translate: 'rules.quickFillContainer.filled.bulk', with: { rawtext: [{ translate: 'tile.chest.name' }, { translate: 'item.oak_log.name' }] } },
                 { text: ' (192)' }
             ]});
         });
@@ -194,7 +194,7 @@ describe('BulkMode', () => {
             new BulkMode(player).onTakeInteraction(container, stack('oak_log'), 'tile.chest.name');
 
             expect(lastActionBar(player)).toEqual({ rawtext: [
-                { translate: 'rules.quickFillContainer.taken.bulk', with: ['item.oak_log.name', 'tile.chest.name'] },
+                { translate: 'rules.quickFillContainer.taken.bulk', with: { rawtext: [{ translate: 'item.oak_log.name' }, { translate: 'tile.chest.name' }] } },
                 { text: ' (10)' }
             ]});
         });
