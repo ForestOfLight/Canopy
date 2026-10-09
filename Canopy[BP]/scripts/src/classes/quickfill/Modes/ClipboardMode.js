@@ -63,9 +63,10 @@ export class ClipboardMode extends QuickFillMode {
         } else {
             for (let i = 0; i < this.takeCopies; i++) {
                 const result = this.#takeFromContainer(container, heldItemStack);
+                if (result.transferredAmount === 0)
+                    break;
                 transferredAmount += result.transferredAmount;
-                if (result.transferredAmount > 0)
-                    copiesTaken++;
+                copiesTaken++;
             }
         }
         if (transferredAmount === 0)
@@ -113,17 +114,16 @@ export class ClipboardMode extends QuickFillMode {
     }
 
     getDropdownItems(container) {
-        const items = [];
+        const dropdownItems = [{ label: 'None', value: 0 }];
+        const seenLabels = new Set(['None']);
         for (let i = 0; i < container.size; i++) {
             const itemStack = container.getItem(i);
-            if (itemStack)
-                items.push(itemStack);
+            if (!itemStack || seenLabels.has(itemStack.typeId))
+                continue;
+            seenLabels.add(itemStack.typeId);
+            dropdownItems.push({ label: itemStack.typeId, value: dropdownItems.length });
         }
-        return items.reduce((uniqueItems, item) => {
-            if (!uniqueItems.some(entry => entry.label === item.typeId))
-                uniqueItems.push({ label: item.typeId, value: uniqueItems.length });
-            return uniqueItems;
-        }, [{ label: 'None', value: 0 }]);
+        return dropdownItems;
     }
 
     #onAppliedCopy(container, { observableWildcard, observableTakeCopies, dropdownItems }, blockLocalizationKey) {

@@ -20,29 +20,43 @@ export class MergeMode extends QuickFillMode {
     }
 
     #mergeInto(from, to) {
-        const templates = this.#getDistinctItemStacks(to);
+        const templatesByTypeId = this.#getDistinctItemStacksByTypeId(to);
+        const fullItemStacks = [];
         let totalTransferred = 0;
         for (let i = 0; i < from.size; i++) {
             const itemStack = from.getItem(i);
-            if (!itemStack || !templates.some(template => InventoryUtils.itemsMatch(template, itemStack)))
+            if (!itemStack || !this.#matchesAny(templatesByTypeId.get(itemStack.typeId), itemStack))
+                continue;
+            if (this.#matchesAny(fullItemStacks, itemStack))
                 continue;
             const remainderItemStack = VanillaTransferStrategy.put(to, i, itemStack);
             const transferredAmount = itemStack.amount - (remainderItemStack?.amount ?? 0);
             if (transferredAmount > 0)
-                SlotTransferStrategy.consume(from, { index: i }, transferredAmount);
+                SlotTransferStrategy.consume(from, { index: i, stack: itemStack }, transferredAmount);
+            if (remainderItemStack)
+                fullItemStacks.push(remainderItemStack);
             totalTransferred += transferredAmount;
         }
         return totalTransferred;
     }
 
-    #getDistinctItemStacks(container) {
-        const itemStacks = [];
+    #matchesAny(itemStacks, itemStack) {
+        return itemStacks?.some(entry => InventoryUtils.itemsMatch(entry, itemStack)) ?? false;
+    }
+
+    #getDistinctItemStacksByTypeId(container) {
+        const itemStacksByTypeId = new Map();
         for (let i = 0; i < container.size; i++) {
             const itemStack = container.getItem(i);
-            if (itemStack && !itemStacks.some(entry => InventoryUtils.itemsMatch(entry, itemStack)))
+            if (!itemStack)
+                continue;
+            const itemStacks = itemStacksByTypeId.get(itemStack.typeId);
+            if (!itemStacks)
+                itemStacksByTypeId.set(itemStack.typeId, [itemStack]);
+            else if (!this.#matchesAny(itemStacks, itemStack))
                 itemStacks.push(itemStack);
         }
-        return itemStacks;
+        return itemStacksByTypeId;
     }
 
     getFilledFeedback(container, transferredAmount, blockLocalizationKey) {

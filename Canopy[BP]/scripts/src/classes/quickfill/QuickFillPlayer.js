@@ -31,12 +31,12 @@ export class QuickFillPlayer {
     onInteractWithBlock(event) {
         if (this.#BANNED_CONTAINERS.includes(event.block.typeId))
             return;
+        const heldItemStack = event.itemStack;
+        if (heldItemStack === void 0)
+            return;
         const block = event.block;
         const container = this.#getContainer(block);
         if (!container)
-            return;
-        const heldItemStack = event.itemStack;
-        if (heldItemStack === void 0)
             return;
         event.cancel = true;
         if (!event.isFirstEvent)
@@ -58,18 +58,16 @@ export class QuickFillPlayer {
             return;
         if (this.#BANNED_CONTAINERS.includes(event.block.typeId))
             return;
+        if (event.itemStack === void 0 || !this.#mode.hasConfigureInteraction())
+            return;
         const block = event.block;
         const container = this.#getContainer(block);
         if (!container)
             return;
-        if (event.itemStack === void 0)
-            return;
-        if (this.#mode.hasConfigureInteraction()) {
-            event.cancel = true;
-            system.run(() => {
-                this.#mode.onConfigureInteraction(container, block.localizationKey)
-            });
-        }
+        event.cancel = true;
+        system.run(() => {
+            this.#mode.onConfigureInteraction(container, block.localizationKey)
+        });
     }
 
     onStartBreakingBlock(event) {
@@ -77,14 +75,13 @@ export class QuickFillPlayer {
             return;
         if (this.#BANNED_CONTAINERS.includes(event.block.typeId))
             return;
+        if (event.heldItemStack === void 0 || !this.#mode.hasConfigureInteraction())
+            return;
         const block = event.block;
         const container = this.#getContainer(block);
         if (!container)
             return;
-        if (event.heldItemStack === void 0)
-            return;
-        if (this.#mode.hasConfigureInteraction())
-            this.#mode.onConfigureInteraction(container, block.localizationKey);
+        this.#mode.onConfigureInteraction(container, block.localizationKey);
     }
 
     #getContainer(block) {

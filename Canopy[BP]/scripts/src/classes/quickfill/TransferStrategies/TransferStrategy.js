@@ -1,4 +1,6 @@
 export class TransferStrategy {
+    static ignoresSlotIndex = false;
+
     static peek() {
         throw new Error('peek() must be implemented');
     }

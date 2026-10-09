@@ -2,6 +2,8 @@ import { SlotTransferStrategy } from "./SlotTransferStrategy";
 import { TransferStrategy } from "./TransferStrategy";
 
 export class SearchTransferStrategy extends TransferStrategy {
+    static ignoresSlotIndex = true;
+
     static peek(container, slotIndex, itemStackToFind) {
         const index = container.find(itemStackToFind);
         if (index === void 0)

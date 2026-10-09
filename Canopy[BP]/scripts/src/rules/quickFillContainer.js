@@ -4,7 +4,7 @@ import { QuickFillPlayer } from "../classes/quickfill/QuickFillPlayer";
 import { getQuickFillModeConfigFromName } from "../classes/quickfill/Modes/QuickFillModes";
 
 class QuickFillContainer extends AbilityRule {
-    #quickFillPlayers = [];
+    #quickFillPlayers = new Map();
 
     constructor() {
         super({
@@ -19,9 +19,9 @@ class QuickFillContainer extends AbilityRule {
                 world.beforeEvents.playerInteractWithBlock.unsubscribe(this.onPlayerInteractWithBlockBound);
                 world.beforeEvents.playerBreakBlock.unsubscribe(this.onPlayerBreakBlockBound);
                 world.afterEvents.playerStartBreakingBlock.unsubscribe(this.onPlayerStartBreakingBlockBound);
-                for (const quickFillPlayer of this.#quickFillPlayers)
+                for (const quickFillPlayer of this.#quickFillPlayers.values())
                     quickFillPlayer.destroy();
-                this.#quickFillPlayers.length = 0;
+                this.#quickFillPlayers.clear();
             }
         }, {
             slotNumber: 9,
@@ -46,7 +46,7 @@ class QuickFillContainer extends AbilityRule {
     }
 
     getActiveQuickFillPlayer(player) {
-        return this.#quickFillPlayers.find(quickFillPlayer => quickFillPlayer.player.id === player?.id);
+        return this.#quickFillPlayers.get(player?.id);
     }
 
     setQuickFillPlayerMode(player, modeName) {
@@ -60,18 +60,15 @@ class QuickFillContainer extends AbilityRule {
     }
 
     #enableQuickFillPlayer(player) {
-        let quickFillPlayer = this.getActiveQuickFillPlayer(player);
-        if (!quickFillPlayer) {
-            quickFillPlayer = new QuickFillPlayer(player);
-            this.#quickFillPlayers.push(quickFillPlayer);
-        }
+        if (!this.getActiveQuickFillPlayer(player))
+            this.#quickFillPlayers.set(player.id, new QuickFillPlayer(player));
     }
 
     #disableQuickFillPlayer(player) {
         const quickFillPlayer = this.getActiveQuickFillPlayer(player);
         if (!quickFillPlayer)
             return;
-        this.#quickFillPlayers.splice(this.#quickFillPlayers.indexOf(quickFillPlayer), 1);
+        this.#quickFillPlayers.delete(player.id);
         quickFillPlayer.destroy();
     }
 }

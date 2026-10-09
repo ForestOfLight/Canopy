@@ -3,7 +3,7 @@ import { TransferStrategy } from "./TransferStrategy";
 
 export class SlotTransferStrategy extends TransferStrategy {
     static consume(container, found, amount) {
-        const itemStack = container.getItem(found.index);
+        const itemStack = found.stack ?? container.getItem(found.index);
         if (amount >= itemStack.amount) {
             container.setItem(found.index, void 0);
             return;
