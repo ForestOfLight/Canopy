@@ -34,7 +34,7 @@ export class QuickFillModeCommand extends VanillaCommand {
                     params: []
                 },
                 merge: {
-                    description: 'Sets the active mode to Merge. Merge mode moves all items that match any item already in the destination: filling moves your matching items into the container, and taking moves the container\'s matching items into your inventory.',
+                    description: 'Sets the active mode to Merge. Merge mode moves all items that match any item already in the container.',
                     params: []
                 }
             }
