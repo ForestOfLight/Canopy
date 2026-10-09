@@ -1,26 +1,19 @@
 import { system } from "@minecraft/server";
+import { getAllDimensionIds } from "../../include/utils";
 
-export const Dimension = Object.freeze({
-    Overworld: 'overworld',
-    Nether: 'nether',
-    TheEnd: 'the_end',
-    OverworldShort: 'o',
-    NetherShort: 'n',
-    TheEndShort: 'e',
-    End: 'end'
-});
+export const dimension = getAllDimensionIds();
 
-export const StartStop = Object.freeze({
-    Start: 'start',
-    Stop: 'stop'
-});
-
-const enums = { Dimension, StartStop };
+const enums = { dimension };
 
 system.beforeEvents.startup.subscribe((event) => {
     const commandRegistry = event.customCommandRegistry;
-    Object.keys(enums).forEach(key => {
-        const name = 'canopy:' + key.toLowerCase();
-        commandRegistry.registerEnum(name, Object.values(enums[key]));
+    Object.keys(enums).forEach(enumKey => {
+        const name = 'canopy:' + enumKey.toLowerCase();
+        if (typeof enums[enumKey] !== "object" || enums[enumKey] === null)
+            throw new TypeError(`Enum ${enumKey} must be an object or array`);
+        if (Array.isArray(enums[enumKey]))
+            commandRegistry.registerEnum(name, enums[enumKey]);
+        else
+            commandRegistry.registerEnum(name, Object.values(enums[enumKey]));
     });
 });

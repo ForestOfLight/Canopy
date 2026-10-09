@@ -268,3 +268,7 @@ export function hexToRGB(hex) {
         blue: (num & 0xFF) / 255
     };
 }
+
+export function getAllDimensionIds() {
+	return DimensionTypes.getAll().map(dimensionType => dimensionType.typeId.replace('minecraft:', ''));
+}

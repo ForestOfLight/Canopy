@@ -108,11 +108,11 @@ commands.canopy.menu.submit=§aApply
 commands.canopy.single=Modifies the value of a single rule.
 commands.canopy.infodisplayRule=§cThe rule '%1' is part of the InfoDisplay, and must be toggled using %2info. Use %2help for more information.
 
-commands.changedimension=Teleports entities to the specified dimension.
-commands.changedimension.notfound=§cInvalid dimension.
-commands.changedimension.success.coords=§7Teleported to %1 in the %2§7.
-commands.changedimension.success=§7Changed to the %s§7.
-commands.changedimension.fail.coords=§cInvalid coordinates. Please provide all x, y, z numeric values or none.
+commands.dimensionalteleport=Teleports entities to the specified dimension.
+commands.dimensionalteleport.notfound=§cInvalid dimension.
+commands.dimensionalteleport.success.coords=§7Teleported to %1 in the %2§7.
+commands.dimensionalteleport.success=§7Changed to the %s§7.
+commands.dimensionalteleport.fail.coords=§cInvalid coordinates. Please provide all x, y, z numeric values or none.
 
 commands.claimprojectiles=Changes the owner of all projectiles within a radius.
 commands.claimprojectiles.fail.sourcenotplayer=§cSpecify a player to use this command.

@@ -69,11 +69,11 @@ commands.canopy.menu.submit=§aYmgeisiwch
 commands.canopy.single=Yn addasu gwerth rheol sengl.
 commands.canopy.infodisplayRule=§cMae'r rheol '%1' yn rhan o'r GwybodaethArddangos, a rhaid ei newid gan ddefnyddio %2info. Defnyddiwch %2help am ragor o wybodaeth.
 
-commands.changedimension=Yn teleportio endidau i'r dimensiwn penodedig.
-commands.changedimension.notfound=§cDimensiwn annilys.
-commands.changedimension.success.coords=§7Teleportiwyd i %1 yn y %2§7.
-commands.changedimension.success=§7Wedi newid i'r  %s§7.
-commands.changedimension.fail.coords=§cCyfesurynnau annilys. Rhowch yr holl werthoedd rhifol x, y, z neu ddim byd o gwbl. 
+commands.dimensionalteleport=Yn teleportio endidau i'r dimensiwn penodedig.
+commands.dimensionalteleport.notfound=§cDimensiwn annilys.
+commands.dimensionalteleport.success.coords=§7Teleportiwyd i %1 yn y %2§7.
+commands.dimensionalteleport.success=§7Wedi newid i'r  %s§7.
+commands.dimensionalteleport.fail.coords=§cCyfesurynnau annilys. Rhowch yr holl werthoedd rhifol x, y, z neu ddim byd o gwbl. 
 
 commands.claimprojectiles=Yn newid perchennog yr holl daflegrau o fewn radiws.
 commands.claimprojectiles.fail.sourcenotplayer=§cNodwch chwaraewr i ddefnyddio'r gorchymyn hwn. 
