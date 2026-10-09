@@ -6,6 +6,7 @@ import { quickFillModes } from "../../../../../Canopy[BP]/scripts/src/classes/qu
 import { BulkMode } from "../../../../../Canopy[BP]/scripts/src/classes/quickfill/Modes/BulkMode";
 import { ClipboardMode } from "../../../../../Canopy[BP]/scripts/src/classes/quickfill/Modes/ClipboardMode";
 import { LogicalBulkMode } from "../../../../../Canopy[BP]/scripts/src/classes/quickfill/Modes/LogicalBulkMode";
+import { MergeMode } from "../../../../../Canopy[BP]/scripts/src/classes/quickfill/Modes/MergeMode";
 import { PlayerCommandOrigin } from "../../../../../Canopy[BP]/scripts/lib/canopy/Canopy";
 
 describe('quickfillmode command', () => {
@@ -58,7 +59,8 @@ describe('quickfillmode command', () => {
         it.each([
             ['bulk', BulkMode],
             ['clipboard', ClipboardMode],
-            ['logicalBulk', LogicalBulkMode]
+            ['logicalBulk', LogicalBulkMode],
+            ['merge', MergeMode]
         ])('switches the caller to %s mode', (modeName, ModeClass) => {
             quickFillModeCommand.quickFillCommand(origin, modeName === 'bulk' ? 'clipboard' : 'bulk');
 

@@ -4,6 +4,7 @@ import { quickFillModes } from "../../../../../../../Canopy[BP]/scripts/src/clas
 import { BulkMode } from "../../../../../../../Canopy[BP]/scripts/src/classes/quickfill/Modes/BulkMode";
 import { ClipboardMode } from "../../../../../../../Canopy[BP]/scripts/src/classes/quickfill/Modes/ClipboardMode";
 import { LogicalBulkMode } from "../../../../../../../Canopy[BP]/scripts/src/classes/quickfill/Modes/LogicalBulkMode";
+import { MergeMode } from "../../../../../../../Canopy[BP]/scripts/src/classes/quickfill/Modes/MergeMode";
 
 const enLang = readFileSync(new URL("../../../../../../../Canopy[RP]/texts/en_US.lang", import.meta.url), 'utf8');
 const langKeys = new Set(enLang.split('\n').map(line => line.split('=')[0].trim()));
@@ -15,6 +16,7 @@ describe('quickFillModes', () => {
         expect(quickFillModes.BULK.class).toBe(BulkMode);
         expect(quickFillModes.CLIPBOARD.class).toBe(ClipboardMode);
         expect(quickFillModes.LOGICAL_BULK.class).toBe(LogicalBulkMode);
+        expect(quickFillModes.MERGE.class).toBe(MergeMode);
     });
 
     test('uses a unique command name per mode', () => {

@@ -32,6 +32,10 @@ export class QuickFillModeCommand extends VanillaCommand {
                 logicalBulk: {
                     description: 'Sets the active mode to Logical Bulk. Logical Bulk mode moves all items that match the dominant item in a container.',
                     params: []
+                },
+                merge: {
+                    description: 'Sets the active mode to Merge. Merge mode moves all items that match any item already in the destination: filling moves your matching items into the container, and taking moves the container\'s matching items into your inventory.',
+                    params: []
                 }
             }
         });
