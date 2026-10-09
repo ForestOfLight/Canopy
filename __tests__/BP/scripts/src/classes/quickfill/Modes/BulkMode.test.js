@@ -137,7 +137,7 @@ describe('BulkMode', () => {
     });
 
     describe('action bar feedback', () => {
-        test('names the container and the held item after filling, with the slots now in use', () => {
+        test('names the container and the held item after filling, with the amount transferred', () => {
             const { player } = playerWith(GameMode.Creative);
             const container = containerOf(3);
 
@@ -145,17 +145,17 @@ describe('BulkMode', () => {
 
             expect(lastActionBar(player)).toEqual({ rawtext: [
                 { translate: 'rules.quickFillContainer.filled.bulk', with: ['tile.chest.name', 'item.oak_log.name'] },
-                { text: ' (3/3)' }
+                { text: ' (192)' }
             ]});
         });
 
-        test('counts only the slots that were actually filled', () => {
+        test('counts only the items that were actually transferred', () => {
             const { player } = playerWith(GameMode.Survival, { 0: stack('oak_log', 10) });
             const container = containerOf(3);
 
             new BulkMode(player).onFillInteraction(container, stack('oak_log'), 'tile.chest.name');
 
-            expect(lastActionBar(player).rawtext[1]).toEqual({ text: ' (1/3)' });
+            expect(lastActionBar(player).rawtext[1]).toEqual({ text: ' (10)' });
         });
 
         test('says nothing was filled when the player has none of the held item', () => {
@@ -187,7 +187,7 @@ describe('BulkMode', () => {
             expect(lastActionBar(player).rawtext[0].translate).toBe('rules.quickFillContainer.filled.noitem');
         });
 
-        test('names the held item before the container after taking, with the slots left in use', () => {
+        test('names the held item before the container after taking, with the amount taken', () => {
             const { player } = playerWith(GameMode.Survival);
             const container = containerOf(2, { 0: stack('oak_log', 10), 1: stack('dirt', 5) });
 
@@ -195,7 +195,7 @@ describe('BulkMode', () => {
 
             expect(lastActionBar(player)).toEqual({ rawtext: [
                 { translate: 'rules.quickFillContainer.taken.bulk', with: ['item.oak_log.name', 'tile.chest.name'] },
-                { text: ' (1/2)' }
+                { text: ' (10)' }
             ]});
         });
 
@@ -206,7 +206,7 @@ describe('BulkMode', () => {
             new BulkMode(player).onTakeInteraction(container, stack('oak_log'), 'tile.chest.name');
 
             expect(lastActionBar(player)).toEqual({ rawtext: [
-                { translate: 'rules.quickFillContainer.taken.empty', with: ['tile.chest.name'] }
+                { translate: 'rules.quickFillContainer.taken.noitem', with: { rawtext: [{ translate: 'tile.chest.name' }, { translate: 'item.oak_log.name' }] } }
             ]});
         });
 
@@ -218,7 +218,9 @@ describe('BulkMode', () => {
 
             mode.onTakeInteraction(container, stack('oak_log'), 'tile.chest.name');
 
-            expect(lastActionBar(player).rawtext[0].translate).toBe('rules.quickFillContainer.taken.empty');
+            expect(lastActionBar(player)).toEqual({ rawtext: [
+                { translate: 'rules.quickFillContainer.taken.nospace', with: { rawtext: [{ translate: 'tile.chest.name' }, { translate: 'item.oak_log.name' }] } }
+            ]});
         });
 
         test('sends exactly one action bar message per interaction', () => {
@@ -237,7 +239,7 @@ describe('BulkMode', () => {
                 'rules.quickFillContainer.filled.bulk',
                 'rules.quickFillContainer.taken.bulk',
                 'rules.quickFillContainer.filled.noitem',
-                'rules.quickFillContainer.taken.empty'
+                'rules.quickFillContainer.taken.noitem'
             ];
             for (const key of keys)
                 expect(langKeys.has(key), key).toBe(true);

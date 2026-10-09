@@ -14,6 +14,10 @@ export class QuickFillPlayer {
         this.setMode(ModeClass ?? BulkMode);
     }
 
+    get mode() {
+        return this.#mode;
+    }
+
     destroy() {
         this.#mode.destroy();
     }
@@ -35,6 +39,8 @@ export class QuickFillPlayer {
         if (heldItemStack === void 0)
             return;
         event.cancel = true;
+        if (!event.isFirstEvent)
+            return;
         system.run(() => {
             if (this.#isSneaking() && this.player.getGameMode() === GameMode.Creative) {
                 container.clearAll();
@@ -74,6 +80,8 @@ export class QuickFillPlayer {
         const block = event.block;
         const container = this.#getContainer(block);
         if (!container)
+            return;
+        if (event.heldItemStack === void 0)
             return;
         if (this.#mode.hasConfigureInteraction())
             this.#mode.onConfigureInteraction(container, block.localizationKey);

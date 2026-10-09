@@ -12,13 +12,12 @@ const blockWith = (container, typeId = 'minecraft:chest') => ({
     getComponent: vi.fn(type => type === BlockComponentTypes.Inventory && container ? { container } : void 0)
 });
 
-const fakeMode = ({ configurable = false } = {}) => ({
-    destroy: vi.fn(),
-    onFillInteraction: vi.fn(),
-    onTakeInteraction: vi.fn(),
-    onConfigureInteraction: vi.fn(),
-    hasConfigureInteraction: vi.fn(() => configurable)
-});
+const stubMode = (mode, { configurable = false } = {}) => {
+    for (const method of ['destroy', 'onFillInteraction', 'onTakeInteraction', 'onConfigureInteraction'])
+        vi.spyOn(mode, method).mockImplementation(() => void 0);
+    vi.spyOn(mode, 'hasConfigureInteraction').mockReturnValue(configurable);
+    return mode;
+};
 
 const makePlayer = ({ gameMode = GameMode.Survival, sneaking = false } = {}) => {
     const player = new Player();
@@ -30,7 +29,8 @@ const makePlayer = ({ gameMode = GameMode.Survival, sneaking = false } = {}) => 
 const makeQuickFillPlayer = (playerOptions, modeOptions) => {
     const player = makePlayer(playerOptions);
     const quickFillPlayer = new QuickFillPlayer(player);
-    quickFillPlayer.mode = fakeMode(modeOptions);
+    quickFillPlayer.setMode(ClipboardMode);
+    stubMode(quickFillPlayer.mode, modeOptions);
     return quickFillPlayer;
 };
 
@@ -54,8 +54,8 @@ describe('QuickFillPlayer', () => {
 
         test('setMode destroys the previous mode first', () => {
             const quickFillPlayer = new QuickFillPlayer(makePlayer());
-            const previousMode = fakeMode();
-            quickFillPlayer.mode = previousMode;
+            const previousMode = quickFillPlayer.mode;
+            vi.spyOn(previousMode, 'destroy');
 
             quickFillPlayer.setMode(ClipboardMode);
 
@@ -82,7 +82,7 @@ describe('QuickFillPlayer', () => {
         const interact = (quickFillPlayer, options = {}) => {
             const block = options.block ?? blockWith(container);
             const itemStack = 'itemStack' in options ? options.itemStack : stack('oak_log');
-            const event = { block, itemStack, cancel: false };
+            const event = { block, itemStack, cancel: false, isFirstEvent: options.isFirstEvent ?? true };
             quickFillPlayer.onInteractWithBlock(event);
             return event;
         };
@@ -105,6 +105,17 @@ describe('QuickFillPlayer', () => {
 
             expect(event.cancel).toBe(false);
             expect(quickFillPlayer.mode.onFillInteraction).not.toHaveBeenCalled();
+        });
+
+        test.each([false, true])('only acts on the first of several same-tick interact events (sneaking: %s)', (sneaking) => {
+            const quickFillPlayer = makeQuickFillPlayer({ sneaking });
+            const mode = quickFillPlayer.mode;
+
+            const events = [interact(quickFillPlayer), interact(quickFillPlayer, { isFirstEvent: false }), interact(quickFillPlayer, { isFirstEvent: false })];
+            flushScheduledRuns();
+
+            expect(mode.onFillInteraction.mock.calls.length + mode.onTakeInteraction.mock.calls.length).toBe(1);
+            expect(events.every(event => event.cancel)).toBe(true);
         });
 
         test('ignores interactions with an empty hand', () => {
@@ -200,10 +211,10 @@ describe('QuickFillPlayer', () => {
 
         test('uses the player\'s current mode', () => {
             const quickFillPlayer = makeQuickFillPlayer();
-            const newMode = fakeMode();
             interact(quickFillPlayer);
 
-            quickFillPlayer.mode = newMode;
+            quickFillPlayer.setMode(ClipboardMode);
+            const newMode = stubMode(quickFillPlayer.mode);
             flushScheduledRuns();
 
             expect(newMode.onFillInteraction).toHaveBeenCalledTimes(1);
@@ -298,15 +309,23 @@ describe('QuickFillPlayer', () => {
         test('opens the configure interaction immediately in survival', () => {
             const quickFillPlayer = makeQuickFillPlayer({}, { configurable: true });
 
-            quickFillPlayer.onStartBreakingBlock({ block: blockWith(container) });
+            quickFillPlayer.onStartBreakingBlock({ block: blockWith(container), heldItemStack: stack('oak_log') });
 
             expect(quickFillPlayer.mode.onConfigureInteraction).toHaveBeenCalledWith(container, 'tile.chest.name');
+        });
+
+        test('does nothing with an empty hand', () => {
+            const quickFillPlayer = makeQuickFillPlayer({}, { configurable: true });
+
+            quickFillPlayer.onStartBreakingBlock({ block: blockWith(container), heldItemStack: void 0 });
+
+            expect(quickFillPlayer.mode.onConfigureInteraction).not.toHaveBeenCalled();
         });
 
         test('opens the configure interaction in adventure', () => {
             const quickFillPlayer = makeQuickFillPlayer({ gameMode: GameMode.Adventure }, { configurable: true });
 
-            quickFillPlayer.onStartBreakingBlock({ block: blockWith(container) });
+            quickFillPlayer.onStartBreakingBlock({ block: blockWith(container), heldItemStack: stack('oak_log') });
 
             expect(quickFillPlayer.mode.onConfigureInteraction).toHaveBeenCalledWith(container, 'tile.chest.name');
         });
@@ -314,7 +333,7 @@ describe('QuickFillPlayer', () => {
         test('does nothing in creative, where onBreakBlock handles it instead', () => {
             const quickFillPlayer = makeQuickFillPlayer({ gameMode: GameMode.Creative }, { configurable: true });
 
-            quickFillPlayer.onStartBreakingBlock({ block: blockWith(container) });
+            quickFillPlayer.onStartBreakingBlock({ block: blockWith(container), heldItemStack: stack('oak_log') });
 
             expect(quickFillPlayer.mode.onConfigureInteraction).not.toHaveBeenCalled();
         });
@@ -322,7 +341,7 @@ describe('QuickFillPlayer', () => {
         test('does nothing when the mode has no configure interaction', () => {
             const quickFillPlayer = makeQuickFillPlayer({}, { configurable: false });
 
-            quickFillPlayer.onStartBreakingBlock({ block: blockWith(container) });
+            quickFillPlayer.onStartBreakingBlock({ block: blockWith(container), heldItemStack: stack('oak_log') });
 
             expect(quickFillPlayer.mode.onConfigureInteraction).not.toHaveBeenCalled();
         });

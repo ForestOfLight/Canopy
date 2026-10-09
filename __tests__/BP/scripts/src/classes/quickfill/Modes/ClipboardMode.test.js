@@ -320,18 +320,30 @@ describe('ClipboardMode', () => {
             const mode = modeWithClipboard(player, [stack('stone', 2)]);
             mode.clipboard.setWildcardTypeId('minecraft:stone');
             mode.takeCopies = 1;
-            const container = containerOf(2, { 0: stack('stone', 10), 1: stack('oak_log', 10) });
+            const container = containerOf(2, { 0: stack('oak_log', 10), 1: stack('stone', 10) });
 
             mode.onTakeInteraction(container, stack('oak_log'));
 
             expect(countOf(inventory, 'oak_log')).toBe(2);
             expect(countOf(inventory, 'stone')).toBe(0);
-            expect(contents(container)).toEqual([['stone', 10], ['oak_log', 8]]);
+            expect(contents(container)).toEqual([['oak_log', 8], ['stone', 10]]);
+        });
+
+        test('only takes from the container slot matching the clipboard slot', () => {
+            const { player, inventory } = playerWith(GameMode.Survival);
+            const mode = modeWithClipboard(player, [stack('stone', 2)]);
+            mode.takeCopies = 1;
+            const container = containerOf(2, { 1: stack('stone', 10) });
+
+            mode.onTakeInteraction(container, stack('stone'));
+
+            expect(countOf(inventory, 'stone')).toBe(0);
+            expect(contents(container)).toEqual([void 0, ['stone', 10]]);
         });
     });
 
     describe('action bar feedback', () => {
-        test('names the container after filling, with the slots now in use', () => {
+        test('names the container after filling, with the amount transferred', () => {
             const { player } = playerWith(GameMode.Creative);
             const mode = new ClipboardMode(player);
             mode.clipboard.copy(containerOf(2, { 0: stack('stone', 10), 1: stack('dirt', 2) }));
@@ -341,7 +353,7 @@ describe('ClipboardMode', () => {
 
             expect(lastActionBar(player)).toEqual({ rawtext: [
                 { translate: 'rules.quickFillContainer.filled.clipboard', with: ['tile.chest.name'] },
-                { text: ' (2/3)' }
+                { text: ' (12)' }
             ]});
         });
 
@@ -367,7 +379,7 @@ describe('ClipboardMode', () => {
             expect(lastActionBar(player).rawtext[0].translate).toBe('rules.quickFillContainer.filled.empty');
         });
 
-        test('names the container after taking, with the slots left in use', () => {
+        test('names the container after taking, with the copies and amount taken', () => {
             const { player } = playerWith(GameMode.Survival);
             const mode = new ClipboardMode(player);
             mode.clipboard.copy(containerOf(1, { 0: stack('stone', 2) }));
@@ -377,8 +389,23 @@ describe('ClipboardMode', () => {
             mode.onTakeInteraction(container, stack('stone'), 'tile.chest.name');
 
             expect(lastActionBar(player)).toEqual({ rawtext: [
-                { translate: 'rules.quickFillContainer.taken.clipboard', with: ['tile.chest.name'] },
-                { text: ' (1/2)' }
+                { translate: 'rules.quickFillContainer.taken.clipboard', with: { rawtext: [{ translate: 'tile.chest.name' }, { text: '1' }] } },
+                { text: ' (2)' }
+            ]});
+        });
+
+        test('reports every copy taken when taking several', () => {
+            const { player } = playerWith(GameMode.Survival);
+            const mode = new ClipboardMode(player);
+            mode.clipboard.copy(containerOf(1, { 0: stack('stone', 2) }));
+            mode.takeCopies = 3;
+            const container = containerOf(2, { 0: stack('stone', 6) });
+
+            mode.onTakeInteraction(container, stack('stone'), 'tile.chest.name');
+
+            expect(lastActionBar(player)).toEqual({ rawtext: [
+                { translate: 'rules.quickFillContainer.taken.clipboard', with: { rawtext: [{ translate: 'tile.chest.name' }, { text: '3' }] } },
+                { text: ' (6)' }
             ]});
         });
 
@@ -416,7 +443,7 @@ describe('ClipboardMode', () => {
 
             expect(lastActionBar(player)).toEqual({ rawtext: [
                 { translate: 'rules.quickFillContainer.saved.clipboard', with: ['tile.chest.name'] },
-                { text: ' (3/3)' }
+                { text: ' (3)' }
             ]});
         });
 

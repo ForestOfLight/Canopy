@@ -1,22 +1,57 @@
-import { EntityComponentTypes, GameMode } from "@minecraft/server";
+import { GameMode } from "@minecraft/server";
 import { BulkContainer } from "../BulkContainer";
 import { ItemClipboard } from "../ItemClipboard";
+import { SearchTransferStrategy } from "../TransferStrategies/SearchTransferStrategy";
+import { SlotTransferStrategy } from "../TransferStrategies/SlotTransferStrategy";
+import { ConjureTransferStrategy } from "../TransferStrategies/ConjureTransferStrategy";
+import { VanillaTransferStrategy } from "../TransferStrategies/VanillaTransferStrategy";
+import { QuickFillMode } from "./QuickFillMode";
 import { quickFillModes } from "./QuickFillModes";
 
-export class BulkMode {
-    player;
+export class BulkMode extends QuickFillMode {
     clipboard;
 
     constructor(player) {
-        this.player = player;
-        this.playerContainer = player.getComponent(EntityComponentTypes.Inventory)?.container;
+        super(player);
         this.clipboard = this.#getBulkClipboard();
     }
 
-    destroy() {}
-
     get name() {
         return quickFillModes.BULK.name;
+    }
+
+    onFillInteraction(container, heldItemStack, blockLocalizationKey) {
+        let transferOptions;
+        if (this.player.getGameMode() === GameMode.Creative) {
+            transferOptions = {
+                take: ConjureTransferStrategy,
+                put: VanillaTransferStrategy,
+                to: container,
+                wildcardItemStack: heldItemStack
+            };
+        } else {
+            transferOptions = {
+                take: SearchTransferStrategy,
+                put: SlotTransferStrategy,
+                from: this.playerContainer,
+                to: container,
+                wildcardItemStack: heldItemStack
+            };
+        }
+        const { transferredAmount } = this.clipboard.transfer(transferOptions);
+        this.sendFeedback(this.getFillInteractionFeedback(container, transferredAmount, blockLocalizationKey, heldItemStack.localizationKey));
+    }
+
+    onTakeInteraction(container, heldItemStack, blockLocalizationKey) {
+        const transferOptions = {
+            take: SearchTransferStrategy,
+            put: VanillaTransferStrategy,
+            from: container,
+            to: this.playerContainer,
+            wildcardItemStack: heldItemStack
+        };
+        const { transferredAmount } = this.clipboard.transfer(transferOptions);
+        this.sendFeedback(this.getTakeInteractionFeedback(container, transferredAmount, blockLocalizationKey, heldItemStack.localizationKey));
     }
 
     #getBulkClipboard() {
@@ -27,61 +62,23 @@ export class BulkMode {
         return clipboard;
     }
 
-    onFillInteraction(container, heldItemStack, blockLocalizationKey) {
-        const transferredAmount = this.player.getGameMode() === GameMode.Creative
-            ? this.clipboard.insertWithoutCost(container, heldItemStack)
-            : this.clipboard.transfer(this.playerContainer, container, heldItemStack).transferredAmount;
-        if (transferredAmount === 0 && container.emptySlotsCount === 0)
-            this.sendContainerFullFeedback(blockLocalizationKey);
-        else if (transferredAmount === 0)
-            this.sendNothingFilledFeedback(blockLocalizationKey, heldItemStack.localizationKey);
-        else
-            this.sendFilledFeedback(container, blockLocalizationKey, heldItemStack.localizationKey);
-    }
-
-    onTakeInteraction(container, heldItemStack, blockLocalizationKey) {
-        const { transferredAmount } = this.clipboard.transferLikeVanilla(container, this.playerContainer, heldItemStack);
-        if (transferredAmount === 0)
-            this.sendNothingTakenFeedback(blockLocalizationKey);
-        else
-            this.sendTakenFeedback(container, blockLocalizationKey, heldItemStack.localizationKey);
-    }
-
-    hasConfigureInteraction() {
-        return false;
-    }
-
-    sendFilledFeedback(container, blockLocalizationKey, itemStackLocalizationKey) {
-        const fullSlotsCount = container.size - container.emptySlotsCount;
-        this.player.onScreenDisplay.setActionBar({ rawtext: [
+    getFilledFeedback(container, transferredAmount, blockLocalizationKey, itemStackLocalizationKey) {
+        return { rawtext: [
             { translate: 'rules.quickFillContainer.filled.bulk', with: { rawtext: [{ translate: blockLocalizationKey }, { translate: itemStackLocalizationKey }] } },
-            { text: ` (${fullSlotsCount}/${container.size})`}
-        ]});
+            { text: ` (${transferredAmount})`}
+        ]};
     }
 
-    sendTakenFeedback(container, blockLocalizationKey, itemStackLocalizationKey) {
-        const fullSlotsCount = container.size - container.emptySlotsCount;
-        this.player.onScreenDisplay.setActionBar({ rawtext: [
+    getTakenFeedback(container, transferredAmount, blockLocalizationKey, itemStackLocalizationKey) {
+        return { rawtext: [
             { translate: 'rules.quickFillContainer.taken.bulk', with: { rawtext: [{ translate: itemStackLocalizationKey }, { translate: blockLocalizationKey }] } },
-            { text: ` (${fullSlotsCount}/${container.size})`}
-        ]});
+            { text: ` (${transferredAmount})`}
+        ]};
     }
 
-    sendContainerFullFeedback(blockLocalizationKey) {
-        this.player.onScreenDisplay.setActionBar({ rawtext: [
-            { translate: 'rules.quickFillContainer.filled.full', with: { rawtext: [{ translate: blockLocalizationKey }] } }
-        ]});
-    }
-
-    sendNothingFilledFeedback(blockLocalizationKey, itemStackLocalizationKey) {
-        this.player.onScreenDisplay.setActionBar({ rawtext: [
+    getNothingFilledFeedback(blockLocalizationKey, itemStackLocalizationKey) {
+        return { rawtext: [
             { translate: 'rules.quickFillContainer.filled.noitem', with: { rawtext: [{ translate: blockLocalizationKey }, { translate: itemStackLocalizationKey }] } }
-        ]});
-    }
-
-    sendNothingTakenFeedback(blockLocalizationKey) {
-        this.player.onScreenDisplay.setActionBar({ rawtext: [
-            { translate: 'rules.quickFillContainer.taken.empty', with: { rawtext: [{ translate: blockLocalizationKey }] } }
-        ]});
+        ]};
     }
 }

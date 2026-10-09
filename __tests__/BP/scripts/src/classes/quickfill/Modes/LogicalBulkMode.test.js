@@ -86,7 +86,7 @@ describe('LogicalBulkMode', () => {
     });
 
     describe('action bar feedback', () => {
-        test('names the container and the held item after filling, with the slots now in use', () => {
+        test('names the container and the held item after filling, with the amount transferred', () => {
             const { player } = playerWith(GameMode.Creative);
             const container = containerOf(3);
 
@@ -94,7 +94,7 @@ describe('LogicalBulkMode', () => {
 
             expect(lastActionBar(player)).toEqual({ rawtext: [
                 { translate: 'rules.quickFillContainer.filled.bulk', with: ['tile.chest.name', 'item.oak_log.name'] },
-                { text: ' (3/3)' }
+                { text: ' (192)' }
             ]});
         });
 
@@ -108,16 +108,16 @@ describe('LogicalBulkMode', () => {
             expect(lastActionBar(player).rawtext[0].with).toEqual(['tile.chest.name', 'item.stone.name']);
         });
 
-        test('counts only the slots that were actually filled', () => {
+        test('counts only the items that were actually transferred', () => {
             const { player } = playerWith(GameMode.Survival, { 0: stack('stone', 10) });
             const container = containerOf(3, { 0: stack('stone', 20) });
 
             new LogicalBulkMode(player).onFillInteraction(container, stack('oak_log'), 'tile.chest.name');
 
-            expect(lastActionBar(player).rawtext[1]).toEqual({ text: ' (1/3)' });
+            expect(lastActionBar(player).rawtext[1]).toEqual({ text: ' (10)' });
         });
 
-        test('names the dominant item before the container after taking, with the slots left in use', () => {
+        test('names the dominant item before the container after taking, with the amount taken', () => {
             const { player } = playerWith(GameMode.Survival);
             const container = containerOf(2, { 0: stack('stone', 10), 1: stack('dirt', 5) });
 
@@ -125,7 +125,7 @@ describe('LogicalBulkMode', () => {
 
             expect(lastActionBar(player)).toEqual({ rawtext: [
                 { translate: 'rules.quickFillContainer.taken.bulk', with: ['item.stone.name', 'tile.chest.name'] },
-                { text: ' (1/2)' }
+                { text: ' (10)' }
             ]});
         });
 
@@ -136,7 +136,7 @@ describe('LogicalBulkMode', () => {
             new LogicalBulkMode(player).onTakeInteraction(container, stack('oak_log'), 'tile.chest.name');
 
             expect(lastActionBar(player)).toEqual({ rawtext: [
-                { translate: 'rules.quickFillContainer.taken.empty', with: ['tile.chest.name'] }
+                { translate: 'rules.quickFillContainer.taken.noitem', with: { rawtext: [{ translate: 'tile.chest.name' }, { translate: 'item.oak_log.name' }] } }
             ]});
         });
 
@@ -167,7 +167,7 @@ describe('LogicalBulkMode', () => {
                 'rules.quickFillContainer.filled.bulk',
                 'rules.quickFillContainer.taken.bulk',
                 'rules.quickFillContainer.filled.noitem',
-                'rules.quickFillContainer.taken.empty'
+                'rules.quickFillContainer.taken.noitem'
             ];
             for (const key of keys)
                 expect(langKeys.has(key), key).toBe(true);
