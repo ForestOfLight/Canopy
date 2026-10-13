@@ -1,48 +1,76 @@
-import { Command, Commands } from "../../lib/canopy/Canopy";
+import { PlayerCommandOrigin, VanillaCommand } from "../../lib/canopy/Canopy";
+import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, system } from "@minecraft/server";
 import { stringifyLocation, getRaycastResults, getClosestTarget, calcDistance } from "../../include/utils";
 
 let savedLocation = { x: undefined, y: undefined, z: undefined };
 const MAX_DISTANCE = 64*16;
 
-const cmd = new Command({
-    name: 'distance',
-    description: { translate: 'commands.distance' },
-    usage: `distance [from [x y z]] [to [x y z]] OR ${Commands.getPrefix()}distance target`,
-    args: [
-        { type: 'string', name: 'actionArgOne' },
-        { type: 'float', name: 'fromArgX' },
-        { type: 'float', name: 'fromArgY' },
-        { type: 'float', name: 'fromArgZ' },
-        { type: 'string', name: 'actionArgTwo' },
-        { type: 'float', name: 'toArgX' },
-        { type: 'float', name: 'toArgY' },
-        { type: 'float', name: 'toArgZ' }
-    ],
-    callback: distanceCommand,
-    helpEntries: [
-        { usage: `distance target`, description: { translate: 'commands.distance.target' }, wikiDescription: 'Calculates the distance in blocks between your head and the block or entity you are looking at down to three decimal places. Note that entity positions are at their foot. Alias: **`./d target`**' },
-        { usage: `distance from <x y z> to [x y z]`, description: { translate: 'commands.distance.fromto' }, wikiDescription: 'Calculates the distance in blocks between the two points. The `to` coordinates can be omitted to use your player\'s position. Alias: **`./d from <x y z> to [x y z]`**' },
-        { usage: `distance from [x y z]`, description: { translate: 'commands.distance.from' }, wikiDescription: 'Saves a location to calculate distance to later. The coordinates can be omitted to use your player\'s position. Alias: **`./d from [x y z]`**' },
-        { usage: `distance to [x y z]`, description: { translate: 'commands.distance.to' }, wikiDescription: 'Calculates the distance in blocks between the saved location and the specified coordinates. The coordinates can be omitted to use your player\'s position. Alias: **`./d to [x y z]`**' }
-    ]
-});
+const DISTANCE_ACTIONS = Object.freeze([
+    'target',
+    'from',
+    'to'
+]);
 
-new Command({
-    name: 'd',
-    description: { translate: 'commands.distance' },
-    args: [
-        { type: 'string', name: 'actionArgOne' },
-        { type: 'float', name: 'fromArgX' },
-        { type: 'float', name: 'fromArgY' },
-        { type: 'float', name: 'fromArgZ' },
-        { type: 'string', name: 'actionArgTwo' },
-        { type: 'float', name: 'toArgX' },
-        { type: 'float', name: 'toArgY' },
-        { type: 'float', name: 'toArgZ' }
+const DISTANCE_CONNECTORS = Object.freeze([
+    'to'
+]);
+
+const NATIVE_PREFIX = '/';
+const DISTANCE_USAGE = '/distance <target|from|to> [location] [to] [location]';
+
+new VanillaCommand({
+    name: 'canopy:distance',
+    description: 'commands.distance',
+    enums: [
+        {
+            name: 'canopy:distanceAction',
+            values: DISTANCE_ACTIONS
+        },
+        {
+            name: 'canopy:distanceConnector',
+            values: DISTANCE_CONNECTORS
+        }
     ],
-    usage: `d to [from [x y z]] [to [x y z]] OR ${Commands.getPrefix()}d target`,
-    callback: distanceCommand,
-    helpHidden: true
+    mandatoryParameters: [
+        {
+            name: 'canopy:distanceAction',
+            type: CustomCommandParamType.Enum
+        }
+    ],
+    optionalParameters: [
+        {
+            name: 'location',
+            type: CustomCommandParamType.Location
+        },
+        {
+            name: 'canopy:distanceConnector',
+            type: CustomCommandParamType.Enum
+        },
+        {
+            name: 'location',
+            type: CustomCommandParamType.Location
+        }
+    ],
+    permissionLevel: CommandPermissionLevel.Any,
+    allowedSources: [PlayerCommandOrigin],
+    aliases: ['canopy:d'],
+    callback: (origin, actionArgOne, location, actionArgTwo, destination) => {
+        const sender = origin.getSource();
+
+        system.run(() => distanceCommand(sender, {
+            actionArgOne: actionArgOne ?? null,
+            fromArgX: location?.x ?? null,
+            fromArgY: location?.y ?? null,
+            fromArgZ: location?.z ?? null,
+            actionArgTwo: actionArgTwo ?? null,
+            toArgX: destination?.x ?? null,
+            toArgY: destination?.y ?? null,
+            toArgZ: destination?.z ?? null
+        }));
+
+        return { status: CustomCommandStatus.Success };
+    },
+    wikiDescription: 'Calculates the cartesian, flat cartesian, and manhattan distances between two points.'
 });
 
 function distanceCommand(sender, args) {
@@ -58,7 +86,7 @@ function distanceCommand(sender, args) {
     else if (actionArgOne === 'target')
         message = targetDistance(sender, args);
     else
-        message = { translate: 'commands.generic.usage', with: [cmd.getUsage()] };
+        message = { translate: 'commands.generic.usage', with: [DISTANCE_USAGE] };
     sender.sendMessage(message);
 }
 
@@ -69,7 +97,7 @@ function trySaveLocation(sender, args) {
     else if (areDefined(fromArgX, fromArgY, fromArgZ))
         savedLocation = { x: fromArgX, y: fromArgY, z: fromArgZ };
     else
-        return { translate: 'commands.generic.usage', with: [`${Commands.getPrefix()}distance from [x y z]`] }
+        return { translate: 'commands.generic.usage', with: [`${NATIVE_PREFIX}distance from [x y z]`] }
 
     return { translate: 'commands.distance.from.success', with: [stringifyLocation(savedLocation)] };
 }
@@ -78,7 +106,7 @@ function tryCalculateDistanceFromSave(sender, args) {
     const { fromArgX, fromArgY, fromArgZ } = args;
     
     if (!hasSavedLocation() || (savedLocation.x === null && savedLocation.y === null && savedLocation.z === null))
-        return { translate: 'commands.distance.to.fail.nosave', with: [Commands.getPrefix()] };
+        return { translate: 'commands.distance.to.fail.nosave', with: [NATIVE_PREFIX] };
     const fromLocation = savedLocation;
     
     let toLocation;
@@ -87,7 +115,7 @@ function tryCalculateDistanceFromSave(sender, args) {
     else if (areUndefined(fromArgX, fromArgY, fromArgZ))
         toLocation = sender.location;
     else
-        return { translate: 'commands.generic.usage', with: [`${Commands.getPrefix()}distance to [x y z]`] };
+        return { translate: 'commands.generic.usage', with: [`${NATIVE_PREFIX}distance to [x y z]`] };
 
     return getCompleteOutput(fromLocation, toLocation);
 }
@@ -105,7 +133,7 @@ function tryCalculateDistance(sender, args) {
         fromLocation = { x: fromArgX, y: fromArgY, z: fromArgZ };
         toLocation = { x: toArgX, y: toArgY, z: toArgZ };
     } else {
-        return { translate: 'commands.generic.usage', with: [`${Commands.getPrefix()}distance from <x y z> to [x y z]`] };
+        return { translate: 'commands.generic.usage', with: [`${NATIVE_PREFIX}distance from <x y z> to [x y z]`] };
     }
 
     return getCompleteOutput(fromLocation, toLocation);
