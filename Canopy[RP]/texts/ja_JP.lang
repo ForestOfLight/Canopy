@@ -108,11 +108,11 @@ commands.canopy.menu.submit=§a適用
 commands.canopy.single=単一のルールの値を変更します。
 commands.canopy.infodisplayRule=§cルール '%1' はInfoDisplayのルールであり、切り替えるには %2info を使用する必要があります。詳細は %2help を参照してください。
 
-commands.changedimension=エンティティを指定のディメンションにテレポートします。
-commands.changedimension.notfound=§c無効なディメンションです。
-commands.changedimension.success.coords=§7%2§7 の %1 にテレポートしました。
-commands.changedimension.success=§7%s§7 に移動しました。
-commands.changedimension.fail.coords=§c無効な座標です。x, y, z の数値をすべて指定するか、何も指定しないでください。
+commands.dimensionalteleport=エンティティを指定のディメンションにテレポートします。
+commands.dimensionalteleport.notfound=§c無効なディメンションです。
+commands.dimensionalteleport.success.coords=§7%2§7 の %1 にテレポートしました。
+commands.dimensionalteleport.success=§7%s§7 に移動しました。
+commands.dimensionalteleport.fail.coords=§c無効な座標です。x, y, z の数値をすべて指定するか、何も指定しないでください。
 
 commands.claimprojectiles=範囲内のすべての投射物の所有者を変更します。
 commands.claimprojectiles.fail.sourcenotplayer=§cこのコマンドを使用するにはプレイヤーを指定してください。

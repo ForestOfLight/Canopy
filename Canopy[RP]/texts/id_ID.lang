@@ -70,11 +70,11 @@ commands.canopy.menu.submit=§aMenerapkan
 commands.canopy.single=Mengaktifkan atau menonaktifkan satu aturan.
 commands.canopy.infodisplayRule=§cAturan '%1' adalah bagian dari InfoDisplay, dan harus diubah menggunakan %2info. Ketik %2help untuk informasi lebih lanjut.
 
-commands.changedimension=Menteleportasi entitas ke dimensi yang ditentukan.
-commands.changedimension.notfound=§cDimensi tidak valid.
-commands.changedimension.success.coords=§7Diteleportasi ke %1 di %2§7.
-commands.changedimension.success=§7Diteleportasi ke %s§7.
-commands.changedimension.fail.coords=§cKoordinat tidak valid. Berikan semua nilai numerik x, y, z atau tidak sama sekali.
+commands.dimensionalteleport=Menteleportasi entitas ke dimensi yang ditentukan.
+commands.dimensionalteleport.notfound=§cDimensi tidak valid.
+commands.dimensionalteleport.success.coords=§7Diteleportasi ke %1 di %2§7.
+commands.dimensionalteleport.success=§7Diteleportasi ke %s§7.
+commands.dimensionalteleport.fail.coords=§cKoordinat tidak valid. Berikan semua nilai numerik x, y, z atau tidak sama sekali.
 
 commands.claimprojectiles=Mengubah pemilik. semua proyektil dalam radius.
 commands.claimprojectiles.fail.sourcenotplayer=§cTentukan pemain yang akan menggunakan perintah ini.

@@ -118,6 +118,16 @@ describe('Understudy', () => {
             expect(understudy.isConnected()).toBe(true);
         });
 
+        it('tags the spawned simulated player as owned by Canopy', () => {
+            understudy.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
+            expect(understudy.simulatedPlayer.hasTag('canopy:owned')).toBe(true);
+        });
+
+        it('recognises the spawned simulated player as its own', () => {
+            understudy.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
+            expect(Understudy.isCanopyOwned(understudy.simulatedPlayer)).toBe(true);
+        });
+
         it('throws if already connected', () => {
             understudy.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
             expect(() => understudy.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() })).toThrow();

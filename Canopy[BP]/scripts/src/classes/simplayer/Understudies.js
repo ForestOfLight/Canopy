@@ -72,16 +72,28 @@ class Understudies {
     static create(name) {
         if (Understudies.isOnline(name))
             throw new Error(`[Canopy] Simulated player with name ${name} already exists.`);
+        if (Understudies.hasForeignSimulatedPlayer(name))
+            throw new Error(`[Canopy] A simulated player named ${name} is already in this world but was not spawned by Canopy.`);
+        return Understudies.#add(name);
+    }
+
+    static #add(name) {
         const understudy = new Understudy(name);
         Understudies.understudies.push(understudy);
         return understudy;
     }
 
+    static hasForeignSimulatedPlayer(name) {
+        return world.getAllPlayers().some(player =>
+            player instanceof SimulatedPlayer && player.name === name && !Understudy.isCanopyOwned(player)
+        );
+    }
+
     static adoptExisting() {
         for (const player of world.getAllPlayers()) {
-            if (!(player instanceof SimulatedPlayer) || Understudies.isOnline(player.name))
+            if (!(player instanceof SimulatedPlayer) || !Understudy.isCanopyOwned(player) || Understudies.isOnline(player.name))
                 continue;
-            const understudy = Understudies.create(player.name);
+            const understudy = Understudies.#add(player.name);
             understudy.adopt(player);
         }
     }
@@ -143,6 +155,10 @@ class Understudies {
 
     static getAlreadyOnlineMessage(name) {
         return { translate: 'simplayer.alreadyonline', with: [name] };
+    }
+
+    static getNameClaimedMessage(name) {
+        return { translate: 'simplayer.nameclaimed', with: [name] };
     }
 }
 

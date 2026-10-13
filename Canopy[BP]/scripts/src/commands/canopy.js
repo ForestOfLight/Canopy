@@ -153,6 +153,7 @@ export class CanopyCommand extends VanillaCommand {
                 return this.sendIncorrectValueTypeMessage(origin, ruleID);
             if (error.message.includes('Value out of range'))
                 return this.sendValueOutOfRangeMessage(origin, ruleID);
+            origin.sendMessage({ translate: 'rules.generic.updateerror' });
             throw error;
         }
     }

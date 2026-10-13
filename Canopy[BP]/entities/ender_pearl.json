@@ -1,151 +1,160 @@
 {
-  "format_version": "1.12.0",
+  "format_version": "1.26.50",
   "minecraft:entity": {
     "description": {
       "identifier": "minecraft:ender_pearl",
-      "is_spawnable": false,
       "is_summonable": false,
-      "is_experimental": false
+      "is_spawnable": false,
+      "spawn_category": "misc"
     },
     "component_groups": {
       "minecraft:no_spawn": {
         "minecraft:projectile": {
-          "on_hit": {
-            "teleport_owner": { },
-            "remove_on_hit": { }
-          },
-          "power": 1.5,
-          "gravity": 0.025,
           "angle_offset": 0.0,
+          "on_hit": {
+            "remove_on_hit": {},
+            "teleport_owner": {}
+          },
+          "gravity": 0.025,
           "inertia": 1,
-          "liquid_inertia": 1
+          "liquid_inertia": 1,
+          "power": 1.5,
+          "isolated_physics": false
         }
       },
       "canopy:tick_world_r2": {
         "minecraft:tick_world": {
-            "never_despawn": true,
-            "radius": 2
+          "never_despawn": true,
+          "radius": 2
         }
       },
       "canopy:tick_world_r3": {
         "minecraft:tick_world": {
-            "never_despawn": true,
-            "radius": 3
+          "never_despawn": true,
+          "radius": 3
         }
       },
       "canopy:tick_world_r4": {
         "minecraft:tick_world": {
-            "never_despawn": true,
-            "radius": 4
+          "never_despawn": true,
+          "radius": 4
         }
       },
       "canopy:tick_world_r5": {
         "minecraft:tick_world": {
-            "never_despawn": true,
-            "radius": 5
+          "never_despawn": true,
+          "radius": 5
         }
       },
       "canopy:tick_world_r6": {
         "minecraft:tick_world": {
-            "never_despawn": true,
-            "radius": 6
+          "never_despawn": true,
+          "radius": 6
         }
       }
     },
-
     "components": {
+      "minecraft:type_family": {
+        "family": [
+          "projectile",
+          "ender_pearl"
+        ]
+      },
       "minecraft:collision_box": {
-        "width": 0.25,
-        "height": 0.25
-      },
-      "minecraft:projectile": {
-        "on_hit": {
-          "teleport_owner": { },
-          "spawn_chance": {
-            "first_spawn_percent_chance": 5.0,
-            "first_spawn_count": 1,
-            "spawn_definition": "minecraft:endermite"
-          },
-          "remove_on_hit": { }
-        },
-        "power": 1.5,
-        "gravity": 0.025,
-        "angle_offset": 0.0,
-        "inertia": 1,
-        "liquid_inertia": 1
-      },
-	    "minecraft:physics": {
-      },
-      "minecraft:pushable": {
-        "is_pushable": true,
-        "is_pushable_by_piston": true
+        "height": 0.25,
+        "width": 0.25
       },
       "minecraft:conditional_bandwidth_optimization": {
         "default_values": {
-          "max_optimized_distance": 80.0,
           "max_dropped_ticks": 7,
+          "max_optimized_distance": 80.0,
           "use_motion_prediction_hints": true
         }
-      }
+      },
+      "minecraft:physics": {},
+      "minecraft:projectile": {
+        "angle_offset": 0.0,
+        "on_hit": {
+          "spawn_chance": {
+            "first_spawn_count": 1,
+            "first_spawn_chance": 0.05,
+            "spawn_definition": "minecraft:endermite"
+          },
+          "remove_on_hit": {},
+          "teleport_owner": {}
+        },
+        "gravity": 0.025,
+        "inertia": 1,
+        "liquid_inertia": 1,
+        "power": 1.5,
+        "isolated_physics": false
+      },
+      "minecraft:pushable_by_entity": {},
+      "minecraft:pushable_by_block": {}
     },
-
     "events": {
       "minecraft:entity_spawned": {
         "sequence": [
           {
-            "filters": {"test": "is_game_rule", "domain": "domobspawning", "value": false},
+            "filters": {
+              "domain": "domobspawning",
+              "test": "is_game_rule",
+              "value": false
+            },
             "add": {
-              "component_groups": [ "minecraft:no_spawn" ]
+              "component_groups": [
+                "minecraft:no_spawn"
+              ]
             }
           }
         ]
       },
       "canopy:start_ticking_r2": {
         "add": {
-					"component_groups": [
-						"canopy:tick_world_r2"
-					]
+          "component_groups": [
+            "canopy:tick_world_r2"
+          ]
         }
       },
-			"canopy:start_ticking_r3": {
-				"add": {
-					"component_groups": [
-						"canopy:tick_world_r3"
-					]
-				}
-			},
-			"canopy:start_ticking_r4": {
-				"add": {
-					"component_groups": [
-						"canopy:tick_world_r4"
-					]
-				}
-			},
-			"canopy:start_ticking_r5": {
-				"add": {
-					"component_groups": [
-						"canopy:tick_world_r5"
-					]
-				}
-			},
-			"canopy:start_ticking_r6": {
-				"add": {
-					"component_groups": [
-						"canopy:tick_world_r6"
-					]
-				}
-			},
-			"canopy:stop_ticking": {
-				"remove": {
-					"component_groups": [
-						"canopy:tick_world_r2",
-						"canopy:tick_world_r3",
-						"canopy:tick_world_r4",
-						"canopy:tick_world_r5",
-						"canopy:tick_world_r6"
-					]
-				}
-			}
+      "canopy:start_ticking_r3": {
+        "add": {
+          "component_groups": [
+            "canopy:tick_world_r3"
+          ]
+        }
+      },
+      "canopy:start_ticking_r4": {
+        "add": {
+          "component_groups": [
+            "canopy:tick_world_r4"
+          ]
+        }
+      },
+      "canopy:start_ticking_r5": {
+        "add": {
+          "component_groups": [
+            "canopy:tick_world_r5"
+          ]
+        }
+      },
+      "canopy:start_ticking_r6": {
+        "add": {
+          "component_groups": [
+            "canopy:tick_world_r6"
+          ]
+        }
+      },
+      "canopy:stop_ticking": {
+        "remove": {
+          "component_groups": [
+            "canopy:tick_world_r2",
+            "canopy:tick_world_r3",
+            "canopy:tick_world_r4",
+            "canopy:tick_world_r5",
+            "canopy:tick_world_r6"
+          ]
+        }
+      }
     }
   }
 }
