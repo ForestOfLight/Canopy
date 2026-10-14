@@ -20,7 +20,7 @@ export class DimensionalTeleport extends VanillaCommand {
     }
 
     dimensionalTeleportCommand(origin, dimension, destination, victims) {
-        const toDimensionId = getAllDimensionIds().includes(dimension.toLowerCase());
+        const toDimensionId = getAllDimensionIds().filter(d => d.toLowerCase().includes(dimension.toLowerCase()))[0];
         if (!toDimensionId)
             return { status: CustomCommandStatus.Failure, message: 'commands.dimensionalteleport.notfound' };
         const source = origin.getSource();
