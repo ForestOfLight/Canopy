@@ -40,6 +40,16 @@ describe('AnalyzeAreaRenderer', () => {
             expect(renderer.textShape.setText).toHaveBeenCalledWith(expected);
         });
 
+        it('setText includes the area name under the header when one is set', () => {
+            const named = new AnalyzeAreaRenderer(dimension, min, max, locations, statsText, 'Stone Farm');
+            named.setText('Analyzing... 42%');
+            expect(named.statsText).toEqual({ rawtext: [
+                { translate: 'commands.analyzearea.stats.header' }, { text: '\n' },
+                { text: '§fStone Farm' }, { text: '\n' },
+                'Analyzing... 42%'
+            ] });
+        });
+
         it('hideOutline removes both the box and the text', () => {
             renderer.showOutline();
             const box = renderer.outlineShape;

@@ -6,17 +6,19 @@ export class AnalyzeAreaRenderer {
     max;
     locations;
     statsText;
+    name;
     outlineShape;
     textShape;
     matchShapes;
     matchesVisible;
 
-    constructor(dimension, min, max, locations, statsText) {
+    constructor(dimension, min, max, locations, statsText, name = '') {
         this.dimension = dimension;
         this.min = min;
         this.max = max;
         this.locations = locations;
         this.statsText = statsText;
+        this.name = name;
         this.outlineShape = void 0;
         this.textShape = void 0;
         this.matchShapes = [];
@@ -48,7 +50,8 @@ export class AnalyzeAreaRenderer {
     }
 
     setText(statsText) {
-        this.statsText = { rawtext: [ { translate: "commands.analyzearea.stats.header" }, { text: '\n' }, statsText] };
+        const nameLine = this.name ? [{ text: `§f${this.name}` }, { text: '\n' }] : [];
+        this.statsText = { rawtext: [ { translate: "commands.analyzearea.stats.header" }, { text: '\n' }, ...nameLine, statsText] };
         if (this.textShape)
             this.textShape.setText(this.statsText);
     }

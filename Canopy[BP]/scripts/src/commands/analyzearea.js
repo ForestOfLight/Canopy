@@ -4,14 +4,20 @@ import { AreaAnalysisManager } from "../classes/analyzearea/AreaAnalysisManager"
 import { Analysis } from "../classes/analyzearea/Analysis";
 import { AnalyzeAreaUI } from "../classes/analyzearea/AnalyzeAreaUI";
 
-const REMOVE_TOKEN = 'remove';
+const ANALYZE_AREA_ACTIONS = Object.freeze({
+    CREATE: 'create',
+    REMOVE: 'remove'
+});
 
 export class AnalyzeAreaCommand extends VanillaCommand {
     constructor() {
         super({
             name: 'canopy:analyzearea',
             description: 'commands.analyzearea',
+            enums: [{ name: 'canopy:analyzeAreaAction', values: Object.values(ANALYZE_AREA_ACTIONS) }],
             optionalParameters: [
+                { name: 'canopy:analyzeAreaAction', type: CustomCommandParamType.Enum },
+                { name: 'name', type: CustomCommandParamType.String },
                 { name: 'from', type: CustomCommandParamType.Location },
                 { name: 'to', type: CustomCommandParamType.Location },
                 { name: 'expression', type: CustomCommandParamType.String }
@@ -33,40 +39,43 @@ export class AnalyzeAreaCommand extends VanillaCommand {
                 '': {
                     description: 'Open the area analyses menu.'
                 },
-                '<from: Location> <to: Location>': {
-                    description: 'Open the saved analysis for those coordinates, or a prefilled create form.'
+                'create [name: String]': {
+                    description: 'Open the create form, prefilled with the name if one is given.'
                 },
-                '<from: Location> <to: Location> remove': {
-                    description: 'Remove the saved analysis for those coordinates.'
+                'create <name: String> <from: Location> <to: Location>': {
+                    description: 'Open the saved analysis for those coordinates, or a create form prefilled with that name and those coordinates.'
                 },
-                '<from: Location> <to: Location> <expression: String>': {
-                    description: 'Create and run an analysis.'
+                'create <name: String> <from: Location> <to: Location> <expression: String>': {
+                    description: 'Create and run an analysis with that name. Names must be unique.'
+                },
+                'remove <name: String>': {
+                    description: 'Remove the saved analysis with that name.'
                 }
             }
         });
     }
 
-    analyzeAreaCommand(origin, from, to, expression) {
+    analyzeAreaCommand(origin, action, rawName, from, to, expression) {
         const manager = AreaAnalysisManager.getInstance();
+        const name = rawName?.trim();
 
-        if (from && to && expression !== void 0) {
-            if (expression === REMOVE_TOKEN)
-                return this.#removeAnalysis(origin, manager, from, to);
-            return this.#createAndRun(origin, manager, from, to, expression);
-        }
+        if (action === ANALYZE_AREA_ACTIONS.REMOVE)
+            return this.#removeAnalysis(manager, name);
+        if (action === ANALYZE_AREA_ACTIONS.CREATE && from && to && expression !== void 0)
+            return this.#createAndRun(origin, manager, name, from, to, expression);
 
         if (!(origin instanceof PlayerCommandOrigin))
             return { status: CustomCommandStatus.Failure, message: 'commands.generic.invalidsource' };
         const player = origin.getSource();
         const ui = new AnalyzeAreaUI(player, manager);
 
-        if (from && to) {
-            const existing = manager.findByCoords(from, to, player.dimension.id);
+        if (action === ANALYZE_AREA_ACTIONS.CREATE) {
+            const existing = from && to ? manager.findByCoords(from, to, player.dimension.id) : void 0;
             system.run(() => {
                 if (existing)
                     ui.showAnalysisPage(existing);
                 else
-                    ui.showCreateForm({ from, to });
+                    ui.showCreateForm({ name, from, to });
             });
             return { status: CustomCommandStatus.Success };
         }
@@ -75,18 +84,19 @@ export class AnalyzeAreaCommand extends VanillaCommand {
         return { status: CustomCommandStatus.Success };
     }
 
-    #removeAnalysis(origin, manager, from, to) {
-        const dimensionId = origin.getSource().dimension.id;
-        const existing = manager.findByCoords(from, to, dimensionId);
+    #removeAnalysis(manager, name) {
+        const existing = manager.findByName(name);
         if (!existing)
             return { status: CustomCommandStatus.Failure, message: 'commands.analyzearea.removenotfound' };
         system.run(() => manager.remove(existing));
         return { status: CustomCommandStatus.Success, message: 'commands.analyzearea.removed' };
     }
 
-    #createAndRun(origin, manager, from, to, expression) {
+    #createAndRun(origin, manager, name, from, to, expression) {
+        if (manager.findByName(name))
+            return { status: CustomCommandStatus.Failure, message: 'commands.analyzearea.nametaken' };
         const source = origin.getSource();
-        const result = Analysis.tryCreate(from, to, source.dimension.id, expression);
+        const result = Analysis.tryCreate(from, to, source.dimension.id, expression, name);
         if (!result.ok)
             return { status: CustomCommandStatus.Failure, message: `commands.analyzearea.${result.reason}` };
 

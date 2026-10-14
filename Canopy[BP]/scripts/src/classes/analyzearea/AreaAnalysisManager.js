@@ -39,6 +39,16 @@ export class AreaAnalysisManager {
         this.#save();
     }
 
+    edit(analysis, changes) {
+        const holder = this.findByName(changes.name);
+        if (holder && holder !== analysis)
+            return { ok: false, reason: 'nametaken' };
+        const result = analysis.tryEdit(changes);
+        if (result.ok)
+            this.#save();
+        return result;
+    }
+
     remove(analysis) {
         const index = this.analyses.indexOf(analysis);
         if (index === -1) return;
@@ -49,5 +59,11 @@ export class AreaAnalysisManager {
 
     findByCoords(from, to, dimensionId) {
         return this.analyses.find((a) => a.matchesCoords(from, to, dimensionId));
+    }
+
+    findByName(name) {
+        if (!name)
+            return void 0;
+        return this.analyses.find((a) => a.name === name);
     }
 }
