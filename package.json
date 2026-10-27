@@ -10,10 +10,10 @@
 	},
 	"license": "MIT",
 	"dependencies": {
-		"@minecraft/debug-utilities": "1.0.0-beta.1.26.50-stable",
-		"@minecraft/server": "2.11.0-beta.1.26.50-stable",
-		"@minecraft/server-gametest": "1.0.0-beta.1.26.50-stable",
-		"@minecraft/server-ui": "2.3.0-beta.1.26.50-stable"
+		"@minecraft/debug-utilities": "1.0.0-beta.1.26.60-stable",
+		"@minecraft/server": "2.12.0-beta.1.26.60-stable",
+		"@minecraft/server-gametest": "1.0.0-beta.1.26.60-stable",
+		"@minecraft/server-ui": "2.4.0-beta.1.26.60-stable"
 	},
 	"scripts": {
 		"test": "vitest run --config vitest.config.js --coverage",
