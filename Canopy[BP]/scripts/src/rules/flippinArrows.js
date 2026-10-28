@@ -16,7 +16,7 @@ const previousBlocks = new Array(WAIT_TICKS_BETWEEN_USE).fill(null);
 const flipOnPlaceIds = ['piston', 'sticky_piston', 'dropper', 'dispenser', 'observer', 'crafter', 'unpowered_repeater', 'unpowered_comparator', 
     'powered_repeater', 'powered_comparator', 'hopper', 'end_rod', 'lightning_rod'];
 const flipIds = ['piston', 'sticky_piston', 'observer', 'end_rod', 'lightning_rod'];
-const flipWhenVerticalIds = ['dropper', 'dispenser', 'barrel', 'command_block', 'chain_command_block', 'repeating_command_block'];
+const flipWhenVerticalIds = ['dropper', 'dispenser', 'crafter', 'barrel', 'command_block', 'chain_command_block', 'repeating_command_block'];
 const openIds = ['iron_trapdoor', 'iron_door'];
 const noInteractBlockIds = ['piston_arm_collision', 'sticky_piston_arm_collision', 'bed', 'frame', 'decorated_pot'];
 
@@ -141,11 +141,15 @@ function open(player, block) {
 
 function flipWhenVertical(block) {
     const directionState = DirectionStateFinder.getMirroredDirection(block);
-    if ([StructureMirrorAxis.X, StructureMirrorAxis.Z].includes(directionState))
+    if ([StructureMirrorAxis.X, StructureMirrorAxis.Z].includes(directionState) || isHorizontalOrientation(directionState))
         rotate(block);
     else
         flip(block);
     return true;
+}
+
+function isHorizontalOrientation(orientation) {
+    return typeof orientation === 'string' && orientation.endsWith('_up');
 }
 
 function stairFlip(player, block) {
@@ -167,7 +171,8 @@ function slabFlip(player, block) {
 function checkForAbort(block, blockId) {
     if (noInteractBlockIds.includes(blockId))
         return true;
-    if (block.getComponent(BlockComponentTypes.Piston)?.state !== BlockPistonState.Retracted)
+    const piston = block.getComponent(BlockComponentTypes.Piston);
+    if (piston && piston.state !== BlockPistonState.Retracted)
         return true;
     if (block.getComponent(BlockComponentTypes.Inventory)?.container.size > 27)
         return true;

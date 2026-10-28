@@ -153,3 +153,64 @@ describe('getTotalItemCount()', () => {
         expect(InventoryUtils.getTotalItemCount(container)).toBe(128);
     });
 });
+
+describe('recipe processing contents', () => {
+	const makeRecipeProcessing = (slots) => ({
+		inputSlotCount: slots.length,
+		getInputItem: vi.fn((i) => slots[i].item),
+		getInputSlotEnabled: vi.fn((i) => slots[i].enabled),
+		setInputItem: vi.fn(),
+		setInputSlotEnabled: vi.fn()
+	});
+
+	it('returns empty array for block without recipe processing', () => {
+		const block = { getComponent: vi.fn().mockReturnValue(undefined) };
+		expect(InventoryUtils.getRecipeProcessingContents(block)).toEqual([]);
+	});
+
+	it('captures cloned items and enabled states for each input slot', () => {
+		const stone = { clone: vi.fn(() => 'stoneClone') };
+		const recipeProcessing = makeRecipeProcessing([
+			{ item: stone, enabled: true },
+			{ item: undefined, enabled: false }
+		]);
+		const block = { getComponent: vi.fn().mockReturnValue(recipeProcessing) };
+		expect(InventoryUtils.getRecipeProcessingContents(block)).toEqual([
+			{ item: 'stoneClone', enabled: true },
+			{ item: undefined, enabled: false }
+		]);
+	});
+
+	it('leaves enabled undefined when slot disabling is unsupported', () => {
+		const recipeProcessing = makeRecipeProcessing([{ item: undefined }]);
+		recipeProcessing.getInputSlotEnabled = vi.fn(() => { throw new Error('unsupported'); });
+		const block = { getComponent: vi.fn().mockReturnValue(recipeProcessing) };
+		expect(InventoryUtils.getRecipeProcessingContents(block)).toEqual([{ item: undefined, enabled: undefined }]);
+	});
+
+	it('restores items and enabled states', () => {
+		const recipeProcessing = makeRecipeProcessing([{}, {}]);
+		const block = { getComponent: vi.fn().mockReturnValue(recipeProcessing) };
+		InventoryUtils.restoreRecipeProcessingContents(block, [
+			{ item: 'stone', enabled: true },
+			{ item: undefined, enabled: false }
+		]);
+		expect(recipeProcessing.setInputItem).toHaveBeenCalledWith(0, 'stone');
+		expect(recipeProcessing.setInputItem).toHaveBeenCalledWith(1, undefined);
+		expect(recipeProcessing.setInputSlotEnabled).toHaveBeenCalledWith(0, true);
+		expect(recipeProcessing.setInputSlotEnabled).toHaveBeenCalledWith(1, false);
+	});
+
+	it('skips enabled state when it was not captured', () => {
+		const recipeProcessing = makeRecipeProcessing([{}]);
+		const block = { getComponent: vi.fn().mockReturnValue(recipeProcessing) };
+		InventoryUtils.restoreRecipeProcessingContents(block, [{ item: 'stone', enabled: undefined }]);
+		expect(recipeProcessing.setInputItem).toHaveBeenCalledWith(0, 'stone');
+		expect(recipeProcessing.setInputSlotEnabled).not.toHaveBeenCalled();
+	});
+
+	it('does nothing for block without recipe processing', () => {
+		const block = { getComponent: vi.fn().mockReturnValue(undefined) };
+		expect(() => InventoryUtils.restoreRecipeProcessingContents(block, [{ item: 'stone', enabled: true }])).not.toThrow();
+	});
+});

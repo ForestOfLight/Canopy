@@ -25,6 +25,40 @@ export class InventoryUtils {
         }
     }
 
+    static getRecipeProcessingContents(block) {
+        const recipeProcessing = block.getComponent(BlockComponentTypes.RecipeProcessing);
+        if (recipeProcessing === undefined) return [];
+        const slots = [];
+        for (let i = 0; i < recipeProcessing.inputSlotCount; i++) {
+            let enabled;
+            try {
+                enabled = recipeProcessing.getInputSlotEnabled(i);
+            } catch {
+                enabled = undefined;
+            }
+            slots.push({ item: recipeProcessing.getInputItem(i)?.clone(), enabled });
+        }
+        return slots;
+    }
+
+    static restoreRecipeProcessingContents(block, slots) {
+        const recipeProcessing = block.getComponent(BlockComponentTypes.RecipeProcessing);
+        if (recipeProcessing === undefined)
+            return;
+        const slotCount = Math.min(slots.length, recipeProcessing.inputSlotCount);
+        for (let i = 0; i < slotCount; i++) {
+            const { item, enabled } = slots[i];
+            recipeProcessing.setInputItem(i, item);
+            if (enabled === undefined)
+                continue;
+            try {
+                recipeProcessing.setInputSlotEnabled(i, enabled);
+            } catch {
+                // Not all recipe processing blocks support disabling slots
+            }
+        }
+    }
+
     static pickupItemEntity(entityWithInventory, itemEntity) {
         const itemComponent = itemEntity.getComponent(EntityComponentTypes.Item);
         const itemStack = itemComponent.itemStack;
