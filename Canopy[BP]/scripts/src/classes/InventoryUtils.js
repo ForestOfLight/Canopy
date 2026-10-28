@@ -1,6 +1,17 @@
 import { BlockComponentTypes, EntityComponentTypes, ItemStack } from "@minecraft/server";
+import { RecipeProcessingContainer } from "./RecipeProcessingContainer";
 
 export class InventoryUtils {
+    static getContainer(target) {
+        const container = target?.getComponent(BlockComponentTypes.Inventory)?.container;
+        if (container !== void 0)
+            return container;
+        const recipeProcessing = target?.getComponent(BlockComponentTypes.RecipeProcessing);
+        if (recipeProcessing === void 0)
+            return void 0;
+        return new RecipeProcessingContainer(recipeProcessing);
+    }
+
     static getInventory(block) {
         const container = block.getComponent(BlockComponentTypes.Inventory)?.container;
         if (container === undefined) return {};

@@ -1,7 +1,8 @@
 import { InfoDisplayTextElement } from "./InfoDisplayTextElement";
 import { getRaycastResults, getClosestTarget } from "../../../include/utils";
 import { currentQuery } from "../../commands/peek";
-import { EntityComponentTypes, ItemStack } from "@minecraft/server";
+import { ItemStack } from "@minecraft/server";
+import { InventoryUtils } from "../../classes/InventoryUtils";
 
 class PeekInventory extends InfoDisplayTextElement {
     static getRuleIdentifier() {
@@ -37,7 +38,7 @@ class PeekInventory extends InfoDisplayTextElement {
 			return;
         let container;
 		try {
-			container = target.getComponent(EntityComponentTypes.Inventory)?.container;
+			container = InventoryUtils.getContainer(target);
 			if (!container)
 				return;
 		} catch {

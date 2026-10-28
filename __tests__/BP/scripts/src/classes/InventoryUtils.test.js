@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { Container, ItemStack } from "@minecraft/server";
 import { InventoryUtils } from "../../../../../Canopy[BP]/scripts/src/classes/InventoryUtils";
+import { RecipeProcessingContainer } from "../../../../../Canopy[BP]/scripts/src/classes/RecipeProcessingContainer";
 
 describe('getInventory()', () => {
 	it('returns correct inventory items', () => {
@@ -212,5 +213,25 @@ describe('recipe processing contents', () => {
 	it('does nothing for block without recipe processing', () => {
 		const block = { getComponent: vi.fn().mockReturnValue(undefined) };
 		expect(() => InventoryUtils.restoreRecipeProcessingContents(block, [{ item: 'stone', enabled: true }])).not.toThrow();
+	});
+});
+
+describe('getContainer()', () => {
+	it('returns the inventory container when present', () => {
+		const container = { size: 27 };
+		const block = { getComponent: vi.fn(id => id === 'minecraft:inventory' ? { container } : void 0) };
+		expect(InventoryUtils.getContainer(block)).toBe(container);
+	});
+
+	it('wraps recipe processing when there is no inventory', () => {
+		const recipeProcessing = { inputSlotCount: 9 };
+		const block = { getComponent: vi.fn(id => id === 'minecraft:inventory' ? void 0 : recipeProcessing) };
+		expect(InventoryUtils.getContainer(block)).toBeInstanceOf(RecipeProcessingContainer);
+		expect(InventoryUtils.getContainer(block).size).toBe(9);
+	});
+
+	it('returns undefined when there is neither', () => {
+		expect(InventoryUtils.getContainer({ getComponent: vi.fn(() => void 0) })).toBeUndefined();
+		expect(InventoryUtils.getContainer(void 0)).toBeUndefined();
 	});
 });

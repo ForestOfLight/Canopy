@@ -13,7 +13,7 @@ export class SlotTransferStrategy extends TransferStrategy {
     }
 
     static put(container, slotIndex, itemStack) {
-        if (slotIndex >= container.size)
+        if (slotIndex >= container.size || container.isSlotEnabled?.(slotIndex) === false)
             return itemStack;
         const targetItemStack = container.getItem(slotIndex);
         if (targetItemStack && !InventoryUtils.itemsMatch(targetItemStack, itemStack))

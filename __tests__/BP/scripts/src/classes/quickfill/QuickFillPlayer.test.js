@@ -97,6 +97,23 @@ describe('QuickFillPlayer', () => {
             expect(quickFillPlayer.mode.onFillInteraction).not.toHaveBeenCalled();
         });
 
+        test('fills a crafter through its recipe processing grid', () => {
+            const quickFillPlayer = makeQuickFillPlayer();
+            const recipeProcessing = { inputSlotCount: 9, getInputItem: vi.fn(() => void 0), getInputSlotEnabled: vi.fn(() => true) };
+            const crafter = {
+                typeId: 'minecraft:crafter',
+                localizationKey: 'tile.crafter.name',
+                getComponent: vi.fn(type => type === BlockComponentTypes.Inventory ? void 0 : recipeProcessing)
+            };
+
+            const event = interact(quickFillPlayer, { block: crafter });
+            flushScheduledRuns();
+
+            expect(event.cancel).toBe(true);
+            const [target] = quickFillPlayer.mode.onFillInteraction.mock.calls[0];
+            expect(target.size).toBe(9);
+        });
+
         test('ignores blocks without an inventory', () => {
             const quickFillPlayer = makeQuickFillPlayer();
 

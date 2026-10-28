@@ -1,6 +1,7 @@
-import { BlockComponentTypes, ButtonState, GameMode, InputButton, system } from "@minecraft/server";
+import { ButtonState, GameMode, InputButton, system } from "@minecraft/server";
 import { BulkMode } from "./Modes/BulkMode";
 import { getQuickFillModeConfigFromName } from "./Modes/QuickFillModes";
+import { InventoryUtils } from "../InventoryUtils";
 
 export class QuickFillPlayer {
     static MODE_DP_IDENTIFIER = 'quickFillModeName';
@@ -85,7 +86,7 @@ export class QuickFillPlayer {
     }
 
     #getContainer(block) {
-        return block?.getComponent(BlockComponentTypes.Inventory)?.container;
+        return InventoryUtils.getContainer(block);
     }
 
     #isSneaking() {

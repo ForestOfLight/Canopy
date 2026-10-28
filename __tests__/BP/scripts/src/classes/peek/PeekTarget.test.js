@@ -56,6 +56,20 @@ describe('PeekTarget', () => {
         });
     });
 
+    describe('crafter', () => {
+        it('exposes the crafting grid through recipe processing', () => {
+            const recipeProcessing = { inputSlotCount: 9, getInputItem: vi.fn(() => void 0), getInputSlotEnabled: vi.fn(() => true) };
+            const target = makeTarget({
+                typeId: 'minecraft:crafter',
+                getComponent: vi.fn(componentId => componentId === EntityComponentTypes.Inventory ? void 0 : recipeProcessing)
+            });
+            const peekTarget = new PeekTarget(target);
+            expect(peekTarget.isAlive()).toBe(true);
+            expect(peekTarget.resolveView().size).toBe(9);
+            expect(peekTarget.tipTranslateKey).toBeUndefined();
+        });
+    });
+
     describe('paging', () => {
         const paged = () => makeTarget({ typeId: 'minecraft:chest' });
 
