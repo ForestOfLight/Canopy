@@ -331,4 +331,19 @@ describe('ContainerSync', () => {
             expect(result.rejectedItemStacks).toEqual([diamond]);
         });
     });
+
+    describe('placeholder slots', () => {
+        it('leaves slots the target marks with a placeholder alone', () => {
+            const understudy = makeView(2, { 0: makeItem('minecraft:dirt') });
+            understudy.isPlaceholderSlot = slotIndex => slotIndex === 0;
+            const proxy = makeView(2, { 0: makeItem('minecraft:barrier'), 1: makeItem('minecraft:stone') });
+
+            const result = ContainerSync.sync(understudy, proxy, [void 0, void 0]);
+
+            expect(proxy.getItem(0).typeId).toBe('minecraft:barrier');
+            expect(understudy.getItem(0).typeId).toBe('minecraft:dirt');
+            expect(understudy.getItem(1).typeId).toBe('minecraft:stone');
+            expect(result.rejectedItemStacks).toEqual([]);
+        });
+    });
 });

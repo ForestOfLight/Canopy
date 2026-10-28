@@ -59,6 +59,16 @@ export class PeekView {
         return slotIndex >= 0 && slotIndex < this.size;
     }
 
+    isSlotDisabled(slotIndex) {
+        if (!this.hasSlot(slotIndex))
+            return false;
+        return this.#container.isSlotEnabled?.(this.#containerSlotFor(slotIndex)) === false;
+    }
+
+    isPlaceholderSlot(slotIndex) {
+        return !this.hasSlot(slotIndex) || this.isSlotDisabled(slotIndex);
+    }
+
     getItem(slotIndex) {
         if (!this.hasSlot(slotIndex))
             return void 0;

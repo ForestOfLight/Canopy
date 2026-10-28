@@ -4,8 +4,11 @@ export class ContainerSync {
     static sync(understudyView, proxyView, proxyBase) {
         const syncedSlotCount = Math.min(understudyView.size, proxyView.size);
         const rejectedItemStacks = [];
-        for (let slotIndex = 0; slotIndex < syncedSlotCount; slotIndex++)
+        for (let slotIndex = 0; slotIndex < syncedSlotCount; slotIndex++) {
+            if (understudyView.isPlaceholderSlot?.(slotIndex) === true)
+                continue;
             ContainerSync.#syncSlot(understudyView, proxyView, proxyBase[slotIndex], slotIndex, rejectedItemStacks);
+        }
         return { proxyBase: ContainerSync.snapshot(proxyView), rejectedItemStacks };
     }
 

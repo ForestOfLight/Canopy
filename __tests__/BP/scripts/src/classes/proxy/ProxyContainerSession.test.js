@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ButtonState, Container, EntityComponentTypes, EquipmentSlot, Player } from '@minecraft/server';
+import { PeekTarget } from '../../../../../../Canopy[BP]/scripts/src/classes/peek/PeekTarget';
 import { ProxyContainerSession } from '../../../../../../Canopy[BP]/scripts/src/classes/proxy/ProxyContainerSession';
 import { UnderstudyTarget } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/editor/UnderstudyTarget';
 import { UnderstudyEditViewMode } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/editor/UnderstudyEditView';
@@ -588,5 +589,119 @@ describe('ProxyContainerSession driving an Understudy', () => {
 
             expect(proxyContainer.getItem(0).typeId).toBe('minecraft:diamond');
         });
+    });
+});
+
+describe('ProxyContainerSession driving a peeked crafter', () => {
+    let player;
+    let playerInventory;
+    let gridSlots;
+    let disabledSlots;
+    let proxyContainer;
+    let proxy;
+
+    beforeEach(() => {
+        playerInventory = new Container({ size: 36 });
+        player = new Player();
+        player.id = 'player-1';
+        player.inputInfo = { getButtonState: vi.fn(() => ButtonState.Released) };
+        player.getHeadLocation.mockReturnValue({ x: 0, y: 66, z: 0 });
+        player.getComponent.mockImplementation(componentId => {
+            if (componentId === EntityComponentTypes.Inventory)
+                return { container: playerInventory };
+            return void 0;
+        });
+        player.onScreenDisplay = { setActionBar: vi.fn() };
+
+        gridSlots = Array(9).fill(void 0);
+        disabledSlots = new Set([4]);
+        proxyContainer = new Container({ size: 27 });
+        proxy = {
+            isValid: true,
+            dimensionId: player.dimension.id,
+            container: proxyContainer,
+            teleportTo: vi.fn(),
+            dropItem: vi.fn(() => true),
+            setName: vi.fn(),
+            remove: vi.fn()
+        };
+    });
+
+    const makeSession = () => {
+        const recipeProcessing = {
+            isValid: true,
+            inputSlotCount: 9,
+            getInputItem: vi.fn(i => gridSlots[i]),
+            setInputItem: vi.fn((i, itemStack) => { gridSlots[i] = itemStack; }),
+            getInputSlotEnabled: vi.fn(i => !disabledSlots.has(i))
+        };
+        const crafter = {
+            typeId: 'minecraft:crafter',
+            isValid: true,
+            localizationKey: 'tile.crafter.name',
+            dimension: player.dimension,
+            location: { x: 0, y: 0, z: 0 },
+            getComponent: vi.fn(componentId => componentId === EntityComponentTypes.Inventory ? void 0 : recipeProcessing)
+        };
+        return new ProxyContainerSession(player, new PeekTarget(crafter), proxy);
+    };
+
+    it('fills slots past the crafter grid with barriers', () => {
+        makeSession().onContainerOpened();
+        for (let slotIndex = 9; slotIndex < 27; slotIndex++)
+            expect(proxyContainer.getItem(slotIndex).typeId).toBe('minecraft:barrier');
+    });
+
+    it('shows disabled crafter slots as barriers', () => {
+        makeSession().onContainerOpened();
+        expect(proxyContainer.getItem(4).typeId).toBe('minecraft:barrier');
+        expect(proxyContainer.getItem(3)).toBeUndefined();
+    });
+
+    it('never writes placeholders into the crafter', () => {
+        const session = makeSession();
+        session.onContainerOpened();
+        session.onTick();
+        expect(gridSlots.every(itemStack => itemStack === void 0)).toBe(true);
+    });
+
+    it('clears the barrier once the slot is enabled again', () => {
+        const session = makeSession();
+        session.onContainerOpened();
+        disabledSlots.clear();
+        session.onTick();
+        expect(proxyContainer.getItem(4)).toBeUndefined();
+        expect(gridSlots[4]).toBeUndefined();
+    });
+
+    it('shows a barrier once a slot is disabled while open', () => {
+        const session = makeSession();
+        session.onContainerOpened();
+        disabledSlots.add(0);
+        session.onTick();
+        expect(proxyContainer.getItem(0).typeId).toBe('minecraft:barrier');
+    });
+
+    it('removes placeholders on close without handing them to the player', () => {
+        const session = makeSession();
+        session.onContainerOpened();
+        session.onContainerClosed();
+        expect(proxyContainer.emptySlotsCount).toBe(27);
+        expect(playerInventory.emptySlotsCount).toBe(36);
+    });
+
+    it('does not hand placeholders to the player when disposed', () => {
+        const session = makeSession();
+        session.onContainerOpened();
+        session.dispose();
+        expect(playerInventory.emptySlotsCount).toBe(36);
+    });
+
+    it('returns a real item found in an unused slot before covering it', () => {
+        const session = makeSession();
+        proxyContainer.setItem(20, makeItem('minecraft:emerald'));
+        session.onContainerOpened();
+        expect(playerInventory.getItem(0).typeId).toBe('minecraft:emerald');
+        expect(proxyContainer.getItem(20).typeId).toBe('minecraft:barrier');
     });
 });
