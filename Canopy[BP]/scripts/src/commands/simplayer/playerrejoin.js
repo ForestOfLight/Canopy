@@ -20,6 +20,10 @@ export class PlayerRejoinCommand extends VanillaCommand {
             origin.sendMessage(Understudies.getAlreadyOnlineMessage(playername));
             return;
         }
+        if (Understudies.hasForeignSimulatedPlayer(playername)) {
+            origin.sendMessage(Understudies.getNameClaimedMessage(playername));
+            return;
+        }
         system.run(() => this.#tryRejoin(origin, playername));
         return { status: CustomCommandStatus.Success };
     }
@@ -32,7 +36,6 @@ export class PlayerRejoinCommand extends VanillaCommand {
             console.warn(`[Canopy] Error while rejoining. Joining normally instead. Error: ${String(error)}`, error.stack);
             understudy.join(getLocationInfoFromSource(origin.getSource()));
         }
-        Understudies.addNametagPrefix(understudy);
     }
 }
 

@@ -39,12 +39,9 @@ class SimplayerRejoining extends BooleanRule {
             playersToRejoin.forEach(name => {
                 if (Understudies.isOnline(name))
                     return;
-                const simPlayer = Understudies.create(name);
-                system.runTimeout(() => {
-                    Understudies.addNametagPrefix(simPlayer);
-                }, 5);
                 try {
-                    simPlayer.rejoin();
+                    const understudy = Understudies.create(name);
+                    understudy.rejoin();
                 } catch (error) {
                     console.error(`[Canopy] Error rejoining player ${name}:`, error);
                 }

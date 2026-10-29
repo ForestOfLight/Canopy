@@ -1,4 +1,4 @@
-import { EntityComponentTypes, world } from "@minecraft/server";
+import { EntityComponentTypes, ItemComponentTypes, world } from "@minecraft/server";
 import { autoItemPickup } from "../rules/autoItemPickup";
 import { carefulBreak } from "../rules/carefulBreak";
 import { InventoryUtils } from "./InventoryUtils";
@@ -31,7 +31,8 @@ export class FastMine {
 
     isEfficiencyFiveNetheritePick(itemStack) {
         if (itemStack && itemStack.typeId === 'minecraft:netherite_pickaxe') {
-            const enchants = itemStack.getComponent('minecraft:enchantable').getEnchantments();
+            const enchantableComponent = itemStack.getComponent(ItemComponentTypes.Enchantable);
+            const enchants = enchantableComponent.getEnchantments();
             return enchants.some(enchant => enchant.type.id === 'efficiency' && enchant.level === 5);
         }
         return false;
@@ -49,10 +50,12 @@ export class FastMine {
         const lootTableManager = world.getLootTableManager();
         try {
             const loot = lootTableManager.generateLootFromBlock(block, heldItemStack);
-            if (this.shouldAutoPickup(player))
-                this.addLootToPlayerInventory(player, loot);
-            else
+            if (this.shouldAutoPickup(player)) {
+                const remainderLoot = this.addLootToPlayerInventory(player, loot);
+                this.spawnLoot(dimension, blockCenter, remainderLoot);
+            } else {
                 this.spawnLoot(dimension, blockCenter, loot);
+            }
         } catch (error) {
             console.warn("[Canopy] Failed to generate and spawn loot for fast mine. Error", error, error.stack);
         }
@@ -70,7 +73,12 @@ export class FastMine {
 
     addLootToPlayerInventory(player, loot) {
         const playerInventory = player.getComponent(EntityComponentTypes.Inventory);
-        for (const itemStack of loot)
-            InventoryUtils.tryAddItemLikeVanilla(playerInventory?.container, itemStack);
+        const remainderLoot = [];
+        for (const itemStack of loot) {
+            const remainder = InventoryUtils.addItemLikeVanilla(playerInventory?.container, itemStack);
+            if (remainder !== void 0)
+                remainderLoot.push(remainder);
+        }
+        return remainderLoot;
     }
 }

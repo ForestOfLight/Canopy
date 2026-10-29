@@ -108,11 +108,11 @@ commands.canopy.menu.submit=§a确认(提交)
 commands.canopy.single=修改单个规则的值.
 commands.canopy.infodisplayRule=§c规则 '%1' 是 信息显示 的一部分, 并且必须使用%2信息进行切换. 有关详细信息, 请使用%2帮助.
 
-commands.changedimension=传送你到指定的维度.
-commands.changedimension.notfound=§c无效的维度.
-commands.changedimension.success.coords=§7成功传送到坐标 %1 维度 %2.
-commands.changedimension.success=§7传送到维度 %s.
-commands.changedimension.fail.coords=§c无效的坐标. 请提供所有 x, y, z 数值或不提供任何数值.
+commands.dimensionalteleport=传送你到指定的维度.
+commands.dimensionalteleport.notfound=§c无效的维度.
+commands.dimensionalteleport.success.coords=§7成功传送到坐标 %1 维度 %2.
+commands.dimensionalteleport.success=§7传送到维度 %s.
+commands.dimensionalteleport.fail.coords=§c无效的坐标. 请提供所有 x, y, z 数值或不提供任何数值.
 
 commands.claimprojectiles=改变半径内所有弹射物的拥有者.
 commands.claimprojectiles.fail.sourcenotplayer=§c请指定一个玩家来使用此命令.

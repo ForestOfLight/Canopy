@@ -1,23 +1,12 @@
 import { VanillaCommand, PlayerCommandOrigin } from "../../lib/canopy/Canopy";
 import { CommandPermissionLevel, CustomCommandParamType, DimensionTypes, world } from '@minecraft/server';
-import { getColoredDimensionName } from "../../include/utils";
+import { getAllDimensionIds, getColoredDimensionName } from "../../include/utils";
 
 const NUM_RESULTS = 10;
-
-const validDimensions = {
-    'o': 'overworld',
-    'overworld': 'overworld',
-    'n': 'nether',
-    'nether': 'nether',
-    'e': 'the_end',
-    'end': 'the_end',
-    'the_end': 'the_end'
-};
 
 new VanillaCommand({
     name: 'canopy:entitydensity',
     description: 'commands.entitydensity',
-    enums: [{name: 'canopy:dimension', values: Object.keys(validDimensions)}],
     mandatoryParameters: [{name: 'gridSize', type: CustomCommandParamType.Integer}],
     optionalParameters: [{name: 'canopy:dimension', type: CustomCommandParamType.Enum}],
     permissionLevel: CommandPermissionLevel.Any,
@@ -52,12 +41,12 @@ function parseArgs(origin, gridSize, dimension) {
     const source = origin.getSource();
     const parsedGridSize = gridSize;
     if (dimension)
-        validDimensionId = validDimensions[dimension.toLowerCase()];
+        validDimensionId = getAllDimensionIds().includes(dimension.toLowerCase());
     else
         validDimensionId = source.dimension.id.replace('minecraft:', '');
 
     if (!validDimensionId) {
-        origin.sendMessage({ translate: 'commands.entitydensity.fail.dimension', with: [Object.keys(validDimensions).join(', ')] });
+        origin.sendMessage({ translate: 'commands.entitydensity.fail.dimension', with: [getAllDimensionIds().join(', ')] });
         hasNoErrors = false;
     }
     if (parsedGridSize < 1 || parsedGridSize > 2048) {

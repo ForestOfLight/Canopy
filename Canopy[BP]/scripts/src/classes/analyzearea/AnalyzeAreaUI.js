@@ -23,7 +23,7 @@ export class AnalyzeAreaUI {
             system.run(() => this.showCreateForm(null));
         });
         for (const analysis of analyses) {
-            const label = `${stringifyLocation(analysis.min, 0)} -> ${stringifyLocation(analysis.max, 0)} (${analysis.dimensionId})`;
+            const label = analysis.name || `${stringifyLocation(analysis.min, 0)} -> ${stringifyLocation(analysis.max, 0)} (${analysis.dimensionId})`;
             form.button(label, () => {
                 form.close();
                 system.run(() => this.showAnalysisPage(analysis));
@@ -36,7 +36,7 @@ export class AnalyzeAreaUI {
         const from = prefill?.from ?? this.player.location;
         const to = prefill?.to ?? this.player.location;
         const form = new CustomForm(this.player, { translate: 'commands.analyzearea.ui.create.title' });
-        const inputs = this.#buildCreateInputs(form, from, to);
+        const inputs = this.#buildInputs(form, { name: prefill?.name ?? '', from, to, dimensionId: this.player.dimension.id, expression: '' });
         const showError = this.#addErrorLabel(form);
         if (initialError)
             showError(initialError);
@@ -45,7 +45,27 @@ export class AnalyzeAreaUI {
         form.show();
     }
 
-    #buildCreateInputs(form, from, to) {
+    showEditForm(analysis, prefill) {
+        const form = new CustomForm(this.player, { translate: 'commands.analyzearea.ui.edit.title' });
+        const inputs = this.#buildInputs(form, {
+            name: analysis.name,
+            from: prefill?.from ?? analysis.min,
+            to: prefill?.to ?? analysis.max,
+            dimensionId: analysis.dimensionId,
+            expression: analysis.expression
+        });
+        const showError = this.#addErrorLabel(form);
+        form.button({ translate: 'commands.analyzearea.ui.edit.submit' }, () => this.#submitEdit(form, analysis, inputs, showError));
+        form.button({ translate: 'commands.analyzearea.ui.page.back' }, () => {
+            form.close();
+            system.run(() => this.showAnalysisPage(analysis));
+        });
+        form.show();
+    }
+
+    #buildInputs(form, initial) {
+        const { from, to } = initial;
+        const name = new ObservableString(initial.name, { clientWritable: true });
         const fields = {
             fromX: new ObservableString(String(Math.floor(from.x)), { clientWritable: true }),
             fromY: new ObservableString(String(Math.floor(from.y)), { clientWritable: true }),
@@ -55,10 +75,11 @@ export class AnalyzeAreaUI {
             toZ: new ObservableString(String(Math.floor(to.z)), { clientWritable: true })
         };
         const dimensions = DimensionTypes.getAll().map((dimensionType) => dimensionType.typeId);
-        const dimObservable = new ObservableNumber(Math.max(0, dimensions.indexOf(this.player.dimension.id)), { clientWritable: true });
-        const expression = new ObservableString('', { clientWritable: true });
+        const dimObservable = new ObservableNumber(Math.max(0, dimensions.indexOf(initial.dimensionId)), { clientWritable: true });
+        const expression = new ObservableString(initial.expression, { clientWritable: true });
         const dimensionLabels = dimensions.map((id, index) => ({ label: id.replace('minecraft:', ''), value: index }));
 
+        form.textField({ translate: 'commands.analyzearea.ui.create.name' }, name);
         form.textField({ translate: 'commands.analyzearea.ui.create.fromX' }, fields.fromX);
         form.textField({ translate: 'commands.analyzearea.ui.create.fromY' }, fields.fromY);
         form.textField({ translate: 'commands.analyzearea.ui.create.fromZ' }, fields.fromZ);
@@ -68,18 +89,50 @@ export class AnalyzeAreaUI {
         form.dropdown({ translate: 'commands.analyzearea.ui.create.dimension' }, dimObservable, dimensionLabels);
         form.textField({ translate: 'commands.analyzearea.ui.create.expression' }, expression);
         form.spacer();
-        return { fields, dimensions, dimObservable, expression };
+        return { name, fields, dimensions, dimObservable, expression };
     }
 
-    #submitCreate(form, inputs, showError) {
-        const parsedFrom = this.#parseCorner(inputs.fields.fromX, inputs.fields.fromY, inputs.fields.fromZ);
-        const parsedTo = this.#parseCorner(inputs.fields.toX, inputs.fields.toY, inputs.fields.toZ);
-        const expr = inputs.expression.getData().trim();
-        if (!parsedFrom || !parsedTo || expr.length === 0) {
+    #readInputs(inputs) {
+        const from = this.#parseCorner(inputs.fields.fromX, inputs.fields.fromY, inputs.fields.fromZ);
+        const to = this.#parseCorner(inputs.fields.toX, inputs.fields.toY, inputs.fields.toZ);
+        const expression = inputs.expression.getData().trim();
+        if (!from || !to || expression.length === 0)
+            return void 0;
+        return {
+            from,
+            to,
+            dimensionId: inputs.dimensions[inputs.dimObservable.getData()],
+            expression,
+            name: inputs.name.getData().trim()
+        };
+    }
+
+    #submitEdit(form, analysis, inputs, showError) {
+        const changes = this.#readInputs(inputs);
+        if (!changes) {
             showError({ translate: 'commands.analyzearea.create.invalid' });
             return;
         }
-        const result = Analysis.tryCreate(parsedFrom, parsedTo, inputs.dimensions[inputs.dimObservable.getData()], expr);
+        const result = this.manager.edit(analysis, changes);
+        if (!result.ok) {
+            showError({ translate: `commands.analyzearea.${result.reason}` });
+            return;
+        }
+        form.close();
+        system.run(() => this.showAnalysisPage(analysis, true));
+    }
+
+    #submitCreate(form, inputs, showError) {
+        const values = this.#readInputs(inputs);
+        if (!values) {
+            showError({ translate: 'commands.analyzearea.create.invalid' });
+            return;
+        }
+        if (this.manager.findByName(values.name)) {
+            showError({ translate: 'commands.analyzearea.nametaken' });
+            return;
+        }
+        const result = Analysis.tryCreate(values.from, values.to, values.dimensionId, values.expression, values.name);
         if (!result.ok) {
             showError({ translate: `commands.analyzearea.${result.reason}` });
             return;
@@ -132,6 +185,10 @@ export class AnalyzeAreaUI {
         form.button(toggleLabel, () => {
             analysis.toggleBoxes();
             toggleLabel.setData(this.#toggleBoxesMessage(analysis));
+        });
+        form.button({ translate: 'commands.analyzearea.ui.page.edit' }, () => {
+            form.close();
+            system.run(() => this.showEditForm(analysis));
         });
         form.button({ translate: 'commands.analyzearea.ui.page.remove' }, () => {
             this.manager.remove(analysis);

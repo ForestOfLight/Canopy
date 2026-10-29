@@ -7,6 +7,7 @@ describe('AnalyzeAreaUI', () => {
         expect(typeof AnalyzeAreaUI.prototype.showSelector).toBe('function');
         expect(typeof AnalyzeAreaUI.prototype.showCreateForm).toBe('function');
         expect(typeof AnalyzeAreaUI.prototype.showAnalysisPage).toBe('function');
+        expect(typeof AnalyzeAreaUI.prototype.showEditForm).toBe('function');
     });
 
     it('uses a 50-item page size', () => {

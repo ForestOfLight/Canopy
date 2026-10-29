@@ -1,5 +1,6 @@
-import { ButtonState, EntityComponentTypes, InputButton } from "@minecraft/server";
+import { ButtonState, InputButton } from "@minecraft/server";
 import { PeekView } from "./PeekView";
+import { InventoryUtils } from "../InventoryUtils";
 
 export class PeekTarget {
     static #TIP_TRANSLATE_KEY = "commands.peek.tip";
@@ -29,7 +30,7 @@ export class PeekTarget {
         try {
             if (target === void 0 || target.isValid === false)
                 return void 0;
-            return target.getComponent(EntityComponentTypes.Inventory)?.container;
+            return InventoryUtils.getContainer(target);
         } catch {
             return void 0;
         }

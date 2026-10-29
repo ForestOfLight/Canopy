@@ -1,5 +1,6 @@
 import { EntityComponentTypes } from "@minecraft/server";
 import { ContainerSync } from "./ContainerSync";
+import { SlotPlaceholder } from "./SlotPlaceholder";
 
 export class ProxyContainerSession {
     #player;
@@ -118,8 +119,37 @@ export class ProxyContainerSession {
         if (targetView === void 0 || proxyContainer === void 0)
             return;
         const result = ContainerSync.sync(targetView, proxyContainer, this.#proxyBase);
-        this.#proxyBase = result.proxyBase;
         this.#returnRejectedItems(result.rejectedItemStacks);
+        if (this.#renderPlaceholders(targetView, proxyContainer))
+            this.#proxyBase = ContainerSync.snapshot(proxyContainer);
+        else
+            this.#proxyBase = result.proxyBase;
+    }
+
+    #renderPlaceholders(targetView, proxyContainer) {
+        if (typeof targetView.isPlaceholderSlot !== "function")
+            return false;
+        let rendered = false;
+        for (let slotIndex = 0; slotIndex < proxyContainer.size; slotIndex++) {
+            if (targetView.isPlaceholderSlot(slotIndex))
+                rendered = this.#renderPlaceholder(targetView, proxyContainer, slotIndex) || rendered;
+        }
+        return rendered;
+    }
+
+    #renderPlaceholder(targetView, proxyContainer, slotIndex) {
+        try {
+            const itemStack = proxyContainer.getItem(slotIndex);
+            if (SlotPlaceholder.is(itemStack))
+                return false;
+            if (itemStack !== void 0 && !targetView.hasSlot(slotIndex))
+                this.#returnItem(itemStack);
+            proxyContainer.setItem(slotIndex, SlotPlaceholder.create());
+            return true;
+        } catch (error) {
+            console.warn(`[Canopy] Failed to render inventory proxy placeholder in slot ${slotIndex}:`, error);
+            return false;
+        }
     }
 
     #isAlive() {
@@ -196,7 +226,8 @@ export class ProxyContainerSession {
             const itemStack = proxyContainer.getItem(slotIndex);
             if (itemStack === void 0)
                 return;
-            this.#returnItem(itemStack);
+            if (!SlotPlaceholder.is(itemStack))
+                this.#returnItem(itemStack);
             proxyContainer.setItem(slotIndex, void 0);
         } catch (error) {
             console.warn(`[Canopy] Failed to return inventory proxy slot ${slotIndex}:`, error);

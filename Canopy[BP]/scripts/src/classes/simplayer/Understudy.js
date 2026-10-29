@@ -10,6 +10,8 @@ import { UnderstudySaveInfoError } from "../errors/UnderstudySaveInfoError";
 import Understudies from "./Understudies";
 
 class Understudy {
+    static OWNERSHIP_TAG = 'canopy:owned';
+
     name;
     #simulatedPlayer = null;
     #createdTick;
@@ -18,6 +20,10 @@ class Understudy {
     #actions;
     #playerInfoSaver;
     #isUnloaded = false;
+
+    static isCanopyOwned(simulatedPlayer) {
+        return simulatedPlayer?.hasTag(Understudy.OWNERSHIP_TAG) === true;
+    }
 
     constructor(name) {
         this.name = name;
@@ -60,6 +66,13 @@ class Understudy {
     get actions() {
         this.#assertConnected();
         return this.#actions;
+    }
+
+    get nameTag() {
+        const prefix = Understudies.getNametagPrefix();
+        if (prefix === '')
+            return this.name;
+        return `§r[${prefix}§r] ${this.name}`;
     }
 
     get lookTarget() {
@@ -105,7 +118,9 @@ class Understudy {
         Understudies.onConnect();
         const updatedGameMode = portOldGameModeToNewUpdate(gameMode);
         this.#simulatedPlayer = spawnSimulatedPlayer({ ...location, dimension }, this.name, updatedGameMode);
+        this.#simulatedPlayer.addTag(Understudy.OWNERSHIP_TAG);
         this.#isConnected = true;
+        this.updateNameTag();
         this.#teleportFacing(location, dimension, rotation);
         try {
             this.#playerInfoSaver.loadInventoryAndProjectileOwnership();
@@ -122,6 +137,7 @@ class Understudy {
         Understudies.onConnect();
         this.#simulatedPlayer = simulatedPlayer;
         this.#isConnected = true;
+        this.updateNameTag();
     }
 
     leave() {
@@ -272,6 +288,10 @@ class Understudy {
 
     refreshHeldItem() {
         this.#simulatedPlayer.selectedSlotIndex = this.simulatedPlayer.selectedSlotIndex;
+    }
+
+    updateNameTag() {
+        this.simulatedPlayer.nameTag = this.nameTag;
     }
 
     #assertConnected() {

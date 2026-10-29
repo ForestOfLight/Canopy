@@ -9,7 +9,7 @@ vi.mock('../../../../../../Canopy[BP]/scripts/src/rules/simplayer/simplayerSavin
     simplayerSaving: { getNativeValue: vi.fn(() => true), getID: vi.fn(() => 'simplayerSaving') }
 }));
 vi.mock('../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies', () => ({
-    default: { onConnect: vi.fn() }
+    default: { onConnect: vi.fn(), getNametagPrefix: vi.fn(() => '') }
 }));
 
 describe('RepeatableAction', () => {

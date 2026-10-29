@@ -13,26 +13,27 @@ class ItemCounterChannels {
         this.controllingRuleID = controllingRuleID;
         this.channels = {};
         this.ChannelClass = ChannelClass;
+        this.onPlayerPlaceBlockBound = this.onPlayerPlaceBlock.bind(this);
 
         this.restartAllChannels();
     }
 
     enable() {
-        world.afterEvents.playerPlaceBlock.subscribe((event) => this.onPlayerPlaceBlock(event.block));
+        world.afterEvents.playerPlaceBlock.subscribe(this.onPlayerPlaceBlockBound);
         this.onTickRunner = system.runInterval(() => this.onTick(), 1);
     }
 
     disable() {
-        world.afterEvents.playerPlaceBlock.unsubscribe(this.onPlayerPlaceBlock);
+        world.afterEvents.playerPlaceBlock.unsubscribe(this.onPlayerPlaceBlockBound);
         if (this.onTickRunner)
             system.clearRun(this.onTickRunner);
         for (const channel of Object.values(this.channels))
             channel.disable();
     }
 
-    onPlayerPlaceBlock(placedBlock) {
+    onPlayerPlaceBlock(event) {
         if (!Rules.getNativeValue(this.controllingRuleID)) return;
-        this.tryCreateHopperBlockPair(placedBlock);
+        this.tryCreateHopperBlockPair(event.block);
     }
 
     onTick() {

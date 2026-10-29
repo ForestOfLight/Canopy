@@ -13,7 +13,7 @@ vi.mock('../../../../../../Canopy[BP]/scripts/src/rules/simplayer/simplayerSavin
     simplayerSaving: { getNativeValue: vi.fn(() => true), getID: vi.fn(() => 'simplayerSaving') }
 }));
 vi.mock('../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies', () => ({
-    default: { onConnect: vi.fn() }
+    default: { onConnect: vi.fn(), getNametagPrefix: vi.fn(() => '') }
 }));
 
 import Understudies from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies';
@@ -71,6 +71,38 @@ describe('Understudy', () => {
         });
     });
 
+    describe('nameTag', () => {
+        it('returns just the name when the prefix is empty', () => {
+            expect(understudy.nameTag).toBe('TestBot');
+        });
+
+        it('returns the name with the stored prefix', () => {
+            Understudies.getNametagPrefix.mockReturnValue('Bot');
+            expect(understudy.nameTag).toBe('§r[Bot§r] TestBot');
+        });
+
+        it('applies the prefixed nameTag to the simulated player on join', () => {
+            Understudies.getNametagPrefix.mockReturnValue('Bot');
+            understudy.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
+            expect(understudy.simulatedPlayer.nameTag).toBe('§r[Bot§r] TestBot');
+        });
+
+        it('applies the prefixed nameTag to the simulated player on adopt', () => {
+            Understudies.getNametagPrefix.mockReturnValue('Bot');
+            const player = new SimulatedPlayer();
+            player.name = 'TestBot';
+            understudy.adopt(player);
+            expect(player.nameTag).toBe('§r[Bot§r] TestBot');
+        });
+
+        it('updates the simulated player nameTag when the prefix changes', () => {
+            understudy.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
+            Understudies.getNametagPrefix.mockReturnValue('Bot');
+            understudy.updateNameTag();
+            expect(understudy.simulatedPlayer.nameTag).toBe('§r[Bot§r] TestBot');
+        });
+    });
+
     describe('join', () => {
         beforeEach(() => {
             vi.clearAllMocks();
@@ -84,6 +116,16 @@ describe('Understudy', () => {
         it('sets isConnected to true', () => {
             understudy.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
             expect(understudy.isConnected()).toBe(true);
+        });
+
+        it('tags the spawned simulated player as owned by Canopy', () => {
+            understudy.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
+            expect(understudy.simulatedPlayer.hasTag('canopy:owned')).toBe(true);
+        });
+
+        it('recognises the spawned simulated player as its own', () => {
+            understudy.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });
+            expect(Understudy.isCanopyOwned(understudy.simulatedPlayer)).toBe(true);
         });
 
         it('throws if already connected', () => {
@@ -180,6 +222,7 @@ describe('Understudy', () => {
             expect(existing.teleport).not.toHaveBeenCalled();
         });
     });
+    
     describe('while connected', () => {
         beforeEach(() => {
             understudy.join({ location: { x: 0, y: 64, z: 0 }, dimension: world.getDimension() });

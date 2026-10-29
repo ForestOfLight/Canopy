@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { Analysis } from '../../../../../../Canopy[BP]/scripts/src/classes/analyzearea/Analysis.js';
 import { ExpressionForbiddenError } from '../../../../../../Canopy[BP]/scripts/src/classes/analyzearea/ExpressionForbiddenError.js';
 import { LoadCapacityError } from '../../../../../../Canopy[BP]/scripts/src/classes/analyzearea/LoadCapacityError.js';
@@ -10,7 +10,8 @@ const identity = {
     to: { x: 0, y: 3, z: 0 },
     dimensionId: 'minecraft:overworld',
     expression: "typeId === 'minecraft:stone'",
-    createdAt: 1234
+    createdAt: 1234,
+    name: 'Stone Farm'
 };
 
 describe('Analysis', () => {
@@ -35,8 +36,15 @@ describe('Analysis', () => {
             to: { x: 5, y: 3, z: 5 },
             dimensionId: 'minecraft:overworld',
             expression: "typeId === 'minecraft:stone'",
-            createdAt: 1234
+            createdAt: 1234,
+            name: 'Stone Farm'
         });
+    });
+
+    it('defaults the name to an empty string when none is stored', () => {
+        const unnamed = { ...identity };
+        delete unnamed.name;
+        expect(new Analysis(unnamed).name).toBe('');
     });
 
     it('round-trips through serialize/deserialize', () => {
@@ -104,6 +112,13 @@ describe('Analysis', () => {
         expect(typeof analysis.id).toBe('string');
         expect(analysis.id.length).toBeGreaterThan(0);
         expect(typeof analysis.createdAt).toBe('number');
+        expect(analysis.name).toBe('');
+    });
+
+    it('create keeps the given name without using it as the id', () => {
+        const analysis = Analysis.create({ x: 0, y: 0, z: 0 }, { x: 1, y: 1, z: 1 }, 'minecraft:overworld', 'x === 0', 'My Area');
+        expect(analysis.name).toBe('My Area');
+        expect(analysis.id).not.toBe('My Area');
     });
 
     describe('tryCreate', () => {
@@ -113,6 +128,11 @@ describe('Analysis', () => {
             const result = Analysis.tryCreate(from, { x: 1, y: 1, z: 1 }, 'minecraft:overworld', "typeId === 'minecraft:stone'");
             expect(result.ok).toBe(true);
             expect(result.analysis).toBeInstanceOf(Analysis);
+        });
+
+        it('passes the name through to the created analysis', () => {
+            const result = Analysis.tryCreate(from, { x: 1, y: 1, z: 1 }, 'minecraft:overworld', 'true', 'Named');
+            expect(result.analysis.name).toBe('Named');
         });
 
         it('rejects an over-capacity region', () => {
@@ -128,6 +148,47 @@ describe('Analysis', () => {
         it('rejects a forbidden expression', () => {
             const result = Analysis.tryCreate(from, { x: 1, y: 1, z: 1 }, 'minecraft:overworld', 'block.constructor');
             expect(result).toEqual({ ok: false, reason: 'forbidden' });
+        });
+    });
+
+    describe('tryEdit', () => {
+        const changes = { from: { x: 2, y: 2, z: 2 }, to: { x: -1, y: 0, z: 0 }, dimensionId: 'minecraft:nether', expression: 'true', name: 'Renamed' };
+
+        it('updates the identity in place, keeping the id', () => {
+            const analysis = new Analysis(identity);
+            const result = analysis.tryEdit(changes);
+            expect(result).toEqual({ ok: true, analysis });
+            expect(analysis.id).toBe('a1');
+            expect(analysis.min).toEqual({ x: -1, y: 0, z: 0 });
+            expect(analysis.max).toEqual({ x: 2, y: 2, z: 2 });
+            expect(analysis.dimensionId).toBe('minecraft:nether');
+            expect(analysis.expression).toBe('true');
+            expect(analysis.name).toBe('Renamed');
+        });
+
+        it('clears previous results and tears down rendering', () => {
+            const analysis = new Analysis(identity);
+            const renderer = { destroy: vi.fn() };
+            analysis.renderer = renderer;
+            analysis.matches = [{ x: 1, y: 1, z: 1 }];
+            analysis.hasRun = true;
+            analysis.capped = true;
+            analysis.tryEdit(changes);
+            expect(renderer.destroy).toHaveBeenCalled();
+            expect(analysis.renderer).toBeUndefined();
+            expect(analysis.matches).toEqual([]);
+            expect(analysis.hasRun).toBe(false);
+            expect(analysis.capped).toBe(false);
+            expect(analysis.statusMessage()).toEqual({ translate: 'commands.analyzearea.ui.page.notrun' });
+        });
+
+        it('leaves the analysis untouched when the edit is invalid', () => {
+            const analysis = new Analysis(identity);
+            analysis.matches = [{ x: 1, y: 1, z: 1 }];
+            expect(analysis.tryEdit({ ...changes, expression: 'block.constructor' })).toEqual({ ok: false, reason: 'forbidden' });
+            expect(analysis.tryEdit({ ...changes, to: { x: 2 ** 32, y: 0, z: 0 } })).toEqual({ ok: false, reason: 'overcapacity' });
+            expect(analysis.serialize()).toEqual(new Analysis(identity).serialize());
+            expect(analysis.matches).toHaveLength(1);
         });
     });
 });

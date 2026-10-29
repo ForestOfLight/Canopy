@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout Canopy repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Checkout Wiki repo (master branch)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ${{ github.repository }}.wiki
           path: wiki
@@ -25,10 +25,10 @@ jobs:
         working-directory: wiki
         run: git fetch origin template && git show origin/template:Commands.md > Commands.md
 
-      - name: Use Node.js 20.14.0
-        uses: actions/setup-node@v4
+      - name: Use Node.js 24
+        uses: actions/setup-node@v5
         with:
-          node-version: 20.14.0
+          node-version: 24
           cache: 'npm'
 
       - name: Install dependencies

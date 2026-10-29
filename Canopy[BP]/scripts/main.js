@@ -15,7 +15,7 @@ import './src/commands/health'
 import './src/commands/counter'
 import './src/commands/data'
 import './src/commands/tick'
-import './src/commands/changedimension'
+import './src/commands/dimensionalteleport'
 import './src/commands/spawn'
 import './src/commands/claimprojectiles'
 import './src/commands/trackevent'
@@ -35,6 +35,7 @@ import './src/commands/lifetimequery'
 import './src/commands/lifetimequeryitem'
 import './src/commands/velocity'
 import './src/commands/analyzearea'
+import './src/commands/quickfillmode'
 
 // Simulated Player Commands
 import './src/commands/simplayer/playerjoin'
@@ -104,6 +105,7 @@ import './src/rules/fastMineGlass'
 // Simulated Player Rules
 import './src/rules/simplayer/simplayerSaving'
 import './src/rules/simplayer/simplayerRejoining'
+import './src/rules/simplayer/simplayerActionInfo'
 
 // Load Time Processes
 import './src/onStart'

@@ -23,4 +23,4 @@ export class FastMineGlass extends BooleanRule {
     }
 }
 
-export const instaminableEndstone = new FastMineGlass();
+export const fastMineGlass = new FastMineGlass();

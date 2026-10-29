@@ -1,8 +1,19 @@
-import { EntityComponentTypes, ItemStack } from "@minecraft/server";
+import { BlockComponentTypes, EntityComponentTypes, ItemStack } from "@minecraft/server";
+import { RecipeProcessingContainer } from "./RecipeProcessingContainer";
 
 export class InventoryUtils {
+    static getContainer(target) {
+        const container = target?.getComponent(BlockComponentTypes.Inventory)?.container;
+        if (container !== void 0)
+            return container;
+        const recipeProcessing = target?.getComponent(BlockComponentTypes.RecipeProcessing);
+        if (recipeProcessing === void 0)
+            return void 0;
+        return new RecipeProcessingContainer(recipeProcessing);
+    }
+
     static getInventory(block) {
-        const container = block.getComponent('inventory')?.container;
+        const container = block.getComponent(BlockComponentTypes.Inventory)?.container;
         if (container === undefined) return {};
         const items = {};
         for (let i = 0; i < container.size; i++) {
@@ -14,7 +25,7 @@ export class InventoryUtils {
     }
     
     static restoreInventory(block, items) {
-        const container = block.getComponent('inventory')?.container;
+        const container = block.getComponent(BlockComponentTypes.Inventory)?.container;
         if (container === undefined)
             return;
         for (let i = 0; i < container.size; i++) {
@@ -25,6 +36,40 @@ export class InventoryUtils {
         }
     }
 
+    static getRecipeProcessingContents(block) {
+        const recipeProcessing = block.getComponent(BlockComponentTypes.RecipeProcessing);
+        if (recipeProcessing === undefined) return [];
+        const slots = [];
+        for (let i = 0; i < recipeProcessing.inputSlotCount; i++) {
+            let enabled;
+            try {
+                enabled = recipeProcessing.getInputSlotEnabled(i);
+            } catch {
+                enabled = undefined;
+            }
+            slots.push({ item: recipeProcessing.getInputItem(i)?.clone(), enabled });
+        }
+        return slots;
+    }
+
+    static restoreRecipeProcessingContents(block, slots) {
+        const recipeProcessing = block.getComponent(BlockComponentTypes.RecipeProcessing);
+        if (recipeProcessing === undefined)
+            return;
+        const slotCount = Math.min(slots.length, recipeProcessing.inputSlotCount);
+        for (let i = 0; i < slotCount; i++) {
+            const { item, enabled } = slots[i];
+            recipeProcessing.setInputItem(i, item);
+            if (enabled === undefined)
+                continue;
+            try {
+                recipeProcessing.setInputSlotEnabled(i, enabled);
+            } catch {
+                // Not all recipe processing blocks support disabling slots
+            }
+        }
+    }
+
     static pickupItemEntity(entityWithInventory, itemEntity) {
         const itemComponent = itemEntity.getComponent(EntityComponentTypes.Item);
         const itemStack = itemComponent.itemStack;
@@ -32,68 +77,142 @@ export class InventoryUtils {
         const inventory = playerInventoryComponent.container;
         if (!itemStack || !inventory)
             return;
-        const canAdd = InventoryUtils.tryAddItemLikeVanilla(inventory, itemStack);
-        if (canAdd)
-            itemEntity.remove();
+        const remainderItemStck = InventoryUtils.addItemLikeVanilla(inventory, itemStack);
+        if (remainderItemStck?.amount === itemStack.amount)
+            return;
+        if (remainderItemStck !== void 0)
+            itemEntity.dimension.spawnItem(remainderItemStck, itemEntity.location);
+        itemEntity.remove();
     }
 
-    static tryAddItemLikeVanilla(inventory, itemStack) {
-        if (InventoryUtils.canAddItem(inventory, itemStack)) {
-            InventoryUtils.#addItemLikeVanilla(inventory, itemStack);
-            return true;
-        }
-        return false;
-    }
-
-    static canAddItem(inventory, itemStack) {
-        if (inventory.emptySlotsCount !== 0)
-            return true;
-        for (let i = 0; i < inventory.size; i++) {
-            const slot = inventory.getSlot(i);
-            if (InventoryUtils.#itemFitsInPartiallyFilledSlot(slot, itemStack))
-                return true;
-        }
-        return false;
-    }
-
-    static #itemFitsInPartiallyFilledSlot(slot, itemStack) {
-        return slot.hasItem() && slot.isStackableWith(itemStack) && slot.amount + itemStack.amount <= slot.maxAmount;
-    }
-
-    static #addItemLikeVanilla(inventory, itemStack) {
-        const isItemDeposited = InventoryUtils.#partiallyFilledSlotPass(inventory, itemStack);
-        if (!isItemDeposited)
-            InventoryUtils.#emptySlotPass(inventory, itemStack);
+    static addItemLikeVanilla(inventory, itemStack) {
+        const remainderItemStack = InventoryUtils.#partiallyFilledSlotPass(inventory, itemStack);
+        if (remainderItemStack === void 0)
+            return void 0;
+        return InventoryUtils.#emptySlotPass(inventory, remainderItemStack);
     }
 
     static #partiallyFilledSlotPass(inventory, itemStack) {
-        for (let slotNum = 0; slotNum < inventory.size; slotNum++) {
-            const slot = inventory.getSlot(slotNum);
-            if (InventoryUtils.#isSlotAvailableForStacking(slot, itemStack)) {
-                const remainderAmount = Math.max(0, (slot.amount + itemStack.amount) - slot.maxAmount);
-                slot.amount += itemStack.amount - remainderAmount;
-                if (remainderAmount > 0) {
-                    const remainderStack = new ItemStack(itemStack.typeId, remainderAmount);
-                    InventoryUtils.#addItemLikeVanilla(inventory, remainderStack);
-                }
-                return true;
-            }
+        let remainingAmount = itemStack.amount;
+        for (let i = 0; i < inventory.size && remainingAmount > 0; i++) {
+            const slot = inventory.getSlot(i);
+            if (!InventoryUtils.#isSlotAvailableForStacking(slot, itemStack))
+                continue;
+
+            const amountToAdd = Math.min(remainingAmount, slot.maxAmount - slot.amount);
+            slot.amount += amountToAdd;
+            remainingAmount -= amountToAdd;
         }
-        return false;
+
+        if (remainingAmount === 0)
+            return void 0;
+
+        const remainderItemStack = itemStack.clone();
+        remainderItemStack.amount = remainingAmount;
+        return remainderItemStack;
     }
 
     static #emptySlotPass(inventory, itemStack) {
-        for (let slotNum = 0; slotNum < inventory.size; slotNum++) {
-            const slot = inventory.getSlot(slotNum);
-            if (!slot.hasItem()) {
-                slot.setItem(itemStack);
-                return true;
-            }
+        let remainingAmount = itemStack.amount;
+        for (let i = 0; i < inventory.size && remainingAmount > 0; i++) {
+            const slot = inventory.getSlot(i);
+            if (slot.hasItem())
+                continue;
+
+            const amountToAdd = Math.min(remainingAmount, itemStack.maxAmount);
+            const stackToAdd = itemStack.clone();
+            stackToAdd.amount = amountToAdd;
+            slot.setItem(stackToAdd);
+            remainingAmount -= amountToAdd;
         }
-        return false;
+
+        if (remainingAmount === 0)
+            return undefined;
+
+        const remainder = itemStack.clone();
+        remainder.amount = remainingAmount;
+        return remainder;
     }
 
     static #isSlotAvailableForStacking(slot, itemStack) {
         return slot.hasItem() && slot.isStackableWith(itemStack) && slot.amount !== slot.maxAmount;
+    }
+
+    static itemsMatch(first, second) {
+        if (!first || !second)
+            return false;
+        if (typeof first.isStackableWith === 'function')
+            return first.isStackableWith(second);
+        return first.typeId === second.typeId;
+    }
+
+    static mergeStacks(current, supplied) {
+        const replacement = current.clone();
+        replacement.amount += supplied.amount;
+        return replacement;
+    }
+
+    static getTotalItemCount(container) {
+        let total = 0;
+        for (let i = 0; i < container.size; i++)
+            total += container.getItem(i)?.amount ?? 0;
+        return total;
+    }
+
+    static hasItemType(container, itemTypeId, slotFilter) {
+        for (let slot = 0; slot < container.size; slot++) {
+            if (slotFilter && !slotFilter(slot))
+                continue;
+            if (container.getItem(slot)?.typeId === itemTypeId)
+                return true;
+        }
+        return false;
+    }
+
+    static hasAvailableSpace(container, itemStack, slotFilter) {
+        for (let slot = 0; slot < container.size; slot++) {
+            if (slotFilter && !slotFilter(slot))
+                continue;
+
+            const current = container.getItem(slot);
+            if (!current || (InventoryUtils.itemsMatch(current, itemStack) && current.amount < current.maxAmount))
+                return true;
+        }
+        return false;
+    }
+
+    static getAvailableAmount(container, template) {
+        let amount = 0;
+        for (let slot = 0; slot < container.size; slot++) {
+            const itemStack = container.getItem(slot);
+            if (itemStack && InventoryUtils.itemsMatch(itemStack, template))
+                amount += itemStack.amount;
+        }
+        return amount;
+    }
+
+    static takeItems(container, template, amount) {
+        let remaining = amount;
+        let result;
+        for (let slot = 0; slot < container.size && remaining > 0; slot++) {
+            const source = container.getItem(slot);
+            if (!source || !InventoryUtils.itemsMatch(source, template))
+                continue;
+
+            const taken = Math.min(source.amount, remaining);
+            if (!result)
+                result = source.clone();
+            result.amount = amount - remaining + taken;
+            remaining -= taken;
+
+            if (source.amount === taken) {
+                container.setItem(slot, null);
+            } else {
+                const replacement = source.clone();
+                replacement.amount -= taken;
+                container.setItem(slot, replacement);
+            }
+        }
+        return remaining === 0 ? result : undefined;
     }
 }

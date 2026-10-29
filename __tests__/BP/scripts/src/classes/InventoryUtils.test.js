@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
+import { Container, ItemStack } from "@minecraft/server";
 import { InventoryUtils } from "../../../../../Canopy[BP]/scripts/src/classes/InventoryUtils";
+import { RecipeProcessingContainer } from "../../../../../Canopy[BP]/scripts/src/classes/RecipeProcessingContainer";
 
 describe('getInventory()', () => {
 	it('returns correct inventory items', () => {
@@ -62,5 +64,174 @@ describe('getInventory()', () => {
 			0: { typeId: 'minecraft:stone', amount: 10 },
 			2: { typeId: 'minecraft:stone', amount: 15 }
 		});
+	});
+});
+
+describe('slot-filtered inventory queries', () => {
+    it('limits item and capacity checks to allowed slots', () => {
+        const items = [
+            { typeId: 'minecraft:stone', amount: 64, maxAmount: 64 },
+            undefined,
+            { typeId: 'minecraft:stone', amount: 63, maxAmount: 64 }
+        ];
+        const container = {
+            size: items.length,
+            getItem: vi.fn(slot => items[slot])
+        };
+        const stone = { typeId: 'minecraft:stone' };
+
+        expect(InventoryUtils.hasItemType(container, 'minecraft:stone')).toBe(true);
+        expect(InventoryUtils.hasItemType(container, 'minecraft:stone', slot => slot === 1)).toBe(false);
+        expect(InventoryUtils.hasItemType(container, 'minecraft:stone', slot => slot === 2)).toBe(true);
+
+        expect(InventoryUtils.hasAvailableSpace(container, stone, slot => slot === 0)).toBe(false);
+        expect(InventoryUtils.hasAvailableSpace(container, stone, slot => slot === 1)).toBe(true);
+        expect(InventoryUtils.hasAvailableSpace(container, stone, slot => slot === 2)).toBe(true);
+    });
+});
+describe('pickupItemEntity()', () => {
+    const setup = (inventoryItems, droppedItemStack) => {
+        const container = new Container({ size: inventoryItems.length, items: inventoryItems });
+        const player = { getComponent: vi.fn(() => ({ container })) };
+        const itemEntity = {
+            location: { x: 0, y: 0, z: 0 },
+            getComponent: vi.fn(() => ({ itemStack: droppedItemStack })),
+            remove: vi.fn(),
+            dimension: { spawnItem: vi.fn() }
+        };
+        return { container, player, itemEntity };
+    };
+
+    it('leaves the item entity untouched when the inventory is full', () => {
+        const { player, itemEntity } = setup([new ItemStack('minecraft:dirt', 64)], new ItemStack('minecraft:stone', 1));
+
+        InventoryUtils.pickupItemEntity(player, itemEntity);
+
+        expect(itemEntity.remove).not.toHaveBeenCalled();
+        expect(itemEntity.dimension.spawnItem).not.toHaveBeenCalled();
+    });
+
+    it('removes the item entity when it fits entirely', () => {
+        const { container, player, itemEntity } = setup([void 0], new ItemStack('minecraft:stone', 5));
+
+        InventoryUtils.pickupItemEntity(player, itemEntity);
+
+        expect(container.getItem(0).amount).toBe(5);
+        expect(itemEntity.remove).toHaveBeenCalled();
+        expect(itemEntity.dimension.spawnItem).not.toHaveBeenCalled();
+    });
+
+    it('respawns only the remainder when the item partially fits', () => {
+        const { player, itemEntity } = setup([new ItemStack('minecraft:stone', 60)], new ItemStack('minecraft:stone', 10));
+
+        InventoryUtils.pickupItemEntity(player, itemEntity);
+
+        expect(itemEntity.remove).toHaveBeenCalled();
+        expect(itemEntity.dimension.spawnItem).toHaveBeenCalledWith(expect.objectContaining({ amount: 6 }), itemEntity.location);
+    });
+});
+
+describe('getTotalItemCount()', () => {
+    it('sums the amounts of every stack in the container', () => {
+        const container = new Container({ size: 3, items: {
+            0: new ItemStack('minecraft:stone', 10),
+            2: new ItemStack('minecraft:dirt', 5)
+        }});
+
+        expect(InventoryUtils.getTotalItemCount(container)).toBe(15);
+    });
+
+    it('counts an empty container as zero', () => {
+        expect(InventoryUtils.getTotalItemCount(new Container({ size: 3 }))).toBe(0);
+    });
+
+    it('counts stacks of the same type separately', () => {
+        const container = new Container({ size: 2, items: {
+            0: new ItemStack('minecraft:stone', 64),
+            1: new ItemStack('minecraft:stone', 64)
+        }});
+
+        expect(InventoryUtils.getTotalItemCount(container)).toBe(128);
+    });
+});
+
+describe('recipe processing contents', () => {
+	const makeRecipeProcessing = (slots) => ({
+		inputSlotCount: slots.length,
+		getInputItem: vi.fn((i) => slots[i].item),
+		getInputSlotEnabled: vi.fn((i) => slots[i].enabled),
+		setInputItem: vi.fn(),
+		setInputSlotEnabled: vi.fn()
+	});
+
+	it('returns empty array for block without recipe processing', () => {
+		const block = { getComponent: vi.fn().mockReturnValue(undefined) };
+		expect(InventoryUtils.getRecipeProcessingContents(block)).toEqual([]);
+	});
+
+	it('captures cloned items and enabled states for each input slot', () => {
+		const stone = { clone: vi.fn(() => 'stoneClone') };
+		const recipeProcessing = makeRecipeProcessing([
+			{ item: stone, enabled: true },
+			{ item: undefined, enabled: false }
+		]);
+		const block = { getComponent: vi.fn().mockReturnValue(recipeProcessing) };
+		expect(InventoryUtils.getRecipeProcessingContents(block)).toEqual([
+			{ item: 'stoneClone', enabled: true },
+			{ item: undefined, enabled: false }
+		]);
+	});
+
+	it('leaves enabled undefined when slot disabling is unsupported', () => {
+		const recipeProcessing = makeRecipeProcessing([{ item: undefined }]);
+		recipeProcessing.getInputSlotEnabled = vi.fn(() => { throw new Error('unsupported'); });
+		const block = { getComponent: vi.fn().mockReturnValue(recipeProcessing) };
+		expect(InventoryUtils.getRecipeProcessingContents(block)).toEqual([{ item: undefined, enabled: undefined }]);
+	});
+
+	it('restores items and enabled states', () => {
+		const recipeProcessing = makeRecipeProcessing([{}, {}]);
+		const block = { getComponent: vi.fn().mockReturnValue(recipeProcessing) };
+		InventoryUtils.restoreRecipeProcessingContents(block, [
+			{ item: 'stone', enabled: true },
+			{ item: undefined, enabled: false }
+		]);
+		expect(recipeProcessing.setInputItem).toHaveBeenCalledWith(0, 'stone');
+		expect(recipeProcessing.setInputItem).toHaveBeenCalledWith(1, undefined);
+		expect(recipeProcessing.setInputSlotEnabled).toHaveBeenCalledWith(0, true);
+		expect(recipeProcessing.setInputSlotEnabled).toHaveBeenCalledWith(1, false);
+	});
+
+	it('skips enabled state when it was not captured', () => {
+		const recipeProcessing = makeRecipeProcessing([{}]);
+		const block = { getComponent: vi.fn().mockReturnValue(recipeProcessing) };
+		InventoryUtils.restoreRecipeProcessingContents(block, [{ item: 'stone', enabled: undefined }]);
+		expect(recipeProcessing.setInputItem).toHaveBeenCalledWith(0, 'stone');
+		expect(recipeProcessing.setInputSlotEnabled).not.toHaveBeenCalled();
+	});
+
+	it('does nothing for block without recipe processing', () => {
+		const block = { getComponent: vi.fn().mockReturnValue(undefined) };
+		expect(() => InventoryUtils.restoreRecipeProcessingContents(block, [{ item: 'stone', enabled: true }])).not.toThrow();
+	});
+});
+
+describe('getContainer()', () => {
+	it('returns the inventory container when present', () => {
+		const container = { size: 27 };
+		const block = { getComponent: vi.fn(id => id === 'minecraft:inventory' ? { container } : void 0) };
+		expect(InventoryUtils.getContainer(block)).toBe(container);
+	});
+
+	it('wraps recipe processing when there is no inventory', () => {
+		const recipeProcessing = { inputSlotCount: 9 };
+		const block = { getComponent: vi.fn(id => id === 'minecraft:inventory' ? void 0 : recipeProcessing) };
+		expect(InventoryUtils.getContainer(block)).toBeInstanceOf(RecipeProcessingContainer);
+		expect(InventoryUtils.getContainer(block).size).toBe(9);
+	});
+
+	it('returns undefined when there is neither', () => {
+		expect(InventoryUtils.getContainer({ getComponent: vi.fn(() => void 0) })).toBeUndefined();
+		expect(InventoryUtils.getContainer(void 0)).toBeUndefined();
 	});
 });

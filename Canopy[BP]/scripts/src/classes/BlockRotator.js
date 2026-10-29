@@ -41,7 +41,10 @@ class BlockRotator {
             includeEntities: false,
             rotation: StructureRotation.Rotate90
         };
+        const recipeSlots = InventoryUtils.getRecipeProcessingContents(block);
         this.place(structureId, block, structurePlaceOptions);
+        if (recipeSlots.length > 0)
+            InventoryUtils.restoreRecipeProcessingContents(block, recipeSlots);
     }
 
     static placeMirrored(structureId, block) {
@@ -49,6 +52,7 @@ class BlockRotator {
         const mirroredDirection = DirectionStateFinder.getMirroredDirection(block);
         let axis;
         const items = InventoryUtils.getInventory(block);
+        const recipeSlots = InventoryUtils.getRecipeProcessingContents(block);
         if ([StructureMirrorAxis.X, StructureMirrorAxis.Z].includes(mirroredDirection)) {
             axis = mirroredDirection;
         } else { // block data has to be rebuilt manually 🎉
@@ -68,6 +72,8 @@ class BlockRotator {
         this.place(structureId, block, structurePlaceOptions);
         if (Object.keys(items).length > 0)
             InventoryUtils.restoreInventory(block, items);
+        if (recipeSlots.length > 0)
+            InventoryUtils.restoreRecipeProcessingContents(block, recipeSlots);
     }
 
     static place(structureId, block, structurePlaceOptions) {

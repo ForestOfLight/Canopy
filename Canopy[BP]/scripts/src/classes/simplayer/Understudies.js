@@ -23,10 +23,10 @@ class Understudies {
             }
         });
         Understudies.#entityDieHandle = Understudies.onEntityDie.bind(Understudies);
-        world.afterEvents.entityDie.subscribe(Understudies.#entityDieHandle);
         Understudies.#playerGameModeChangeHandle = Understudies.onPlayerGameModeChange.bind(Understudies);
-        world.afterEvents.playerGameModeChange.subscribe(Understudies.#playerGameModeChangeHandle);
         Understudies.#playerInventoryItemChangeHandle = Understudies.onPlayerInventoryItemChange.bind(Understudies);
+        world.afterEvents.entityDie.subscribe(Understudies.#entityDieHandle);
+        world.afterEvents.playerGameModeChange.subscribe(Understudies.#playerGameModeChangeHandle);
         world.afterEvents.playerInventoryItemChange.subscribe(Understudies.#playerInventoryItemChangeHandle);
     }
 
@@ -72,25 +72,30 @@ class Understudies {
     static create(name) {
         if (Understudies.isOnline(name))
             throw new Error(`[Canopy] Simulated player with name ${name} already exists.`);
+        if (Understudies.hasForeignSimulatedPlayer(name))
+            throw new Error(`[Canopy] A simulated player named ${name} is already in this world but was not spawned by Canopy.`);
+        return Understudies.#add(name);
+    }
+
+    static #add(name) {
         const understudy = new Understudy(name);
         Understudies.understudies.push(understudy);
         return understudy;
     }
 
-    static adoptExisting() {
-        for (const player of world.getAllPlayers()) {
-            if (!(player instanceof SimulatedPlayer) || Understudies.isOnline(player.name))
-                continue;
-            const understudy = Understudies.create(player.name);
-            understudy.adopt(player);
-            Understudies.addNametagPrefix(understudy);
-        }
+    static hasForeignSimulatedPlayer(name) {
+        return world.getAllPlayers().some(player =>
+            player instanceof SimulatedPlayer && player.name === name && !Understudy.isCanopyOwned(player)
+        );
     }
 
-    static addNametagPrefix(understudy) {
-        const prefix = world.getDynamicProperty('nametagPrefix');
-        if (prefix)
-            understudy.simulatedPlayer.nameTag = Understudies.#formatNametagWithPrefix(understudy.name, prefix);
+    static adoptExisting() {
+        for (const player of world.getAllPlayers()) {
+            if (!(player instanceof SimulatedPlayer) || !Understudy.isCanopyOwned(player) || Understudies.isOnline(player.name))
+                continue;
+            const understudy = Understudies.#add(player.name);
+            understudy.adopt(player);
+        }
     }
 
     static get(name) {
@@ -124,16 +129,16 @@ class Understudies {
         return Understudies.understudies.length;
     }
 
-    static setNametagPrefix(prefix) {
-        world.setDynamicProperty('nametagPrefix', prefix);
-        for (const understudy of Understudies.understudies)
-            understudy.simulatedPlayer.nameTag = Understudies.#formatNametagWithPrefix(understudy.name, prefix);
+    static getNametagPrefix() {
+        return world.getDynamicProperty('nametagPrefix') ?? '';
     }
 
-    static #formatNametagWithPrefix(name, prefix) {
-        if (prefix === '')
-            return name;
-        return `§r[${prefix}§r] ${name}`;
+    static setNametagPrefix(prefix) {
+        world.setDynamicProperty('nametagPrefix', prefix);
+        for (const understudy of Understudies.understudies) {
+            if (understudy.isConnected())
+                understudy.updateNameTag();
+        }
     }
 
     static isOnline(name) {
@@ -150,6 +155,10 @@ class Understudies {
 
     static getAlreadyOnlineMessage(name) {
         return { translate: 'simplayer.alreadyonline', with: [name] };
+    }
+
+    static getNameClaimedMessage(name) {
+        return { translate: 'simplayer.nameclaimed', with: [name] };
     }
 }
 

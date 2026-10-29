@@ -8,7 +8,7 @@ import { AnalyzeAreaRenderer } from './AnalyzeAreaRenderer.js';
 import { stringifyLocation } from '../../../include/utils';
 
 export class Analysis {
-    constructor({ id, from, to, dimensionId, expression, createdAt }) {
+    constructor({ id, from, to, dimensionId, expression, createdAt, name = '' }) {
         const { min, max } = Analysis.#normalizeCorners(from, to);
         this.id = id;
         this.min = min;
@@ -16,6 +16,7 @@ export class Analysis {
         this.dimensionId = dimensionId;
         this.expression = expression;
         this.createdAt = createdAt;
+        this.name = name;
 
         this.matches = [];
         this.renderer = void 0;
@@ -44,12 +45,12 @@ export class Analysis {
         }
     }
 
-    static create(from, to, dimensionId, expression) {
+    static create(from, to, dimensionId, expression, name) {
         const id = `${Date.now().toString(36)}${Math.floor(Math.random() * 1e6).toString(36)}`;
-        return new Analysis({ id, from, to, dimensionId, expression, createdAt: Date.now() });
+        return new Analysis({ id, from, to, dimensionId, expression, createdAt: Date.now(), name });
     }
 
-    static tryCreate(from, to, dimensionId, expression) {
+    static #validate(from, to, expression) {
         const { min, max } = Analysis.#normalizeCorners(from, to);
         if (Analysis.#regionCapacity(min, max) > SCAN_CAP)
             return { ok: false, reason: 'overcapacity' };
@@ -59,7 +60,24 @@ export class Analysis {
             const reason = error instanceof ExpressionForbiddenError ? 'forbidden' : 'syntaxerror';
             return { ok: false, reason };
         }
-        return { ok: true, analysis: Analysis.create(from, to, dimensionId, expression) };
+        return { ok: true };
+    }
+
+    static tryCreate(from, to, dimensionId, expression, name) {
+        const validation = Analysis.#validate(from, to, expression);
+        if (!validation.ok)
+            return validation;
+        return { ok: true, analysis: Analysis.create(from, to, dimensionId, expression, name) };
+    }
+
+    tryEdit({ from, to, dimensionId, expression, name = '' }) {
+        const validation = Analysis.#validate(from, to, expression);
+        if (!validation.ok)
+            return validation;
+        this.destroy();
+        Object.assign(this, Analysis.#normalizeCorners(from, to), { dimensionId, expression, name });
+        Object.assign(this, { renderer: void 0, loader: void 0, matches: [], hasRun: false, capped: false, running: false, progress: 0 });
+        return { ok: true, analysis: this };
     }
 
     static errorMessage(error) {
@@ -78,7 +96,8 @@ export class Analysis {
             to: this.max,
             dimensionId: this.dimensionId,
             expression: this.expression,
-            createdAt: this.createdAt
+            createdAt: this.createdAt,
+            name: this.name
         };
     }
 
@@ -190,7 +209,7 @@ export class Analysis {
     #beginRender() {
         if (this.renderer)
             this.renderer.destroy();
-        this.renderer = new AnalyzeAreaRenderer(this.dimension, this.min, this.max, [], this.statusMessage());
+        this.renderer = new AnalyzeAreaRenderer(this.dimension, this.min, this.max, [], this.statusMessage(), this.name);
         this.renderer.showOutline();
     }
 

@@ -68,11 +68,11 @@ commands.canopy.menu.submit=§aAnwenden
 commands.canopy.single=Aktiviert oder deaktiviert eine bestimmte Regel.
 commands.canopy.infodisplayRule=§cDie Regel '%1' ist ein Teil des Info Displays, und muss mit %2info umgeschaltet werden. Nutze %2help für mehr Informationen.
 
-commands.changedimension=Telepotiert dich zur angegebenen Diemension.
-commands.changedimension.notfound=§cUngültige Dimension. Bitte nutze eine dieser Optionen: %s
-commands.changedimension.success.coords=§7Teleportiert zu %1 in %2 Diemension.
-commands.changedimension.success=§7Zu %s Dimension geändert.
-commands.changedimension.fail.coords=§cUngültige Koordinaten. Bitte stelle jede x, y, z Koordinate als numerischer wert oder ganicht bereit.
+commands.dimensionalteleport=Telepotiert dich zur angegebenen Diemension.
+commands.dimensionalteleport.notfound=§cUngültige Dimension. Bitte nutze eine dieser Optionen: %s
+commands.dimensionalteleport.success.coords=§7Teleportiert zu %1 in %2 Diemension.
+commands.dimensionalteleport.success=§7Zu %s Dimension geändert.
+commands.dimensionalteleport.fail.coords=§cUngültige Koordinaten. Bitte stelle jede x, y, z Koordinate als numerischer wert oder ganicht bereit.
 
 commands.claimprojectiles=Ändert den Besitzer von allen Projektielen in einem Radius.
 commands.claimprojectiles.fail.sourcenotplayer=§cGebe einen Spieler an der diesen Befehl nutzt.

@@ -104,4 +104,33 @@ describe('PeekView', () => {
             expect(PeekView.titleKeyFor(PeekViewMode.Bottom)).toBe('commands.peek.view.bottom');
         });
     });
+
+    describe('placeholders', () => {
+        const crafterGrid = (disabled = []) => ({
+            size: 9,
+            getItem: () => void 0,
+            setItem: () => void 0,
+            isSlotEnabled: slot => !disabled.includes(slot)
+        });
+
+        it('marks slots past the target as unused', () => {
+            const view = new PeekView(crafterGrid(), PeekViewMode.Top);
+            expect(view.isPlaceholderSlot(8)).toBe(false);
+            expect(view.isPlaceholderSlot(9)).toBe(true);
+            expect(view.isPlaceholderSlot(26)).toBe(true);
+        });
+
+        it('marks disabled slots as placeholders', () => {
+            const view = new PeekView(crafterGrid([4]), PeekViewMode.Top);
+            expect(view.isSlotDisabled(4)).toBe(true);
+            expect(view.isPlaceholderSlot(4)).toBe(true);
+            expect(view.isPlaceholderSlot(3)).toBe(false);
+        });
+
+        it('has no placeholders for a full chest', () => {
+            const view = new PeekView(new Container({ size: 27 }), PeekViewMode.Top);
+            for (let slotIndex = 0; slotIndex < 27; slotIndex++)
+                expect(view.isPlaceholderSlot(slotIndex)).toBe(false);
+        });
+    });
 });

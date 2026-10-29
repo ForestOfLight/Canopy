@@ -1,5 +1,5 @@
 import { EntityLog } from "./EntityLog";
-import { world, system, DimensionTypes } from "@minecraft/server";
+import { world, system, DimensionTypes, EntityComponentTypes } from "@minecraft/server";
 
 class EntityMovementLog extends EntityLog {
     validTypes = ['projectiles', 'falling_blocks'];
@@ -59,7 +59,7 @@ class EntityMovementLog extends EntityLog {
     hasTrait(entity) {
         switch (this.type) {
             case 'projectiles':
-                return entity.getComponent('minecraft:projectile') !== undefined;
+                return entity.getComponent(EntityComponentTypes.Projectile) !== undefined;
             case 'falling_blocks':
                 return entity.typeId === 'minecraft:falling_block';
             default:

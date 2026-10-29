@@ -1,5 +1,5 @@
 import ItemCounterChannel from "./ItemCounterChannel";
-import { world, ItemStack } from "@minecraft/server";
+import { world, ItemStack, BlockComponentTypes } from "@minecraft/server";
 
 class CounterChannel extends ItemCounterChannel {
     constructor(color) {
@@ -20,7 +20,7 @@ class CounterChannel extends ItemCounterChannel {
             const hopper = world.getDimension(hopperCounter.dimensionId).getBlock(hopperCounter.location);
             if (!hopper) continue;
     
-            const hopperContainer = hopper.getComponent('minecraft:inventory').container;
+            const hopperContainer = hopper.getComponent(BlockComponentTypes.Inventory).container;
             const itemStack = hopperContainer?.getItem(0);
             if (!itemStack) continue;
             countedItems.push({ typeId: itemStack.typeId, amount: itemStack.amount });

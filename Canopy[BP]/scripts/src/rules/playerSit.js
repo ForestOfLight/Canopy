@@ -49,7 +49,7 @@ class PlayerSit extends BooleanRule {
         const entityLocation = { x: player.location.x, y: player.location.y + heightAdjustment, z: player.location.z };
         const rideableEntity = player.dimension.spawnEntity('canopy:rideable', entityLocation);
         rideableEntity.setRotation(player.getRotation());
-        rideableEntity.getComponent('rideable').addRider(player);
+        rideableEntity.getComponent(EntityComponentTypes.Rideable).addRider(player);
     }
 
     startEntityCleanup() {

@@ -5,6 +5,13 @@ import { BlockComponentTypes, CommandPermissionLevel, CustomCommandParamType, Cu
 
 const TARGET_DISTANCE = 100;
 
+const DISAMBIGUATION_PROPERTIES = [
+    "id",
+    "typeId",
+    "location",
+    "dimension"
+]
+
 new VanillaCommand({
     name: 'canopy:data',
     description: 'commands.data',
@@ -65,10 +72,12 @@ function formatBlockOutput(block) {
 }
 
 function formatEntityOutput(entity) {
+    const memo = new Set();
+
     const nameTag = entity.nameTag ? `§r§a(§o${entity.nameTag}§r§a)` : '';
     const dimensionId = entity.dimension.id.replace('minecraft:', '');
-    const properties = formatProperties(entity);
-    const components = formatComponents(entity, entity.getComponents());
+    const properties = formatProperties(entity, memo);
+    const components = formatComponents(entity, entity.getComponents(), memo);
     const dynamicProperties = JSON.stringify(entity.getDynamicPropertyIds());
     const effects = JSON.stringify(entity.getEffects());
     const tags = JSON.stringify(entity.getTags());
@@ -94,17 +103,15 @@ function formatEntityOutput(entity) {
     return message;
 }
 
-function formatProperties(target) {
+function formatProperties(target, memo = null) {
     let output = '';
     for (const key in target) {
         try {
             let value = target[key];
             if (typeof value === 'function')
                 continue;
-            else if (isDataTarget(target, value))
-                value = 'this';
             else if (typeof value === 'object')
-                value = formatObject(target, value);
+                value = formatObject(target, value, false, memo);
             else
                 value = JSON.stringify(value);
             output += `§7${key}=§b${value}§7, `;
@@ -128,26 +135,30 @@ function tryGetBlockComponents(target) {
     return components;
 }
 
-function formatComponents(target, components) {
+function formatComponents(target, components, memo = null) {
+    if (memo === null) 
+        memo = new Set();
+
     if (components.length === 0) 
         return 'none';
     let output = '';
     for (const component of components) 
-        output += formatComponent(target, component);
+        output += formatComponent(target, component, memo);
     return output;
 }
 
-function formatComponent(target, component) {
+function formatComponent(target, component, memo = null) {
+    if (memo === null) 
+        memo = new Set();
+
     let output = '';
     for (const key in component) {
         try {
             let value = component[key];
             if (typeof value === 'function')
                 continue;
-            else if (isDataTarget(target, value))
-                value = 'this';
             else if (typeof value === 'object')
-                value = formatObject(target, value);
+                value = formatObject(target, value, false, memo);
             else
                 value = JSON.stringify(value);
             output += `${key}=§b${value}§7, `;
@@ -159,33 +170,23 @@ function formatComponent(target, component) {
     return `\n  §7>§f ${component.typeId}§7 - {${output}}`;
 }
 
-export function isDataTarget(target, value) {
-    if (target === value)
-        return true;
-    if (!target || !value || typeof target !== 'object' || typeof value !== 'object')
-        return false;
-    try {
-        return isSameEntity(target, value) || isSameBlock(target, value);
-    } catch {
-        return false;
+export function formatObject(target, object, shouldColorTopLevel = false, memo = null) {
+    if (memo === null) 
+        memo = new Set();
+
+    if (isMemoizableGameObject(object)) {
+        const objectHashValue = hashMemoizableGameObject(object);
+        if (memo.has(objectHashValue)) 
+            return formatRecursiveDisambiguation(object, memo);
+        
+        memo.add(objectHashValue);
     }
-}
 
-function isSameEntity(target, value) {
-    return target.id !== undefined && target.id === value.id && target.typeId === value.typeId;
-}
+    else if (isMemoizableGameObject(target)) {
+        const targetHashValue = hashMemoizableGameObject(target);
+        memo.add(targetHashValue);
+    }
 
-function isSameBlock(target, value) {
-    if (target.id !== undefined || value.id !== undefined)
-        return false;
-    if (!target.location || !value.location || target.dimension?.id !== value.dimension?.id)
-        return false;
-    return target.location.x === value.location.x
-        && target.location.y === value.location.y
-        && target.location.z === value.location.z;
-}
-
-export function formatObject(target, object, shouldColorTopLevel = false) {
     let output = '';
     for (const key in object) {
         try {
@@ -193,10 +194,8 @@ export function formatObject(target, object, shouldColorTopLevel = false) {
             if (typeof value === 'function')
                 continue;
             let formatted;
-            if (isDataTarget(target, value))
-                formatted = JSON.stringify('this');
-            else if (typeof value === 'object')
-                formatted = formatObject(target, value, false);
+            if (typeof value === 'object')
+                formatted = formatObject(target, value, false, memo);
             else
                 formatted = JSON.stringify(value);
 
@@ -212,4 +211,47 @@ export function formatObject(target, object, shouldColorTopLevel = false) {
     if (shouldColorTopLevel)
         return `§7{${output}}§r`;
     return `{${output}}`;
+}
+
+function formatRecursiveDisambiguation(object, memo) {
+    let output = '§5...§7, ';
+    for (const key of DISAMBIGUATION_PROPERTIES) {
+        try {
+            const value = object[key];
+            if (value === undefined) continue;
+
+            if (typeof value === 'function')
+                continue;
+            let formatted;
+            if (typeof value === 'object')
+                formatted = formatObject(null, value, false, memo);
+            else
+                formatted = JSON.stringify(value);
+
+            output += `§7${key}=§b${formatted}§7, `;
+        } catch(error) {
+            console.warn(error);
+        }
+    }
+    output = output.slice(0, -2);
+    return `§d{§7${output}§d}§r`;
+}
+
+function isMemoizableGameObject(value) {
+    try {
+        if (value === null || value === undefined) return false;
+        return (value.id !== undefined && value.typeId !== undefined) || (value.location !== undefined && value.dimension !== undefined);
+    }
+    catch {
+        return false;
+    }
+}
+
+function hashMemoizableGameObject(value) {
+    if (value.id !== undefined) 
+        return `E:${value.id}`;
+    
+    else if (value.location !== undefined && value.dimension !== undefined) 
+        return `B:${value.location.x},${value.location.y},${value.location.z},${value.dimension.id}`;
+    
 }

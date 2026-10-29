@@ -10,7 +10,7 @@ describe('Actions', () => {
     let repeatableActionOnTickSpy;
 
     beforeEach(() => {
-        mockUnderstudy = { name: 'TestBot' };
+        mockUnderstudy = { name: 'TestBot', simulatedPlayer: { nameplateRenderDistance: 64 } };
         actions = new Actions(mockUnderstudy);
         performSpy = vi.spyOn(RepeatableAction.prototype, 'perform').mockImplementation(() => {});
         repeatableActionOnTickSpy = vi.spyOn(RepeatableAction.prototype, 'onTick').mockImplementation(() => {});
