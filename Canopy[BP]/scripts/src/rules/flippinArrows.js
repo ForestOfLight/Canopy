@@ -1,5 +1,5 @@
 import { BooleanRule, Rules } from "../../lib/canopy/Canopy";
-import { system, world, StructureMirrorAxis, BlockPistonState, EquipmentSlot, EntityComponentTypes, BlockComponentTypes } from "@minecraft/server";
+import { BlockPermutation, system, world, StructureMirrorAxis, BlockPistonState, EquipmentSlot, EntityComponentTypes, BlockComponentTypes } from "@minecraft/server";
 import BlockRotator from "../classes/BlockRotator";
 import DirectionStateFinder from "../classes/DirectionState";
 
@@ -38,9 +38,9 @@ world.afterEvents.playerPlaceBlock.subscribe((event) => {
     if (isFlippableOnPlace(block))
         flip(block);
     else if (isStair(block))
-        stairFlip(player, block);
+        stairFlip(block);
     else if (isSlab(block))
-        slabFlip(player, block);
+        slabFlip(block);
 });
 
 world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
@@ -60,11 +60,11 @@ world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
         else if (flipIds.includes(blockId))
             succeeded = flip(block);
         else if (openIds.includes(blockId))
-            succeeded = open(event.player, block);
+            succeeded = open(block);
         else if (isStair(block))
-            succeeded = stairFlip(event.player, block);
+            succeeded = stairFlip(block);
         else if (isSlab(block))
-            succeeded = slabFlip(event.player, block);
+            succeeded = slabFlip(block);
         else
             succeeded = rotate(block);
         if (succeeded)
@@ -100,7 +100,7 @@ function rotate(block) {
     return true;
 }
 
-function open(player, block) {
+function open(block) {
     const directionState = {
         name: 'open_bit',
         value: block.permutation.getState('open_bit')
@@ -129,13 +129,11 @@ function open(player, block) {
             'door_hinge_bit': hingeBit
         };
     }
-    const blockData = {
-        block,
-        directionState,
-        permutationValue,
-        otherPermutations
-    }
-    safeSetblock(player, blockData);
+    const states = {
+        ...otherPermutations,
+        [directionState.name]: permutationValue
+    };
+    block.dimension.setBlockPermutation(block.location, BlockPermutation.resolve(block.typeId, states));
     return true;
 }
 
@@ -152,19 +150,21 @@ function isHorizontalOrientation(orientation) {
     return typeof orientation === 'string' && orientation.endsWith('_up');
 }
 
-function stairFlip(player, block) {
+function stairFlip(block) {
     const states = block.permutation.getAllStates();
     const isUpsideDown = DirectionStateFinder.getMirroredDirection(block);
-    safeSetblock(player, { block, directionState: { name: 'upside_down_bit' }, permutationValue: isUpsideDown, otherPermutations: states });
+    states['upside_down_bit'] = isUpsideDown;
+    block.dimension.setBlockPermutation(block.location, BlockPermutation.resolve(block.typeId, states));
     return true;
 }
 
-function slabFlip(player, block) {
+function slabFlip(block) {
     const states = block.permutation.getAllStates();
     const topOrBottom = DirectionStateFinder.getMirroredDirection(block);
     if ('top_slot_bit' in states)
         states['top_slot_bit'] = !states['top_slot_bit'];
-    safeSetblock(player, { block, directionState: { name: 'minecraft:vertical_half' }, permutationValue: topOrBottom, otherPermutations: states });
+    states['minecraft:vertical_half'] = topOrBottom;
+    block.dimension.setBlockPermutation(block.location, BlockPermutation.resolve(block.typeId, states));
     return true;
 }
 
@@ -177,25 +177,6 @@ function checkForAbort(block, blockId) {
     if (block.getComponent(BlockComponentTypes.Inventory)?.container.size > 27)
         return true;
     return false;
-}
-
-function safeSetblock(player, blockData) {
-    const { block, directionState, permutationValue } = blockData;
-    let otherPermutations = blockData.otherPermutations;
-    delete otherPermutations[directionState.name];
-    if (Object.keys(otherPermutations).length === 0) {
-        otherPermutations = '';
-    } else {
-        otherPermutations = ',' + Object.entries(otherPermutations).map(([key, value]) => {
-            const val = typeof value === "string" ? `"${value}"` : value;
-            return `"${key}"=${val}`;
-        }).join(',');
-    }
-    const permValue = typeof permutationValue === "string" ? `"${permutationValue}"` : permutationValue;
-    const setblockCmd = `setblock ${block.location.x} ${block.location.y} ${block.location.z} ${block.typeId} ["${directionState.name}"=${permValue}${otherPermutations}] replace`;
-    player.runCommand(`setblock ${block.location.x} ${block.location.y} ${block.location.z} air replace`);
-    player.runCommand(setblockCmd);
-    return block.dimension.getBlock(block.location);
 }
 
 function isOnCooldown(block) {
