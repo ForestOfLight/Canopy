@@ -5,7 +5,8 @@ import { InventoryUtils } from "../InventoryUtils";
 
 export class QuickFillPlayer {
     static MODE_DP_IDENTIFIER = 'quickFillModeName';
-    #BANNED_CONTAINERS = ['minecraft:beacon', 'minecraft:jukebox', 'minecraft:lectern'];
+    #BANNED_BLOCKS = ['minecraft:beacon', 'minecraft:jukebox', 'minecraft:lectern', 'minecraft:chiseled_bookshelf'];
+    #BANNED_ENTITIES = ['minecraft:player'];
     #mode;
     player;
 
@@ -30,51 +31,35 @@ export class QuickFillPlayer {
     }
 
     onInteractWithBlock(event) {
-        if (this.#BANNED_CONTAINERS.includes(event.block.typeId))
+        if (this.#BANNED_BLOCKS.includes(event.block.typeId))
             return;
-        const heldItemStack = event.itemStack;
-        if (heldItemStack === void 0)
+        this.#interact(event, event.block, event.isFirstEvent);
+    }
+
+    onInteractWithEntity(event) {
+        if (this.#BANNED_ENTITIES.includes(event.target.typeId))
             return;
-        const block = event.block;
-        const container = this.#getContainer(block);
-        if (!container)
-            return;
-        event.cancel = true;
-        if (!event.isFirstEvent)
-            return;
-        system.run(() => {
-            if (this.#isSneaking() && this.player.getGameMode() === GameMode.Creative) {
-                container.clearAll();
-                this.player.onScreenDisplay.setActionBar({ rawtext: [{ translate: 'rules.quickFillContainer.cleared', with: { rawtext: [{ translate: block.localizationKey }] } }]});
-            } else if (this.#isSneaking()) {
-                this.#mode.onTakeInteraction(container, heldItemStack, block.localizationKey);
-            } else {
-                this.#mode.onFillInteraction(container, heldItemStack, block.localizationKey);
-            }
-        });
+        this.#interact(event, event.target, true);
     }
 
     onBreakBlock(event) {
         if (this.player.getGameMode() !== GameMode.Creative)
             return;
-        if (this.#BANNED_CONTAINERS.includes(event.block.typeId))
+        if (this.#BANNED_BLOCKS.includes(event.block.typeId))
             return;
-        if (event.itemStack === void 0 || !this.#mode.hasConfigureInteraction())
+        this.#configure(event, event.block);
+    }
+
+    onAttackEntity(event) {
+        if (this.#BANNED_ENTITIES.includes(event.target.typeId))
             return;
-        const block = event.block;
-        const container = this.#getContainer(block);
-        if (!container)
-            return;
-        event.cancel = true;
-        system.run(() => {
-            this.#mode.onConfigureInteraction(container, block.localizationKey)
-        });
+        this.#configure(event, event.target);
     }
 
     onStartBreakingBlock(event) {
         if (this.player.getGameMode() === GameMode.Creative)
             return;
-        if (this.#BANNED_CONTAINERS.includes(event.block.typeId))
+        if (this.#BANNED_BLOCKS.includes(event.block.typeId))
             return;
         if (event.heldItemStack === void 0 || !this.#mode.hasConfigureInteraction())
             return;
@@ -85,8 +70,42 @@ export class QuickFillPlayer {
         this.#mode.onConfigureInteraction(container, block.localizationKey);
     }
 
-    #getContainer(block) {
-        return InventoryUtils.getContainer(block);
+    #interact(event, target, isFirstEvent) {
+        const heldItemStack = event.itemStack;
+        if (heldItemStack === void 0)
+            return;
+        const container = this.#getContainer(target);
+        if (!container)
+            return;
+        event.cancel = true;
+        if (!isFirstEvent)
+            return;
+        system.run(() => {
+            if (this.#isSneaking() && this.player.getGameMode() === GameMode.Creative) {
+                container.clearAll();
+                this.player.onScreenDisplay.setActionBar({ rawtext: [{ translate: 'rules.quickFillContainer.cleared', with: { rawtext: [{ translate: target.localizationKey }] } }]});
+            } else if (this.#isSneaking()) {
+                this.#mode.onTakeInteraction(container, heldItemStack, target.localizationKey);
+            } else {
+                this.#mode.onFillInteraction(container, heldItemStack, target.localizationKey);
+            }
+        });
+    }
+
+    #configure(event, target) {
+        if (event.itemStack === void 0 || !this.#mode.hasConfigureInteraction())
+            return;
+        const container = this.#getContainer(target);
+        if (!container)
+            return;
+        event.cancel = true;
+        system.run(() => {
+            this.#mode.onConfigureInteraction(container, target.localizationKey)
+        });
+    }
+
+    #getContainer(target) {
+        return InventoryUtils.getContainer(target);
     }
 
     #isSneaking() {

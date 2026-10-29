@@ -12,11 +12,15 @@ class QuickFillContainer extends AbilityRule {
             wikiDescription: 'With an arrow in the top left of your inventory (slot 9), interact with a container while holding an item to move matching items into it; sneak to reverse, or sneak + interact with an empty hand to remove all. Use /quickfillmode to customize item movement.',
             onEnableCallback: () => {
                 world.beforeEvents.playerInteractWithBlock.subscribe(this.onPlayerInteractWithBlockBound);
+                world.beforeEvents.playerInteractWithEntity.subscribe(this.onPlayerInteractWithEntityBound);
+                world.beforeEvents.playerItemAttackEntity.subscribe(this.onPlayerItemAttackEntityBound);
                 world.beforeEvents.playerBreakBlock.subscribe(this.onPlayerBreakBlockBound);
                 world.afterEvents.playerStartBreakingBlock.subscribe(this.onPlayerStartBreakingBlockBound);
             },
             onDisableCallback: () => {
                 world.beforeEvents.playerInteractWithBlock.unsubscribe(this.onPlayerInteractWithBlockBound);
+                world.beforeEvents.playerInteractWithEntity.unsubscribe(this.onPlayerInteractWithEntityBound);
+                world.beforeEvents.playerItemAttackEntity.unsubscribe(this.onPlayerItemAttackEntityBound);
                 world.beforeEvents.playerBreakBlock.unsubscribe(this.onPlayerBreakBlockBound);
                 world.afterEvents.playerStartBreakingBlock.unsubscribe(this.onPlayerStartBreakingBlockBound);
                 for (const quickFillPlayer of this.#quickFillPlayers.values())
@@ -29,12 +33,22 @@ class QuickFillContainer extends AbilityRule {
             onPlayerDisableCallback: (player) => this.#disableQuickFillPlayer(player)
         });
         this.onPlayerInteractWithBlockBound = this.onPlayerInteractWithBlock.bind(this);
+        this.onPlayerInteractWithEntityBound = this.onPlayerInteractWithEntity.bind(this);
+        this.onPlayerItemAttackEntityBound = this.onPlayerItemAttackEntity.bind(this);
         this.onPlayerBreakBlockBound = this.onPlayerBreakBlock.bind(this);
         this.onPlayerStartBreakingBlockBound = this.onPlayerStartBreakingBlock.bind(this);
     }
 
     onPlayerInteractWithBlock(event) {
         this.getActiveQuickFillPlayer(event.player)?.onInteractWithBlock(event);
+    }
+
+    onPlayerInteractWithEntity(event) {
+        this.getActiveQuickFillPlayer(event.player)?.onInteractWithEntity(event);
+    }
+
+    onPlayerItemAttackEntity(event) {
+        this.getActiveQuickFillPlayer(event.player)?.onAttackEntity(event);
     }
 
     onPlayerBreakBlock(event) {

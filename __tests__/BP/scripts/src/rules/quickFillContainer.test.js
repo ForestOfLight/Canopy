@@ -22,10 +22,12 @@ describe('quickFillContainer', () => {
     });
 
     describe('enabling and disabling', () => {
-        test('enabling listens for block interaction, block breaking and the start of block breaking', () => {
+        test('enabling listens for block and entity interaction, entity attacks, block breaking and the start of block breaking', () => {
             quickFillContainer.onEnable();
 
             expect(world.beforeEvents.playerInteractWithBlock.subscribe).toHaveBeenCalledWith(quickFillContainer.onPlayerInteractWithBlockBound);
+            expect(world.beforeEvents.playerInteractWithEntity.subscribe).toHaveBeenCalledWith(quickFillContainer.onPlayerInteractWithEntityBound);
+            expect(world.beforeEvents.playerItemAttackEntity.subscribe).toHaveBeenCalledWith(quickFillContainer.onPlayerItemAttackEntityBound);
             expect(world.beforeEvents.playerBreakBlock.subscribe).toHaveBeenCalledWith(quickFillContainer.onPlayerBreakBlockBound);
             expect(world.afterEvents.playerStartBreakingBlock.subscribe).toHaveBeenCalledWith(quickFillContainer.onPlayerStartBreakingBlockBound);
         });
@@ -35,6 +37,8 @@ describe('quickFillContainer', () => {
             quickFillContainer.onDisable();
 
             expect(world.beforeEvents.playerInteractWithBlock.unsubscribe).toHaveBeenCalledWith(quickFillContainer.onPlayerInteractWithBlockBound);
+            expect(world.beforeEvents.playerInteractWithEntity.unsubscribe).toHaveBeenCalledWith(quickFillContainer.onPlayerInteractWithEntityBound);
+            expect(world.beforeEvents.playerItemAttackEntity.unsubscribe).toHaveBeenCalledWith(quickFillContainer.onPlayerItemAttackEntityBound);
             expect(world.beforeEvents.playerBreakBlock.unsubscribe).toHaveBeenCalledWith(quickFillContainer.onPlayerBreakBlockBound);
             expect(world.afterEvents.playerStartBreakingBlock.unsubscribe).toHaveBeenCalledWith(quickFillContainer.onPlayerStartBreakingBlockBound);
         });
@@ -142,6 +146,8 @@ describe('quickFillContainer', () => {
             quickFillContainer.enableForPlayer(player);
             quickFillPlayer = quickFillContainer.getActiveQuickFillPlayer(player);
             vi.spyOn(quickFillPlayer, 'onInteractWithBlock').mockImplementation(() => void 0);
+            vi.spyOn(quickFillPlayer, 'onInteractWithEntity').mockImplementation(() => void 0);
+            vi.spyOn(quickFillPlayer, 'onAttackEntity').mockImplementation(() => void 0);
             vi.spyOn(quickFillPlayer, 'onBreakBlock').mockImplementation(() => void 0);
             vi.spyOn(quickFillPlayer, 'onStartBreakingBlock').mockImplementation(() => void 0);
         });
@@ -152,6 +158,22 @@ describe('quickFillContainer', () => {
             quickFillContainer.onPlayerInteractWithBlockBound(event);
 
             expect(quickFillPlayer.onInteractWithBlock).toHaveBeenCalledWith(event);
+        });
+
+        test('entity interaction goes to the interacting player\'s quick fill player', () => {
+            const event = { player };
+
+            quickFillContainer.onPlayerInteractWithEntityBound(event);
+
+            expect(quickFillPlayer.onInteractWithEntity).toHaveBeenCalledWith(event);
+        });
+
+        test('entity attacks go to the attacking player\'s quick fill player', () => {
+            const event = { player };
+
+            quickFillContainer.onPlayerItemAttackEntityBound(event);
+
+            expect(quickFillPlayer.onAttackEntity).toHaveBeenCalledWith(event);
         });
 
         test('block breaking goes to the breaking player\'s quick fill player', () => {
@@ -174,10 +196,14 @@ describe('quickFillContainer', () => {
             const bystander = makePlayer('p2');
 
             quickFillContainer.onPlayerInteractWithBlockBound({ player: bystander });
+            quickFillContainer.onPlayerInteractWithEntityBound({ player: bystander });
+            quickFillContainer.onPlayerItemAttackEntityBound({ player: bystander });
             quickFillContainer.onPlayerBreakBlockBound({ player: bystander });
             quickFillContainer.onPlayerStartBreakingBlockBound({ player: bystander });
 
             expect(quickFillPlayer.onInteractWithBlock).not.toHaveBeenCalled();
+            expect(quickFillPlayer.onInteractWithEntity).not.toHaveBeenCalled();
+            expect(quickFillPlayer.onAttackEntity).not.toHaveBeenCalled();
             expect(quickFillPlayer.onBreakBlock).not.toHaveBeenCalled();
             expect(quickFillPlayer.onStartBreakingBlock).not.toHaveBeenCalled();
         });

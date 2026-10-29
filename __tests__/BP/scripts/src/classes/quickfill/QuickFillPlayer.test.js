@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { BlockComponentTypes, ButtonState, GameMode, Player } from "@minecraft/server";
+import { BlockComponentTypes, ButtonState, EntityComponentTypes, GameMode, Player } from "@minecraft/server";
 import { scheduler as mockScheduler } from "@forestoflight/minecraft-vitest-mocks";
 import { QuickFillPlayer } from "../../../../../../Canopy[BP]/scripts/src/classes/quickfill/QuickFillPlayer";
 import { BulkMode } from "../../../../../../Canopy[BP]/scripts/src/classes/quickfill/Modes/BulkMode";
@@ -11,6 +11,14 @@ const blockWith = (container, typeId = 'minecraft:chest') => ({
     localizationKey: `tile.${typeId.replace('minecraft:', '')}.name`,
     getComponent: vi.fn(type => type === BlockComponentTypes.Inventory && container ? { container } : void 0)
 });
+
+const entityWith = (container, typeId = 'minecraft:chest_minecart') => ({
+    typeId,
+    localizationKey: `entity.${typeId.replace('minecraft:', '')}.name`,
+    getComponent: vi.fn(type => type === EntityComponentTypes.Inventory && container ? { container } : void 0)
+});
+
+const BANNED_BLOCK_IDS = ['minecraft:beacon', 'minecraft:jukebox', 'minecraft:lectern', 'minecraft:chiseled_bookshelf'];
 
 const stubMode = (mode, { configurable = false } = {}) => {
     for (const method of ['destroy', 'onFillInteraction', 'onTakeInteraction', 'onConfigureInteraction'])
@@ -87,7 +95,7 @@ describe('QuickFillPlayer', () => {
             return event;
         };
 
-        test.each(['minecraft:beacon', 'minecraft:jukebox', 'minecraft:lectern'])('ignores %s so its normal interaction still happens', (typeId) => {
+        test.each(BANNED_BLOCK_IDS)('ignores %s so its normal interaction still happens', (typeId) => {
             const quickFillPlayer = makeQuickFillPlayer();
 
             const event = interact(quickFillPlayer, { block: blockWith(container, typeId) });
@@ -238,6 +246,176 @@ describe('QuickFillPlayer', () => {
         });
     });
 
+    describe('onInteractWithEntity()', () => {
+        let container;
+
+        beforeEach(() => {
+            mockScheduler.reset();
+            container = containerOf(3, { 0: stack('stone') });
+        });
+
+        const interact = (quickFillPlayer, options = {}) => {
+            const target = options.target ?? entityWith(container);
+            const itemStack = 'itemStack' in options ? options.itemStack : stack('oak_log');
+            const event = { target, itemStack, cancel: false };
+            quickFillPlayer.onInteractWithEntity(event);
+            return event;
+        };
+
+        test('ignores players so their normal interaction still happens', () => {
+            const quickFillPlayer = makeQuickFillPlayer();
+
+            const event = interact(quickFillPlayer, { target: entityWith(container, 'minecraft:player') });
+            flushScheduledRuns();
+
+            expect(event.cancel).toBe(false);
+            expect(quickFillPlayer.mode.onFillInteraction).not.toHaveBeenCalled();
+        });
+
+        test('ignores entities without an inventory', () => {
+            const quickFillPlayer = makeQuickFillPlayer();
+
+            const event = interact(quickFillPlayer, { target: entityWith(void 0, 'minecraft:cow') });
+            flushScheduledRuns();
+
+            expect(event.cancel).toBe(false);
+            expect(quickFillPlayer.mode.onFillInteraction).not.toHaveBeenCalled();
+        });
+
+        test('ignores interactions with an empty hand', () => {
+            const quickFillPlayer = makeQuickFillPlayer();
+
+            const event = interact(quickFillPlayer, { itemStack: void 0 });
+            flushScheduledRuns();
+
+            expect(event.cancel).toBe(false);
+            expect(quickFillPlayer.mode.onFillInteraction).not.toHaveBeenCalled();
+            expect(quickFillPlayer.mode.onTakeInteraction).not.toHaveBeenCalled();
+        });
+
+        test('cancels the interaction and defers the mode interaction to the next tick', () => {
+            const quickFillPlayer = makeQuickFillPlayer();
+
+            const event = interact(quickFillPlayer);
+            expect(event.cancel).toBe(true);
+            expect(quickFillPlayer.mode.onFillInteraction).not.toHaveBeenCalled();
+
+            flushScheduledRuns();
+            expect(quickFillPlayer.mode.onFillInteraction).toHaveBeenCalledTimes(1);
+        });
+
+        test('acts on every interact event', () => {
+            const quickFillPlayer = makeQuickFillPlayer();
+
+            interact(quickFillPlayer);
+            interact(quickFillPlayer);
+            flushScheduledRuns();
+
+            expect(quickFillPlayer.mode.onFillInteraction).toHaveBeenCalledTimes(2);
+        });
+
+        test('fills with the held item when not sneaking', () => {
+            const quickFillPlayer = makeQuickFillPlayer();
+            const heldItemStack = stack('oak_log');
+
+            interact(quickFillPlayer, { itemStack: heldItemStack });
+            flushScheduledRuns();
+
+            expect(quickFillPlayer.mode.onFillInteraction).toHaveBeenCalledWith(container, heldItemStack, 'entity.chest_minecart.name');
+            expect(quickFillPlayer.mode.onTakeInteraction).not.toHaveBeenCalled();
+        });
+
+        test('takes with the held item when sneaking in survival', () => {
+            const quickFillPlayer = makeQuickFillPlayer({ sneaking: true });
+            const heldItemStack = stack('oak_log');
+
+            interact(quickFillPlayer, { itemStack: heldItemStack });
+            flushScheduledRuns();
+
+            expect(quickFillPlayer.mode.onTakeInteraction).toHaveBeenCalledWith(container, heldItemStack, 'entity.chest_minecart.name');
+            expect(container.clearAll).not.toHaveBeenCalled();
+        });
+
+        test('clears the container instead of taking when sneaking in creative', () => {
+            const quickFillPlayer = makeQuickFillPlayer({ gameMode: GameMode.Creative, sneaking: true });
+
+            interact(quickFillPlayer);
+            flushScheduledRuns();
+
+            expect(container.clearAll).toHaveBeenCalledTimes(1);
+            expect(quickFillPlayer.mode.onTakeInteraction).not.toHaveBeenCalled();
+            expect(quickFillPlayer.mode.onFillInteraction).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('onAttackEntity()', () => {
+        let container;
+
+        beforeEach(() => {
+            mockScheduler.reset();
+            container = containerOf(3, { 0: stack('stone') });
+        });
+
+        const attack = (quickFillPlayer, options = {}) => {
+            const target = options.target ?? entityWith(container);
+            const itemStack = 'itemStack' in options ? options.itemStack : stack('golden_sword');
+            const event = { target, itemStack, cancel: false };
+            quickFillPlayer.onAttackEntity(event);
+            return event;
+        };
+
+        test.each([GameMode.Survival, GameMode.Adventure, GameMode.Creative])('cancels the attack and opens the configure interaction next tick in %s', (gameMode) => {
+            const quickFillPlayer = makeQuickFillPlayer({ gameMode }, { configurable: true });
+
+            const event = attack(quickFillPlayer);
+            expect(quickFillPlayer.mode.onConfigureInteraction).not.toHaveBeenCalled();
+            flushScheduledRuns();
+
+            expect(event.cancel).toBe(true);
+            expect(quickFillPlayer.mode.onConfigureInteraction).toHaveBeenCalledWith(container, 'entity.chest_minecart.name');
+        });
+
+        test('lets the attack happen when the mode has no configure interaction', () => {
+            const quickFillPlayer = makeQuickFillPlayer({}, { configurable: false });
+
+            const event = attack(quickFillPlayer);
+            flushScheduledRuns();
+
+            expect(event.cancel).toBe(false);
+            expect(quickFillPlayer.mode.onConfigureInteraction).not.toHaveBeenCalled();
+        });
+
+        test('lets players be attacked normally', () => {
+            const quickFillPlayer = makeQuickFillPlayer({}, { configurable: true });
+
+            const event = attack(quickFillPlayer, { target: entityWith(container, 'minecraft:player') });
+            flushScheduledRuns();
+
+            expect(event.cancel).toBe(false);
+            expect(quickFillPlayer.mode.onConfigureInteraction).not.toHaveBeenCalled();
+        });
+
+        test('lets entities without an inventory be attacked normally', () => {
+            const quickFillPlayer = makeQuickFillPlayer({}, { configurable: true });
+
+            const event = attack(quickFillPlayer, { target: entityWith(void 0, 'minecraft:cow') });
+            flushScheduledRuns();
+
+            expect(event.cancel).toBe(false);
+            expect(quickFillPlayer.mode.onConfigureInteraction).not.toHaveBeenCalled();
+        });
+
+        test('lets the attack happen when the player is not holding an item', () => {
+            const quickFillPlayer = makeQuickFillPlayer({}, { configurable: true });
+
+            const event = attack(quickFillPlayer, { itemStack: void 0 });
+            flushScheduledRuns();
+
+            expect(event.cancel).toBe(false);
+            expect(quickFillPlayer.mode.onConfigureInteraction).not.toHaveBeenCalled();
+        });
+    });
+
     describe('onBreakBlock()', () => {
         let container;
 
@@ -285,7 +463,7 @@ describe('QuickFillPlayer', () => {
             expect(quickFillPlayer.mode.onConfigureInteraction).not.toHaveBeenCalled();
         });
 
-        test.each(['minecraft:beacon', 'minecraft:jukebox', 'minecraft:lectern'])('lets %s break normally', (typeId) => {
+        test.each(BANNED_BLOCK_IDS)('lets %s break normally', (typeId) => {
             const quickFillPlayer = makeQuickFillPlayer({ gameMode: GameMode.Creative }, { configurable: true });
 
             const event = breakBlock(quickFillPlayer, { block: blockWith(container, typeId) });
@@ -363,7 +541,7 @@ describe('QuickFillPlayer', () => {
             expect(quickFillPlayer.mode.onConfigureInteraction).not.toHaveBeenCalled();
         });
 
-        test.each(['minecraft:beacon', 'minecraft:jukebox', 'minecraft:lectern'])('ignores %s', (typeId) => {
+        test.each(BANNED_BLOCK_IDS)('ignores %s', (typeId) => {
             const quickFillPlayer = makeQuickFillPlayer({}, { configurable: true });
 
             quickFillPlayer.onStartBreakingBlock({ block: blockWith(container, typeId) });
