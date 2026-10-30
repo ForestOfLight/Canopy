@@ -47,6 +47,15 @@ new VanillaCommand({
         }));
 
         return { status: CustomCommandStatus.Success };
+    },
+    wikiDescription: '',
+    subCommandWikiDescription: {
+        '<add/remove> <name>': {
+            description: 'Adds or removes a warp. Alias: **`/w <add|remove> <name>`**'
+        },
+        '<name>': {
+            description: 'Teleports you to a warp. Alias: **`/w <name>`**'
+        }
     }
 });
 
