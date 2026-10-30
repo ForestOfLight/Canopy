@@ -2,7 +2,6 @@ import { PlayerCommandOrigin, VanillaCommand } from "../../lib/canopy/Canopy";
 import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, system, world } from "@minecraft/server";
 import { getColoredDimensionName } from "../../include/utils";
 import { SimulationMapUtils } from "../classes/SimulationMapUtils";
-import { Dimension } from "./CommandEnums";
 
 const MAX_CHUNK_DISTANCE = 30;
 
@@ -11,15 +10,6 @@ const SIMMAP_ACTIONS = Object.freeze([
     'display',
     'follow'
 ]);
-
-const validDimensions = {
-    [Dimension.OverworldShort]: Dimension.Overworld,
-    [Dimension.Overworld]: Dimension.Overworld,
-    [Dimension.NetherShort]: Dimension.Nether,
-    [Dimension.Nether]: Dimension.Nether,
-    [Dimension.TheEndShort]: Dimension.TheEnd,
-    [Dimension.End]: Dimension.TheEnd
-};
 
 const SIMMAP_USAGE = '/canopy:simmap [show|display|follow] [distance] [dimension] [x] [z]';
 
@@ -30,10 +20,6 @@ new VanillaCommand({
         {
             name: 'canopy:simmapAction',
             values: SIMMAP_ACTIONS
-        },
-        {
-            name: 'canopy:simmapDimension',
-            values: Object.keys(validDimensions)
         }
     ],
     optionalParameters: [
@@ -46,7 +32,7 @@ new VanillaCommand({
             type: CustomCommandParamType.Integer
         },
         {
-            name: 'canopy:simmapDimension',
+            name: 'canopy:dimension',
             type: CustomCommandParamType.Enum
         },
         {
@@ -120,7 +106,7 @@ function handleChatCommand(sender, args) {
     if (x === null || z === null)
         return sendSimmapUsage(sender);
 
-    dimensionLocation.dimension = world.getDimension(validDimensions[dimension]);
+    dimensionLocation.dimension = world.getDimension(dimension);
     dimensionLocation.location = { x, z };
     printLoadedChunks(sender, dimensionLocation, mapDistance);
 }
@@ -142,7 +128,7 @@ function handleInfoDisplayConfig(sender, args) {
 
     updateDistance(sender, distance);
     updateLocation(sender, {
-        dimension: validDimensions[dimension],
+        dimension,
         x,
         z
     });

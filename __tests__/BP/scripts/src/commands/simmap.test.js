@@ -13,22 +13,23 @@ describe('simmap native command refactor', () => {
         expect(command.customCommand.optionalParameters).toEqual([
             { name: 'canopy:simmapAction', type: CustomCommandParamType.Enum },
             { name: 'distance', type: CustomCommandParamType.Integer },
-            { name: 'canopy:simmapDimension', type: CustomCommandParamType.Enum },
+            { name: 'canopy:dimension', type: CustomCommandParamType.Enum },
             { name: 'x', type: CustomCommandParamType.Float },
             { name: 'z', type: CustomCommandParamType.Float }
         ]);
     });
 
-    it('provides native action and dimension autocomplete', () => {
+    it('uses the shared dimension enum without registering a duplicate', () => {
         expect(command.customCommand.enums).toEqual([
             {
                 name: 'canopy:simmapAction',
                 values: ['show', 'display', 'follow']
-            },
-            {
-                name: 'canopy:simmapDimension',
-                values: ['o', 'overworld', 'n', 'nether', 'e', 'end']
             }
         ]);
+
+        expect(command.customCommand.optionalParameters[2]).toEqual({
+            name: 'canopy:dimension',
+            type: CustomCommandParamType.Enum
+        });
     });
 });
