@@ -76,6 +76,30 @@ new VanillaCommand({
         }));
 
         return { status: CustomCommandStatus.Success };
+    },
+    wikiDescription: '',
+    subCommandWikiDescription: {
+        'entities': {
+            description: 'Displays a list of all entities & their positions in the world.'
+        },
+        'recent [mobName]': {
+            description: 'Displays all mob spawns from the last 30s. Specify a mob name to filter.'
+        },
+        'tracking start [x1 y1 z1] [x2 y2 z2]': {
+            description: 'Starts tracking mob spawns. Specify coords to track within an area.'
+        },
+        'tracking <mobName> [x1 y1 z1] [x2 y2 z2]': {
+            description: 'Starts spawn tracking for a specific mob. Specify coordinates to track a specific area. Run this command again with a new mob name to track multiple mobs types at once.'
+        },
+        'tracking': {
+            description: 'Displays statistics about mob spawning since spawn tracking started. Mob categories are based on population control.'
+        },
+        'tracking stop': {
+            description: 'Displays statistics about mob spawning since spawn tracking started and then stops spawn tracking.'
+        },
+        'mocking <true/false>': {
+            description: 'Allows the spawning algorithm to continue running while no mobs spawn. Useful for getting an upper bound on your farm\'s rates while tracking spawns. Requires OP.'
+        }
     }
 });
 
