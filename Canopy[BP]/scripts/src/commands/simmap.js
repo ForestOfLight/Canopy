@@ -71,7 +71,21 @@ new VanillaCommand({
         }));
         return { status: CustomCommandStatus.Success };
     },
-    wikiDescription: 'Displays a map showing the simulation status of chunks in an area and configures the Simulation Map InfoDisplay element.'
+    wikiDescription: '',
+    subCommandWikiDescription: {
+        'show <distance>': {
+            description: 'Displays the map with a radius of chunks equal to the specified distance.'
+        },
+        'show <distance> <dimension x z>': {
+            description: 'Display the map around the specified location.'
+        },
+        'display <distance> [dimension x z]': {
+            description: 'Sets the distance or location for the simulation map in your InfoDisplay.'
+        },
+        'follow [distance]': {
+            description: 'Sets the location for the simulation map in your InfoDisplay to follow your current location.'
+        }
+    }
 });
 
 function simmapCommand(sender, args) {
