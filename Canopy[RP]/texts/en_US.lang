@@ -363,7 +363,7 @@ commands.simmap.config.reset=§7InfoDisplay Simulation Map location updated to f
 commands.sit=Makes your player sit down.
 commands.sit.busy=§cYou are busy and cannot sit down.
 
-commands.spawn=Spawn command for tracking and mocking spawns.
+commands.spawn=Tracks, queries, and mocks mob spawning.
 commands.spawn.entities=Displays a list of all entities & their positions in the world.
 commands.spawn.recent=Displays all mob spawns from the last 30s. Specify a mob name to filter.
 commands.spawn.tracking.start=Starts tracking mob spawns. Specify coords to track within an area.
