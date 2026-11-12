@@ -20,13 +20,13 @@ new VanillaCommand({
     wikiDescription: 'Displays your current position, or the position of another player. Shows dimension and relative nether/overworld position as well.'
 });
 
-function posCommand(origin, player) {
-    if (player && !isOp(origin) && !Rules.getNativeValue('commandPosOthers')) {
+function posCommand(origin, players) {
+    if (players && !isOp(origin) && !Rules.getNativeValue('commandPosOthers')) {
         origin.sendMessage({ translate: 'rules.generic.blocked', with: ['commandPosOthers'] });
         return;
     }
-    if (player?.length > 0) {
-        for (const currPlayer of player) {
+    if (players?.length > 0) {
+        for (const currPlayer of players) {
             if (!currPlayer)
                 continue;
             sendPosMessage(origin, currPlayer);
@@ -40,13 +40,14 @@ function posCommand(origin, player) {
 
 function sendPosMessage(origin, target = void 0) {
     target = target === void 0 ? origin.getSource() : target;
-    origin.sendMessage({
-        rawtext: [
-            getPositionText(origin, target), { text: '\n' },
-            getDimensionText(target), { text: '\n' },
-            getRelativeDimensionPositionText(target)
-        ]
-    });
+    const rawtext = [
+        getPositionText(origin, target), { text: '\n' },
+        getDimensionText(target)
+    ];
+    const relativeText = getRelativeDimensionPositionText(target);
+    if (relativeText)
+        rawtext.push({ text: '\n' }, relativeText);
+    origin.sendMessage({ rawtext });
 }
 
 function getPositionText(origin, target) {
