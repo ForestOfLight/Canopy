@@ -349,7 +349,7 @@ commands.quickfillmode.updated=§7Quick Fill mode updated to §a%s§7.
 commands.retest=Resets spawn tracking, hopper counters, and hopper generators.
 commands.retest.success=§7Reset spawn counters, hopper counters, and hopper generators.
 
-commands.simmap=Displays a map of the loaded chunks near you or the specified location.
+commands.simmap=Displays a simulation map or configures the Simulation Map InfoDisplay element.
 commands.simmap.help.distance=Displays the map with a radius of chunks equal to the specified distance.
 commands.simmap.help.location=Display the map around the specified location.
 commands.simmap.help.display.set=Sets the distance or location for the simulation map in your InfoDisplay.
