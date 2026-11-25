@@ -38,9 +38,9 @@ describe('Timeline', () => {
         timeline = new Timeline();
     });
 
-    it('starts with the default loop length, two pages, and nothing active', () => {
-        expect(timeline.loopLength).toBe(40);
-        expect(timeline.pageCount).toBe(2);
+    it('starts with a one page default loop and nothing active', () => {
+        expect(timeline.loopLength).toBe(20);
+        expect(timeline.pageCount).toBe(1);
         expect(timeline.isEmpty()).toBe(true);
     });
 
@@ -61,7 +61,7 @@ describe('Timeline', () => {
     });
 
     it('ignores ticks outside the loop', () => {
-        timeline.setActive('attack', 40, true);
+        timeline.setActive('attack', 20, true);
         timeline.setActive('attack', -1, true);
         expect(timeline.isEmpty()).toBe(true);
     });
@@ -74,10 +74,11 @@ describe('Timeline', () => {
 
     it('rejects an invalid loop length', () => {
         expect(timeline.setLoopLength(0)).toBe(false);
-        expect(timeline.loopLength).toBe(40);
+        expect(timeline.loopLength).toBe(20);
     });
 
     it('drops ticks beyond a shortened loop for good', () => {
+        timeline.setLoopLength(40);
         timeline.setActive('attack', 5, true);
         timeline.setActive('attack', 30, true);
         timeline.setLoopLength(20);
@@ -89,7 +90,7 @@ describe('Timeline', () => {
     it('fills and clears a track', () => {
         timeline.fillTrack('jump');
         expect(timeline.isTrackFull('jump')).toBe(true);
-        for (let tick = 0; tick < 40; tick++)
+        for (let tick = 0; tick < 20; tick++)
             expect(timeline.isActive('jump', tick)).toBe(true);
         timeline.clearTrack('jump');
         expect(timeline.isEmpty()).toBe(true);
@@ -97,7 +98,7 @@ describe('Timeline', () => {
 
     it('is no longer full after the loop grows', () => {
         timeline.fillTrack('jump');
-        timeline.setLoopLength(41);
+        timeline.setLoopLength(21);
         expect(timeline.isTrackFull('jump')).toBe(false);
     });
 
@@ -112,7 +113,7 @@ describe('Timeline', () => {
         timeline.setLoopLength(100);
         timeline.setActive('build', 3, true);
         timeline.reset();
-        expect(timeline.loopLength).toBe(40);
+        expect(timeline.loopLength).toBe(20);
         expect(timeline.isEmpty()).toBe(true);
     });
 });

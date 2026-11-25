@@ -92,7 +92,7 @@ describe('TimelineForm', () => {
 
         it('defaults the loop length field to the current length', () => {
             const form = new TimelineForm(player, understudy).build();
-            expect(form.elements[LOOP_INDEX].options.defaultValue).toBe('40');
+            expect(form.elements[LOOP_INDEX].options.defaultValue).toBe('20');
         });
     });
 
@@ -144,7 +144,7 @@ describe('TimelineForm', () => {
 
         it.each(['', 'abc', '0', '1201', '12.5', '-3'])('keeps the loop length for invalid input %j', (text) => {
             const result = submit(new TimelineForm(player, understudy), values => { values[LOOP_INDEX] = text; });
-            expect(timeline.loopLength).toBe(40);
+            expect(timeline.loopLength).toBe(20);
             expect(result).toBeUndefined();
         });
 
