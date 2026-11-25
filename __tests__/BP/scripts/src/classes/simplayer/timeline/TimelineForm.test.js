@@ -9,9 +9,9 @@ vi.mock('../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understud
     }
 }));
 
-const ROW = 41;
-const LOOP_INDEX = 410;
-const PAGE_INDEX = 411;
+const ROW = 21;
+const LOOP_INDEX = 210;
+const PAGE_INDEX = 211;
 const ATTACK = 0;
 const USEHOLD = 3;
 const JUMP = 9;
@@ -42,9 +42,9 @@ describe('TimelineForm', () => {
     });
 
     describe('build', () => {
-        it('lays out 410 toggles, then the loop length field, then the page dropdown', () => {
+        it('lays out 210 toggles, then the loop length field, then the page dropdown', () => {
             const form = new TimelineForm(player, understudy).build();
-            expect(form.elements).toHaveLength(412);
+            expect(form.elements).toHaveLength(212);
             expect(form.elements.slice(0, LOOP_INDEX).every(element => element.type === 'toggle')).toBe(true);
             expect(form.elements[LOOP_INDEX].type).toBe('textField');
             expect(form.elements[PAGE_INDEX].type).toBe('dropdown');
@@ -57,12 +57,12 @@ describe('TimelineForm', () => {
         });
 
         it('labels cells with their tick and disables cells past the loop', () => {
-            timeline.setLoopLength(50);
+            timeline.setLoopLength(30);
             const form = new TimelineForm(player, understudy, 1).build();
-            expect(form.elements[cellIndex(ATTACK, 0)].label).toBe('40');
-            expect(form.elements[cellIndex(ATTACK, 9)].label).toBe('49');
+            expect(form.elements[cellIndex(ATTACK, 0)].label).toBe('20');
+            expect(form.elements[cellIndex(ATTACK, 9)].label).toBe('29');
             expect(form.elements[cellIndex(ATTACK, 10)].label).toBe(TimelineForm.DISABLED_CELL_LABEL);
-            expect(form.elements[cellIndex(JUMP, 39)].label).toBe('-');
+            expect(form.elements[cellIndex(JUMP, 19)].label).toBe('-');
         });
 
         it('defaults cells to their active state and row toggles to fullness', () => {
@@ -85,8 +85,8 @@ describe('TimelineForm', () => {
             timeline.setLoopLength(100);
             const form = new TimelineForm(player, understudy, 2).build();
             const dropdown = form.elements[PAGE_INDEX];
-            expect(dropdown.items).toHaveLength(3);
-            expect(dropdown.items[2]).toEqual({ translate: 'simplayer.timeline.page.option', with: ['3', '3'] });
+            expect(dropdown.items).toHaveLength(5);
+            expect(dropdown.items[2]).toEqual({ translate: 'simplayer.timeline.page.option', with: ['3', '5'] });
             expect(dropdown.options.defaultValueIndex).toBe(2);
         });
 
@@ -112,13 +112,13 @@ describe('TimelineForm', () => {
         it('applies cells for the page being edited', () => {
             timeline.setLoopLength(80);
             submit(new TimelineForm(player, understudy, 1), values => { values[cellIndex(ATTACK, 2)] = true; });
-            expect(timeline.isActive('attack', 42)).toBe(true);
+            expect(timeline.isActive('attack', 22)).toBe(true);
             expect(timeline.isActive('attack', 2)).toBe(false);
         });
 
         it('ignores cells past the loop on the last page', () => {
-            timeline.setLoopLength(50);
-            submit(new TimelineForm(player, understudy, 1), values => { values[cellIndex(ATTACK, 20)] = true; });
+            timeline.setLoopLength(30);
+            submit(new TimelineForm(player, understudy, 1), values => { values[cellIndex(ATTACK, 15)] = true; });
             expect(timeline.isEmpty()).toBe(true);
         });
 
@@ -158,7 +158,7 @@ describe('TimelineForm', () => {
             timeline.setLoopLength(100);
             timeline.setActive('attack', 90, true);
             const result = submit(new TimelineForm(player, understudy, 2), values => { values[LOOP_INDEX] = '30'; });
-            expect(result).toBe(0);
+            expect(result).toBe(1);
             expect(timeline.isActive('attack', 90)).toBe(false);
         });
 
@@ -168,7 +168,7 @@ describe('TimelineForm', () => {
                 values[cellIndex(JUMP, 1)] = true;
                 values[LOOP_INDEX] = '60';
             });
-            expect(timeline.isActive('jump', 41)).toBe(true);
+            expect(timeline.isActive('jump', 21)).toBe(true);
             expect(result).toBe(1);
         });
 

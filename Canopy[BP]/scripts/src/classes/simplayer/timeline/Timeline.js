@@ -4,7 +4,7 @@ export class Timeline {
     static MIN_LOOP_LENGTH = 1;
     static MAX_LOOP_LENGTH = 1200;
     static DEFAULT_LOOP_LENGTH = 40;
-    static PAGE_WIDTH = 40;
+    static PAGE_WIDTH = 20;
 
     #loopLength = Timeline.DEFAULT_LOOP_LENGTH;
     #tracks = new Map(TIMELINE_TRACKS.map(track => [track.id, new Set()]));

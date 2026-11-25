@@ -38,9 +38,9 @@ describe('Timeline', () => {
         timeline = new Timeline();
     });
 
-    it('starts with the default loop length, one page, and nothing active', () => {
+    it('starts with the default loop length, two pages, and nothing active', () => {
         expect(timeline.loopLength).toBe(40);
-        expect(timeline.pageCount).toBe(1);
+        expect(timeline.pageCount).toBe(2);
         expect(timeline.isEmpty()).toBe(true);
     });
 
@@ -69,7 +69,7 @@ describe('Timeline', () => {
     it('changes the loop length and page count', () => {
         expect(timeline.setLoopLength(100)).toBe(true);
         expect(timeline.loopLength).toBe(100);
-        expect(timeline.pageCount).toBe(3);
+        expect(timeline.pageCount).toBe(5);
     });
 
     it('rejects an invalid loop length', () => {
