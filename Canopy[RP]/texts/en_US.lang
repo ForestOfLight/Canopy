@@ -330,6 +330,7 @@ commands.playersneak=Make a simplayer start or stop sneaking.
 commands.playersprint=Make a simplayer start or stop sprinting.
 
 commands.playerstop=Make a simplayer stop doing all actions.
+commands.playertimeline=Edit a looping timeline of simplayer actions.
 
 commands.playerswapheld=Swap the held item of a simplayer with your held item.
 
