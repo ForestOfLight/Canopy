@@ -5,13 +5,20 @@ import { REPEATABLE_ACTIONS } from '../../../../../../../Canopy[BP]/scripts/src/
 
 describe('TIMELINE_TRACKS', () => {
     it('lists the tracks in display order', () => {
-        expect(TIMELINE_TRACKS.map(track => track.id)).toEqual(['attack', 'interact', 'use', 'usehold', 'build', 'break', 'drop', 'dropstack', 'dropall', 'jump']);
+        expect(TIMELINE_TRACKS.map(track => track.id)).toEqual(['attack', 'interact', 'use', 'usehold', 'build', 'break', 'drop', 'dropstack', 'dropall', 'jump', 'sneak', 'sprint', 'glide']);
     });
 
-    it('marks usehold as a hold track with no action', () => {
-        const usehold = TIMELINE_TRACKS.find(track => track.id === 'usehold');
-        expect(usehold.hold).toBe(true);
-        expect(usehold.action).toBeUndefined();
+    it('marks the held states as hold tracks with no action', () => {
+        const holdTracks = TIMELINE_TRACKS.filter(track => track.hold);
+        expect(holdTracks.map(track => track.id)).toEqual(['usehold', 'sneak', 'sprint', 'glide']);
+        for (const track of holdTracks)
+            expect(track.action).toBeUndefined();
+    });
+
+    it('labels the new movement tracks', () => {
+        expect(TIMELINE_TRACKS.find(t => t.id === 'sneak').labelKey).toBe('simplayer.timeline.track.sneak');
+        expect(TIMELINE_TRACKS.find(t => t.id === 'sprint').labelKey).toBe('simplayer.timeline.track.sprint');
+        expect(TIMELINE_TRACKS.find(t => t.id === 'glide').labelKey).toBe('simplayer.timeline.track.glide');
     });
 
     it('maps every other track to its repeatable action', () => {

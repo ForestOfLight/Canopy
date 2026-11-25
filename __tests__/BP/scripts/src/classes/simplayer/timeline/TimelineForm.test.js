@@ -10,8 +10,8 @@ vi.mock('../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understud
 }));
 
 const ROW = 20;
-const LOOP_INDEX = 200;
-const PAGE_INDEX = 201;
+const LOOP_INDEX = 260;
+const PAGE_INDEX = 261;
 const ATTACK = 0;
 const JUMP = 9;
 
@@ -41,9 +41,9 @@ describe('TimelineForm', () => {
     });
 
     describe('build', () => {
-        it('lays out 200 cell toggles, then the loop length slider, then the page dropdown', () => {
+        it('lays out 260 cell toggles, then the loop length slider, then the page dropdown', () => {
             const form = new TimelineForm(player, understudy).build();
-            expect(form.elements).toHaveLength(202);
+            expect(form.elements).toHaveLength(262);
             expect(form.elements.slice(0, LOOP_INDEX).every(element => element.type === 'toggle')).toBe(true);
             expect(form.elements[LOOP_INDEX].type).toBe('slider');
             expect(form.elements[PAGE_INDEX].type).toBe('dropdown');

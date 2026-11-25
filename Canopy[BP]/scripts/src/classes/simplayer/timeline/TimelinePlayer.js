@@ -1,11 +1,34 @@
 import { RepeatableAction } from "../RepeatableAction";
 import { TIMELINE_TRACKS } from "./TimelineTracks";
 
+const HOLD_HANDLERS = Object.freeze({
+    usehold: {
+        reassert: false,
+        start: understudy => understudy.simulatedPlayer.useItemInSlot(understudy.simulatedPlayer.selectedSlotIndex),
+        stop: understudy => understudy.simulatedPlayer.stopUsingItem()
+    },
+    sneak: {
+        reassert: true,
+        start: understudy => understudy.sneak(true),
+        stop: understudy => understudy.sneak(false)
+    },
+    sprint: {
+        reassert: true,
+        start: understudy => understudy.sprint(true),
+        stop: understudy => understudy.sprint(false)
+    },
+    glide: {
+        reassert: false,
+        start: understudy => understudy.glide(true),
+        stop: understudy => understudy.glide(false)
+    }
+});
+
 export class TimelinePlayer {
     #understudy;
     #timeline;
     #actions = new Map();
-    #isHolding = false;
+    #heldTracks = new Set();
 
     constructor(understudy, timeline) {
         this.#understudy = understudy;
@@ -17,35 +40,37 @@ export class TimelinePlayer {
     }
 
     get isHolding() {
-        return this.#isHolding;
+        return this.#heldTracks.size > 0;
     }
 
     onTick(currentTick) {
-        if (this.#timeline.isEmpty() && !this.#isHolding)
+        if (this.#timeline.isEmpty() && !this.isHolding)
             return;
         const tick = this.#timeline.getTick(currentTick);
         for (const track of TIMELINE_TRACKS) {
             const isActive = this.#timeline.isActive(track.id, tick);
             if (track.hold)
-                this.#updateHold(isActive);
+                this.#updateHold(track.id, isActive);
             else if (isActive)
                 this.#actions.get(track.id).perform();
         }
     }
 
     stop() {
-        if (this.#isHolding)
-            this.#understudy.simulatedPlayer.stopUsingItem();
-        this.#isHolding = false;
+        for (const trackId of this.#heldTracks)
+            HOLD_HANDLERS[trackId].stop(this.#understudy);
+        this.#heldTracks.clear();
     }
 
-    #updateHold(isActive) {
-        if (isActive && !this.#isHolding) {
-            const simulatedPlayer = this.#understudy.simulatedPlayer;
-            simulatedPlayer.useItemInSlot(simulatedPlayer.selectedSlotIndex);
-            this.#isHolding = true;
-        } else if (!isActive && this.#isHolding) {
-            this.stop();
+    #updateHold(trackId, isActive) {
+        const handler = HOLD_HANDLERS[trackId];
+        const isHeld = this.#heldTracks.has(trackId);
+        if (isActive && (!isHeld || handler.reassert)) {
+            handler.start(this.#understudy);
+            this.#heldTracks.add(trackId);
+        } else if (!isActive && isHeld) {
+            handler.stop(this.#understudy);
+            this.#heldTracks.delete(trackId);
         }
     }
 }

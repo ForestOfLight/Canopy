@@ -14,5 +14,8 @@ export const TIMELINE_TRACKS = Object.freeze([
     actionTrack(REPEATABLE_ACTIONS.DROP),
     actionTrack(REPEATABLE_ACTIONS.DROP_STACK),
     actionTrack(REPEATABLE_ACTIONS.DROP_ALL),
-    actionTrack(REPEATABLE_ACTIONS.JUMP)
+    actionTrack(REPEATABLE_ACTIONS.JUMP),
+    Object.freeze({ id: 'sneak', hold: true, labelKey: 'simplayer.timeline.track.sneak' }),
+    Object.freeze({ id: 'sprint', hold: true, labelKey: 'simplayer.timeline.track.sprint' }),
+    Object.freeze({ id: 'glide', hold: true, labelKey: 'simplayer.timeline.track.glide' })
 ]);
