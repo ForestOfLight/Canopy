@@ -1,0 +1,323 @@
+{
+	"namespace": "server_form",
+
+	"main_screen_content": {
+		"modifications": [
+			{
+				"array_name": "controls",
+				"operation": "replace",
+				"control_name": "server_form_factory",
+				"value": {
+					"server_form_factory": {
+						"type": "factory",
+						"control_ids": {
+							"long_form": "@server_form.long_form",
+							"custom_form": "@server_form.canopy_custom_form_router"
+						}
+					}
+				}
+			}
+		]
+	},
+
+	"canopy_custom_form_router": {
+		"type": "panel",
+		"size": [ 0, 0 ],
+		"controls": [
+			{
+				"vanilla_custom_form@server_form.custom_form": {
+					"bindings": [
+						{ "binding_name": "#title_text" },
+						{
+							"binding_type": "view",
+							"source_property_name": "((#title_text - '§t§i§m§e§l§i§n§e§r') = #title_text)",
+							"target_property_name": "#visible"
+						}
+					]
+				}
+			},
+			{
+				"canopy_timeline_form@server_form.canopy_timeline_form": {
+					"bindings": [
+						{ "binding_name": "#title_text" },
+						{
+							"binding_type": "view",
+							"source_property_name": "(not ((#title_text - '§t§i§m§e§l§i§n§e§r') = #title_text))",
+							"target_property_name": "#visible"
+						}
+					]
+				}
+			}
+		]
+	},
+
+	"canopy_timeline_form@common_dialogs.main_panel_no_buttons": {
+		"$title_panel": "common_dialogs.standard_title_label",
+		"$title_size": [ "100% - 15px", 10 ],
+		"$title_max_size": [ "100% - 15px", 10 ],
+		"size": [ 300, 230 ],
+		"$text_name": "#title_text",
+		"$title_text_binding_type": "none",
+		"$child_control": "server_form.canopy_timeline_panel",
+		"layer": 2
+	},
+
+	"canopy_timeline_panel@common.scrolling_panel": {
+		"anchor_to": "top_left",
+		"anchor_from": "top_left",
+		"$show_background": false,
+		"size": [ "100%", "100%" ],
+		"$scrolling_content": "server_form.canopy_timeline_content",
+		"$scroll_size": [ 5, "100% - 4px" ],
+		"$scrolling_pane_size": [ "100% - 4px", "100% - 2px" ],
+		"$scrolling_pane_offset": [ 2, 0 ],
+		"$scroll_bar_right_padding_size": [ 0, 0 ]
+	},
+
+	"canopy_timeline_content": {
+		"type": "stack_panel",
+		"size": [ "100% - 4px", "100%c" ],
+		"offset": [ 2, 0 ],
+		"orientation": "vertical",
+		"anchor_from": "top_left",
+		"anchor_to": "top_left",
+		"controls": [
+			{
+				"grid_area": {
+					"type": "panel",
+					"size": [ "100%", 103 ],
+					"controls": [
+						{ "track_labels@server_form.canopy_timeline_track_labels": {} },
+						{ "cells@server_form.canopy_timeline_grid": {} }
+					]
+				}
+			},
+			{ "settings@server_form.canopy_timeline_settings": {} },
+			{
+				"submit_button@common_buttons.light_text_button": {
+					"$pressed_button_name": "button.submit_custom_form",
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"size": [ "100%", 32 ],
+					"$button_text": "#submit_text",
+					"$button_text_binding_type": "global",
+					"$button_binding_condition": "once",
+					"bindings": [
+						{
+							"binding_name": "#submit_button_visible",
+							"binding_name_override": "#visible"
+						}
+					]
+				}
+			}
+		]
+	},
+
+	"canopy_timeline_track_label": {
+		"type": "label",
+		"size": [ 56, 9 ],
+		"font_scale_factor": 0.8,
+		"color": "$body_text_color",
+		"text": "$track_label"
+	},
+
+	"canopy_timeline_track_labels": {
+		"type": "stack_panel",
+		"orientation": "vertical",
+		"size": [ 56, 90 ],
+		"offset": [ 0, 9 ],
+		"anchor_from": "top_left",
+		"anchor_to": "top_left",
+		"controls": [
+			{ "attack@server_form.canopy_timeline_track_label": { "$track_label": "simplayer.action.attack" } },
+			{ "interact@server_form.canopy_timeline_track_label": { "$track_label": "simplayer.action.interact" } },
+			{ "use@server_form.canopy_timeline_track_label": { "$track_label": "simplayer.timeline.track.use" } },
+			{ "usehold@server_form.canopy_timeline_track_label": { "$track_label": "simplayer.timeline.track.usehold" } },
+			{ "build@server_form.canopy_timeline_track_label": { "$track_label": "simplayer.action.build" } },
+			{ "break@server_form.canopy_timeline_track_label": { "$track_label": "simplayer.action.break" } },
+			{ "drop@server_form.canopy_timeline_track_label": { "$track_label": "simplayer.action.drop" } },
+			{ "dropstack@server_form.canopy_timeline_track_label": { "$track_label": "simplayer.action.dropstack" } },
+			{ "dropall@server_form.canopy_timeline_track_label": { "$track_label": "simplayer.action.dropall" } },
+			{ "jump@server_form.canopy_timeline_track_label": { "$track_label": "simplayer.action.jump" } }
+		]
+	},
+
+	"canopy_timeline_grid": {
+		"type": "grid",
+		"size": [ 210, 90 ],
+		"offset": [ 58, 9 ],
+		"anchor_from": "top_left",
+		"anchor_to": "top_left",
+		"grid_dimensions": [ 21, 10 ],
+		"grid_item_template": "server_form.canopy_timeline_grid_item",
+		"collection_name": "custom_form"
+	},
+
+	"canopy_timeline_grid_item": {
+		"type": "panel",
+		"size": [ 10, 9 ],
+		"bindings": [
+			{ "binding_type": "collection_details", "binding_collection_name": "custom_form" },
+			{
+				"binding_type": "view",
+				"source_property_name": "(#collection_index < 210)",
+				"target_property_name": "#visible"
+			}
+		],
+		"controls": [
+			{ "cell@server_form.canopy_timeline_cell": {} },
+			{
+				"disabled_overlay": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 0.05, 0.05, 0.05 ],
+					"alpha": 0.8,
+					"size": [ 9, 7 ],
+					"layer": 5,
+					"bindings": [
+						{ "binding_name": "#custom_text", "binding_type": "collection", "binding_collection_name": "custom_form" },
+						{
+							"binding_type": "view",
+							"source_property_name": "(#custom_text = '-')",
+							"target_property_name": "#visible"
+						}
+					]
+				}
+			},
+			{
+				"tick_number": {
+					"type": "label",
+					"text": "#custom_text",
+					"localize": false,
+					"font_scale_factor": 0.5,
+					"color": "$body_text_color",
+					"size": [ "default", "default" ],
+					"offset": [ 0, -1 ],
+					"anchor_from": "top_middle",
+					"anchor_to": "bottom_middle",
+					"layer": 4,
+					"bindings": [
+						{ "binding_name": "#custom_text", "binding_type": "collection", "binding_collection_name": "custom_form" },
+						{ "binding_type": "collection_details", "binding_collection_name": "custom_form" },
+						{
+							"binding_type": "view",
+							"source_property_name": "(((#collection_index = 1) or (#collection_index = 6) or (#collection_index = 11) or (#collection_index = 16)) and (not (#custom_text = '-')))",
+							"target_property_name": "#visible"
+						}
+					]
+				}
+			}
+		]
+	},
+
+	"canopy_timeline_cell_visual": {
+		"type": "panel",
+		"size": [ 10, 9 ],
+		"controls": [
+			{
+				"cell": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"size": [ 9, 7 ],
+					"color": "$cell_color",
+					"bindings": [
+						{ "binding_type": "collection_details", "binding_collection_name": "custom_form" },
+						{
+							"binding_type": "view",
+							"source_property_name": "(not ((#collection_index = 0) or (#collection_index = 21) or (#collection_index = 42) or (#collection_index = 63) or (#collection_index = 84) or (#collection_index = 105) or (#collection_index = 126) or (#collection_index = 147) or (#collection_index = 168) or (#collection_index = 189)))",
+							"target_property_name": "#visible"
+						}
+					]
+				}
+			},
+			{
+				"select_all": {
+					"type": "image",
+					"texture": "$select_all_texture",
+					"size": [ 9, 7 ],
+					"color": "$icon_tint",
+					"bindings": [
+						{ "binding_type": "collection_details", "binding_collection_name": "custom_form" },
+						{
+							"binding_type": "view",
+							"source_property_name": "((#collection_index = 0) or (#collection_index = 21) or (#collection_index = 42) or (#collection_index = 63) or (#collection_index = 84) or (#collection_index = 105) or (#collection_index = 126) or (#collection_index = 147) or (#collection_index = 168) or (#collection_index = 189))",
+							"target_property_name": "#visible"
+						}
+					]
+				}
+			}
+		]
+	},
+	"canopy_timeline_cell_off@server_form.canopy_timeline_cell_visual": {
+		"$cell_color": [ 0.22, 0.22, 0.22 ],
+		"$select_all_texture": "textures/ui/timeline_select_all_off",
+		"$icon_tint": [ 0.85, 0.85, 0.85 ]
+	},
+	"canopy_timeline_cell_off_hover@server_form.canopy_timeline_cell_visual": {
+		"$cell_color": [ 0.45, 0.45, 0.45 ],
+		"$select_all_texture": "textures/ui/timeline_select_all_off",
+		"$icon_tint": [ 1.0, 1.0, 1.0 ]
+	},
+	"canopy_timeline_cell_on@server_form.canopy_timeline_cell_visual": {
+		"$cell_color": [ 0.33, 0.8, 0.33 ],
+		"$select_all_texture": "textures/ui/timeline_select_all_on",
+		"$icon_tint": [ 0.85, 0.85, 0.85 ]
+	},
+	"canopy_timeline_cell_on_hover@server_form.canopy_timeline_cell_visual": {
+		"$cell_color": [ 0.55, 0.95, 0.55 ],
+		"$select_all_texture": "textures/ui/timeline_select_all_on",
+		"$icon_tint": [ 1.0, 1.0, 1.0 ]
+	},
+
+	"canopy_timeline_cell@common.toggle": {
+		"size": [ 10, 9 ],
+		"$toggle_name": "custom_toggle",
+		"$toggle_state_binding_name": "#custom_toggle_state",
+		"$toggle_binding_type": "collection",
+		"$toggle_grid_collection_name": "custom_form",
+		"$toggle_enabled_binding_name": "#custom_toggle_enabled",
+		"$toggle_enabled_binding_type": "collection",
+		"$unchecked_control": "server_form.canopy_timeline_cell_off",
+		"$checked_control": "server_form.canopy_timeline_cell_on",
+		"$unchecked_hover_control": "server_form.canopy_timeline_cell_off_hover",
+		"$checked_hover_control": "server_form.canopy_timeline_cell_on_hover",
+		"$unchecked_locked_control": "server_form.canopy_timeline_cell_off",
+		"$checked_locked_control": "server_form.canopy_timeline_cell_on",
+		"$unchecked_locked_hover_control": "server_form.canopy_timeline_cell_off",
+		"$checked_locked_hover_control": "server_form.canopy_timeline_cell_on"
+	},
+
+	"canopy_timeline_hidden_item": {
+		"type": "panel",
+		"size": [ 0, 0 ]
+	},
+
+	"canopy_timeline_settings": {
+		"type": "stack_panel",
+		"size": [ "100%", "100%c" ],
+		"orientation": "vertical",
+		"anchor_from": "top_left",
+		"anchor_to": "top_left",
+		"factory": {
+			"name": "buttons",
+			"control_ids": {
+				"label": "@server_form.canopy_timeline_hidden_item",
+				"toggle": "@server_form.canopy_timeline_hidden_item",
+				"slider": "@server_form.canopy_timeline_hidden_item",
+				"step_slider": "@server_form.canopy_timeline_hidden_item",
+				"dropdown": "@server_form.custom_dropdown",
+				"input": "@server_form.custom_input",
+				"header": "@server_form.canopy_timeline_hidden_item",
+				"divider": "@server_form.canopy_timeline_hidden_item",
+				"multiselect": "@server_form.canopy_timeline_hidden_item"
+			}
+		},
+		"collection_name": "custom_form",
+		"bindings": [
+			{
+				"binding_name": "#custom_form_length",
+				"binding_name_override": "#collection_length"
+			}
+		]
+	}
+}
