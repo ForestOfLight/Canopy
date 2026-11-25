@@ -606,6 +606,7 @@ simplayer.editor.tip=§7Interact: §fHotbar & Armor§r\n§7Sneak + Interact: §f
 simplayer.editor.view.hotbarAndArmor=Hotbar & Armor
 simplayer.editor.view.inventory=Inventory
 simplayer.action.line=§a%1 §7(interval %2)
+simplayer.action.timeline=§aTimeline §7(loop %1)
 simplayer.action.attack=Attack
 simplayer.action.interact=Interact
 simplayer.action.use=Use

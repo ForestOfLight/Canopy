@@ -2,6 +2,7 @@ import { system, TextPrimitive, world } from "@minecraft/server";
 import { RepeatableAction } from "./RepeatableAction";
 import { simplayerActionInfo } from "../../rules/simplayer/simplayerActionInfo";
 import { Timeline } from "./timeline/Timeline";
+import { TimelinePlayer } from "./timeline/TimelinePlayer";
 
 const VANILLA_NAMEPLATE_RENDER_DISTANCE = 64;
 
@@ -11,9 +12,11 @@ export class Actions {
     #actionInfoDebugShape;
     #vanillaNameplateRenderDistance;
     #timeline = new Timeline();
+    #timelinePlayer;
 
     constructor(understudy) {
         this.understudy = understudy;
+        this.#timelinePlayer = new TimelinePlayer(understudy, this.#timeline);
     }
 
     onTick() {
@@ -22,6 +25,7 @@ export class Actions {
         this.#singleActions.length = 0;
         for (const repeatingAction of this.#repeatingActions)
             repeatingAction.onTick();
+        this.#timelinePlayer.onTick(system.currentTick);
         if (simplayerActionInfo.getNativeValue())
             this.#tickActionInfo();
         else
@@ -56,7 +60,7 @@ export class Actions {
     }
 
     isEmpty() {
-        return this.#singleActions.length === 0 && this.#repeatingActions.length === 0;
+        return this.#singleActions.length === 0 && this.#repeatingActions.length === 0 && this.#timeline.isEmpty();
     }
 
     remove(type) {
@@ -66,13 +70,15 @@ export class Actions {
     clear() {
         this.#repeatingActions.length = 0;
         this.#singleActions.length = 0;
+        this.#timelinePlayer.stop();
+        this.#timeline.reset();
     }
 
     #tickActionInfo() {
         const simplayer = this.understudy.simulatedPlayer;
         if (simplayer.nameplateRenderDistance > 0)
             this.#vanillaNameplateRenderDistance = simplayer.nameplateRenderDistance;
-        if (this.#repeatingActions.length === 0) {
+        if (this.#repeatingActions.length === 0 && this.#timeline.isEmpty()) {
             this.#disableActionInfo();
             return;
         }
@@ -91,6 +97,10 @@ export class Actions {
                 { text: String(repeatingAction.intervalTicks) }
             ] } })
             output.rawtext.push({ text: '\n' })
+        }
+        if (!this.#timeline.isEmpty()) {
+            output.rawtext.push({ translate: 'simplayer.action.timeline', with: [String(this.#timeline.loopLength)] });
+            output.rawtext.push({ text: '\n' });
         }
         return output;
     }

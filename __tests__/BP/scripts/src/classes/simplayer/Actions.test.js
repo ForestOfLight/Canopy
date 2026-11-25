@@ -1,5 +1,7 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { scheduler } from '@forestoflight/minecraft-vitest-mocks';
+import { system, world } from '@minecraft/server';
+import { simplayerActionInfo } from '../../../../../../Canopy[BP]/scripts/src/rules/simplayer/simplayerActionInfo';
 import { Actions } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Actions';
 import { RepeatableAction, REPEATABLE_ACTIONS } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/RepeatableAction';
 import { Timeline } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/Timeline';
@@ -170,6 +172,56 @@ describe('Actions', () => {
             actions.repeat(REPEATABLE_ACTIONS.JUMP);
             actions.onTick();
             expect(repeatableActionOnTickSpy).toHaveBeenCalledTimes(2);
+        });
+    });
+
+    describe('timeline playback', () => {
+        beforeEach(() => {
+            Object.assign(mockUnderstudy.simulatedPlayer, { useItemInSlot: vi.fn(), stopUsingItem: vi.fn(), selectedSlotIndex: 0 });
+            system.currentTick = 0;
+        });
+
+        it('plays the timeline on its active tick', () => {
+            actions.timeline.setActive('attack', 3, true);
+            system.currentTick = 3;
+            actions.onTick();
+            expect(performSpy).toHaveBeenCalledTimes(1);
+            system.currentTick = 4;
+            actions.onTick();
+            expect(performSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('is not empty while the timeline has active ticks', () => {
+            actions.timeline.setActive('jump', 0, true);
+            expect(actions.isEmpty()).toBe(false);
+        });
+
+        it('resets the timeline when cleared', () => {
+            actions.timeline.setLoopLength(100);
+            actions.timeline.setActive('jump', 0, true);
+            actions.clear();
+            expect(actions.timeline.isEmpty()).toBe(true);
+            expect(actions.timeline.loopLength).toBe(Timeline.DEFAULT_LOOP_LENGTH);
+        });
+
+        it('releases a held item when cleared and does not hold again', () => {
+            actions.timeline.fillTrack('usehold');
+            actions.onTick();
+            expect(mockUnderstudy.simulatedPlayer.useItemInSlot).toHaveBeenCalledTimes(1);
+            actions.clear();
+            expect(mockUnderstudy.simulatedPlayer.stopUsingItem).toHaveBeenCalledTimes(1);
+            system.currentTick = 1;
+            actions.onTick();
+            expect(mockUnderstudy.simulatedPlayer.useItemInSlot).toHaveBeenCalledTimes(1);
+        });
+
+        it('shows the timeline in the action info', () => {
+            vi.spyOn(simplayerActionInfo, 'getNativeValue').mockReturnValue(true);
+            mockUnderstudy.nameTag = 'TestBot';
+            actions.timeline.setActive('jump', 5, true);
+            actions.onTick();
+            const textPrimitive = vi.mocked(world.primitiveShapesManager.addText).mock.calls.at(-1)[0];
+            expect(textPrimitive.text.rawtext).toContainEqual({ translate: 'simplayer.action.timeline', with: [String(Timeline.DEFAULT_LOOP_LENGTH)] });
         });
     });
 });
