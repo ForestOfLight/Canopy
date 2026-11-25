@@ -184,6 +184,34 @@
 				"cell@server_form.canopy_timeline_cell": {}
 			},
 			{
+				"fifth_column_highlight": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [
+						1.0,
+						1.0,
+						1.0
+					],
+					"alpha": 0.1,
+					"size": [
+						9,
+						7
+					],
+					"layer": 4,
+					"bindings": [
+						{
+							"binding_type": "collection_details",
+							"binding_collection_name": "custom_form"
+						},
+						{
+							"binding_type": "view",
+							"source_property_name": "((#collection_index = 0) or (#collection_index = 5) or (#collection_index = 10) or (#collection_index = 15) or (#collection_index = 20) or (#collection_index = 25) or (#collection_index = 30) or (#collection_index = 35) or (#collection_index = 40) or (#collection_index = 45) or (#collection_index = 50) or (#collection_index = 55) or (#collection_index = 60) or (#collection_index = 65) or (#collection_index = 70) or (#collection_index = 75) or (#collection_index = 80) or (#collection_index = 85) or (#collection_index = 90) or (#collection_index = 95) or (#collection_index = 100) or (#collection_index = 105) or (#collection_index = 110) or (#collection_index = 115) or (#collection_index = 120) or (#collection_index = 125) or (#collection_index = 130) or (#collection_index = 135) or (#collection_index = 140) or (#collection_index = 145) or (#collection_index = 150) or (#collection_index = 155) or (#collection_index = 160) or (#collection_index = 165) or (#collection_index = 170) or (#collection_index = 175) or (#collection_index = 180) or (#collection_index = 185) or (#collection_index = 190) or (#collection_index = 195))",
+							"target_property_name": "#visible"
+						}
+					]
+				}
+			},
+			{
 				"disabled_overlay": {
 					"type": "image",
 					"texture": "textures/ui/timeline_cell",
