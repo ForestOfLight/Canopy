@@ -9,14 +9,14 @@ export const TIMELINE_FORM_MARKER = '§t§i§m§e§l§i§n§e§r';
 
 export class TimelineForm {
     static DISABLED_CELL_LABEL = '-';
-    static ROW_STRIDE = Timeline.PAGE_WIDTH + 1;
+    static ROW_BUTTON_COUNT = 2;
+    static ROW_STRIDE = Timeline.PAGE_WIDTH + TimelineForm.ROW_BUTTON_COUNT;
     static LOOP_LENGTH_INDEX = TIMELINE_TRACKS.length * TimelineForm.ROW_STRIDE;
     static PAGE_INDEX = TimelineForm.LOOP_LENGTH_INDEX + 1;
 
     #player;
     #understudy;
     #page;
-    #fullTracksAtBuild = new Set();
 
     constructor(player, understudy, page = 0) {
         this.#player = player;
@@ -38,12 +38,10 @@ export class TimelineForm {
             { text: TIMELINE_FORM_MARKER },
             { translate: 'simplayer.timeline.title', with: [this.#understudy.name] }
         ] });
-        this.#fullTracksAtBuild.clear();
         for (const track of TIMELINE_TRACKS) {
-            const isFull = timeline.isTrackFull(track.id);
-            if (isFull)
-                this.#fullTracksAtBuild.add(track.id);
-            form.toggle({ translate: track.labelKey }, { defaultValue: isFull });
+            const trackName = { rawtext: [{ translate: track.labelKey }] };
+            form.toggle({ translate: 'simplayer.timeline.selectall', with: trackName }, { defaultValue: false });
+            form.toggle({ translate: 'simplayer.timeline.deselectall', with: trackName }, { defaultValue: false });
             for (let column = 0; column < Timeline.PAGE_WIDTH; column++) {
                 const tick = this.#tickAt(column);
                 const label = tick < timeline.loopLength ? String(tick) : TimelineForm.DISABLED_CELL_LABEL;
@@ -60,9 +58,11 @@ export class TimelineForm {
     apply(formValues) {
         const timeline = this.#timeline;
         const lengthChanged = this.#applyLoopLength(timeline, formValues[TimelineForm.LOOP_LENGTH_INDEX]);
-        TIMELINE_TRACKS.forEach((track, row) => this.#applyTrack(timeline, track, row, formValues));
+        const rowButtonPressed = TIMELINE_TRACKS
+            .map((track, row) => this.#applyTrack(timeline, track, row, formValues))
+            .some(pressed => pressed);
         const selectedPage = formValues[TimelineForm.PAGE_INDEX];
-        if (!lengthChanged && selectedPage === this.#page)
+        if (!lengthChanged && !rowButtonPressed && selectedPage === this.#page)
             return void 0;
         return Math.min(selectedPage, timeline.pageCount - 1);
     }
@@ -88,14 +88,16 @@ export class TimelineForm {
         const rowStart = row * TimelineForm.ROW_STRIDE;
         if (formValues[rowStart] === true) {
             timeline.fillTrack(track.id);
-            return;
+            return true;
         }
-        if (this.#fullTracksAtBuild.has(track.id)) {
+        if (formValues[rowStart + 1] === true) {
             timeline.clearTrack(track.id);
-            return;
+            return true;
         }
+        const cellStart = rowStart + TimelineForm.ROW_BUTTON_COUNT;
         for (let column = 0; column < Timeline.PAGE_WIDTH; column++)
-            timeline.setActive(track.id, this.#tickAt(column), formValues[rowStart + 1 + column] === true);
+            timeline.setActive(track.id, this.#tickAt(column), formValues[cellStart + column] === true);
+        return false;
     }
 
     #applyLoopLength(timeline, text) {

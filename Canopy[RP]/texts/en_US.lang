@@ -623,3 +623,5 @@ simplayer.timeline.looplength=Loop length (ticks)
 simplayer.timeline.page=Page
 simplayer.timeline.page.option=%1 / %2
 simplayer.timeline.save=Save
+simplayer.timeline.selectall=Select all: %1
+simplayer.timeline.deselectall=Deselect all: %1
