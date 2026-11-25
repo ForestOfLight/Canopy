@@ -44,8 +44,7 @@ export class TimelineForm {
                 form.toggle(label, { defaultValue: timeline.isActive(track.id, tick) });
             }
         }
-        const loopLength = String(timeline.loopLength);
-        form.textField({ translate: 'simplayer.timeline.looplength' }, loopLength, { defaultValue: loopLength });
+        form.slider({ translate: 'simplayer.timeline.looplength' }, Timeline.MIN_LOOP_LENGTH, Timeline.MAX_LOOP_LENGTH, { valueStep: 1, defaultValue: timeline.loopLength });
         form.dropdown({ translate: 'simplayer.timeline.page' }, this.#pageOptions(timeline.pageCount), { defaultValueIndex: this.#page });
         form.submitButton({ translate: 'simplayer.timeline.save' });
         return form;
@@ -84,10 +83,7 @@ export class TimelineForm {
             timeline.setActive(track.id, this.#tickAt(column), formValues[rowStart + column] === true);
     }
 
-    #applyLoopLength(timeline, text) {
-        if (typeof text !== 'string' || !/^\d+$/.test(text))
-            return false;
-        const loopLength = Number(text);
+    #applyLoopLength(timeline, loopLength) {
         if (loopLength === timeline.loopLength)
             return false;
         return timeline.setLoopLength(loopLength);

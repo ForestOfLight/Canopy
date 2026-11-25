@@ -41,11 +41,11 @@ describe('TimelineForm', () => {
     });
 
     describe('build', () => {
-        it('lays out 200 cell toggles, then the loop length field, then the page dropdown', () => {
+        it('lays out 200 cell toggles, then the loop length slider, then the page dropdown', () => {
             const form = new TimelineForm(player, understudy).build();
             expect(form.elements).toHaveLength(202);
             expect(form.elements.slice(0, LOOP_INDEX).every(element => element.type === 'toggle')).toBe(true);
-            expect(form.elements[LOOP_INDEX].type).toBe('textField');
+            expect(form.elements[LOOP_INDEX].type).toBe('slider');
             expect(form.elements[PAGE_INDEX].type).toBe('dropdown');
         });
 
@@ -83,9 +83,11 @@ describe('TimelineForm', () => {
             expect(dropdown.options.defaultValueIndex).toBe(2);
         });
 
-        it('defaults the loop length field to the current length', () => {
-            const form = new TimelineForm(player, understudy).build();
-            expect(form.elements[LOOP_INDEX].options.defaultValue).toBe('20');
+        it('offers a loop length slider over the allowed range at the current length', () => {
+            const slider = new TimelineForm(player, understudy).build().elements[LOOP_INDEX];
+            expect(slider.minimumValue).toBe(1);
+            expect(slider.maximumValue).toBe(1200);
+            expect(slider.options).toEqual({ valueStep: 1, defaultValue: 20 });
         });
     });
 
@@ -125,7 +127,7 @@ describe('TimelineForm', () => {
 
         it('adds empty ticks to a full row when the loop is lengthened', () => {
             timeline.fillTrack('usehold');
-            submit(new TimelineForm(player, understudy), values => { values[LOOP_INDEX] = '40'; });
+            submit(new TimelineForm(player, understudy), values => { values[LOOP_INDEX] = 40; });
             expect(timeline.isActive('usehold', 19)).toBe(true);
             expect(timeline.isActive('usehold', 20)).toBe(false);
         });
@@ -137,14 +139,14 @@ describe('TimelineForm', () => {
             expect(result).toBeUndefined();
         });
 
-        it.each(['', 'abc', '0', '1201', '12.5', '-3'])('keeps the loop length for invalid input %j', (text) => {
-            const result = submit(new TimelineForm(player, understudy), values => { values[LOOP_INDEX] = text; });
+        it.each([0, 1201, 12.5, -3, '40', undefined])('keeps the loop length for invalid input %j', (value) => {
+            const result = submit(new TimelineForm(player, understudy), values => { values[LOOP_INDEX] = value; });
             expect(timeline.loopLength).toBe(20);
             expect(result).toBeUndefined();
         });
 
         it('changes the loop length and reopens on the same page', () => {
-            const result = submit(new TimelineForm(player, understudy), values => { values[LOOP_INDEX] = '100'; });
+            const result = submit(new TimelineForm(player, understudy), values => { values[LOOP_INDEX] = 100; });
             expect(timeline.loopLength).toBe(100);
             expect(result).toBe(0);
         });
@@ -152,7 +154,7 @@ describe('TimelineForm', () => {
         it('reopens on the last remaining page when the loop shrinks below it', () => {
             timeline.setLoopLength(100);
             timeline.setActive('attack', 90, true);
-            const result = submit(new TimelineForm(player, understudy, 2), values => { values[LOOP_INDEX] = '30'; });
+            const result = submit(new TimelineForm(player, understudy, 2), values => { values[LOOP_INDEX] = 30; });
             expect(result).toBe(1);
             expect(timeline.isActive('attack', 90)).toBe(false);
         });
@@ -161,7 +163,7 @@ describe('TimelineForm', () => {
             timeline.setLoopLength(100);
             const result = submit(new TimelineForm(player, understudy, 1), values => {
                 values[cellIndex(JUMP, 1)] = true;
-                values[LOOP_INDEX] = '60';
+                values[LOOP_INDEX] = 60;
             });
             expect(timeline.isActive('jump', 21)).toBe(true);
             expect(result).toBe(1);
