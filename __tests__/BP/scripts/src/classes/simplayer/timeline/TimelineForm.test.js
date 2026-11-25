@@ -130,6 +130,21 @@ describe('TimelineForm', () => {
             expect(timeline.isTrackFull('attack')).toBe(true);
         });
 
+        it('fills the whole lengthened loop when a row toggle is on', () => {
+            submit(new TimelineForm(player, understudy), values => {
+                values[JUMP * ROW] = true;
+                values[LOOP_INDEX] = '40';
+            });
+            expect(timeline.loopLength).toBe(40);
+            expect(timeline.isTrackFull('jump')).toBe(true);
+        });
+
+        it('keeps a full row full when the loop is lengthened with its toggle on', () => {
+            timeline.fillTrack('usehold');
+            submit(new TimelineForm(player, understudy), values => { values[LOOP_INDEX] = '40'; });
+            expect(timeline.isTrackFull('usehold')).toBe(true);
+        });
+
         it('clears a row that was full when opened and is now toggled off', () => {
             timeline.fillTrack('attack');
             submit(new TimelineForm(player, understudy), values => { values[ATTACK * ROW] = false; });
@@ -162,7 +177,7 @@ describe('TimelineForm', () => {
             expect(timeline.isActive('attack', 90)).toBe(false);
         });
 
-        it('applies cells before shortening the loop', () => {
+        it('applies cells on a page that survives a shortened loop', () => {
             timeline.setLoopLength(100);
             const result = submit(new TimelineForm(player, understudy, 1), values => {
                 values[cellIndex(JUMP, 1)] = true;

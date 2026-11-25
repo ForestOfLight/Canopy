@@ -59,8 +59,8 @@ export class TimelineForm {
 
     apply(formValues) {
         const timeline = this.#timeline;
-        TIMELINE_TRACKS.forEach((track, row) => this.#applyTrack(timeline, track, row, formValues));
         const lengthChanged = this.#applyLoopLength(timeline, formValues[TimelineForm.LOOP_LENGTH_INDEX]);
+        TIMELINE_TRACKS.forEach((track, row) => this.#applyTrack(timeline, track, row, formValues));
         const selectedPage = formValues[TimelineForm.PAGE_INDEX];
         if (!lengthChanged && selectedPage === this.#page)
             return void 0;
