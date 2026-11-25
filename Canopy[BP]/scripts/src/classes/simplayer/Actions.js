@@ -1,6 +1,7 @@
 import { system, TextPrimitive, world } from "@minecraft/server";
 import { RepeatableAction } from "./RepeatableAction";
 import { simplayerActionInfo } from "../../rules/simplayer/simplayerActionInfo";
+import { Timeline } from "./timeline/Timeline";
 
 const VANILLA_NAMEPLATE_RENDER_DISTANCE = 64;
 
@@ -9,6 +10,7 @@ export class Actions {
     #repeatingActions = [];
     #actionInfoDebugShape;
     #vanillaNameplateRenderDistance;
+    #timeline = new Timeline();
 
     constructor(understudy) {
         this.understudy = understudy;
@@ -39,6 +41,10 @@ export class Actions {
             this.remove(type);
         const repeatingAction = new RepeatableAction(this.understudy, type, intervalTicks);
         this.#repeatingActions.push(repeatingAction);
+    }
+
+    get timeline() {
+        return this.#timeline;
     }
 
     get(type) {

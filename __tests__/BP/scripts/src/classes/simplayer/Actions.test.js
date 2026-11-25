@@ -2,6 +2,7 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { scheduler } from '@forestoflight/minecraft-vitest-mocks';
 import { Actions } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Actions';
 import { RepeatableAction, REPEATABLE_ACTIONS } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/RepeatableAction';
+import { Timeline } from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/Timeline';
 
 describe('Actions', () => {
     let mockUnderstudy;
@@ -23,6 +24,13 @@ describe('Actions', () => {
 
         it('starts with no actions queued', () => {
             expect(actions.isEmpty()).toBe(true);
+        });
+    });
+
+    describe('timeline', () => {
+        it('exposes one timeline per understudy', () => {
+            expect(actions.timeline).toBeInstanceOf(Timeline);
+            expect(actions.timeline).toBe(actions.timeline);
         });
     });
 
