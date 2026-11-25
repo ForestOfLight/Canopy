@@ -9,11 +9,10 @@ vi.mock('../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understud
     }
 }));
 
-const ROW = 22;
-const LOOP_INDEX = 220;
-const PAGE_INDEX = 221;
+const ROW = 20;
+const LOOP_INDEX = 200;
+const PAGE_INDEX = 201;
 const ATTACK = 0;
-const USEHOLD = 3;
 const JUMP = 9;
 
 function defaultValues(form) {
@@ -24,16 +23,8 @@ function defaultValues(form) {
     });
 }
 
-function selectAllIndex(row) {
-    return row * ROW;
-}
-
-function deselectAllIndex(row) {
-    return row * ROW + 1;
-}
-
 function cellIndex(row, column) {
-    return row * ROW + 2 + column;
+    return row * ROW + column;
 }
 
 describe('TimelineForm', () => {
@@ -50,18 +41,12 @@ describe('TimelineForm', () => {
     });
 
     describe('build', () => {
-        it('lays out 220 toggles, then the loop length field, then the page dropdown', () => {
+        it('lays out 200 cell toggles, then the loop length field, then the page dropdown', () => {
             const form = new TimelineForm(player, understudy).build();
-            expect(form.elements).toHaveLength(222);
+            expect(form.elements).toHaveLength(202);
             expect(form.elements.slice(0, LOOP_INDEX).every(element => element.type === 'toggle')).toBe(true);
             expect(form.elements[LOOP_INDEX].type).toBe('textField');
             expect(form.elements[PAGE_INDEX].type).toBe('dropdown');
-        });
-
-        it('labels the select all and deselect all toggles with their track', () => {
-            const form = new TimelineForm(player, understudy).build();
-            expect(form.elements[selectAllIndex(ATTACK)].label).toEqual({ translate: 'simplayer.timeline.selectall', with: { rawtext: [{ translate: 'simplayer.action.attack' }] } });
-            expect(form.elements[deselectAllIndex(USEHOLD)].label).toEqual({ translate: 'simplayer.timeline.deselectall', with: { rawtext: [{ translate: 'simplayer.timeline.track.usehold' }] } });
         });
 
         it('labels cells with their tick and disables cells past the loop', () => {
@@ -73,14 +58,14 @@ describe('TimelineForm', () => {
             expect(form.elements[cellIndex(JUMP, 19)].label).toBe('-');
         });
 
-        it('defaults cells to their active state and the row buttons to off', () => {
+        it('defaults cells to their active state', () => {
             timeline.setActive('attack', 5, true);
             timeline.fillTrack('jump');
             const values = defaultValues(new TimelineForm(player, understudy).build());
             expect(values[cellIndex(ATTACK, 5)]).toBe(true);
             expect(values[cellIndex(ATTACK, 6)]).toBe(false);
-            expect(values[selectAllIndex(JUMP)]).toBe(false);
-            expect(values[deselectAllIndex(JUMP)]).toBe(false);
+            expect(values[cellIndex(JUMP, 0)]).toBe(true);
+            expect(values[cellIndex(JUMP, 19)]).toBe(true);
         });
 
         it('starts the title with the timeline marker', () => {
@@ -130,46 +115,12 @@ describe('TimelineForm', () => {
             expect(timeline.isEmpty()).toBe(true);
         });
 
-        it('selects a whole row and reopens on the same page', () => {
-            timeline.setLoopLength(60);
-            const result = submit(new TimelineForm(player, understudy, 1), values => {
-                values[selectAllIndex(ATTACK)] = true;
-                values[cellIndex(ATTACK, 3)] = false;
+        it('selects a whole row when every cell is painted', () => {
+            submit(new TimelineForm(player, understudy), values => {
+                for (let column = 0; column < ROW; column++)
+                    values[cellIndex(ATTACK, column)] = true;
             });
             expect(timeline.isTrackFull('attack')).toBe(true);
-            expect(result).toBe(1);
-        });
-
-        it('deselects a whole row and reopens on the same page', () => {
-            timeline.fillTrack('attack');
-            const result = submit(new TimelineForm(player, understudy), values => { values[deselectAllIndex(ATTACK)] = true; });
-            expect(timeline.isEmpty()).toBe(true);
-            expect(result).toBe(0);
-        });
-
-        it('applies the other rows alongside a row button', () => {
-            submit(new TimelineForm(player, understudy), values => {
-                values[selectAllIndex(ATTACK)] = true;
-                values[cellIndex(JUMP, 4)] = true;
-            });
-            expect(timeline.isActive('jump', 4)).toBe(true);
-        });
-
-        it('prefers select all when both row buttons arrive on', () => {
-            submit(new TimelineForm(player, understudy), values => {
-                values[selectAllIndex(ATTACK)] = true;
-                values[deselectAllIndex(ATTACK)] = true;
-            });
-            expect(timeline.isTrackFull('attack')).toBe(true);
-        });
-
-        it('fills the whole lengthened loop when select all is pressed', () => {
-            submit(new TimelineForm(player, understudy), values => {
-                values[selectAllIndex(JUMP)] = true;
-                values[LOOP_INDEX] = '40';
-            });
-            expect(timeline.loopLength).toBe(40);
-            expect(timeline.isTrackFull('jump')).toBe(true);
         });
 
         it('adds empty ticks to a full row when the loop is lengthened', () => {

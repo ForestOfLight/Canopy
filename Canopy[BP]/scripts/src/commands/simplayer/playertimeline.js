@@ -13,8 +13,8 @@ export class PlayerTimelineCommand extends VanillaCommand {
             allowedSources: [PlayerCommandOrigin],
             callback: (origin, ...args) => this.playertimelineCommand(origin, ...args),
             wikiDescription: "Opens a timeline editor for the simulated player with the given name.\n\n" +
-                "Each row is an action and each cell is one tick of a loop. Toggle cells to choose which ticks the action happens on, " +
-                "or use the select all and deselect all buttons at the start of a row to fill or clear the whole row. The loop length can be set from 1 to 1200 ticks, " +
+                "Each row is an action and each cell is one tick of a loop. Toggle cells to choose which ticks the action happens on. " +
+                "The loop length can be set from 1 to 1200 ticks, " +
                 "and loops longer than 20 ticks are split into pages.\n\n" +
                 "The loop is aligned to the world tick, so saving at different times keeps the same timing. " +
                 "`Use (tick)` uses the held item on each selected tick, while `Use (hold)` starts using the item at the start of a span " +

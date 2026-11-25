@@ -55,7 +55,7 @@
 		"$title_panel": "common_dialogs.standard_title_label",
 		"$title_size": [ "100% - 15px", 10 ],
 		"$title_max_size": [ "100% - 15px", 10 ],
-		"size": [ 310, 230 ],
+		"size": [ 300, 230 ],
 		"$text_name": "#title_text",
 		"$title_text_binding_type": "none",
 		"$child_control": "server_form.canopy_timeline_panel",
@@ -145,7 +145,7 @@
 	"canopy_timeline_grid": {
 		"type": "grid",
 		"size": [
-			220,
+			200,
 			90
 		],
 		"offset": [
@@ -155,7 +155,7 @@
 		"anchor_from": "top_left",
 		"anchor_to": "top_left",
 		"grid_dimensions": [
-			22,
+			20,
 			10
 		],
 		"grid_item_template": "server_form.canopy_timeline_grid_item",
@@ -175,85 +175,13 @@
 			},
 			{
 				"binding_type": "view",
-				"source_property_name": "(#collection_index < 220)",
+				"source_property_name": "(#collection_index < 200)",
 				"target_property_name": "#visible"
 			}
 		],
 		"controls": [
 			{
-				"cell": {
-					"type": "panel",
-					"size": [
-						10,
-						9
-					],
-					"bindings": [
-						{
-							"binding_type": "collection_details",
-							"binding_collection_name": "custom_form"
-						},
-						{
-							"binding_type": "view",
-							"source_property_name": "(not ((#collection_index = 0) or (#collection_index = 22) or (#collection_index = 44) or (#collection_index = 66) or (#collection_index = 88) or (#collection_index = 110) or (#collection_index = 132) or (#collection_index = 154) or (#collection_index = 176) or (#collection_index = 198) or (#collection_index = 1) or (#collection_index = 23) or (#collection_index = 45) or (#collection_index = 67) or (#collection_index = 89) or (#collection_index = 111) or (#collection_index = 133) or (#collection_index = 155) or (#collection_index = 177) or (#collection_index = 199)))",
-							"target_property_name": "#visible"
-						}
-					],
-					"controls": [
-						{
-							"cell_toggle@server_form.canopy_timeline_cell": {}
-						}
-					]
-				}
-			},
-			{
-				"select_all": {
-					"type": "panel",
-					"size": [
-						10,
-						9
-					],
-					"bindings": [
-						{
-							"binding_type": "collection_details",
-							"binding_collection_name": "custom_form"
-						},
-						{
-							"binding_type": "view",
-							"source_property_name": "((#collection_index = 0) or (#collection_index = 22) or (#collection_index = 44) or (#collection_index = 66) or (#collection_index = 88) or (#collection_index = 110) or (#collection_index = 132) or (#collection_index = 154) or (#collection_index = 176) or (#collection_index = 198))",
-							"target_property_name": "#visible"
-						}
-					],
-					"controls": [
-						{
-							"select_all_toggle@server_form.canopy_timeline_select_all_button": {}
-						}
-					]
-				}
-			},
-			{
-				"deselect_all": {
-					"type": "panel",
-					"size": [
-						10,
-						9
-					],
-					"bindings": [
-						{
-							"binding_type": "collection_details",
-							"binding_collection_name": "custom_form"
-						},
-						{
-							"binding_type": "view",
-							"source_property_name": "((#collection_index = 1) or (#collection_index = 23) or (#collection_index = 45) or (#collection_index = 67) or (#collection_index = 89) or (#collection_index = 111) or (#collection_index = 133) or (#collection_index = 155) or (#collection_index = 177) or (#collection_index = 199))",
-							"target_property_name": "#visible"
-						}
-					],
-					"controls": [
-						{
-							"deselect_all_toggle@server_form.canopy_timeline_deselect_all_button": {}
-						}
-					]
-				}
+				"cell@server_form.canopy_timeline_cell": {}
 			},
 			{
 				"disabled_overlay": {
@@ -314,7 +242,7 @@
 						},
 						{
 							"binding_type": "view",
-							"source_property_name": "(((#collection_index = 2) or (#collection_index = 7) or (#collection_index = 12) or (#collection_index = 17)) and (not (#custom_text = '-')))",
+							"source_property_name": "(((#collection_index = 0) or (#collection_index = 5) or (#collection_index = 10) or (#collection_index = 15)) and (not (#custom_text = '-')))",
 							"target_property_name": "#visible"
 						}
 					]
@@ -384,83 +312,6 @@
 		"$checked_locked_control": "server_form.canopy_timeline_cell_on",
 		"$unchecked_locked_hover_control": "server_form.canopy_timeline_cell_off",
 		"$checked_locked_hover_control": "server_form.canopy_timeline_cell_on"
-	},
-
-	"canopy_timeline_row_button_visual": {
-		"type": "image",
-		"texture": "$row_button_texture",
-		"size": [
-			9,
-			7
-		],
-		"color": "$row_button_tint"
-	},
-
-	"canopy_timeline_row_button_idle@server_form.canopy_timeline_row_button_visual": {
-		"$row_button_tint": [
-			0.8,
-			0.8,
-			0.8
-		]
-	},
-
-	"canopy_timeline_row_button_hover@server_form.canopy_timeline_row_button_visual": {
-		"$row_button_tint": [
-			1.0,
-			1.0,
-			1.0
-		]
-	},
-
-	"canopy_timeline_row_button@common.toggle": {
-		"size": [
-			10,
-			9
-		],
-		"$toggle_name": "custom_toggle",
-		"$toggle_state_binding_name": "#custom_toggle_state",
-		"$toggle_binding_type": "collection",
-		"$toggle_grid_collection_name": "custom_form",
-		"$toggle_enabled_binding_name": "#custom_toggle_enabled",
-		"$toggle_enabled_binding_type": "collection",
-		"$unchecked_control": "server_form.canopy_timeline_row_button_idle",
-		"$checked_control": "server_form.canopy_timeline_row_button_hover",
-		"$unchecked_hover_control": "server_form.canopy_timeline_row_button_hover",
-		"$checked_hover_control": "server_form.canopy_timeline_row_button_hover",
-		"$unchecked_locked_control": "server_form.canopy_timeline_row_button_idle",
-		"$checked_locked_control": "server_form.canopy_timeline_row_button_idle",
-		"$unchecked_locked_hover_control": "server_form.canopy_timeline_row_button_idle",
-		"$checked_locked_hover_control": "server_form.canopy_timeline_row_button_idle",
-		"button_mappings": [
-			{
-				"from_button_id": "button.menu_select",
-				"to_button_id": "button.menu_select",
-				"mapping_type": "pressed"
-			},
-			{
-				"from_button_id": "button.menu_select",
-				"to_button_id": "button.submit_custom_form",
-				"mapping_type": "pressed"
-			},
-			{
-				"from_button_id": "button.menu_ok",
-				"to_button_id": "button.menu_ok",
-				"mapping_type": "focused"
-			},
-			{
-				"from_button_id": "button.menu_ok",
-				"to_button_id": "button.submit_custom_form",
-				"mapping_type": "focused"
-			}
-		]
-	},
-
-	"canopy_timeline_select_all_button@server_form.canopy_timeline_row_button": {
-		"$row_button_texture": "textures/ui/timeline_select_all"
-	},
-
-	"canopy_timeline_deselect_all_button@server_form.canopy_timeline_row_button": {
-		"$row_button_texture": "textures/ui/timeline_deselect_all"
 	},
 
 	"canopy_timeline_hidden_item": {

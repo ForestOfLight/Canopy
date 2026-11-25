@@ -9,8 +9,7 @@ export const TIMELINE_FORM_MARKER = '§t§i§m§e§l§i§n§e§r';
 
 export class TimelineForm {
     static DISABLED_CELL_LABEL = '-';
-    static ROW_BUTTON_COUNT = 2;
-    static ROW_STRIDE = Timeline.PAGE_WIDTH + TimelineForm.ROW_BUTTON_COUNT;
+    static ROW_STRIDE = Timeline.PAGE_WIDTH;
     static LOOP_LENGTH_INDEX = TIMELINE_TRACKS.length * TimelineForm.ROW_STRIDE;
     static PAGE_INDEX = TimelineForm.LOOP_LENGTH_INDEX + 1;
 
@@ -39,9 +38,6 @@ export class TimelineForm {
             { translate: 'simplayer.timeline.title', with: [this.#understudy.name] }
         ] });
         for (const track of TIMELINE_TRACKS) {
-            const trackName = { rawtext: [{ translate: track.labelKey }] };
-            form.toggle({ translate: 'simplayer.timeline.selectall', with: trackName }, { defaultValue: false });
-            form.toggle({ translate: 'simplayer.timeline.deselectall', with: trackName }, { defaultValue: false });
             for (let column = 0; column < Timeline.PAGE_WIDTH; column++) {
                 const tick = this.#tickAt(column);
                 const label = tick < timeline.loopLength ? String(tick) : TimelineForm.DISABLED_CELL_LABEL;
@@ -58,11 +54,9 @@ export class TimelineForm {
     apply(formValues) {
         const timeline = this.#timeline;
         const lengthChanged = this.#applyLoopLength(timeline, formValues[TimelineForm.LOOP_LENGTH_INDEX]);
-        const rowButtonPressed = TIMELINE_TRACKS
-            .map((track, row) => this.#applyTrack(timeline, track, row, formValues))
-            .some(pressed => pressed);
+        TIMELINE_TRACKS.forEach((track, row) => this.#applyTrack(timeline, track, row, formValues));
         const selectedPage = formValues[TimelineForm.PAGE_INDEX];
-        if (!lengthChanged && !rowButtonPressed && selectedPage === this.#page)
+        if (!lengthChanged && selectedPage === this.#page)
             return void 0;
         return Math.min(selectedPage, timeline.pageCount - 1);
     }
@@ -86,18 +80,8 @@ export class TimelineForm {
 
     #applyTrack(timeline, track, row, formValues) {
         const rowStart = row * TimelineForm.ROW_STRIDE;
-        if (formValues[rowStart] === true) {
-            timeline.fillTrack(track.id);
-            return true;
-        }
-        if (formValues[rowStart + 1] === true) {
-            timeline.clearTrack(track.id);
-            return true;
-        }
-        const cellStart = rowStart + TimelineForm.ROW_BUTTON_COUNT;
         for (let column = 0; column < Timeline.PAGE_WIDTH; column++)
-            timeline.setActive(track.id, this.#tickAt(column), formValues[cellStart + column] === true);
-        return false;
+            timeline.setActive(track.id, this.#tickAt(column), formValues[rowStart + column] === true);
     }
 
     #applyLoopLength(timeline, text) {
