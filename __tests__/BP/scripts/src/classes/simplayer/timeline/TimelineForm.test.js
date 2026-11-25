@@ -86,7 +86,7 @@ describe('TimelineForm', () => {
         it('offers a loop length slider over the allowed range at the current length', () => {
             const slider = new TimelineForm(player, understudy).build().elements[LOOP_INDEX];
             expect(slider.minimumValue).toBe(1);
-            expect(slider.maximumValue).toBe(1200);
+            expect(slider.maximumValue).toBe(200);
             expect(slider.options).toEqual({ valueStep: 1, defaultValue: 20 });
         });
     });
@@ -139,7 +139,7 @@ describe('TimelineForm', () => {
             expect(result).toBeUndefined();
         });
 
-        it.each([0, 1201, 12.5, -3, '40', undefined])('keeps the loop length for invalid input %j', (value) => {
+        it.each([0, 201, 12.5, -3, '40', undefined])('keeps the loop length for invalid input %j', (value) => {
             const result = submit(new TimelineForm(player, understudy), values => { values[LOOP_INDEX] = value; });
             expect(timeline.loopLength).toBe(20);
             expect(result).toBeUndefined();

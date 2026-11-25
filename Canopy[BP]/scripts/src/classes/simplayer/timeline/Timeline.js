@@ -2,7 +2,7 @@ import { TIMELINE_TRACKS } from "./TimelineTracks";
 
 export class Timeline {
     static MIN_LOOP_LENGTH = 1;
-    static MAX_LOOP_LENGTH = 1200;
+    static MAX_LOOP_LENGTH = 200;
     static DEFAULT_LOOP_LENGTH = 20;
     static PAGE_WIDTH = 20;
 

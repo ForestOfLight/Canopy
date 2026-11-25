@@ -46,8 +46,8 @@ describe('Timeline', () => {
 
     it('validates loop lengths', () => {
         expect(Timeline.isValidLoopLength(1)).toBe(true);
-        expect(Timeline.isValidLoopLength(1200)).toBe(true);
-        for (const value of [0, 1201, 12.5, '40', NaN, undefined])
+        expect(Timeline.isValidLoopLength(200)).toBe(true);
+        for (const value of [0, 201, 12.5, '40', NaN, undefined])
             expect(Timeline.isValidLoopLength(value)).toBe(false);
     });
 
