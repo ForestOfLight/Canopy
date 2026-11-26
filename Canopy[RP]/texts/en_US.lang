@@ -673,6 +673,7 @@ simplayer.timeline.preset.error.tick=§cThe preset track "%1" has a tick outside
 simplayer.timeline.preset.error.version=§cUnknown timeline preset version "%1".
 simplayer.timeline.preset.error.duplicate=§cThe preset has the track "%1" more than once.
 simplayer.timeline.preset.dropped=§cLeft out the preset track "%1" because its target could not be found.
+simplayer.timeline.preset.applied=§aApplied the timeline preset to %1.
 simplayer.timeline.addtrack.select=Select Slot
 simplayer.timeline.addtrack.look=Look
 simplayer.timeline.addtrack.move=Move
