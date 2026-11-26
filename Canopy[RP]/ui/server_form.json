@@ -1621,7 +1621,7 @@
 									},
 									{
 										"binding_type": "view",
-										"source_property_name": "(not ((#custom_text - '§c§e§l§r') = '-'))",
+										"source_property_name": "((#custom_text - '§d§i§s§r') = #custom_text)",
 										"target_property_name": "#visible"
 									}
 								],
@@ -1654,7 +1654,7 @@
 						},
 						{
 							"binding_type": "view",
-							"source_property_name": "((not ((#custom_text - '§c§e§l§r') = #custom_text)) and ((#custom_text - '§c§e§l§r') = '-'))",
+							"source_property_name": "((not ((#custom_text - '§c§e§l§r') = #custom_text)) and (not ((#custom_text - '§d§i§s§r') = #custom_text)))",
 							"target_property_name": "#visible"
 						}
 					]
@@ -1746,7 +1746,7 @@
 						},
 						{
 							"binding_type": "view",
-							"source_property_name": "(((#collection_index = 5) or (#collection_index = 10) or (#collection_index = 15) or (#collection_index = 20)) and (not ((#custom_text - '§c§e§l§r') = #custom_text)) and (not ((#custom_text - '§c§e§l§r') = '-')))",
+							"source_property_name": "(((#collection_index = 5) or (#collection_index = 10) or (#collection_index = 15) or (#collection_index = 20)) and (not ((#custom_text - '§c§e§l§r') = #custom_text)) and ((#custom_text - '§d§i§s§r') = #custom_text))",
 							"target_property_name": "#visible"
 						}
 					]

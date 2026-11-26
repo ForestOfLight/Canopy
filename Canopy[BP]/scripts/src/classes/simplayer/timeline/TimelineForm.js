@@ -11,9 +11,9 @@ export const TIMELINE_ROW_MARKER = '§r§o§w§r';
 export const TIMELINE_CELL_MARKER = '§c§e§l§r';
 export const TIMELINE_PAGE_MARKER = '§p§a§g§r';
 export const TIMELINE_TRACK_PAGE_MARKER = '§t§p§g§r';
+export const TIMELINE_DISABLED_CELL_MARKER = '§d§i§s§r';
 
 export class TimelineForm {
-    static DISABLED_CELL_LABEL = '-';
     static ROW_STRIDE = Timeline.PAGE_WIDTH + 1;
     static TRAILING_CONTROL_COUNT = 5;
     static ROWS_PER_PAGE = ALWAYS_PRESENT_TYPES.length;
@@ -132,7 +132,7 @@ export class TimelineForm {
             if (offset < length)
                 form.toggle(`${TIMELINE_CELL_MARKER}${offset + 1}`, { defaultValue: track.isActive(offset) });
             else
-                form.toggle(`${TIMELINE_CELL_MARKER}${TimelineForm.DISABLED_CELL_LABEL}`, { defaultValue: false });
+                form.toggle(`${TIMELINE_CELL_MARKER}${TIMELINE_DISABLED_CELL_MARKER}`, { defaultValue: false });
         }
     }
 

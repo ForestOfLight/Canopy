@@ -1,6 +1,6 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { scheduler } from '@forestoflight/minecraft-vitest-mocks';
-import { TimelineForm, TIMELINE_FORM_MARKER, TIMELINE_ROW_MARKER, TIMELINE_CELL_MARKER, TIMELINE_PAGE_MARKER, TIMELINE_TRACK_PAGE_MARKER } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/TimelineForm';
+import { TimelineForm, TIMELINE_FORM_MARKER, TIMELINE_ROW_MARKER, TIMELINE_CELL_MARKER, TIMELINE_PAGE_MARKER, TIMELINE_TRACK_PAGE_MARKER, TIMELINE_DISABLED_CELL_MARKER } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/TimelineForm';
 import { AddTrackForm } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/AddTrackForm';
 import { Timeline } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/Timeline';
 
@@ -76,8 +76,8 @@ describe('TimelineForm', () => {
         });
 
         it('marks only the cells, row labels and page controls with distinct markers', () => {
-            const markers = [TIMELINE_ROW_MARKER, TIMELINE_CELL_MARKER, TIMELINE_PAGE_MARKER, TIMELINE_TRACK_PAGE_MARKER];
-            expect(new Set(markers).size).toBe(4);
+            const markers = [TIMELINE_ROW_MARKER, TIMELINE_CELL_MARKER, TIMELINE_PAGE_MARKER, TIMELINE_TRACK_PAGE_MARKER, TIMELINE_DISABLED_CELL_MARKER];
+            expect(new Set(markers).size).toBe(5);
             for (const marker of markers)
                 expect(markers.filter(other => other.includes(marker))).toEqual([marker]);
             for (const marker of markers)
@@ -168,14 +168,15 @@ describe('TimelineForm', () => {
             const form = new TimelineForm(player, understudy, 1).build();
             expect(form.elements[cellIndex(ATTACK, 0)].label).toBe(`${TIMELINE_CELL_MARKER}21`);
             expect(form.elements[cellIndex(ATTACK, 9)].label).toBe(`${TIMELINE_CELL_MARKER}30`);
-            expect(form.elements[cellIndex(ATTACK, 10)].label).toBe(`${TIMELINE_CELL_MARKER}${TimelineForm.DISABLED_CELL_LABEL}`);
+            expect(form.elements[cellIndex(ATTACK, 10)].label).toBe(`${TIMELINE_CELL_MARKER}${TIMELINE_DISABLED_CELL_MARKER}`);
         });
 
         it('disables cells past a fixed-length row', () => {
             timeline.setLooping('jump', void 0, { length: 7, ticks: [0] });
             const form = new TimelineForm(player, understudy).build();
             expect(form.elements[cellIndex(JUMP, 6)].label).toBe(`${TIMELINE_CELL_MARKER}7`);
-            expect(form.elements[cellIndex(JUMP, 7)].label).toBe(`${TIMELINE_CELL_MARKER}-`);
+            expect(form.elements[cellIndex(JUMP, 7)].label).toBe(`${TIMELINE_CELL_MARKER}${TIMELINE_DISABLED_CELL_MARKER}`);
+            expect(form.elements[cellIndex(JUMP, 19)].label).toBe(`${TIMELINE_CELL_MARKER}${TIMELINE_DISABLED_CELL_MARKER}`);
             expect(form.elements[cellIndex(ATTACK, 7)].label).toBe(`${TIMELINE_CELL_MARKER}8`);
         });
 
