@@ -109,8 +109,6 @@ export class AddTrackForm {
         }
         const timeline = this.#understudy.actions.timeline;
         const track = timeline.getOrCreate(this.#type, params);
-        if (track.isEmpty())
-            track.setActive(0, true, timeline.loopLength);
         form.close();
         this.#reopenTimeline(TimelineForm.trackPageOf(timeline, track));
     }

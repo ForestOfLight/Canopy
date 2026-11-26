@@ -135,12 +135,12 @@ describe('AddTrackForm', () => {
     });
 
     describe('adding', () => {
-        it('creates a select track with its first tick active', () => {
+        it('creates a select track with no ticks active', () => {
             const form = open('select');
             fill(form, 3);
             add(form);
             const track = timeline.getTrack('select:3');
-            expect(track.activeOffsets()).toEqual([0]);
+            expect(track.activeOffsets()).toEqual([]);
             expect(form.close).toHaveBeenCalled();
         });
 
