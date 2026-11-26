@@ -18,7 +18,7 @@ export class TimelineForm {
     #player;
     #understudy;
     #page;
-    #rowKeys = [];
+    #rows = [];
 
     constructor(player, understudy, page = 0) {
         this.#player = player;
@@ -41,7 +41,7 @@ export class TimelineForm {
             { translate: 'simplayer.timeline.title', with: [this.#understudy.name] }
         ] });
         const tracks = timeline.tracks.slice(0, TimelineForm.MAX_ROWS);
-        this.#rowKeys = tracks.map(track => track.key);
+        this.#rows = tracks;
         for (const track of tracks)
             this.#addRow(form, track, timeline.loopLength);
         form.slider({ translate: 'simplayer.timeline.looplength' }, Timeline.MIN_LOOP_LENGTH, Timeline.MAX_LOOP_LENGTH, { valueStep: 1, defaultValue: timeline.loopLength });
@@ -57,11 +57,11 @@ export class TimelineForm {
 
     apply(formValues) {
         const timeline = this.#timeline;
-        const trailingStart = this.#rowKeys.length * TimelineForm.ROW_STRIDE;
+        const trailingStart = this.#rows.length * TimelineForm.ROW_STRIDE;
         const pageCountBefore = timeline.pageCount;
         const selectedPage = this.#selectedPage(formValues[trailingStart + 1], pageCountBefore);
         const lengthChanged = this.#applyLoopLength(timeline, formValues[trailingStart]);
-        this.#rowKeys.forEach((key, row) => this.#applyRow(timeline, key, row, formValues));
+        this.#rows.forEach((track, row) => this.#applyRow(timeline, track, row, formValues));
         const addTrackType = PARAMETERISED_TYPES[formValues[trailingStart + 2] - 1];
         if (!lengthChanged && selectedPage === this.#page)
             return { nextPage: void 0, addTrackType };
@@ -109,15 +109,14 @@ export class TimelineForm {
         }
     }
 
-    #applyRow(timeline, key, row, formValues) {
-        const track = timeline.getTrack(key);
-        if (track === void 0)
+    #applyRow(timeline, track, row, formValues) {
+        if (timeline.getTrack(track.key) !== track)
             return;
         const cellStart = row * TimelineForm.ROW_STRIDE + 1;
         for (let column = 0; column < Timeline.PAGE_WIDTH; column++)
             track.setActive(this.#offsetAt(column), formValues[cellStart + column] === true, timeline.loopLength);
         if (!track.isAlwaysPresent() && track.isEmpty())
-            timeline.remove(key);
+            timeline.remove(track.key);
     }
 
     #applyLoopLength(timeline, loopLength) {

@@ -1724,15 +1724,12 @@
 			},
 			{
 				"row_label": {
-					"type": "label",
-					"text": "#row_label",
-					"color": [ 1, 1, 1 ],
-					"shadow": false,
-					"font_scale_factor": 0.8,
-					"size": [ 56, "default" ],
-					"offset": [ -2, 0.8 ],
+					"type": "panel",
+					"size": [ 56, 9 ],
+					"offset": [ -2, 0 ],
 					"anchor_from": "right_middle",
 					"anchor_to": "right_middle",
+					"clips_children": true,
 					"layer": 3,
 					"bindings": [
 						{
@@ -1742,13 +1739,35 @@
 						},
 						{
 							"binding_type": "view",
-							"source_property_name": "(#custom_text - '§r§o§w')",
-							"target_property_name": "#row_label"
-						},
-						{
-							"binding_type": "view",
 							"source_property_name": "(not ((#custom_text - '§r§o§w') = #custom_text))",
 							"target_property_name": "#visible"
+						}
+					],
+					"controls": [
+						{
+							"text": {
+								"type": "label",
+								"text": "#row_label",
+								"color": [ 1, 1, 1 ],
+								"shadow": false,
+								"font_scale_factor": 0.8,
+								"size": [ "default", "default" ],
+								"offset": [ 0, 0.8 ],
+								"anchor_from": "left_middle",
+								"anchor_to": "left_middle",
+								"bindings": [
+									{
+										"binding_name": "#custom_text",
+										"binding_type": "collection",
+										"binding_collection_name": "custom_form"
+									},
+									{
+										"binding_type": "view",
+										"source_property_name": "(#custom_text - '§r§o§w')",
+										"target_property_name": "#row_label"
+									}
+								]
+							}
 						}
 					]
 				}

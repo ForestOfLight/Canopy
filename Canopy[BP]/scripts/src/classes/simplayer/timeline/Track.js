@@ -6,6 +6,7 @@ export class Track {
     #type;
     #params;
     #key;
+    #baseLabel;
     length;
     loops;
     originTick;
@@ -16,6 +17,7 @@ export class Track {
         this.#type = type;
         this.#params = params;
         this.#key = key;
+        this.#baseLabel = trackLabel(type, params);
         this.length = length;
         this.loops = loops;
         this.originTick = 'originTick' in options ? options.originTick : 0;
@@ -88,8 +90,12 @@ export class Track {
         return !TRACK_TYPES[this.#type].parameterised && this.#key === this.#type;
     }
 
+    baseLabel() {
+        return this.#baseLabel;
+    }
+
     label() {
-        const label = trackLabel(this.type, this.params);
+        const label = this.#baseLabel;
         if (!this.loops)
             return { translate: 'simplayer.timeline.track.oneshot', with: { rawtext: [label] } };
         if (this.length !== Track.SHARED)

@@ -244,6 +244,24 @@ describe('TimelineForm', () => {
             expect(move.activeOffsets()).toEqual([0]);
         });
 
+        it('leaves an always-present track replaced by a command while the form was open untouched', () => {
+            const timelineForm = new TimelineForm(player, understudy);
+            const values = defaultValues(timelineForm.build());
+            const interval = timeline.setLooping('jump', void 0, { length: 7, ticks: [0] });
+            timelineForm.apply(values);
+            expect(timeline.getTrack('jump')).toBe(interval);
+            expect(interval.activeOffsets()).toEqual([0]);
+        });
+
+        it('leaves an always-present track cleared by a command while the form was open untouched', () => {
+            timeline.setLooping('jump', void 0, { length: 7, ticks: [0] });
+            const timelineForm = new TimelineForm(player, understudy);
+            const values = defaultValues(timelineForm.build());
+            timeline.clearTrack('jump');
+            timelineForm.apply(values);
+            expect(timeline.getTrack('jump').isEmpty()).toBe(true);
+        });
+
         it('removes an extra track saved with no active cells', () => {
             timeline.getOrCreate('select', { slot: 2 }).setActive(0, true, 20);
             submit(new TimelineForm(player, understudy), values => { values[cellIndex(13, 0)] = false; });

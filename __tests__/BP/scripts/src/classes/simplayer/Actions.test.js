@@ -88,16 +88,18 @@ describe('Actions', () => {
             vi.spyOn(simplayerActionInfo, 'getNativeValue').mockReturnValue(true);
         });
 
-        it('lists every non-empty track with its label and length', () => {
-            const jump = actions.timeline.setLooping('jump', void 0, { length: 7, ticks: [3] });
-            const attack = actions.timeline.getTrack('attack');
-            attack.setActive(5, true, 20);
+        it('lists every non-empty track with its label and length once', () => {
+            actions.timeline.setLooping('jump', void 0, { length: 7, ticks: [3] });
+            actions.timeline.getTrack('attack').setActive(5, true, 20);
+            actions.timeline.addOneShot('select', { slot: 2 }, { delay: 40 });
             actions.onTick();
             expect(lastActionInfoText()).toEqual([
                 { text: 'TestBot\n' },
-                { translate: 'simplayer.action.track', with: { rawtext: [attack.label(), { text: '20' }] } },
+                { translate: 'simplayer.action.track', with: { rawtext: [{ translate: 'simplayer.action.attack' }, { text: '20t' }] } },
                 { text: '\n' },
-                { translate: 'simplayer.action.track', with: { rawtext: [jump.label(), { text: '7' }] } },
+                { translate: 'simplayer.action.track', with: { rawtext: [{ translate: 'simplayer.action.jump' }, { text: '7t' }] } },
+                { text: '\n' },
+                { translate: 'simplayer.action.track', with: { rawtext: [{ translate: 'simplayer.timeline.track.select', with: ['3'] }, { translate: 'simplayer.action.track.once' }] } },
                 { text: '\n' }
             ]);
         });

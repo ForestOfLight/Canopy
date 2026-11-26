@@ -81,6 +81,18 @@ describe('Track', () => {
     });
 
     describe('label', () => {
+        it('keeps its label after an entity target becomes invalid', () => {
+            const entity = { id: '3', typeId: 'minecraft:zombie', isValid: true };
+            let alive = true;
+            Object.defineProperty(entity, 'nameTag', { get() { if (!alive) throw new Error('InvalidEntityError'); return 'Zed'; } });
+            const track = new Track({ type: 'look', params: { target: { kind: 'entity', entity } }, key: 'look:entity:3' });
+            alive = false;
+            entity.isValid = false;
+            expect(() => track.label()).not.toThrow();
+            expect(track.label()).toEqual({ translate: 'simplayer.timeline.track.look', with: { rawtext: [{ text: 'Zed' }] } });
+        });
+
+
         it('is the bare track label on the shared length', () => {
             expect(makeTrack().label()).toEqual({ translate: 'simplayer.action.jump' });
         });
