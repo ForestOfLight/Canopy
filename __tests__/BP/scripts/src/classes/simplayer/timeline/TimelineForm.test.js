@@ -151,10 +151,26 @@ describe('TimelineForm', () => {
             expect(values[cellIndex(ATTACK, 6)]).toBe(false);
         });
 
-        it('starts the title with the timeline marker', () => {
+        it('starts the title with the timeline marker and the row count marker', () => {
             const form = new TimelineForm(player, understudy).build();
             expect(form.titleText.rawtext[0]).toEqual({ text: TIMELINE_FORM_MARKER });
-            expect(form.titleText.rawtext[1]).toEqual({ translate: 'simplayer.timeline.title', with: ['Bot'] });
+            expect(form.titleText.rawtext[1]).toEqual({ text: '§q§1§3§r' });
+            expect(form.titleText.rawtext[2]).toEqual({ translate: 'simplayer.timeline.title', with: ['Bot'] });
+        });
+
+        it('encodes the row count as a fixed-width marker', () => {
+            expect(TimelineForm.rowCountMarker(1)).toBe('§q§0§1§r');
+            expect(TimelineForm.rowCountMarker(14)).toBe('§q§1§4§r');
+            expect(TimelineForm.rowCountMarker(40)).toBe('§q§4§0§r');
+        });
+
+        it('counts only the rows it shows in the row count marker', () => {
+            for (let slot = 0; slot < 9; slot++)
+                timeline.getOrCreate('select', { slot });
+            for (let i = 0; i < 30; i++)
+                timeline.addOneShot('jump', void 0, { delay: 0 });
+            const form = new TimelineForm(player, understudy).build();
+            expect(form.titleText.rawtext[1]).toEqual({ text: '§q§4§0§r' });
         });
     });
 

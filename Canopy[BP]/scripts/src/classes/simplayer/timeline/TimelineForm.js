@@ -28,6 +28,11 @@ export class TimelineForm {
         this.#page = page;
     }
 
+    static rowCountMarker(rows) {
+        const [tens, ones] = String(rows).padStart(2, '0');
+        return `§q§${tens}§${ones}§r`;
+    }
+
     get page() {
         return this.#page;
     }
@@ -38,11 +43,12 @@ export class TimelineForm {
 
     build() {
         const timeline = this.#timeline;
+        const tracks = timeline.tracks.slice(0, TimelineForm.MAX_ROWS);
         const form = new ModalFormData().title({ rawtext: [
             { text: TIMELINE_FORM_MARKER },
+            { text: TimelineForm.rowCountMarker(tracks.length) },
             { translate: 'simplayer.timeline.title', with: [this.#understudy.name] }
         ] });
-        const tracks = timeline.tracks.slice(0, TimelineForm.MAX_ROWS);
         this.#rows = tracks;
         for (const track of tracks)
             this.#addRow(form, track, timeline.loopLength);
