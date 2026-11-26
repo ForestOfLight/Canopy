@@ -184,7 +184,7 @@ describe('PlayerInfoSaver', () => {
 
         it('does not save on an off-interval tick when the player has repeating actions', () => {
             system.currentTick = TicksPerSecond * 5;
-            understudy.actions.repeat('attack');
+            understudy.actions.timeline.setLooping('attack', void 0, { length: 1, ticks: [0] });
             const spy = vi.spyOn(infoSaver, 'save');
             infoSaver.onConnectedTick();
             expect(spy).not.toHaveBeenCalled();

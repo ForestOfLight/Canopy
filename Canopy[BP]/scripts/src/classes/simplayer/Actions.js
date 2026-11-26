@@ -1,5 +1,4 @@
 import { system, TextPrimitive, world } from "@minecraft/server";
-import { RepeatableAction } from "./RepeatableAction";
 import { simplayerActionInfo } from "../../rules/simplayer/simplayerActionInfo";
 import { Timeline } from "./timeline/Timeline";
 import { TimelinePlayer } from "./timeline/TimelinePlayer";
@@ -7,8 +6,6 @@ import { TimelinePlayer } from "./timeline/TimelinePlayer";
 const VANILLA_NAMEPLATE_RENDER_DISTANCE = 64;
 
 export class Actions {
-    #singleActions = [];
-    #repeatingActions = [];
     #actionInfoDebugShape;
     #vanillaNameplateRenderDistance;
     #timeline = new Timeline();
@@ -20,11 +17,6 @@ export class Actions {
     }
 
     onTick() {
-        for (const singleAction of this.#singleActions)
-            singleAction.perform();
-        this.#singleActions.length = 0;
-        for (const repeatingAction of this.#repeatingActions)
-            repeatingAction.onTick();
         this.#timelinePlayer.onTick(system.currentTick);
         if (simplayerActionInfo.getNativeValue())
             this.#tickActionInfo();
@@ -32,44 +24,15 @@ export class Actions {
             this.#disableActionInfo();
     }
 
-    once(type, afterTicks = void 0) {
-        const repeatableAction = new RepeatableAction(this.understudy, type);
-        if (afterTicks === void 0)
-            this.#singleActions.push(repeatableAction);
-        else
-            system.runTimeout(() => this.#singleActions.push(repeatableAction), afterTicks);
-    }
-
-    repeat(type, intervalTicks = 0) {
-        if (this.has(type))
-            this.remove(type);
-        const repeatingAction = new RepeatableAction(this.understudy, type, intervalTicks);
-        this.#repeatingActions.push(repeatingAction);
-    }
-
     get timeline() {
         return this.#timeline;
     }
 
-    get(type) {
-        return this.#repeatingActions.find(action => action.type === type);
-    }
-
-    has(type) {
-        return this.#repeatingActions.some(action => action.type === type);
-    }
-
     isEmpty() {
-        return this.#singleActions.length === 0 && this.#repeatingActions.length === 0 && this.#timeline.isEmpty();
-    }
-
-    remove(type) {
-        this.#repeatingActions = this.#repeatingActions.filter(action => action.type !== type);
+        return this.#timeline.isEmpty();
     }
 
     clear() {
-        this.#repeatingActions.length = 0;
-        this.#singleActions.length = 0;
         this.#timelinePlayer.stop();
         this.#timeline.reset();
     }
@@ -78,7 +41,7 @@ export class Actions {
         const simplayer = this.understudy.simulatedPlayer;
         if (simplayer.nameplateRenderDistance > 0)
             this.#vanillaNameplateRenderDistance = simplayer.nameplateRenderDistance;
-        if (this.#repeatingActions.length === 0 && this.#timeline.isEmpty()) {
+        if (this.#timeline.isEmpty()) {
             this.#disableActionInfo();
             return;
         }
@@ -86,20 +49,18 @@ export class Actions {
             this.#createActionInfoDebugShape();
         this.#actionInfoDebugShape.setText(this.#getActionInfoText());
     }
-    
+
     #getActionInfoText() {
         const output = { rawtext: [
             { text: this.understudy.nameTag + '\n' }
         ]};
-        for (const repeatingAction of this.#repeatingActions) {
-            output.rawtext.push({ translate: 'simplayer.action.line', with: { rawtext: [
-                { translate: `simplayer.action.${repeatingAction.type}` },
-                { text: String(repeatingAction.intervalTicks) }
-            ] } })
-            output.rawtext.push({ text: '\n' })
-        }
-        if (!this.#timeline.isEmpty()) {
-            output.rawtext.push({ translate: 'simplayer.action.timeline', with: [String(this.#timeline.loopLength)] });
+        for (const track of this.#timeline.tracks) {
+            if (track.isEmpty())
+                continue;
+            output.rawtext.push({ translate: 'simplayer.action.track', with: { rawtext: [
+                track.label(),
+                { text: String(track.effectiveLength(this.#timeline.loopLength)) }
+            ] } });
             output.rawtext.push({ text: '\n' });
         }
         return output;
