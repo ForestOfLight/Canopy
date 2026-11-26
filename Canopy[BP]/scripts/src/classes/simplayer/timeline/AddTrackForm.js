@@ -1,17 +1,19 @@
 import { system } from "@minecraft/server";
-import { ModalFormData } from "@minecraft/server-ui";
+import { CustomForm, ObservableBoolean, ObservableNumber, ObservableString, ObservableUIRawMessage } from "@minecraft/server-ui";
 import { MOVE_DIRECTIONS } from "./TrackTypes";
 import { TimelineForm } from "./TimelineForm";
 import { CARDINAL_ROTATIONS, getViewedBlock, getViewedBlockFaceLocation, getViewedEntity } from "../targeting";
-import { forceShow } from "../../../../include/utils";
 import Understudies from "../Understudies";
+import { InvalidTrackTargetError } from "../../errors/InvalidTrackTargetError";
 
 const SLOT_COUNT = 9;
+const AXES = Object.freeze(['X', 'Y', 'Z']);
 const CARDINAL_DIRECTIONS = Object.freeze(Object.keys(CARDINAL_ROTATIONS));
 const TARGET_OPTIONS = Object.freeze({
     look: Object.freeze([...CARDINAL_DIRECTIONS, 'rotation', 'coordinates', 'block', 'entity', 'me']),
     moveto: Object.freeze(['coordinates', 'block', 'entity', 'me'])
 });
+const AXES_USED_BY_TARGET = Object.freeze({ rotation: 2, coordinates: 3 });
 
 export class AddTrackForm {
     #player;
@@ -28,61 +30,102 @@ export class AddTrackForm {
         this.#trackPage = trackPage;
     }
 
-    build() {
-        const form = new ModalFormData().title({ translate: `simplayer.timeline.addtrack.${this.#type}` });
-        switch (this.#type) {
-            case 'select':
-                form.dropdown({ translate: 'simplayer.timeline.addtrack.slot' }, Array.from({ length: SLOT_COUNT }, (_, slot) => String(slot + 1)));
-                break;
-            case 'move':
-                form.dropdown({ translate: 'simplayer.timeline.addtrack.direction' }, MOVE_DIRECTIONS.map(direction => ({ translate: `simplayer.timeline.track.move.${direction}` })));
-                break;
-            default:
-                form.dropdown({ translate: 'simplayer.timeline.addtrack.target' }, TARGET_OPTIONS[this.#type].map(target => ({ translate: `simplayer.timeline.target.${target}` })));
-                for (const axis of ['x', 'y', 'z'])
-                    form.textField(axis, axis);
-        }
-        return form;
+    show() {
+        const form = new CustomForm(this.#player, { translate: `simplayer.timeline.addtrack.${this.#type}` });
+        const choice = new ObservableNumber(0, { clientWritable: true });
+        form.dropdown({ translate: this.#dropdownLabelKey() }, choice, this.#dropdownItems());
+        const axes = this.#addAxisFields(form, choice);
+        const showError = this.#addErrorLabel(form);
+        form.button({ translate: 'simplayer.timeline.addtrack.submit' }, () => this.#submit(form, choice, axes, showError));
+        form.button({ translate: 'simplayer.timeline.addtrack.back' }, () => {
+            form.close();
+            this.#reopenTimeline(this.#trackPage);
+        });
+        form.closeButton();
+        form.show();
     }
 
-    apply(formValues) {
-        const params = this.#params(formValues);
-        if (params === void 0)
-            return void 0;
+    #dropdownLabelKey() {
+        switch (this.#type) {
+            case 'select':
+                return 'simplayer.timeline.addtrack.slot';
+            case 'move':
+                return 'simplayer.timeline.addtrack.direction';
+            default:
+                return 'simplayer.timeline.addtrack.target';
+        }
+    }
+
+    #dropdownItems() {
+        switch (this.#type) {
+            case 'select':
+                return Array.from({ length: SLOT_COUNT }, (_, slot) => ({ label: String(slot + 1), value: slot }));
+            case 'move':
+                return MOVE_DIRECTIONS.map((direction, value) => ({ label: { translate: `simplayer.timeline.track.move.${direction}` }, value }));
+            default:
+                return TARGET_OPTIONS[this.#type].map((target, value) => ({ label: { translate: `simplayer.timeline.target.${target}` }, value }));
+        }
+    }
+
+    #addAxisFields(form, choice) {
+        if (TARGET_OPTIONS[this.#type] === void 0)
+            return [];
+        const axes = AXES.map(() => ({ text: new ObservableString('', { clientWritable: true }), visible: new ObservableBoolean(false) }));
+        const showAxesFor = (index) => {
+            const used = AXES_USED_BY_TARGET[TARGET_OPTIONS[this.#type][index]] ?? 0;
+            axes.forEach((axis, axisIndex) => axis.visible.setData(axisIndex < used));
+        };
+        showAxesFor(choice.getData());
+        choice.subscribe(showAxesFor);
+        axes.forEach((axis, index) => form.textField(AXES[index], axis.text, { visible: axis.visible }));
+        return axes;
+    }
+
+    #addErrorLabel(form) {
+        const text = new ObservableUIRawMessage({ text: '' });
+        const visible = new ObservableBoolean(false);
+        form.label(text, { visible });
+        return (message) => {
+            text.setData(message);
+            visible.setData(true);
+        };
+    }
+
+    #submit(form, choice, axes, showError) {
+        if (!this.#understudy.isConnected()) {
+            form.close();
+            this.#player.sendMessage(Understudies.getNotOnlineMessage(this.#understudy.name));
+            return;
+        }
+        let params;
+        try {
+            params = this.#params(choice.getData(), axes.map(axis => axis.text.getData()));
+        } catch (error) {
+            if (!(error instanceof InvalidTrackTargetError))
+                throw error;
+            showError(error.reason);
+            return;
+        }
         const timeline = this.#understudy.actions.timeline;
         const track = timeline.getOrCreate(this.#type, params);
         if (track.isEmpty())
             track.setActive(0, true, timeline.loopLength);
-        return track;
+        form.close();
+        this.#reopenTimeline(TimelineForm.trackPageOf(timeline, track));
     }
 
-    async show() {
-        try {
-            const response = await forceShow(this.#player, this.build());
-            if (response.canceled)
-                return;
-            if (!this.#understudy.isConnected()) {
-                this.#player.sendMessage(Understudies.getNotOnlineMessage(this.#understudy.name));
-                return;
-            }
-            const track = this.apply(response.formValues);
-            const trackPage = track === void 0 ? this.#trackPage : TimelineForm.trackPageOf(this.#understudy.actions.timeline, track);
-            system.run(() => new TimelineForm(this.#player, this.#understudy, this.#page, trackPage).show());
-        } catch (error) {
-            this.#player.sendMessage(`§cError: ${error.message}`);
-        }
+    #reopenTimeline(trackPage) {
+        system.run(() => new TimelineForm(this.#player, this.#understudy, this.#page, trackPage).show());
     }
 
-    #params([choice, x, y, z]) {
+    #params(choice, fields) {
         switch (this.#type) {
             case 'select':
                 return { slot: choice };
             case 'move':
                 return { direction: MOVE_DIRECTIONS[choice] };
-            default: {
-                const target = this.#target(TARGET_OPTIONS[this.#type][choice], [x, y, z]);
-                return target === void 0 ? void 0 : { target };
-            }
+            default:
+                return { target: this.#target(TARGET_OPTIONS[this.#type][choice], fields) };
         }
     }
 
@@ -91,53 +134,43 @@ export class AddTrackForm {
             return { kind: 'cardinal', direction: option };
         switch (option) {
             case 'rotation': {
-                const numbers = this.#numbers(fields.slice(0, 2));
-                return numbers && { kind: 'rotation', rotation: { x: numbers[0], y: numbers[1] } };
+                const [x, y] = this.#numbers(fields.slice(0, 2));
+                return { kind: 'rotation', rotation: { x, y } };
             }
             case 'coordinates': {
-                const numbers = this.#numbers(fields);
-                return numbers && { kind: 'location', location: { x: numbers[0], y: numbers[1], z: numbers[2] } };
+                const [x, y, z] = this.#numbers(fields);
+                return { kind: 'location', location: { x, y, z } };
             }
             case 'block':
                 return this.#viewedBlockTarget();
             case 'entity': {
                 const entity = getViewedEntity(this.#player);
-                if (entity === void 0) {
-                    this.#player.sendMessage({ translate: 'commands.playerlook.entity.noentity' });
-                    return void 0;
-                }
+                if (entity === void 0)
+                    throw new InvalidTrackTargetError({ translate: 'commands.playerlook.entity.noentity' });
                 return { kind: 'entity', entity };
             }
-            case 'me':
-                return { kind: 'entity', entity: this.#player };
             default:
-                return void 0;
+                return { kind: 'entity', entity: this.#player };
         }
     }
 
     #viewedBlockTarget() {
-        const target = this.#type === 'look'
-            ? this.#locationTarget(getViewedBlockFaceLocation(this.#player))
-            : this.#blockTarget(getViewedBlock(this.#player));
-        if (target === void 0)
-            this.#player.sendMessage({ translate: 'commands.playerlook.block.noblock' });
-        return target;
-    }
-
-    #locationTarget(location) {
-        return location === void 0 ? void 0 : { kind: 'location', location: { x: location.x, y: location.y, z: location.z } };
-    }
-
-    #blockTarget(block) {
-        return block === void 0 ? void 0 : { kind: 'block', block };
+        if (this.#type === 'look') {
+            const location = getViewedBlockFaceLocation(this.#player);
+            if (location !== void 0)
+                return { kind: 'location', location: { x: location.x, y: location.y, z: location.z } };
+        } else {
+            const block = getViewedBlock(this.#player);
+            if (block !== void 0)
+                return { kind: 'block', block };
+        }
+        throw new InvalidTrackTargetError({ translate: 'commands.playerlook.block.noblock' });
     }
 
     #numbers(fields) {
         const numbers = fields.map(field => (typeof field === 'string' && field.trim() !== '') ? Number(field) : NaN);
-        if (numbers.some(Number.isNaN)) {
-            this.#player.sendMessage({ translate: 'simplayer.timeline.addtrack.invalidnumber' });
-            return void 0;
-        }
+        if (numbers.some(Number.isNaN))
+            throw new InvalidTrackTargetError({ translate: 'simplayer.timeline.addtrack.invalidnumber' });
         return numbers;
     }
 }
