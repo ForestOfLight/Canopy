@@ -7,7 +7,9 @@ import { forceShow } from "../../../../include/utils";
 import Understudies from "../Understudies";
 
 export const TIMELINE_FORM_MARKER = '§t§i§m§e§l§i§n§e§r';
-export const TIMELINE_ROW_MARKER = '§r§o§w';
+export const TIMELINE_ROW_MARKER = '§r§o§w§r';
+export const TIMELINE_CELL_MARKER = '§c§e§l§r';
+export const TIMELINE_PAGE_MARKER = '§p§a§g§r';
 
 export class TimelineForm {
     static DISABLED_CELL_LABEL = '-';
@@ -46,11 +48,11 @@ export class TimelineForm {
             this.#addRow(form, track, timeline.loopLength);
         form.slider({ translate: 'simplayer.timeline.looplength' }, Timeline.MIN_LOOP_LENGTH, Timeline.MAX_LOOP_LENGTH, { valueStep: 1, defaultValue: timeline.loopLength });
         if (timeline.pageCount > 1)
-            form.slider({ translate: 'simplayer.timeline.page' }, 1, timeline.pageCount, { valueStep: 1, defaultValue: this.#page + 1 });
+            form.slider({ rawtext: [{ text: TIMELINE_PAGE_MARKER }, { translate: 'simplayer.timeline.page' }] }, 1, timeline.pageCount, { valueStep: 1, defaultValue: this.#page + 1 });
         else
             form.label({ text: '' });
         form.dropdown({ translate: 'simplayer.timeline.addtrack' }, ['none', ...PARAMETERISED_TYPES].map(type => ({ translate: `simplayer.timeline.addtrack.${type}` })), { defaultValueIndex: 0 });
-        form.label({ translate: 'simplayer.timeline.page.current', with: [String(this.#page + 1), String(timeline.pageCount)] });
+        form.label({ rawtext: [{ text: TIMELINE_PAGE_MARKER }, { translate: 'simplayer.timeline.page.current', with: [String(this.#page + 1), String(timeline.pageCount)] }] });
         form.submitButton({ translate: 'simplayer.timeline.save' });
         return form;
     }
@@ -103,9 +105,9 @@ export class TimelineForm {
         for (let column = 0; column < Timeline.PAGE_WIDTH; column++) {
             const offset = this.#offsetAt(column);
             if (offset < length)
-                form.toggle(String(offset + 1), { defaultValue: track.isActive(offset) });
+                form.toggle(`${TIMELINE_CELL_MARKER}${offset + 1}`, { defaultValue: track.isActive(offset) });
             else
-                form.toggle(TimelineForm.DISABLED_CELL_LABEL, { defaultValue: false });
+                form.toggle(`${TIMELINE_CELL_MARKER}${TimelineForm.DISABLED_CELL_LABEL}`, { defaultValue: false });
         }
     }
 

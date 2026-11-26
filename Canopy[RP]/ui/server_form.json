@@ -494,15 +494,13 @@
 		"size": [ "100%", 52 ],
 		"bindings": [
 			{
-				"binding_type": "collection_details",
+				"binding_name": "#custom_slider_text",
+				"binding_type": "collection",
 				"binding_collection_name": "custom_form"
 			},
 			{
-				"binding_name": "#custom_form_length"
-			},
-			{
 				"binding_type": "view",
-				"source_property_name": "(#collection_index = (#custom_form_length - 4))",
+				"source_property_name": "((#custom_slider_text - '§p§a§g§r') = #custom_slider_text)",
 				"target_property_name": "#visible"
 			}
 		],
@@ -620,15 +618,13 @@
 		"size": [ "100%", 42 ],
 		"bindings": [
 			{
-				"binding_type": "collection_details",
+				"binding_name": "#custom_slider_text",
+				"binding_type": "collection",
 				"binding_collection_name": "custom_form"
 			},
 			{
-				"binding_name": "#custom_form_length"
-			},
-			{
 				"binding_type": "view",
-				"source_property_name": "(#collection_index = (#custom_form_length - 3))",
+				"source_property_name": "(not ((#custom_slider_text - '§p§a§g§r') = #custom_slider_text))",
 				"target_property_name": "#visible"
 			}
 		],
@@ -883,15 +879,13 @@
 		],
 		"bindings": [
 			{
-				"binding_type": "collection_details",
+				"binding_name": "#custom_text",
+				"binding_type": "collection",
 				"binding_collection_name": "custom_form"
 			},
 			{
-				"binding_name": "#custom_form_length"
-			},
-			{
 				"binding_type": "view",
-				"source_property_name": "(#collection_index = (#custom_form_length - 1))",
+				"source_property_name": "(not ((#custom_text - '§p§a§g§r') = #custom_text))",
 				"target_property_name": "#visible"
 			}
 		]
@@ -1573,14 +1567,6 @@
 			{
 				"binding_type": "collection_details",
 				"binding_collection_name": "custom_form"
-			},
-			{
-				"binding_name": "#custom_form_length"
-			},
-			{
-				"binding_type": "view",
-				"source_property_name": "(#collection_index < (#custom_form_length - 4))",
-				"target_property_name": "#visible"
 			}
 		],
 		"controls": [
@@ -1596,7 +1582,7 @@
 						},
 						{
 							"binding_type": "view",
-							"source_property_name": "((#custom_text - '§r§o§w') = #custom_text)",
+							"source_property_name": "(not ((#custom_text - '§c§e§l§r') = #custom_text))",
 							"target_property_name": "#visible"
 						}
 					],
@@ -1682,7 +1668,7 @@
 									},
 									{
 										"binding_type": "view",
-										"source_property_name": "(#custom_text = '-')",
+										"source_property_name": "((#custom_text - '§c§e§l§r') = '-')",
 										"target_property_name": "#visible"
 									}
 								]
@@ -1691,7 +1677,7 @@
 						{
 							"tick_number": {
 								"type": "label",
-								"text": "#custom_text",
+								"text": "#tick_label",
 								"localize": false,
 								"font_scale_factor": 0.7,
 								"color": [ 0.8157, 0.8196, 0.8314 ],
@@ -1713,7 +1699,12 @@
 									},
 									{
 										"binding_type": "view",
-										"source_property_name": "((#collection_index < 21) and (((#collection_index % 21) = 5) or ((#collection_index % 21) = 10) or ((#collection_index % 21) = 15) or ((#collection_index % 21) = 20)) and (not (#custom_text = '-')))",
+										"source_property_name": "(#custom_text - '§c§e§l§r')",
+										"target_property_name": "#tick_label"
+									},
+									{
+										"binding_type": "view",
+										"source_property_name": "(((#collection_index = 5) or (#collection_index = 10) or (#collection_index = 15) or (#collection_index = 20)) and (not ((#custom_text - '§c§e§l§r') = '-')))",
 										"target_property_name": "#visible"
 									}
 								]
@@ -1739,7 +1730,7 @@
 						},
 						{
 							"binding_type": "view",
-							"source_property_name": "(not ((#custom_text - '§r§o§w') = #custom_text))",
+							"source_property_name": "(not ((#custom_text - '§r§o§w§r') = #custom_text))",
 							"target_property_name": "#visible"
 						}
 					],
@@ -1763,7 +1754,7 @@
 									},
 									{
 										"binding_type": "view",
-										"source_property_name": "(#custom_text - '§r§o§w')",
+										"source_property_name": "(#custom_text - '§r§o§w§r')",
 										"target_property_name": "#row_label"
 									}
 								]
@@ -1818,20 +1809,6 @@
 	"canopy_timeline_add_track_row": {
 		"type": "panel",
 		"size": [ "100%", "100%c" ],
-		"bindings": [
-			{
-				"binding_type": "collection_details",
-				"binding_collection_name": "custom_form"
-			},
-			{
-				"binding_name": "#custom_form_length"
-			},
-			{
-				"binding_type": "view",
-				"source_property_name": "(#collection_index = (#custom_form_length - 2))",
-				"target_property_name": "#visible"
-			}
-		],
 		"controls": [
 			{
 				"content": {

@@ -1,6 +1,6 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { scheduler } from '@forestoflight/minecraft-vitest-mocks';
-import { TimelineForm, TIMELINE_FORM_MARKER, TIMELINE_ROW_MARKER } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/TimelineForm';
+import { TimelineForm, TIMELINE_FORM_MARKER, TIMELINE_ROW_MARKER, TIMELINE_CELL_MARKER, TIMELINE_PAGE_MARKER } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/TimelineForm';
 import { AddTrackForm } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/AddTrackForm';
 import { Timeline } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/Timeline';
 
@@ -70,6 +70,13 @@ describe('TimelineForm', () => {
             expect(form.elements[rowIndex(JUMP)].text.rawtext[1]).toEqual(timeline.getTrack('jump').label());
         });
 
+        it('marks only the cells, row labels and page controls with distinct markers', () => {
+            const markers = [TIMELINE_ROW_MARKER, TIMELINE_CELL_MARKER, TIMELINE_PAGE_MARKER];
+            expect(new Set(markers).size).toBe(3);
+            for (const marker of markers)
+                expect(marker.endsWith('§r')).toBe(true);
+        });
+
         it('keeps a placeholder label in place of the page slider on one page', () => {
             const form = new TimelineForm(player, understudy).build();
             expect(form.elements[BASE.page]).toMatchObject({ type: 'label', text: { text: '' } });
@@ -79,7 +86,7 @@ describe('TimelineForm', () => {
             timeline.setLoopLength(100);
             const slider = new TimelineForm(player, understudy, 2).build().elements[BASE.page];
             expect(slider.type).toBe('slider');
-            expect(slider.label).toEqual({ translate: 'simplayer.timeline.page' });
+            expect(slider.label).toEqual({ rawtext: [{ text: TIMELINE_PAGE_MARKER }, { translate: 'simplayer.timeline.page' }] });
             expect(slider.minimumValue).toBe(1);
             expect(slider.maximumValue).toBe(5);
             expect(slider.options).toEqual({ valueStep: 1, defaultValue: 3 });
@@ -102,7 +109,7 @@ describe('TimelineForm', () => {
         it('labels the current page out of the page count', () => {
             timeline.setLoopLength(100);
             const form = new TimelineForm(player, understudy, 2).build();
-            expect(form.elements.at(-1).text).toEqual({ translate: 'simplayer.timeline.page.current', with: ['3', '5'] });
+            expect(form.elements.at(-1).text).toEqual({ rawtext: [{ text: TIMELINE_PAGE_MARKER }, { translate: 'simplayer.timeline.page.current', with: ['3', '5'] }] });
         });
 
         it('adds a row for each extra track', () => {
@@ -124,17 +131,17 @@ describe('TimelineForm', () => {
         it('labels cells with their one-indexed tick and disables cells past the loop', () => {
             timeline.setLoopLength(30);
             const form = new TimelineForm(player, understudy, 1).build();
-            expect(form.elements[cellIndex(ATTACK, 0)].label).toBe('21');
-            expect(form.elements[cellIndex(ATTACK, 9)].label).toBe('30');
-            expect(form.elements[cellIndex(ATTACK, 10)].label).toBe(TimelineForm.DISABLED_CELL_LABEL);
+            expect(form.elements[cellIndex(ATTACK, 0)].label).toBe(`${TIMELINE_CELL_MARKER}21`);
+            expect(form.elements[cellIndex(ATTACK, 9)].label).toBe(`${TIMELINE_CELL_MARKER}30`);
+            expect(form.elements[cellIndex(ATTACK, 10)].label).toBe(`${TIMELINE_CELL_MARKER}${TimelineForm.DISABLED_CELL_LABEL}`);
         });
 
         it('disables cells past a fixed-length row', () => {
             timeline.setLooping('jump', void 0, { length: 7, ticks: [0] });
             const form = new TimelineForm(player, understudy).build();
-            expect(form.elements[cellIndex(JUMP, 6)].label).toBe('7');
-            expect(form.elements[cellIndex(JUMP, 7)].label).toBe('-');
-            expect(form.elements[cellIndex(ATTACK, 7)].label).toBe('8');
+            expect(form.elements[cellIndex(JUMP, 6)].label).toBe(`${TIMELINE_CELL_MARKER}7`);
+            expect(form.elements[cellIndex(JUMP, 7)].label).toBe(`${TIMELINE_CELL_MARKER}-`);
+            expect(form.elements[cellIndex(ATTACK, 7)].label).toBe(`${TIMELINE_CELL_MARKER}8`);
         });
 
         it('defaults cells to their active state', () => {
