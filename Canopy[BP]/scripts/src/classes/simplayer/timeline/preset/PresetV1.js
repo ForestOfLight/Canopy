@@ -125,10 +125,15 @@ function parseParams(type, args) {
     }
 }
 
-function parseTicks(text) {
+function parseOwnLength(text) {
+    const length = WHOLE_NUMBER.test(text) ? Number(text) : NaN;
+    return Number.isSafeInteger(length) && length >= 1 ? length : void 0;
+}
+
+function parseRanges(text) {
     if (text === '')
         return [];
-    const ticks = new Set();
+    const ranges = [];
     for (const part of text.split(',')) {
         const bounds = part.split('-');
         if (bounds.length > 2 || !bounds.every(bound => WHOLE_NUMBER.test(bound)))
@@ -136,6 +141,14 @@ function parseTicks(text) {
         const [start, end = start] = bounds.map(Number);
         if (start > end)
             return void 0;
+        ranges.push([start, end]);
+    }
+    return ranges;
+}
+
+function expandRanges(ranges) {
+    const ticks = new Set();
+    for (const [start, end] of ranges) {
         for (let tick = start; tick <= end; tick++)
             ticks.add(tick);
     }
@@ -152,13 +165,14 @@ function parseTrack(source, loopLength) {
         throw unreadable;
     const [type, ...args] = path.split('/');
     const { valid, params } = parseParams(type, args);
-    const ticks = parseTicks(source.slice(colon + 1));
-    if (!valid || ticks === void 0)
+    const ranges = parseRanges(source.slice(colon + 1));
+    const length = lengthText === void 0 ? Track.SHARED : parseOwnLength(lengthText);
+    if (!valid || ranges === void 0 || length === void 0)
         throw unreadable;
-    const length = lengthText === void 0 ? Track.SHARED : parseLoopLength(lengthText);
-    if (ticks.some(tick => tick >= (length ?? loopLength)))
+    const tickLimit = Math.min(length ?? loopLength, Timeline.MAX_LOOP_LENGTH);
+    if (ranges.some(([, end]) => end >= tickLimit))
         throw new InvalidPresetError({ translate: 'simplayer.timeline.preset.error.tick', with: [source] });
-    return { source, type, params, length, ticks };
+    return { source, type, params, length, ticks: expandRanges(ranges) };
 }
 
 function decode(body) {

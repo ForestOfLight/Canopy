@@ -54,6 +54,14 @@ describe('TimelinePreset', () => {
         expect(exportPreset(fresh)).toBe(preset);
     });
 
+    it('round-trips a long interval track', () => {
+        timeline.setLooping('attack', void 0, { length: 1200, ticks: [0] });
+        const preset = exportPreset(timeline);
+        const fresh = new Timeline();
+        expect(applyPreset(fresh, preset)).toEqual({ dropped: [] });
+        expect(fresh.getTrack('attack').length).toBe(1200);
+    });
+
     it('trims surrounding whitespace', () => {
         applyPreset(timeline, '  v1;20;attack:0\n');
         expect(timeline.tracks.map(track => track.key)).toEqual(['attack']);

@@ -116,7 +116,7 @@ describe('PresetV1', () => {
         });
 
         it('rejects a bad loop length', () => {
-            for (const body of ['0', '801', 'abc', '12.5', '', '20.0;attack:0', '20;attack@0:0', '20;attack@801:0'])
+            for (const body of ['0', '801', 'abc', '12.5', '', '20.0;attack:0'])
                 expect(reasonOf(body)).toEqual({ translate: 'simplayer.timeline.preset.error.looplength' });
         });
 
@@ -125,6 +125,24 @@ describe('PresetV1', () => {
                 'move/up:0', 'look/rot/1:0', 'look/pos/1,2:0', 'look/pos/1e3,2,3:0', 'moveto/north:0', 'moveto/block/overworld/1.5,2,3:0', 'look/entity/abc:0'];
             for (const segment of segments)
                 expect(reasonOf(`20;${segment}`)).toEqual({ translate: 'simplayer.timeline.preset.error.track', with: [segment] });
+        });
+
+        it('rejects a bad own length naming the segment', () => {
+            for (const segment of ['attack@0:0', 'attack@:0', 'attack@1.5:0', 'attack@99999999999999999999:0'])
+                expect(reasonOf(`20;${segment}`)).toEqual({ translate: 'simplayer.timeline.preset.error.track', with: [segment] });
+        });
+
+        it('accepts own lengths past 800 like those from /playeraction interval', () => {
+            expect(PresetV1.decode('20;attack@1200:0').tracks[0]).toEqual({ source: 'attack@1200:0', type: 'attack', params: void 0, length: 1200, ticks: [0] });
+        });
+
+        it('rejects ticks at or past 800 on a longer track', () => {
+            expect(reasonOf('20;attack@1200:800')).toEqual({ translate: 'simplayer.timeline.preset.error.tick', with: ['attack@1200:800'] });
+            expect(PresetV1.decode('20;attack@1200:799').tracks[0].ticks).toEqual([799]);
+        });
+
+        it('rejects a huge tick range without expanding it', () => {
+            expect(reasonOf('20;attack:0-99999999')).toEqual({ translate: 'simplayer.timeline.preset.error.tick', with: ['attack:0-99999999'] });
         });
 
         it("rejects ticks past the track's loop", () => {
