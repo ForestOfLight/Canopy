@@ -1610,19 +1610,9 @@
 							}
 						},
 						{
-							"cell@server_form.canopy_timeline_cell": {
-								"layer": 3
-							}
-						},
-						{
-							"disabled_overlay": {
-								"type": "image",
-								"texture": "textures/ui/timeline_cell",
-								"color": [ 0.2824, 0.2863, 0.2902 ],
-								"alpha": 0.85,
-								"keep_ratio": false,
-								"size": [ 9, 7 ],
-								"layer": 5,
+							"cell_holder": {
+								"type": "panel",
+								"size": [ "100%", "100%" ],
 								"bindings": [
 									{
 										"binding_name": "#custom_text",
@@ -1631,11 +1621,41 @@
 									},
 									{
 										"binding_type": "view",
-										"source_property_name": "((#custom_text - '§c§e§l§r') = '-')",
+										"source_property_name": "(not ((#custom_text - '§c§e§l§r') = '-'))",
 										"target_property_name": "#visible"
+									}
+								],
+								"controls": [
+									{
+										"cell@server_form.canopy_timeline_cell": {
+											"layer": 3
+										}
 									}
 								]
 							}
+						}
+					]
+				}
+			},
+			{
+				"disabled_overlay": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 0.2824, 0.2863, 0.2902 ],
+					"alpha": 0.85,
+					"keep_ratio": false,
+					"size": [ 9, 7 ],
+					"layer": 5,
+					"bindings": [
+						{
+							"binding_name": "#custom_text",
+							"binding_type": "collection",
+							"binding_collection_name": "custom_form"
+						},
+						{
+							"binding_type": "view",
+							"source_property_name": "((not ((#custom_text - '§c§e§l§r') = #custom_text)) and ((#custom_text - '§c§e§l§r') = '-'))",
+							"target_property_name": "#visible"
 						}
 					]
 				}

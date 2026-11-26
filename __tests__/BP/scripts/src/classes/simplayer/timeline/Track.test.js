@@ -97,8 +97,8 @@ describe('Track', () => {
             expect(makeTrack().labelParts()).toEqual([{ translate: 'simplayer.action.jump' }]);
         });
 
-        it('shows a fixed length', () => {
-            expect(makeTrack({ length: 7 }).labelParts()).toEqual([{ translate: 'simplayer.action.jump' }, { text: ' §7(7t)' }]);
+        it('shows its own loop length', () => {
+            expect(makeTrack({ length: 7 }).labelParts()).toEqual([{ translate: 'simplayer.action.jump' }, { text: ' §7(' }, { translate: 'simplayer.timeline.track.loop', with: ['7'] }, { text: ')' }]);
         });
 
         it('marks a one-shot track', () => {

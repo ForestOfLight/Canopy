@@ -634,6 +634,7 @@ simplayer.timeline.track.look.south=Look South
 simplayer.timeline.track.look.east=Look East
 simplayer.timeline.track.look.west=Look West
 simplayer.timeline.track.moveto=Move To
+simplayer.timeline.track.loop=%1t loop
 simplayer.timeline.target.up=Up
 simplayer.timeline.target.down=Down
 simplayer.timeline.target.north=North

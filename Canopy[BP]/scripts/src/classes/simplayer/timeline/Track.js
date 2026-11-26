@@ -98,7 +98,7 @@ export class Track {
         if (!this.loops)
             return [...this.#baseLabel, { text: ' §7(' }, { translate: 'simplayer.action.track.once' }, { text: ')' }];
         if (this.length !== Track.SHARED)
-            return [...this.#baseLabel, { text: ` §7(${this.length}t)` }];
+            return [...this.#baseLabel, { text: ' §7(' }, { translate: 'simplayer.timeline.track.loop', with: [String(this.length)] }, { text: ')' }];
         return [...this.#baseLabel];
     }
 }
