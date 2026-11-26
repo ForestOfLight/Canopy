@@ -88,21 +88,21 @@ describe('Track', () => {
             const track = new Track({ type: 'look', params: { target: { kind: 'entity', entity } }, key: 'look:entity:3' });
             alive = false;
             entity.isValid = false;
-            expect(() => track.label()).not.toThrow();
-            expect(track.label()).toEqual({ translate: 'simplayer.timeline.track.look', with: { rawtext: [{ text: 'Zed' }] } });
+            expect(() => track.labelParts()).not.toThrow();
+            expect(track.labelParts()).toEqual([{ translate: 'simplayer.timeline.track.look', with: { rawtext: [{ text: 'Zed' }] } }]);
         });
 
 
         it('is the bare track label on the shared length', () => {
-            expect(makeTrack().label()).toEqual({ translate: 'simplayer.action.jump' });
+            expect(makeTrack().labelParts()).toEqual([{ translate: 'simplayer.action.jump' }]);
         });
 
         it('shows a fixed length', () => {
-            expect(makeTrack({ length: 7 }).label()).toEqual({ translate: 'simplayer.timeline.track.fixed', with: { rawtext: [{ translate: 'simplayer.action.jump' }, { text: '7' }] } });
+            expect(makeTrack({ length: 7 }).labelParts()).toEqual([{ translate: 'simplayer.action.jump' }, { text: ' §7(7t)' }]);
         });
 
         it('marks a one-shot track', () => {
-            expect(makeTrack({ length: 1, loops: false }).label()).toEqual({ translate: 'simplayer.timeline.track.oneshot', with: { rawtext: [{ translate: 'simplayer.action.jump' }] } });
+            expect(makeTrack({ length: 1, loops: false }).labelParts()).toEqual([{ translate: 'simplayer.action.jump' }, { text: ' §7(' }, { translate: 'simplayer.action.track.once' }, { text: ')' }]);
         });
     });
 });

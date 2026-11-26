@@ -57,11 +57,11 @@ export class Actions {
         for (const track of this.#timeline.tracks) {
             if (track.isEmpty())
                 continue;
-            const length = track.loops
-                ? { text: `${track.effectiveLength(this.#timeline.loopLength)}t` }
-                : { translate: 'simplayer.action.track.once' };
-            output.rawtext.push({ translate: 'simplayer.action.track', with: { rawtext: [track.baseLabel(), length] } });
-            output.rawtext.push({ text: '\n' });
+            output.rawtext.push({ text: '§a' }, track.baseLabel());
+            if (track.loops)
+                output.rawtext.push({ text: ` §7(${track.effectiveLength(this.#timeline.loopLength)}t)\n` });
+            else
+                output.rawtext.push({ text: ' §7(' }, { translate: 'simplayer.action.track.once' }, { text: ')\n' });
         }
         return output;
     }

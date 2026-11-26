@@ -106,7 +106,7 @@ export class TimelineForm {
     }
 
     #addRow(form, track, loopLength) {
-        form.label({ rawtext: [{ text: TIMELINE_ROW_MARKER }, track.label()] });
+        form.label({ rawtext: [{ text: TIMELINE_ROW_MARKER }, ...track.labelParts()] });
         const length = track.effectiveLength(loopLength);
         for (let column = 0; column < Timeline.PAGE_WIDTH; column++) {
             const offset = this.#offsetAt(column);

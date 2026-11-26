@@ -94,12 +94,11 @@ export class Track {
         return this.#baseLabel;
     }
 
-    label() {
-        const label = this.#baseLabel;
+    labelParts() {
         if (!this.loops)
-            return { translate: 'simplayer.timeline.track.oneshot', with: { rawtext: [label] } };
+            return [this.#baseLabel, { text: ' §7(' }, { translate: 'simplayer.action.track.once' }, { text: ')' }];
         if (this.length !== Track.SHARED)
-            return { translate: 'simplayer.timeline.track.fixed', with: { rawtext: [label, { text: String(this.length) }] } };
-        return label;
+            return [this.#baseLabel, { text: ` §7(${this.length}t)` }];
+        return [this.#baseLabel];
     }
 }

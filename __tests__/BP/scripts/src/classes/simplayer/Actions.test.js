@@ -95,13 +95,22 @@ describe('Actions', () => {
             actions.onTick();
             expect(lastActionInfoText()).toEqual([
                 { text: 'TestBot\n' },
-                { translate: 'simplayer.action.track', with: { rawtext: [{ translate: 'simplayer.action.attack' }, { text: '20t' }] } },
-                { text: '\n' },
-                { translate: 'simplayer.action.track', with: { rawtext: [{ translate: 'simplayer.action.jump' }, { text: '7t' }] } },
-                { text: '\n' },
-                { translate: 'simplayer.action.track', with: { rawtext: [{ translate: 'simplayer.timeline.track.select', with: ['3'] }, { translate: 'simplayer.action.track.once' }] } },
-                { text: '\n' }
+                { text: '§a' }, { translate: 'simplayer.action.attack' }, { text: ' §7(20t)\n' },
+                { text: '§a' }, { translate: 'simplayer.action.jump' }, { text: ' §7(7t)\n' },
+                { text: '§a' }, { translate: 'simplayer.timeline.track.select', with: ['3'] }, { text: ' §7(' }, { translate: 'simplayer.action.track.once' }, { text: ')\n' }
             ]);
+        });
+
+        it('keeps every piece within the raw message line limit', () => {
+            const block = { location: { x: -12345, y: 64, z: 67890 }, dimension: { id: 'minecraft:overworld' } };
+            actions.timeline.setLooping('look', { target: { kind: 'cardinal', direction: 'north' } }, { length: 7, ticks: [3] });
+            actions.timeline.addOneShot('look', { target: { kind: 'location', location: { x: -12345.5, y: 64, z: 67890.5 } } }, { delay: 40 });
+            actions.timeline.addOneShot('moveto', { target: { kind: 'block', block } }, { delay: 40 });
+            actions.timeline.setLooping('move', { direction: 'backward' }, { length: 7, ticks: [3] });
+            actions.timeline.getOrCreate('select', { slot: 2 }).setActive(5, true, 20);
+            actions.onTick();
+            for (const piece of lastActionInfoText())
+                expect(JSON.stringify(piece).length).toBeLessThanOrEqual(128);
         });
 
         it('hides the info and restores the nameplate when every track is empty', () => {
