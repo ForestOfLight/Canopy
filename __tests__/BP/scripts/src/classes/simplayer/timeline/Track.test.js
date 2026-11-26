@@ -74,12 +74,6 @@ describe('Track', () => {
         expect(track.isEmpty()).toBe(true);
     });
 
-    it('knows whether its type is always present', () => {
-        expect(makeTrack().isAlwaysPresent()).toBe(true);
-        expect(new Track({ type: 'select', params: { slot: 1 }, key: 'select:1' }).isAlwaysPresent()).toBe(false);
-        expect(makeTrack({ key: 'jump#1', loops: false }).isAlwaysPresent()).toBe(false);
-    });
-
     describe('label', () => {
         it('keeps its label after an entity target becomes invalid', () => {
             const entity = { id: '3', typeId: 'minecraft:zombie', isValid: true };

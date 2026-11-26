@@ -1,9 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { Timeline } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/Timeline';
 import { Track } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/Track';
-import { ALWAYS_PRESENT_TYPES } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/TrackTypes';
 
-const JUMP_INDEX = 9;
 const lookNorth = { target: { kind: 'cardinal', direction: 'north' } };
 
 describe('Timeline', () => {
@@ -13,8 +11,8 @@ describe('Timeline', () => {
         timeline = new Timeline();
     });
 
-    it('starts with an empty always-present track for each type', () => {
-        expect(timeline.tracks.map(track => track.type)).toEqual([...ALWAYS_PRESENT_TYPES]);
+    it('starts with no tracks', () => {
+        expect(timeline.tracks).toEqual([]);
         expect(timeline.isEmpty()).toBe(true);
     });
 
@@ -34,50 +32,67 @@ describe('Timeline', () => {
     });
 
     it('finds a track by key', () => {
-        expect(timeline.getTrack('jump')).toBe(timeline.tracks[JUMP_INDEX]);
+        const jump = timeline.getOrCreate('jump');
+        expect(timeline.getTrack('jump')).toBe(jump);
         expect(timeline.getTrack('select:2')).toBeUndefined();
     });
 
     describe('getOrCreate', () => {
         it('appends one looping shared track with origin 0', () => {
             const track = timeline.getOrCreate('select', { slot: 2 });
-            expect(timeline.tracks.at(-1)).toBe(track);
+            expect(timeline.tracks).toEqual([track]);
             expect(track.key).toBe('select:2');
             expect(track.length).toBe(Track.SHARED);
             expect(track.loops).toBe(true);
             expect(track.originTick).toBe(0);
         });
 
+        it('creates tracks without params too', () => {
+            expect(timeline.getOrCreate('jump').key).toBe('jump');
+        });
+
         it('returns the existing track for the same params', () => {
             const track = timeline.getOrCreate('select', { slot: 2 });
             expect(timeline.getOrCreate('select', { slot: 2 })).toBe(track);
-            expect(timeline.tracks).toHaveLength(14);
+            expect(timeline.tracks).toHaveLength(1);
+        });
+
+        it('keeps tracks in the order they were added', () => {
+            timeline.getOrCreate('jump');
+            timeline.getOrCreate('attack');
+            timeline.getOrCreate('select', { slot: 0 });
+            expect(timeline.tracks.map(track => track.key)).toEqual(['jump', 'attack', 'select:0']);
         });
     });
 
     describe('setLooping', () => {
-        it('replaces an always-present track in its slot with a fresh one', () => {
-            const before = timeline.tracks[JUMP_INDEX];
+        it('adds a fresh looping track with a lazy origin', () => {
             const track = timeline.setLooping('jump', void 0, { length: 7, ticks: [0] });
-            expect(timeline.tracks[JUMP_INDEX]).toBe(track);
-            expect(track).not.toBe(before);
+            expect(timeline.tracks).toEqual([track]);
             expect(track.length).toBe(7);
             expect(track.originTick).toBeUndefined();
             expect(track.activeOffsets()).toEqual([0]);
-            expect(timeline.tracks).toHaveLength(13);
         });
 
-        it('moves a replaced extra track to the end', () => {
+        it('replaces a track with the same key and moves it to the end', () => {
+            const before = timeline.getOrCreate('jump');
+            timeline.getOrCreate('attack');
+            const track = timeline.setLooping('jump', void 0, { length: 7, ticks: [0] });
+            expect(track).not.toBe(before);
+            expect(timeline.tracks.map(entry => entry.key)).toEqual(['attack', 'jump']);
+        });
+
+        it('lets the latest move direction come last', () => {
             timeline.setLooping('move', { direction: 'forward' }, { length: 1, ticks: [0] });
             timeline.setLooping('move', { direction: 'backward' }, { length: 1, ticks: [0] });
             timeline.setLooping('move', { direction: 'forward' }, { length: 1, ticks: [0] });
-            const keys = timeline.tracks.slice(13).map(track => track.key);
-            expect(keys).toEqual(['move:backward', 'move:forward']);
+            expect(timeline.tracks.map(track => track.key)).toEqual(['move:backward', 'move:forward']);
         });
     });
 
     describe('addOneShot', () => {
         it('appends a separate one-shot track each time', () => {
+            const looping = timeline.getOrCreate('jump');
             const first = timeline.addOneShot('jump', void 0, { delay: 40 });
             const second = timeline.addOneShot('jump', void 0, { delay: 40 });
             expect(first.key).not.toBe(second.key);
@@ -88,63 +103,51 @@ describe('Timeline', () => {
                 expect(track.activeOffsets()).toEqual([40]);
                 expect(track.originTick).toBeUndefined();
             }
-            expect(timeline.tracks[JUMP_INDEX].isEmpty()).toBe(true);
+            expect(looping.isEmpty()).toBe(true);
             expect(timeline.isEmpty()).toBe(false);
         });
     });
 
-    describe('clearTrack', () => {
-        it('resets an always-present track to an empty shared track', () => {
-            timeline.setLooping('jump', void 0, { length: 7, ticks: [0] });
-            timeline.clearTrack('jump');
-            const track = timeline.tracks[JUMP_INDEX];
-            expect(track.type).toBe('jump');
-            expect(track.isEmpty()).toBe(true);
-            expect(track.length).toBe(Track.SHARED);
-            expect(track.originTick).toBe(0);
-        });
-
-        it('removes an extra track', () => {
-            timeline.getOrCreate('select', { slot: 2 });
-            timeline.clearTrack('select', { slot: 2 });
-            expect(timeline.getTrack('select:2')).toBeUndefined();
-        });
-    });
-
     describe('removal', () => {
-        it('removes every extra track of a type', () => {
+        it('clears a track by removing it', () => {
+            timeline.setLooping('jump', void 0, { length: 7, ticks: [0] });
+            timeline.getOrCreate('select', { slot: 2 });
+            timeline.clearTrack('jump');
+            timeline.clearTrack('select', { slot: 2 });
+            expect(timeline.tracks).toEqual([]);
+        });
+
+        it('removes every track of a type', () => {
             timeline.setLooping('look', lookNorth, { length: 5, ticks: [0] });
             timeline.addOneShot('look', lookNorth, { delay: 0 });
             timeline.getOrCreate('select', { slot: 1 });
             timeline.removeType('look');
-            expect(timeline.tracks.slice(13).map(track => track.key)).toEqual(['select:1']);
+            expect(timeline.tracks.map(track => track.key)).toEqual(['select:1']);
         });
 
-        it('removes an extra track by key', () => {
+        it('removes a track by key', () => {
             const track = timeline.addOneShot('attack', void 0, { delay: 0 });
+            timeline.getOrCreate('jump');
             timeline.remove(track.key);
-            expect(timeline.getTrack(track.key)).toBeUndefined();
-        });
-
-        it('never removes an always-present track', () => {
             timeline.remove('jump');
-            expect(timeline.tracks).toHaveLength(13);
+            expect(timeline.tracks).toEqual([]);
         });
     });
 
     describe('loop length', () => {
         it('drops offsets past a shortened loop from shared tracks only', () => {
-            timeline.tracks[0].setActive(15, true, 20);
+            const attack = timeline.getOrCreate('attack');
+            attack.setActive(15, true, 20);
             const fixed = timeline.setLooping('jump', void 0, { length: 30, ticks: [15] });
             timeline.setLoopLength(10);
-            expect(timeline.tracks[0].isEmpty()).toBe(true);
+            expect(attack.isEmpty()).toBe(true);
             expect(fixed.activeOffsets()).toEqual([15]);
         });
     });
 
     describe('setTrackLength', () => {
         it('gives a shared track its own length and drops offsets past it', () => {
-            const attack = timeline.getTrack('attack');
+            const attack = timeline.getOrCreate('attack');
             attack.setActive(3, true, 20);
             attack.setActive(10, true, 20);
             expect(timeline.setTrackLength('attack', 7)).toBe(true);
@@ -170,6 +173,7 @@ describe('Timeline', () => {
         });
 
         it.each([0, -3, 2.5, '7', undefined])('rejects a length of %j', (length) => {
+            timeline.getOrCreate('attack');
             expect(timeline.setTrackLength('attack', length)).toBe(false);
             expect(timeline.getTrack('attack').length).toBe(Track.SHARED);
         });
@@ -188,20 +192,24 @@ describe('Timeline', () => {
             expect(timeline.pageCount).toBe(3);
         });
 
-        it('covers the shared loop', () => {
+        it('covers the shared loop even with no tracks', () => {
             timeline.setLoopLength(200);
             expect(timeline.pageCount).toBe(10);
         });
+
+        it('ignores tracks shorter than the shared loop', () => {
+            timeline.setLoopLength(60);
+            timeline.setLooping('jump', void 0, { length: 7, ticks: [0] });
+            expect(timeline.pageCount).toBe(3);
+        });
     });
 
-    it('resets to the always-present tracks and the default loop', () => {
+    it('resets to no tracks and the default loop', () => {
         timeline.setLoopLength(50);
         timeline.getOrCreate('select', { slot: 1 });
         timeline.setLooping('jump', void 0, { length: 7, ticks: [0] });
         timeline.reset();
-        expect(timeline.tracks).toHaveLength(13);
-        expect(timeline.isEmpty()).toBe(true);
+        expect(timeline.tracks).toEqual([]);
         expect(timeline.loopLength).toBe(20);
-        expect(timeline.tracks[JUMP_INDEX].length).toBe(Track.SHARED);
     });
 });

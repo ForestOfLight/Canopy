@@ -21,7 +21,7 @@ describe('TimelinePlayer', () => {
     }
 
     function track(type) {
-        return timeline.getTrack(type);
+        return timeline.getOrCreate(type);
     }
 
     beforeEach(() => {
@@ -88,8 +88,8 @@ describe('TimelinePlayer', () => {
         });
 
         it('performs different types in track order', () => {
-            track('jump').setActive(3, true, 40);
             track('attack').setActive(3, true, 40);
+            track('jump').setActive(3, true, 40);
             player.onTick(3);
             expect(performedTypes()).toEqual(['attack', 'jump']);
         });

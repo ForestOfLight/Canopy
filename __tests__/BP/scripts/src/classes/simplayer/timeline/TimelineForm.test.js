@@ -2,6 +2,7 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { scheduler } from '@forestoflight/minecraft-vitest-mocks';
 import { TimelineForm, TIMELINE_FORM_MARKER, TIMELINE_ROW_MARKER, TIMELINE_CELL_MARKER, TIMELINE_PAGE_MARKER, TIMELINE_TRACK_PAGE_MARKER, TIMELINE_DISABLED_CELL_MARKER, TIMELINE_SETTINGS_MARKER } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/TimelineForm';
 import { TimelineSettingsForm } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/TimelineSettingsForm';
+import { TimelineWelcomeForm } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/TimelineWelcomeForm';
 import { Timeline } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/Timeline';
 
 vi.mock('../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies', () => ({
@@ -13,6 +14,12 @@ vi.mock('../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understud
 vi.mock('../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/TimelineSettingsForm', () => ({
     TimelineSettingsForm: vi.fn(function MockTimelineSettingsForm() { this.show = vi.fn(); })
 }));
+
+vi.mock('../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/TimelineWelcomeForm', () => ({
+    TimelineWelcomeForm: vi.fn(function MockTimelineWelcomeForm() { this.show = vi.fn(); })
+}));
+
+const SEEDED_TYPES = ['attack', 'interact', 'use', 'usehold', 'build', 'break', 'drop', 'dropstack', 'dropall', 'jump', 'sneak', 'sprint', 'glide'];
 
 const STRIDE = 21;
 const BASE_ROWS = 13;
@@ -39,6 +46,10 @@ function addExtraTracks(timeline, count) {
         timeline.getOrCreate('look', { target: { kind: 'rotation', rotation: { x: i, y: 0 } } }).setActive(0, true, timeline.loopLength);
 }
 
+function rowOf(timeline, key) {
+    return timeline.tracks.findIndex(track => track.key === key);
+}
+
 function defaultValues(form) {
     return form.elements.map(element => element.type === 'dropdown' ? element.options?.defaultValueIndex : element.options?.defaultValue);
 }
@@ -52,6 +63,8 @@ describe('TimelineForm', () => {
         vi.clearAllMocks();
         scheduler.reset();
         timeline = new Timeline();
+        for (const type of SEEDED_TYPES)
+            timeline.getOrCreate(type);
         understudy = { name: 'Bot', isConnected: () => true, actions: { timeline } };
         player = { sendMessage: vi.fn() };
     });
@@ -72,7 +85,7 @@ describe('TimelineForm', () => {
             timeline.setLooping('jump', void 0, { length: 7, ticks: [0] });
             const form = new TimelineForm(player, understudy).build();
             expect(form.elements[rowIndex(ATTACK)].text.rawtext.slice(1)).toEqual([{ translate: 'simplayer.action.attack' }]);
-            expect(form.elements[rowIndex(JUMP)].text.rawtext.slice(1)).toEqual(timeline.getTrack('jump').labelParts());
+            expect(form.elements[rowIndex(rowOf(timeline, 'jump'))].text.rawtext.slice(1)).toEqual(timeline.getTrack('jump').labelParts());
         });
 
         it('marks only the cells, row labels and page controls with distinct markers', () => {
@@ -100,7 +113,7 @@ describe('TimelineForm', () => {
             expect(slider.options).toEqual({ valueStep: 1, defaultValue: 2 });
         });
 
-        it('shows the built-in tracks on the first track page', () => {
+        it('shows the first thirteen tracks on the first track page', () => {
             addExtraTracks(timeline, 2);
             const form = new TimelineForm(player, understudy).build();
             expect(form.elements).toHaveLength(BASE_ROWS * STRIDE + 5);
@@ -172,10 +185,11 @@ describe('TimelineForm', () => {
 
         it('disables cells past a fixed-length row', () => {
             timeline.setLooping('jump', void 0, { length: 7, ticks: [0] });
+            const jumpRow = rowOf(timeline, 'jump');
             const form = new TimelineForm(player, understudy).build();
-            expect(form.elements[cellIndex(JUMP, 6)].label).toBe(`${TIMELINE_CELL_MARKER}7`);
-            expect(form.elements[cellIndex(JUMP, 7)].label).toBe(`${TIMELINE_CELL_MARKER}${TIMELINE_DISABLED_CELL_MARKER}`);
-            expect(form.elements[cellIndex(JUMP, 19)].label).toBe(`${TIMELINE_CELL_MARKER}${TIMELINE_DISABLED_CELL_MARKER}`);
+            expect(form.elements[cellIndex(jumpRow, 6)].label).toBe(`${TIMELINE_CELL_MARKER}7`);
+            expect(form.elements[cellIndex(jumpRow, 7)].label).toBe(`${TIMELINE_CELL_MARKER}${TIMELINE_DISABLED_CELL_MARKER}`);
+            expect(form.elements[cellIndex(jumpRow, 19)].label).toBe(`${TIMELINE_CELL_MARKER}${TIMELINE_DISABLED_CELL_MARKER}`);
             expect(form.elements[cellIndex(ATTACK, 7)].label).toBe(`${TIMELINE_CELL_MARKER}8`);
         });
 
@@ -264,9 +278,10 @@ describe('TimelineForm', () => {
 
         it('applies a fixed-length row inside its length only', () => {
             const jump = timeline.setLooping('jump', void 0, { length: 7, ticks: [0] });
+            const jumpRow = rowOf(timeline, 'jump');
             submit(new TimelineForm(player, understudy), values => {
-                values[cellIndex(JUMP, 3)] = true;
-                values[cellIndex(JUMP, 10)] = true;
+                values[cellIndex(jumpRow, 3)] = true;
+                values[cellIndex(jumpRow, 10)] = true;
             });
             expect(jump.activeOffsets()).toEqual([0, 3]);
         });
@@ -291,7 +306,7 @@ describe('TimelineForm', () => {
             expect(move.activeOffsets()).toEqual([0]);
         });
 
-        it('leaves an always-present track replaced by a command while the form was open untouched', () => {
+        it('leaves a track replaced by a command while the form was open untouched', () => {
             const timelineForm = new TimelineForm(player, understudy);
             const values = defaultValues(timelineForm.build());
             const interval = timeline.setLooping('jump', void 0, { length: 7, ticks: [0] });
@@ -300,13 +315,13 @@ describe('TimelineForm', () => {
             expect(interval.activeOffsets()).toEqual([0]);
         });
 
-        it('leaves an always-present track cleared by a command while the form was open untouched', () => {
-            timeline.setLooping('jump', void 0, { length: 7, ticks: [0] });
+        it('does not bring back a track cleared by a command while the form was open', () => {
             const timelineForm = new TimelineForm(player, understudy);
             const values = defaultValues(timelineForm.build());
+            values[cellIndex(JUMP, 2)] = true;
             timeline.clearTrack('jump');
             timelineForm.apply(values);
-            expect(timeline.getTrack('jump').isEmpty()).toBe(true);
+            expect(timeline.getTrack('jump')).toBeUndefined();
         });
 
         it('keeps an added track saved with no active cells', () => {
@@ -316,12 +331,6 @@ describe('TimelineForm', () => {
             expect(timeline.getTrack('select:2')).toBe(select);
             expect(select.isEmpty()).toBe(true);
             expect(result.nextPage).toBeUndefined();
-        });
-
-        it('keeps an always-present track saved with no active cells', () => {
-            timeline.getTrack('jump').setActive(0, true, timeline.loopLength);
-            submit(new TimelineForm(player, understudy), values => { values[cellIndex(JUMP, 0)] = false; });
-            expect(timeline.getTrack('jump')).toBeDefined();
         });
 
         it('keeps an extra track that has active cells on another page', () => {
@@ -338,6 +347,16 @@ describe('TimelineForm', () => {
     });
 
     describe('show', () => {
+        it('opens the welcome page instead when the timeline has no tracks', async () => {
+            timeline.reset();
+            const timelineForm = new TimelineForm(player, understudy);
+            const buildSpy = vi.spyOn(timelineForm, 'build');
+            await timelineForm.show();
+            expect(TimelineWelcomeForm).toHaveBeenCalledWith(player, understudy);
+            expect(vi.mocked(TimelineWelcomeForm).mock.instances[0].show).toHaveBeenCalled();
+            expect(buildSpy).not.toHaveBeenCalled();
+        });
+
         async function showWith(timelineForm, edit) {
             const form = timelineForm.build();
             const values = defaultValues(form);

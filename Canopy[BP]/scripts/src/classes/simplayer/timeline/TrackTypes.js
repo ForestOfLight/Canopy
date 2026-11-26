@@ -32,7 +32,7 @@ export const TRACK_TYPES = Object.freeze({
     moveto: trackType('moveto', TRACK_KINDS.EVENT, 'simplayer.timeline.track.moveto', { parameterised: true })
 });
 
-export const ALWAYS_PRESENT_TYPES = Object.freeze(Object.values(TRACK_TYPES).filter(info => !info.parameterised).map(info => info.type));
+export const TRACK_TYPE_ORDER = Object.freeze(Object.keys(TRACK_TYPES));
 
 export const PARAMETERISED_TYPES = Object.freeze(['select', 'look', 'move', 'moveto']);
 
@@ -113,4 +113,10 @@ export function trackLabel(type, params) {
         default:
             return [{ translate: TRACK_TYPES[type].labelKey }];
     }
+}
+
+export function trackTypeLabel(type) {
+    if (TRACK_TYPES[type].parameterised)
+        return { translate: `simplayer.timeline.addtrack.${type}` };
+    return { translate: TRACK_TYPES[type].labelKey };
 }

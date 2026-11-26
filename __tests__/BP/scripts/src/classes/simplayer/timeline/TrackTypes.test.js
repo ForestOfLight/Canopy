@@ -1,12 +1,19 @@
 import { describe, it, expect } from 'vitest';
-import { trackKey, trackLabel, ALWAYS_PRESENT_TYPES, PARAMETERISED_TYPES, TRACK_TYPES, TRACK_KINDS, MOVE_DIRECTIONS } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/TrackTypes';
+import { trackKey, trackLabel, trackTypeLabel, TRACK_TYPE_ORDER, PARAMETERISED_TYPES, TRACK_TYPES, TRACK_KINDS, MOVE_DIRECTIONS } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/TrackTypes';
 
 const cardinal = direction => ({ target: { kind: 'cardinal', direction } });
 
 describe('TrackTypes', () => {
     describe('catalogue', () => {
-        it('lists the always-present types in order', () => {
-            expect(ALWAYS_PRESENT_TYPES).toEqual(['attack', 'interact', 'use', 'usehold', 'build', 'break', 'drop', 'dropstack', 'dropall', 'jump', 'sneak', 'sprint', 'glide']);
+        it('lists every track type in menu order', () => {
+            expect(TRACK_TYPE_ORDER).toEqual(['attack', 'interact', 'use', 'usehold', 'build', 'break', 'drop', 'dropstack', 'dropall', 'jump', 'sneak', 'sprint', 'glide', 'select', 'look', 'move', 'moveto']);
+        });
+
+        it('names each track type for menus', () => {
+            expect(trackTypeLabel('jump')).toEqual({ translate: 'simplayer.action.jump' });
+            expect(trackTypeLabel('usehold')).toEqual({ translate: 'simplayer.timeline.track.usehold' });
+            expect(trackTypeLabel('select')).toEqual({ translate: 'simplayer.timeline.addtrack.select' });
+            expect(trackTypeLabel('moveto')).toEqual({ translate: 'simplayer.timeline.addtrack.moveto' });
         });
 
         it('lists the parameterised types', () => {

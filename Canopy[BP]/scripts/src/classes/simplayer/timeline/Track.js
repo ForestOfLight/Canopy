@@ -1,4 +1,4 @@
-import { TRACK_TYPES, trackLabel } from "./TrackTypes";
+import { trackLabel } from "./TrackTypes";
 
 export class Track {
     static SHARED = null;
@@ -84,10 +84,6 @@ export class Track {
         if (this.loops)
             return false;
         return this.offsetAt(currentTick, sharedLength) >= this.effectiveLength(sharedLength);
-    }
-
-    isAlwaysPresent() {
-        return !TRACK_TYPES[this.#type].parameterised && this.#key === this.#type;
     }
 
     baseLabel() {

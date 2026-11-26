@@ -1,8 +1,8 @@
 import { system } from "@minecraft/server";
 import { ModalFormData } from "@minecraft/server-ui";
 import { Timeline } from "./Timeline";
-import { ALWAYS_PRESENT_TYPES } from "./TrackTypes";
 import { TimelineSettingsForm } from "./TimelineSettingsForm";
+import { TimelineWelcomeForm } from "./TimelineWelcomeForm";
 import { forceShow } from "../../../../include/utils";
 import Understudies from "../Understudies";
 
@@ -17,7 +17,7 @@ export const TIMELINE_SETTINGS_MARKER = '§s§e§t§r';
 export class TimelineForm {
     static ROW_STRIDE = Timeline.PAGE_WIDTH + 1;
     static TRAILING_CONTROL_COUNT = 5;
-    static ROWS_PER_PAGE = ALWAYS_PRESENT_TYPES.length;
+    static ROWS_PER_PAGE = 13;
 
     #player;
     #understudy;
@@ -92,6 +92,10 @@ export class TimelineForm {
     }
 
     async show() {
+        if (this.#timeline.tracks.length === 0) {
+            new TimelineWelcomeForm(this.#player, this.#understudy).show();
+            return;
+        }
         try {
             const response = await forceShow(this.#player, this.build());
             if (response.canceled)

@@ -67,8 +67,7 @@ describe('Actions', () => {
         actions.timeline.getOrCreate('select', { slot: 1 }).setActive(0, true, 100);
         actions.clear();
         expect(stopSpy).toHaveBeenCalled();
-        expect(actions.timeline.tracks).toHaveLength(13);
-        expect(actions.timeline.isEmpty()).toBe(true);
+        expect(actions.timeline.tracks).toEqual([]);
         expect(actions.timeline.loopLength).toBe(Timeline.DEFAULT_LOOP_LENGTH);
     });
 
@@ -93,8 +92,8 @@ describe('Actions', () => {
         }
 
         it('lists every non-empty looping track with its label and length', () => {
+            actions.timeline.getOrCreate('attack').setActive(5, true, 20);
             actions.timeline.setLooping('jump', void 0, { length: 7, ticks: [3] });
-            actions.timeline.getTrack('attack').setActive(5, true, 20);
             actions.onTick();
             expect(lastActionInfoText()).toEqual([
                 { text: 'TestBot\n§a' },
@@ -126,7 +125,7 @@ describe('Actions', () => {
         });
 
         it('hides the info and restores the nameplate when every track is empty', () => {
-            actions.timeline.getTrack('attack').setActive(5, true, 20);
+            actions.timeline.getOrCreate('attack').setActive(5, true, 20);
             actions.onTick();
             expect(mockUnderstudy.simulatedPlayer.nameplateRenderDistance).toBe(0);
             actions.timeline.clearTrack('attack');

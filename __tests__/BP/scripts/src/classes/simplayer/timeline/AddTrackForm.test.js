@@ -215,6 +215,8 @@ describe('AddTrackForm', () => {
         });
 
         it('reopens the timeline on its page and the track page holding the new track', () => {
+            for (let slot = 0; slot < 13; slot++)
+                timeline.getOrCreate('look', { target: { kind: 'rotation', rotation: { x: slot, y: 0 } } });
             const form = open('select', 2, 0);
             fill(form, 0);
             add(form);
@@ -233,7 +235,7 @@ describe('AddTrackForm', () => {
             expect(errorLabel(form).label.getData()).toEqual({ translate: 'simplayer.timeline.addtrack.invalidnumber' });
             expect(errorLabel(form).options.visible.getData()).toBe(true);
             expect(form.close).not.toHaveBeenCalled();
-            expect(timeline.tracks).toHaveLength(13);
+            expect(timeline.tracks).toEqual([]);
         });
 
         it('shows an error for missing coordinates', () => {
@@ -263,7 +265,7 @@ describe('AddTrackForm', () => {
             add(form);
             expect(form.close).toHaveBeenCalled();
             expect(player.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.notonline', with: ['Bot'] });
-            expect(timeline.tracks).toHaveLength(13);
+            expect(timeline.tracks).toEqual([]);
         });
     });
 
@@ -276,7 +278,7 @@ describe('AddTrackForm', () => {
             expect(form.close).toHaveBeenCalled();
             expect(settingsSpy).toHaveBeenCalledTimes(1);
             expect(showSpy).not.toHaveBeenCalled();
-            expect(timeline.tracks).toHaveLength(13);
+            expect(timeline.tracks).toEqual([]);
         });
     });
 });
