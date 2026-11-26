@@ -451,7 +451,7 @@
 				}
 			},
 			{
-				"add_track": {
+				"settings": {
 					"type": "stack_panel",
 					"size": [ "100%", "100%c" ],
 					"orientation": "vertical",
@@ -461,10 +461,10 @@
 						"name": "buttons",
 						"control_ids": {
 							"label": "@server_form.canopy_timeline_hidden_item",
-							"toggle": "@server_form.canopy_timeline_hidden_item",
+							"toggle": "@server_form.canopy_timeline_settings_row",
 							"slider": "@server_form.canopy_timeline_hidden_item",
 							"step_slider": "@server_form.canopy_timeline_hidden_item",
-							"dropdown": "@server_form.canopy_timeline_add_track_row",
+							"dropdown": "@server_form.canopy_timeline_hidden_item",
 							"input": "@server_form.canopy_timeline_hidden_item",
 							"header": "@server_form.canopy_timeline_hidden_item",
 							"divider": "@server_form.canopy_timeline_hidden_item",
@@ -1845,39 +1845,6 @@
 		"type": "panel",
 		"size": [ 0, 0 ]
 	},
-	"canopy_timeline_add_track_row": {
-		"type": "panel",
-		"size": [ "100%", "100%c" ],
-		"controls": [
-			{
-				"content": {
-					"type": "stack_panel",
-					"orientation": "vertical",
-					"size": [ "100% - 24px", "100%c" ],
-					"offset": [ 12, 0 ],
-					"anchor_from": "top_left",
-					"anchor_to": "top_left",
-					"controls": [
-						{
-							"row_top": {
-								"type": "panel",
-								"size": [ "100%", 6 ]
-							}
-						},
-						{
-							"dropdown@server_form.custom_dropdown": {}
-						},
-						{
-							"row_bottom": {
-								"type": "panel",
-								"size": [ "100%", 6 ]
-							}
-						}
-					]
-				}
-			}
-		]
-	},
 	"canopy_timeline_track_page_row": {
 		"type": "panel",
 		"size": [ "100%", 42 ],
@@ -1977,6 +1944,51 @@
 						}
 					]
 				}
+			}
+		]
+	},
+	"canopy_timeline_settings_row": {
+		"type": "panel",
+		"size": [ "100%", "100%c" ],
+		"controls": [
+			{
+				"content": {
+					"type": "stack_panel",
+					"orientation": "vertical",
+					"size": [ "100% - 24px", "100%c" ],
+					"offset": [ 12, 0 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"controls": [
+						{
+							"row_top": {
+								"type": "panel",
+								"size": [ "100%", 6 ]
+							}
+						},
+						{
+							"toggle@server_form.custom_toggle": {}
+						},
+						{
+							"row_bottom": {
+								"type": "panel",
+								"size": [ "100%", 6 ]
+							}
+						}
+					]
+				}
+			}
+		],
+		"bindings": [
+			{
+				"binding_name": "#custom_text",
+				"binding_type": "collection",
+				"binding_collection_name": "custom_form"
+			},
+			{
+				"binding_type": "view",
+				"source_property_name": "(not ((#custom_text - '§s§e§t§r') = #custom_text))",
+				"target_property_name": "#visible"
 			}
 		]
 	}

@@ -1,7 +1,7 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { scheduler } from '@forestoflight/minecraft-vitest-mocks';
-import { TimelineForm, TIMELINE_FORM_MARKER, TIMELINE_ROW_MARKER, TIMELINE_CELL_MARKER, TIMELINE_PAGE_MARKER, TIMELINE_TRACK_PAGE_MARKER, TIMELINE_DISABLED_CELL_MARKER } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/TimelineForm';
-import { AddTrackForm } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/AddTrackForm';
+import { TimelineForm, TIMELINE_FORM_MARKER, TIMELINE_ROW_MARKER, TIMELINE_CELL_MARKER, TIMELINE_PAGE_MARKER, TIMELINE_TRACK_PAGE_MARKER, TIMELINE_DISABLED_CELL_MARKER, TIMELINE_SETTINGS_MARKER } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/TimelineForm';
+import { TimelineSettingsForm } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/TimelineSettingsForm';
 import { Timeline } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/Timeline';
 
 vi.mock('../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies', () => ({
@@ -10,8 +10,8 @@ vi.mock('../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understud
     }
 }));
 
-vi.mock('../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/AddTrackForm', () => ({
-    AddTrackForm: vi.fn(function MockAddTrackForm() { this.show = vi.fn(); })
+vi.mock('../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/TimelineSettingsForm', () => ({
+    TimelineSettingsForm: vi.fn(function MockTimelineSettingsForm() { this.show = vi.fn(); })
 }));
 
 const STRIDE = 21;
@@ -29,7 +29,7 @@ function cellIndex(row, column) {
 
 function trailing(rows) {
     const start = rows * STRIDE;
-    return { loop: start, page: start + 1, trackPage: start + 2, add: start + 3, label: start + 4 };
+    return { loop: start, page: start + 1, trackPage: start + 2, settings: start + 3, label: start + 4 };
 }
 
 const BASE = trailing(BASE_ROWS);
@@ -64,7 +64,7 @@ describe('TimelineForm', () => {
             expect(form.elements[rowIndex(0)].text.rawtext[0]).toEqual({ text: TIMELINE_ROW_MARKER });
             expect(form.elements.slice(1, STRIDE).every(element => element.type === 'toggle')).toBe(true);
             expect(form.elements[BASE.loop].type).toBe('slider');
-            expect(form.elements[BASE.add].type).toBe('dropdown');
+            expect(form.elements[BASE.settings].type).toBe('toggle');
             expect(form.elements[BASE.label].type).toBe('label');
         });
 
@@ -76,8 +76,8 @@ describe('TimelineForm', () => {
         });
 
         it('marks only the cells, row labels and page controls with distinct markers', () => {
-            const markers = [TIMELINE_ROW_MARKER, TIMELINE_CELL_MARKER, TIMELINE_PAGE_MARKER, TIMELINE_TRACK_PAGE_MARKER, TIMELINE_DISABLED_CELL_MARKER];
-            expect(new Set(markers).size).toBe(5);
+            const markers = [TIMELINE_ROW_MARKER, TIMELINE_CELL_MARKER, TIMELINE_PAGE_MARKER, TIMELINE_TRACK_PAGE_MARKER, TIMELINE_DISABLED_CELL_MARKER, TIMELINE_SETTINGS_MARKER];
+            expect(new Set(markers).size).toBe(6);
             for (const marker of markers)
                 expect(markers.filter(other => other.includes(marker))).toEqual([marker]);
             for (const marker of markers)
@@ -139,11 +139,10 @@ describe('TimelineForm', () => {
             expect(slider.options).toEqual({ valueStep: 1, defaultValue: 20 });
         });
 
-        it('offers the parameterised track types to add', () => {
-            const dropdown = new TimelineForm(player, understudy).build().elements[BASE.add];
-            expect(dropdown.label).toEqual({ translate: 'simplayer.timeline.addtrack' });
-            expect(dropdown.items).toEqual(['none', 'select', 'look', 'move', 'moveto'].map(type => ({ translate: `simplayer.timeline.addtrack.${type}` })));
-            expect(dropdown.options).toEqual({ defaultValueIndex: 0 });
+        it('offers an unticked settings toggle', () => {
+            const toggle = new TimelineForm(player, understudy).build().elements[BASE.settings];
+            expect(toggle.label).toEqual({ rawtext: [{ text: TIMELINE_SETTINGS_MARKER }, { translate: 'simplayer.timeline.settings.open' }] });
+            expect(toggle.options).toEqual({ defaultValue: false });
         });
 
         it('labels the current page out of the page count', () => {
@@ -203,7 +202,7 @@ describe('TimelineForm', () => {
         it('applies painted cells and closes', () => {
             const result = submit(new TimelineForm(player, understudy), values => { values[cellIndex(JUMP, 3)] = true; });
             expect(timeline.getTrack('jump').isActive(3)).toBe(true);
-            expect(result).toEqual({ nextPage: void 0, nextTrackPage: void 0, addTrackType: void 0 });
+            expect(result).toEqual({ nextPage: void 0, nextTrackPage: void 0, openSettings: false });
         });
 
         it('applies cells for the page being edited', () => {
@@ -339,9 +338,9 @@ describe('TimelineForm', () => {
             expect(timeline.getTrack('select:2')).toBeDefined();
         });
 
-        it('returns the chosen track type to add', () => {
-            const result = submit(new TimelineForm(player, understudy), values => { values[BASE.add] = 2; });
-            expect(result.addTrackType).toBe('look');
+        it('asks to open the settings when the settings toggle is ticked', () => {
+            const result = submit(new TimelineForm(player, understudy), values => { values[BASE.settings] = true; });
+            expect(result.openSettings).toBe(true);
         });
     });
 
@@ -391,12 +390,18 @@ describe('TimelineForm', () => {
             expect(showSpy.mock.contexts[1].trackPage).toBe(1);
         });
 
-        it('opens the add-track form for the chosen type on the current pages', async () => {
+        it('opens the settings page on the current pages when the settings toggle is ticked', async () => {
             timeline.setLoopLength(80);
-            await showWith(new TimelineForm(player, understudy, 1), values => { values[BASE.add] = 1; });
+            await showWith(new TimelineForm(player, understudy, 1), values => { values[BASE.settings] = true; });
             scheduler.advanceTicks(1);
-            expect(AddTrackForm).toHaveBeenCalledWith(player, understudy, 'select', 1, 0);
-            expect(vi.mocked(AddTrackForm).mock.instances[0].show).toHaveBeenCalled();
+            expect(TimelineSettingsForm).toHaveBeenCalledWith(player, understudy, 1, 0);
+            expect(vi.mocked(TimelineSettingsForm).mock.instances[0].show).toHaveBeenCalled();
+        });
+
+        it('opens on the last tick page when the requested one no longer exists', () => {
+            const form = new TimelineForm(player, understudy, 4).build();
+            expect(form.elements[cellIndex(ATTACK, 0)].label).toBe(`${TIMELINE_CELL_MARKER}1`);
+            expect(form.elements.at(-1).text.rawtext[1]).toEqual({ translate: 'simplayer.timeline.page.current', with: ['1', '1'] });
         });
     });
 });

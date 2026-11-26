@@ -19,7 +19,8 @@ export class PlayerTimelineCommand extends VanillaCommand {
                 "The timeline is the same data the other simplayer commands use, so `/playeraction`, `/playermove`, `/playerlook`, " +
                 "`/playerselect`, `/playersneak`, `/playersprint` and `/playerglide` all show up here as tracks. " +
                 "Tracks made by `interval` or `continuous` keep their own length, shown next to their name, and one-time actions show as `(once)` until they run.\n\n" +
-                "Use `Add Track` to add a track with a parameter, such as selecting a slot, moving in a direction, or looking at or moving to a target. " +
+                "Tick `Open Settings` and save to open the settings page. There you can add a track with a parameter, such as selecting a slot, moving in a direction, or looking at or moving to a target, " +
+                "and give any looping track its own loop length or put it back on the shared loop length. " +
                 "Saving a track with a parameter and no active cells removes it.\n\n" +
                 "Loops made in the editor are aligned to the world tick, so saving at different times keeps the same timing. " +
                 "`Use (tick)` uses the held item on each selected tick, while `Use (hold)` starts using the item at the start of a span " +

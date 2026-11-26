@@ -1,8 +1,8 @@
 import { system } from "@minecraft/server";
 import { ModalFormData } from "@minecraft/server-ui";
 import { Timeline } from "./Timeline";
-import { ALWAYS_PRESENT_TYPES, PARAMETERISED_TYPES } from "./TrackTypes";
-import { AddTrackForm } from "./AddTrackForm";
+import { ALWAYS_PRESENT_TYPES } from "./TrackTypes";
+import { TimelineSettingsForm } from "./TimelineSettingsForm";
 import { forceShow } from "../../../../include/utils";
 import Understudies from "../Understudies";
 
@@ -12,6 +12,7 @@ export const TIMELINE_CELL_MARKER = '§c§e§l§r';
 export const TIMELINE_PAGE_MARKER = '§p§a§g§r';
 export const TIMELINE_TRACK_PAGE_MARKER = '§t§p§g§r';
 export const TIMELINE_DISABLED_CELL_MARKER = '§d§i§s§r';
+export const TIMELINE_SETTINGS_MARKER = '§s§e§t§r';
 
 export class TimelineForm {
     static ROW_STRIDE = Timeline.PAGE_WIDTH + 1;
@@ -55,6 +56,7 @@ export class TimelineForm {
         const timeline = this.#timeline;
         const trackPageCount = TimelineForm.trackPageCount(timeline);
         this.#trackPage = Math.min(this.#trackPage, trackPageCount - 1);
+        this.#page = Math.min(this.#page, timeline.pageCount - 1);
         const form = new ModalFormData().title({ rawtext: [
             { text: TIMELINE_FORM_MARKER },
             { translate: 'simplayer.timeline.title', with: [this.#understudy.name] }
@@ -66,7 +68,7 @@ export class TimelineForm {
         form.slider({ translate: 'simplayer.timeline.looplength' }, Timeline.MIN_LOOP_LENGTH, Timeline.MAX_LOOP_LENGTH, { valueStep: 1, defaultValue: timeline.loopLength });
         this.#addPageSlider(form, TIMELINE_PAGE_MARKER, 'simplayer.timeline.page', this.#page, timeline.pageCount);
         this.#addPageSlider(form, TIMELINE_TRACK_PAGE_MARKER, 'simplayer.timeline.trackpage', this.#trackPage, trackPageCount);
-        form.dropdown({ translate: 'simplayer.timeline.addtrack' }, ['none', ...PARAMETERISED_TYPES].map(type => ({ translate: `simplayer.timeline.addtrack.${type}` })), { defaultValueIndex: 0 });
+        form.toggle({ rawtext: [{ text: TIMELINE_SETTINGS_MARKER }, { translate: 'simplayer.timeline.settings.open' }] }, { defaultValue: false });
         form.label({ rawtext: this.#pageLabel(timeline.pageCount, trackPageCount) });
         form.submitButton({ translate: 'simplayer.timeline.save' });
         return form;
@@ -79,13 +81,13 @@ export class TimelineForm {
         const selectedTrackPage = this.#selectedPage(formValues[trailingStart + 2], this.#trackPage, TimelineForm.trackPageCount(timeline));
         const lengthChanged = this.#applyLoopLength(timeline, formValues[trailingStart]);
         const rowsRemoved = this.#rows.filter((track, row) => this.#applyRow(timeline, track, row, formValues)).length > 0;
-        const addTrackType = PARAMETERISED_TYPES[formValues[trailingStart + 3] - 1];
+        const openSettings = formValues[trailingStart + 3] === true;
         if (!lengthChanged && !rowsRemoved && selectedPage === this.#page && selectedTrackPage === this.#trackPage)
-            return { nextPage: void 0, nextTrackPage: void 0, addTrackType };
+            return { nextPage: void 0, nextTrackPage: void 0, openSettings };
         return {
             nextPage: Math.min(selectedPage, timeline.pageCount - 1),
             nextTrackPage: Math.min(selectedTrackPage, TimelineForm.trackPageCount(timeline) - 1),
-            addTrackType
+            openSettings
         };
     }
 
@@ -98,11 +100,11 @@ export class TimelineForm {
                 this.#player.sendMessage(Understudies.getNotOnlineMessage(this.#understudy.name));
                 return;
             }
-            const { nextPage, nextTrackPage, addTrackType } = this.apply(response.formValues);
+            const { nextPage, nextTrackPage, openSettings } = this.apply(response.formValues);
             const page = nextPage ?? this.#page;
             const trackPage = nextTrackPage ?? this.#trackPage;
-            if (addTrackType !== void 0)
-                system.run(() => new AddTrackForm(this.#player, this.#understudy, addTrackType, page, trackPage).show());
+            if (openSettings)
+                system.run(() => new TimelineSettingsForm(this.#player, this.#understudy, page, trackPage).show());
             else if (nextPage !== void 0)
                 system.run(() => new TimelineForm(this.#player, this.#understudy, page, trackPage).show());
         } catch (error) {

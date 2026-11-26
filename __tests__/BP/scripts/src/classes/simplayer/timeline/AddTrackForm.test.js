@@ -3,6 +3,7 @@ import { scheduler } from '@forestoflight/minecraft-vitest-mocks';
 import { CustomForm, ObservableNumber, ObservableString } from '@minecraft/server-ui';
 import { AddTrackForm } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/AddTrackForm';
 import { TimelineForm } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/TimelineForm';
+import { TimelineSettingsForm } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/TimelineSettingsForm';
 import { Timeline } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/Timeline';
 
 vi.mock('../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies', () => ({
@@ -267,13 +268,14 @@ describe('AddTrackForm', () => {
     });
 
     describe('back', () => {
-        it('closes and reopens the timeline where it came from', () => {
+        it('closes and returns to the settings page for the same timeline pages', () => {
+            const settingsSpy = vi.spyOn(TimelineSettingsForm.prototype, 'show').mockImplementation(() => {});
             const form = open('look', 1, 3);
             button(form, 'simplayer.timeline.addtrack.back').onClick();
             scheduler.advanceTicks(1);
             expect(form.close).toHaveBeenCalled();
-            expect(showSpy.mock.contexts[0].page).toBe(1);
-            expect(showSpy.mock.contexts[0].trackPage).toBe(3);
+            expect(settingsSpy).toHaveBeenCalledTimes(1);
+            expect(showSpy).not.toHaveBeenCalled();
             expect(timeline.tracks).toHaveLength(13);
         });
     });

@@ -86,6 +86,23 @@ export class Timeline {
             this.#alwaysPresent[slot] = alwaysPresentTrack(type);
     }
 
+    setTrackLength(key, length) {
+        const track = this.getTrack(key);
+        if (track === void 0 || !track.loops)
+            return false;
+        if (length === Track.SHARED) {
+            track.length = Track.SHARED;
+            track.originTick = 0;
+            track.dropOffsetsFrom(this.#loopLength);
+            return true;
+        }
+        if (!Number.isInteger(length) || length < 1)
+            return false;
+        track.length = length;
+        track.dropOffsetsFrom(length);
+        return true;
+    }
+
     removeType(type) {
         this.#extras = this.#extras.filter(track => track.type !== type);
     }

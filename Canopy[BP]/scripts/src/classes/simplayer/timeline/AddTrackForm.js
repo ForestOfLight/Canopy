@@ -2,6 +2,7 @@ import { system } from "@minecraft/server";
 import { CustomForm, ObservableBoolean, ObservableNumber, ObservableString, ObservableUIRawMessage } from "@minecraft/server-ui";
 import { MOVE_DIRECTIONS } from "./TrackTypes";
 import { TimelineForm } from "./TimelineForm";
+import { TimelineSettingsForm } from "./TimelineSettingsForm";
 import { CARDINAL_ROTATIONS, getViewedBlock, getViewedBlockFaceLocation, getViewedEntity } from "../targeting";
 import Understudies from "../Understudies";
 import { InvalidTrackTargetError } from "../../errors/InvalidTrackTargetError";
@@ -39,7 +40,7 @@ export class AddTrackForm {
         form.button({ translate: 'simplayer.timeline.addtrack.submit' }, () => this.#submit(form, choice, axes, showError));
         form.button({ translate: 'simplayer.timeline.addtrack.back' }, () => {
             form.close();
-            this.#reopenTimeline(this.#trackPage);
+            system.run(() => new TimelineSettingsForm(this.#player, this.#understudy, this.#page, this.#trackPage).show());
         });
         form.closeButton();
         form.show();

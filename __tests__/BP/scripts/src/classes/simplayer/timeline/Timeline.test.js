@@ -142,6 +142,46 @@ describe('Timeline', () => {
         });
     });
 
+    describe('setTrackLength', () => {
+        it('gives a shared track its own length and drops offsets past it', () => {
+            const attack = timeline.getTrack('attack');
+            attack.setActive(3, true, 20);
+            attack.setActive(10, true, 20);
+            expect(timeline.setTrackLength('attack', 7)).toBe(true);
+            expect(attack.length).toBe(7);
+            expect(attack.activeOffsets()).toEqual([3]);
+            expect(timeline.getTrack('attack')).toBe(attack);
+        });
+
+        it('returns a track to the shared loop aligned to the world tick', () => {
+            const jump = timeline.setLooping('jump', void 0, { length: 30, ticks: [0, 25] });
+            jump.originTick = 107;
+            expect(timeline.setTrackLength('jump', Track.SHARED)).toBe(true);
+            expect(jump.length).toBe(Track.SHARED);
+            expect(jump.originTick).toBe(0);
+            expect(jump.activeOffsets()).toEqual([0]);
+        });
+
+        it('keeps the origin of a track given a new fixed length', () => {
+            const jump = timeline.setLooping('jump', void 0, { length: 30, ticks: [0] });
+            jump.originTick = 107;
+            timeline.setTrackLength('jump', 12);
+            expect(jump.originTick).toBe(107);
+        });
+
+        it.each([0, -3, 2.5, '7', undefined])('rejects a length of %j', (length) => {
+            expect(timeline.setTrackLength('attack', length)).toBe(false);
+            expect(timeline.getTrack('attack').length).toBe(Track.SHARED);
+        });
+
+        it('rejects a missing or one-shot track', () => {
+            const once = timeline.addOneShot('jump', void 0, { delay: 4 });
+            expect(timeline.setTrackLength('select:1', 5)).toBe(false);
+            expect(timeline.setTrackLength(once.key, 5)).toBe(false);
+            expect(once.length).toBe(5);
+        });
+    });
+
     describe('pageCount', () => {
         it('covers the longest track', () => {
             timeline.setLooping('jump', void 0, { length: 41, ticks: [0] });
