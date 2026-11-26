@@ -5,6 +5,8 @@ import { Track } from "./Track";
 import { Timeline } from "./Timeline";
 import { TimelineForm } from "./TimelineForm";
 import { AddTrackForm } from "./AddTrackForm";
+import { applyPreset, exportPreset } from "./preset/TimelinePreset";
+import { InvalidPresetError } from "../../errors/InvalidPresetError";
 import Understudies from "../Understudies";
 
 export class TimelineSettingsForm {
@@ -31,6 +33,8 @@ export class TimelineSettingsForm {
         this.#addRemoveTrack(form);
         form.divider();
         this.#addLengthSection(form);
+        form.divider();
+        this.#addPresetSection(form);
         form.button({ translate: 'simplayer.timeline.settings.back' }, () => {
             form.close();
             this.#reopenTimeline();
@@ -169,7 +173,37 @@ export class TimelineSettingsForm {
         return ticks <= Timeline.MAX_LOOP_LENGTH ? ticks : void 0;
     }
 
-    #reopenTimeline(trackPage = this.#trackPage) {
-        system.run(() => new TimelineForm(this.#player, this.#understudy, this.#page, trackPage).show());
+    #addPresetSection(form) {
+        const preset = new ObservableString(exportPreset(this.#timeline), { clientWritable: true });
+        form.header({ translate: 'simplayer.timeline.settings.preset' });
+        form.spacer();
+        form.label({ translate: 'simplayer.timeline.settings.preset.description' });
+        form.spacer();
+        form.textField({ translate: 'simplayer.timeline.settings.preset.field' }, preset);
+        form.spacer();
+        const showError = this.#addErrorLabel(form);
+        form.button({ translate: 'simplayer.timeline.settings.preset.apply' }, () => this.#applyPreset(form, preset.getData(), showError));
+    }
+
+    #applyPreset(form, preset, showError) {
+        if (!this.#isConnected(form))
+            return;
+        let dropped;
+        try {
+            ({ dropped } = applyPreset(this.#timeline, preset));
+        } catch (error) {
+            if (!(error instanceof InvalidPresetError))
+                throw error;
+            showError(error.reason);
+            return;
+        }
+        for (const source of dropped)
+            this.#player.sendMessage({ translate: 'simplayer.timeline.preset.dropped', with: [source] });
+        form.close();
+        this.#reopenTimeline(0, 0);
+    }
+
+    #reopenTimeline(trackPage = this.#trackPage, page = this.#page) {
+        system.run(() => new TimelineForm(this.#player, this.#understudy, page, trackPage).show());
     }
 }

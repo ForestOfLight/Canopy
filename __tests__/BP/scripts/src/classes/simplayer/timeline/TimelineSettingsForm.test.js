@@ -1,4 +1,5 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { world } from '@minecraft/server';
 import { scheduler } from '@forestoflight/minecraft-vitest-mocks';
 import { CustomForm, ObservableBoolean, ObservableNumber, ObservableString } from '@minecraft/server-ui';
 import { TimelineSettingsForm } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/TimelineSettingsForm';
@@ -44,8 +45,16 @@ describe('TimelineSettingsForm', () => {
         return form.getControl('toggle');
     }
 
+    function textField(form, key) {
+        return form.controls.find(control => control.type === 'textField' && control.label.translate === key);
+    }
+
     function ticksField(form) {
-        return form.getControl('textField');
+        return textField(form, 'simplayer.timeline.settings.ticks');
+    }
+
+    function presetField(form) {
+        return textField(form, 'simplayer.timeline.settings.preset.field');
     }
 
     function errorLabels(form) {
@@ -57,7 +66,16 @@ describe('TimelineSettingsForm', () => {
     }
 
     function lengthError(form) {
+        const applyIndex = form.controls.indexOf(button(form, 'simplayer.timeline.settings.apply'));
+        return errorLabels(form).filter(label => form.controls.indexOf(label) < applyIndex).at(-1);
+    }
+
+    function presetError(form) {
         return errorLabels(form).at(-1);
+    }
+
+    function applyPresetButton(form) {
+        return button(form, 'simplayer.timeline.settings.preset.apply');
     }
 
     function hasLabel(form, key) {
@@ -334,6 +352,66 @@ describe('TimelineSettingsForm', () => {
             expect(form.close).toHaveBeenCalled();
             expect(showSpy.mock.contexts[0].page).toBe(1);
             expect(showSpy.mock.contexts[0].trackPage).toBe(2);
+        });
+    });
+    describe('preset', () => {
+        it('shows the current timeline preset in an editable field', () => {
+            timeline.getOrCreate('attack').setActive(0, true, timeline.loopLength);
+            const form = open();
+            expect(presetField(form).observable).toBeInstanceOf(ObservableString);
+            expect(presetField(form).observable.options).toEqual({ clientWritable: true });
+            expect(presetField(form).observable.getData()).toBe('v1;20;attack:0');
+            expect(form.controls.some(control => control.type === 'header' && control.label.translate === 'simplayer.timeline.settings.preset')).toBe(true);
+            expect(hasLabel(form, 'simplayer.timeline.settings.preset.description')).toBe(true);
+            expect(applyPresetButton(form)).toBeDefined();
+            expect(presetError(form).options.visible.getData()).toBe(false);
+        });
+
+        it('shows the preset of an empty timeline', () => {
+            expect(presetField(open()).observable.getData()).toBe('v1;20');
+        });
+
+        it('applies an edited preset and returns to the first page of the timeline', () => {
+            const form = open(1, 2);
+            presetField(form).observable.setData('v1;40;jump:3');
+            applyPresetButton(form).onClick();
+            expect(timeline.loopLength).toBe(40);
+            expect(timeline.getTrack('jump').activeOffsets()).toEqual([3]);
+            expect(form.close).toHaveBeenCalled();
+            scheduler.advanceTicks(1);
+            expect(showSpy).toHaveBeenCalled();
+            expect(showSpy.mock.contexts[0].page).toBe(0);
+            expect(showSpy.mock.contexts[0].trackPage).toBe(0);
+        });
+
+        it('shows an error and stays open for an invalid preset', () => {
+            timeline.getOrCreate('attack');
+            const form = open();
+            presetField(form).observable.setData('v1;0');
+            applyPresetButton(form).onClick();
+            expect(presetError(form).label.getData()).toEqual({ translate: 'simplayer.timeline.preset.error.looplength' });
+            expect(presetError(form).options.visible.getData()).toBe(true);
+            expect(form.close).not.toHaveBeenCalled();
+            expect(timeline.tracks.map(track => track.key)).toEqual(['attack']);
+        });
+
+        it('tells the player about dropped tracks', () => {
+            world.getEntity.mockReturnValue(void 0);
+            const form = open();
+            presetField(form).observable.setData('v1;20;attack:0;look/entity/5:0');
+            applyPresetButton(form).onClick();
+            expect(player.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.timeline.preset.dropped', with: ['look/entity/5:0'] });
+            expect(timeline.tracks.map(track => track.key)).toEqual(['attack']);
+        });
+
+        it('reports a simplayer that left before the preset was applied', () => {
+            const form = open();
+            understudy.isConnected = () => false;
+            presetField(form).observable.setData('v1;40;jump:3');
+            applyPresetButton(form).onClick();
+            expect(form.close).toHaveBeenCalled();
+            expect(player.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.notonline', with: ['Bot'] });
+            expect(timeline.loopLength).toBe(20);
         });
     });
 });
