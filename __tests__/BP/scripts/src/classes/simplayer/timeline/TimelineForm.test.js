@@ -97,6 +97,29 @@ describe('TimelineForm', () => {
             expect(header[20].text).toBe(`${TIMELINE_HEADER_MARKER}40`);
         });
 
+        it('shows at most 200 ticks of pages for a longer track', () => {
+            timeline.setLooping('jump', void 0, { length: 500, ticks: [0] });
+            const form = new TimelineForm(player, understudy).build();
+            expect(form.elements[BASE.page].maximumValue).toBe(10);
+            expect(form.elements.at(-1).text.rawtext[1]).toEqual({ translate: 'simplayer.timeline.page.current', with: ['1', '10'] });
+        });
+
+        it('opens the 200 tick page when a later page is asked for', () => {
+            timeline.setLooping('jump', void 0, { length: 500, ticks: [0] });
+            const form = new TimelineForm(player, understudy, 14).build();
+            const header = form.elements.slice(0, STRIDE);
+            expect(header[20].text).toBe(`${TIMELINE_HEADER_MARKER}200`);
+            expect(form.elements.at(-1).text.rawtext[1]).toEqual({ translate: 'simplayer.timeline.page.current', with: ['10', '10'] });
+        });
+
+        it('never reopens past the 200 tick page', () => {
+            timeline.setLooping('jump', void 0, { length: 500, ticks: [0] });
+            const timelineForm = new TimelineForm(player, understudy, 9);
+            const values = defaultValues(timelineForm.build());
+            values[BASE.loop] = 30;
+            expect(timelineForm.apply(values).nextPage).toBe(9);
+        });
+
         it('leaves the header blank past the end of the longest loop', () => {
             timeline.setLoopLength(30);
             const header = new TimelineForm(player, understudy, 1).build().elements.slice(0, STRIDE);

@@ -20,6 +20,7 @@ export class TimelineForm {
     static TRAILING_CONTROL_COUNT = 5;
     static ROWS_PER_PAGE = 13;
     static HEADER_INTERVAL = 5;
+    static MAX_PAGES = Timeline.MAX_LOOP_LENGTH / Timeline.PAGE_WIDTH;
 
     #player;
     #understudy;
@@ -32,6 +33,10 @@ export class TimelineForm {
         this.#understudy = understudy;
         this.#page = page;
         this.#trackPage = trackPage;
+    }
+
+    static pageCount(timeline) {
+        return Math.min(timeline.pageCount, TimelineForm.MAX_PAGES);
     }
 
     static trackPageCount(timeline) {
@@ -58,7 +63,8 @@ export class TimelineForm {
         const timeline = this.#timeline;
         const trackPageCount = TimelineForm.trackPageCount(timeline);
         this.#trackPage = Math.min(this.#trackPage, trackPageCount - 1);
-        this.#page = Math.min(this.#page, timeline.pageCount - 1);
+        const pageCount = TimelineForm.pageCount(timeline);
+        this.#page = Math.min(this.#page, pageCount - 1);
         const form = new ModalFormData().title({ rawtext: [
             { text: TIMELINE_FORM_MARKER },
             { translate: 'simplayer.timeline.title', with: [this.#understudy.name] }
@@ -69,10 +75,10 @@ export class TimelineForm {
         for (const track of this.#rows)
             this.#addRow(form, track, timeline.loopLength);
         form.slider({ translate: 'simplayer.timeline.looplength' }, Timeline.MIN_LOOP_LENGTH, Timeline.MAX_LOOP_LENGTH, { valueStep: 1, defaultValue: timeline.loopLength });
-        this.#addPageSlider(form, TIMELINE_PAGE_MARKER, 'simplayer.timeline.page', this.#page, timeline.pageCount);
+        this.#addPageSlider(form, TIMELINE_PAGE_MARKER, 'simplayer.timeline.page', this.#page, pageCount);
         this.#addPageSlider(form, TIMELINE_TRACK_PAGE_MARKER, 'simplayer.timeline.trackpage', this.#trackPage, trackPageCount);
         form.toggle({ rawtext: [{ text: TIMELINE_SETTINGS_MARKER }, { translate: 'simplayer.timeline.settings.open' }] }, { defaultValue: false });
-        form.label({ rawtext: this.#pageLabel(timeline.pageCount, trackPageCount) });
+        form.label({ rawtext: this.#pageLabel(pageCount, trackPageCount) });
         form.submitButton({ translate: 'simplayer.timeline.save' });
         return form;
     }
@@ -80,7 +86,7 @@ export class TimelineForm {
     apply(formValues) {
         const timeline = this.#timeline;
         const trailingStart = (this.#rows.length + 1) * TimelineForm.ROW_STRIDE;
-        const selectedPage = this.#selectedPage(formValues[trailingStart + 1], this.#page, timeline.pageCount);
+        const selectedPage = this.#selectedPage(formValues[trailingStart + 1], this.#page, TimelineForm.pageCount(timeline));
         const selectedTrackPage = this.#selectedPage(formValues[trailingStart + 2], this.#trackPage, TimelineForm.trackPageCount(timeline));
         const lengthChanged = this.#applyLoopLength(timeline, formValues[trailingStart]);
         this.#rows.forEach((track, row) => this.#applyRow(timeline, track, row, formValues));
@@ -88,7 +94,7 @@ export class TimelineForm {
         if (!lengthChanged && selectedPage === this.#page && selectedTrackPage === this.#trackPage)
             return { nextPage: void 0, nextTrackPage: void 0, openSettings };
         return {
-            nextPage: Math.min(selectedPage, timeline.pageCount - 1),
+            nextPage: Math.min(selectedPage, TimelineForm.pageCount(timeline) - 1),
             nextTrackPage: Math.min(selectedTrackPage, TimelineForm.trackPageCount(timeline) - 1),
             openSettings
         };

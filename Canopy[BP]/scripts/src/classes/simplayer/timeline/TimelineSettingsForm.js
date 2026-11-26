@@ -2,6 +2,7 @@ import { system } from "@minecraft/server";
 import { CustomForm, ObservableBoolean, ObservableNumber, ObservableString, ObservableUIRawMessage } from "@minecraft/server-ui";
 import { TRACK_TYPES, TRACK_TYPE_ORDER, trackTypeLabel } from "./TrackTypes";
 import { Track } from "./Track";
+import { Timeline } from "./Timeline";
 import { TimelineForm } from "./TimelineForm";
 import { AddTrackForm } from "./AddTrackForm";
 import Understudies from "../Understudies";
@@ -73,6 +74,7 @@ export class TimelineSettingsForm {
         }
         const choice = new ObservableNumber(0, { clientWritable: true });
         form.dropdown({ translate: 'simplayer.timeline.settings.remove.track' }, choice, tracks.map((track, value) => ({ label: { rawtext: track.baseLabel() }, value })));
+        form.spacer();
         const showError = this.#addErrorLabel(form);
         form.button({ translate: 'simplayer.timeline.settings.remove' }, () => this.#removeTrack(form, tracks[choice.getData()], showError));
         form.spacer();
@@ -163,7 +165,8 @@ export class TimelineSettingsForm {
     #parseTicks(text) {
         if (!/^\d+$/.test(text.trim()))
             return void 0;
-        return Number(text.trim());
+        const ticks = Number(text.trim());
+        return ticks <= Timeline.MAX_LOOP_LENGTH ? ticks : void 0;
     }
 
     #reopenTimeline(trackPage = this.#trackPage) {
