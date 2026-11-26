@@ -1,7 +1,7 @@
 import { system } from "@minecraft/server";
 import { ModalFormData } from "@minecraft/server-ui";
 import { Timeline } from "./Timeline";
-import { PARAMETERISED_TYPES } from "./TrackTypes";
+import { ALWAYS_PRESENT_TYPES, PARAMETERISED_TYPES } from "./TrackTypes";
 import { AddTrackForm } from "./AddTrackForm";
 import { forceShow } from "../../../../include/utils";
 import Understudies from "../Understudies";
@@ -10,31 +10,41 @@ export const TIMELINE_FORM_MARKER = '§t§i§m§e§l§i§n§e§r';
 export const TIMELINE_ROW_MARKER = '§r§o§w§r';
 export const TIMELINE_CELL_MARKER = '§c§e§l§r';
 export const TIMELINE_PAGE_MARKER = '§p§a§g§r';
+export const TIMELINE_TRACK_PAGE_MARKER = '§t§p§g§r';
 
 export class TimelineForm {
     static DISABLED_CELL_LABEL = '-';
     static ROW_STRIDE = Timeline.PAGE_WIDTH + 1;
-    static TRAILING_CONTROL_COUNT = 4;
-    static MAX_ROWS = 40;
+    static TRAILING_CONTROL_COUNT = 5;
+    static ROWS_PER_PAGE = ALWAYS_PRESENT_TYPES.length;
 
     #player;
     #understudy;
     #page;
+    #trackPage;
     #rows = [];
 
-    constructor(player, understudy, page = 0) {
+    constructor(player, understudy, page = 0, trackPage = 0) {
         this.#player = player;
         this.#understudy = understudy;
         this.#page = page;
+        this.#trackPage = trackPage;
     }
 
-    static rowCountMarker(rows) {
-        const [tens, ones] = String(rows).padStart(2, '0');
-        return `§q§${tens}§${ones}§r`;
+    static trackPageCount(timeline) {
+        return Math.max(1, Math.ceil(timeline.tracks.length / TimelineForm.ROWS_PER_PAGE));
+    }
+
+    static trackPageOf(timeline, track) {
+        return Math.max(0, Math.floor(timeline.tracks.indexOf(track) / TimelineForm.ROWS_PER_PAGE));
     }
 
     get page() {
         return this.#page;
+    }
+
+    get trackPage() {
+        return this.#trackPage;
     }
 
     get #timeline() {
@@ -43,22 +53,21 @@ export class TimelineForm {
 
     build() {
         const timeline = this.#timeline;
-        const tracks = timeline.tracks.slice(0, TimelineForm.MAX_ROWS);
+        const trackPageCount = TimelineForm.trackPageCount(timeline);
+        this.#trackPage = Math.min(this.#trackPage, trackPageCount - 1);
         const form = new ModalFormData().title({ rawtext: [
             { text: TIMELINE_FORM_MARKER },
-            { text: TimelineForm.rowCountMarker(tracks.length) },
             { translate: 'simplayer.timeline.title', with: [this.#understudy.name] }
         ] });
-        this.#rows = tracks;
-        for (const track of tracks)
+        const firstRow = this.#trackPage * TimelineForm.ROWS_PER_PAGE;
+        this.#rows = timeline.tracks.slice(firstRow, firstRow + TimelineForm.ROWS_PER_PAGE);
+        for (const track of this.#rows)
             this.#addRow(form, track, timeline.loopLength);
         form.slider({ translate: 'simplayer.timeline.looplength' }, Timeline.MIN_LOOP_LENGTH, Timeline.MAX_LOOP_LENGTH, { valueStep: 1, defaultValue: timeline.loopLength });
-        if (timeline.pageCount > 1)
-            form.slider({ rawtext: [{ text: TIMELINE_PAGE_MARKER }, { translate: 'simplayer.timeline.page' }] }, 1, timeline.pageCount, { valueStep: 1, defaultValue: this.#page + 1 });
-        else
-            form.label({ text: '' });
+        this.#addPageSlider(form, TIMELINE_PAGE_MARKER, 'simplayer.timeline.page', this.#page, timeline.pageCount);
+        this.#addPageSlider(form, TIMELINE_TRACK_PAGE_MARKER, 'simplayer.timeline.trackpage', this.#trackPage, trackPageCount);
         form.dropdown({ translate: 'simplayer.timeline.addtrack' }, ['none', ...PARAMETERISED_TYPES].map(type => ({ translate: `simplayer.timeline.addtrack.${type}` })), { defaultValueIndex: 0 });
-        form.label({ rawtext: [{ text: TIMELINE_PAGE_MARKER }, { translate: 'simplayer.timeline.page.current', with: [String(this.#page + 1), String(timeline.pageCount)] }] });
+        form.label({ rawtext: this.#pageLabel(timeline.pageCount, trackPageCount) });
         form.submitButton({ translate: 'simplayer.timeline.save' });
         return form;
     }
@@ -66,14 +75,18 @@ export class TimelineForm {
     apply(formValues) {
         const timeline = this.#timeline;
         const trailingStart = this.#rows.length * TimelineForm.ROW_STRIDE;
-        const pageCountBefore = timeline.pageCount;
-        const selectedPage = this.#selectedPage(formValues[trailingStart + 1], pageCountBefore);
+        const selectedPage = this.#selectedPage(formValues[trailingStart + 1], this.#page, timeline.pageCount);
+        const selectedTrackPage = this.#selectedPage(formValues[trailingStart + 2], this.#trackPage, TimelineForm.trackPageCount(timeline));
         const lengthChanged = this.#applyLoopLength(timeline, formValues[trailingStart]);
-        this.#rows.forEach((track, row) => this.#applyRow(timeline, track, row, formValues));
-        const addTrackType = PARAMETERISED_TYPES[formValues[trailingStart + 2] - 1];
-        if (!lengthChanged && selectedPage === this.#page)
-            return { nextPage: void 0, addTrackType };
-        return { nextPage: Math.min(selectedPage, timeline.pageCount - 1), addTrackType };
+        const rowsRemoved = this.#rows.filter((track, row) => this.#applyRow(timeline, track, row, formValues)).length > 0;
+        const addTrackType = PARAMETERISED_TYPES[formValues[trailingStart + 3] - 1];
+        if (!lengthChanged && !rowsRemoved && selectedPage === this.#page && selectedTrackPage === this.#trackPage)
+            return { nextPage: void 0, nextTrackPage: void 0, addTrackType };
+        return {
+            nextPage: Math.min(selectedPage, timeline.pageCount - 1),
+            nextTrackPage: Math.min(selectedTrackPage, TimelineForm.trackPageCount(timeline) - 1),
+            addTrackType
+        };
     }
 
     async show() {
@@ -85,24 +98,30 @@ export class TimelineForm {
                 this.#player.sendMessage(Understudies.getNotOnlineMessage(this.#understudy.name));
                 return;
             }
-            const { nextPage, addTrackType } = this.apply(response.formValues);
+            const { nextPage, nextTrackPage, addTrackType } = this.apply(response.formValues);
             const page = nextPage ?? this.#page;
+            const trackPage = nextTrackPage ?? this.#trackPage;
             if (addTrackType !== void 0)
-                this.#openAddTrack(addTrackType, page);
+                system.run(() => new AddTrackForm(this.#player, this.#understudy, addTrackType, page, trackPage).show());
             else if (nextPage !== void 0)
-                system.run(() => new TimelineForm(this.#player, this.#understudy, nextPage).show());
+                system.run(() => new TimelineForm(this.#player, this.#understudy, page, trackPage).show());
         } catch (error) {
             this.#player.sendMessage(`§cError: ${error.message}`);
         }
     }
 
-    #openAddTrack(type, page) {
-        if (this.#timeline.tracks.length >= TimelineForm.MAX_ROWS) {
-            this.#player.sendMessage({ translate: 'simplayer.timeline.addtrack.full', with: [String(TimelineForm.MAX_ROWS)] });
-            system.run(() => new TimelineForm(this.#player, this.#understudy, page).show());
-            return;
-        }
-        system.run(() => new AddTrackForm(this.#player, this.#understudy, type, page).show());
+    #addPageSlider(form, marker, labelKey, page, pageCount) {
+        if (pageCount > 1)
+            form.slider({ rawtext: [{ text: marker }, { translate: labelKey }] }, 1, pageCount, { valueStep: 1, defaultValue: page + 1 });
+        else
+            form.label({ text: '' });
+    }
+
+    #pageLabel(pageCount, trackPageCount) {
+        const rawtext = [{ text: TIMELINE_PAGE_MARKER }, { translate: 'simplayer.timeline.page.current', with: [String(this.#page + 1), String(pageCount)] }];
+        if (trackPageCount > 1)
+            rawtext.push({ text: '   ' }, { translate: 'simplayer.timeline.trackpage.current', with: [String(this.#trackPage + 1), String(trackPageCount)] });
+        return rawtext;
     }
 
     #addRow(form, track, loopLength) {
@@ -119,12 +138,14 @@ export class TimelineForm {
 
     #applyRow(timeline, track, row, formValues) {
         if (timeline.getTrack(track.key) !== track)
-            return;
+            return false;
         const cellStart = row * TimelineForm.ROW_STRIDE + 1;
         for (let column = 0; column < Timeline.PAGE_WIDTH; column++)
             track.setActive(this.#offsetAt(column), formValues[cellStart + column] === true, timeline.loopLength);
-        if (!track.isAlwaysPresent() && track.isEmpty())
-            timeline.remove(track.key);
+        if (track.isAlwaysPresent() || !track.isEmpty())
+            return false;
+        timeline.remove(track.key);
+        return true;
     }
 
     #applyLoopLength(timeline, loopLength) {
@@ -137,9 +158,9 @@ export class TimelineForm {
         return this.#page * Timeline.PAGE_WIDTH + column;
     }
 
-    #selectedPage(pageNumber, pageCount) {
+    #selectedPage(pageNumber, currentPage, pageCount) {
         if (!Number.isInteger(pageNumber) || pageNumber < 1 || pageNumber > pageCount)
-            return this.#page;
+            return currentPage;
         return pageNumber - 1;
     }
 }

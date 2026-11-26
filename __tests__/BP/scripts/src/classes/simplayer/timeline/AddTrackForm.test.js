@@ -148,13 +148,21 @@ describe('AddTrackForm', () => {
             await addTrackForm.show();
         }
 
-        it('reopens the timeline on its page after adding', async () => {
+        it('reopens the timeline on its page and the track page holding the new track', async () => {
             const showSpy = vi.spyOn(TimelineForm.prototype, 'show').mockImplementation(async () => {});
-            await showWith(new AddTrackForm(player, understudy, 'select', 2), { canceled: false, formValues: [0] });
+            await showWith(new AddTrackForm(player, understudy, 'select', 2, 0), { canceled: false, formValues: [0] });
             scheduler.advanceTicks(1);
             expect(timeline.getTrack('select:0')).toBeDefined();
             expect(showSpy).toHaveBeenCalledTimes(1);
             expect(showSpy.mock.contexts[0].page).toBe(2);
+            expect(showSpy.mock.contexts[0].trackPage).toBe(1);
+        });
+
+        it('reopens the timeline on the track page it came from when nothing was added', async () => {
+            const showSpy = vi.spyOn(TimelineForm.prototype, 'show').mockImplementation(async () => {});
+            await showWith(new AddTrackForm(player, understudy, 'look', 0, 3), { canceled: false, formValues: [6, 'abc', '1', ''] });
+            scheduler.advanceTicks(1);
+            expect(showSpy.mock.contexts[0].trackPage).toBe(3);
         });
 
         it('does not reopen the timeline when canceled', async () => {

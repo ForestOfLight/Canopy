@@ -18,12 +18,14 @@ export class AddTrackForm {
     #understudy;
     #type;
     #page;
+    #trackPage;
 
-    constructor(player, understudy, type, page) {
+    constructor(player, understudy, type, page, trackPage = 0) {
         this.#player = player;
         this.#understudy = understudy;
         this.#type = type;
         this.#page = page;
+        this.#trackPage = trackPage;
     }
 
     build() {
@@ -63,8 +65,9 @@ export class AddTrackForm {
                 this.#player.sendMessage(Understudies.getNotOnlineMessage(this.#understudy.name));
                 return;
             }
-            this.apply(response.formValues);
-            system.run(() => new TimelineForm(this.#player, this.#understudy, this.#page).show());
+            const track = this.apply(response.formValues);
+            const trackPage = track === void 0 ? this.#trackPage : TimelineForm.trackPageOf(this.#understudy.actions.timeline, track);
+            system.run(() => new TimelineForm(this.#player, this.#understudy, this.#page, trackPage).show());
         } catch (error) {
             this.#player.sendMessage(`§cError: ${error.message}`);
         }
