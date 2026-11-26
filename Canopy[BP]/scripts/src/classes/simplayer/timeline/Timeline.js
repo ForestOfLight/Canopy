@@ -104,27 +104,6 @@ export class Timeline {
         this.#loopLength = Timeline.DEFAULT_LOOP_LENGTH;
     }
 
-    isActive(type, tick) {
-        return this.getTrack(type)?.isActive(tick) === true;
-    }
-
-    setActive(type, tick, active) {
-        this.getTrack(type)?.setActive(tick, active, this.#loopLength);
-    }
-
-    fillTrack(type) {
-        for (let tick = 0; tick < this.#loopLength; tick++)
-            this.setActive(type, tick, true);
-    }
-
-    isTrackFull(type) {
-        return this.getTrack(type)?.activeOffsets().length === this.#loopLength;
-    }
-
-    getTick(currentTick) {
-        return currentTick % this.#loopLength;
-    }
-
     #alwaysPresentSlot(key) {
         return ALWAYS_PRESENT_TYPES.indexOf(key);
     }
