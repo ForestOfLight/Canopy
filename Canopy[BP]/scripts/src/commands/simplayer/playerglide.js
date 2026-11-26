@@ -1,4 +1,4 @@
-import { CustomCommandParamType, CommandPermissionLevel, CustomCommandStatus, system } from "@minecraft/server";
+import { CustomCommandParamType, CommandPermissionLevel, CustomCommandStatus } from "@minecraft/server";
 import { VanillaCommand, PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin, ServerCommandOrigin } from "../../../lib/canopy/Canopy";
 import Understudies from "../../classes/simplayer/Understudies";
 
@@ -23,7 +23,11 @@ export class PlayerGlideCommand extends VanillaCommand {
             origin.sendMessage(Understudies.getNotOnlineMessage(playername));
             return;
         }
-        system.run(() => understudy.glide(shouldGlide));
+        const timeline = understudy.actions.timeline;
+        if (shouldGlide)
+            timeline.setLooping('glide', void 0, { length: 1, ticks: [0] });
+        else
+            timeline.clearTrack('glide');
         return { status: CustomCommandStatus.Success };
     }
 }

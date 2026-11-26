@@ -1,5 +1,5 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { system, CustomCommandStatus } from '@minecraft/server';
+import { CustomCommandStatus } from '@minecraft/server';
 import Understudies from '../../../../../../Canopy[BP]/scripts/src/classes/simplayer/Understudies';
 import { playerselectCommand } from '../../../../../../Canopy[BP]/scripts/src/commands/simplayer/playerselect';
 
@@ -16,12 +16,14 @@ vi.mock('../../../../../../Canopy[BP]/scripts/lib/canopy/Canopy', async (importO
 });
 
 describe('playerselectCommand', () => {
+    let mockTimeline;
     let mockUnderstudy;
     let mockOrigin;
 
     beforeEach(() => {
         vi.clearAllMocks();
-        mockUnderstudy = { selectSlot: vi.fn(), name: 'TestBot' };
+        mockTimeline = { addOneShot: vi.fn() };
+        mockUnderstudy = { name: 'TestBot', actions: { timeline: mockTimeline } };
         mockOrigin = { sendMessage: vi.fn() };
     });
 
@@ -44,19 +46,20 @@ describe('playerselectCommand', () => {
         const result = playerselectCommand.playerselectCommand(mockOrigin, 'TestBot', 9);
         expect(result).toBeUndefined();
         expect(mockOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'commands.playerselect.invalidslot', with: ['9'] });
+        expect(mockTimeline.addOneShot).not.toHaveBeenCalled();
     });
 
-    it('returns success and queues selectSlot for valid slot 0', () => {
+    it('returns success and adds a select event for slot 0', () => {
         vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
         const result = playerselectCommand.playerselectCommand(mockOrigin, 'TestBot', 0);
         expect(result.status).toBe(CustomCommandStatus.Success);
-        expect(system.run).toHaveBeenCalled();
+        expect(mockTimeline.addOneShot).toHaveBeenCalledWith('select', { slot: 0 }, { delay: 0 });
     });
 
-    it('returns success and queues selectSlot for valid slot 8', () => {
+    it('returns success and adds a select event for slot 8', () => {
         vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
         const result = playerselectCommand.playerselectCommand(mockOrigin, 'TestBot', 8);
         expect(result.status).toBe(CustomCommandStatus.Success);
-        expect(system.run).toHaveBeenCalled();
+        expect(mockTimeline.addOneShot).toHaveBeenCalledWith('select', { slot: 8 }, { delay: 0 });
     });
 });

@@ -22,70 +22,16 @@ describe('RepeatableAction', () => {
     });
 
     describe('constructor', () => {
-        it('stores understudy, type, intervalTicks, and startTick', () => {
-            system.currentTick = 10;
-            const action = new RepeatableAction(understudy, 'attack', 5);
+        it('stores understudy and type', () => {
+            const action = new RepeatableAction(understudy, 'attack');
             expect(action.understudy).toBe(understudy);
             expect(action.type).toBe('attack');
-            expect(action.intervalTicks).toBe(5);
-            expect(action.startTick).toBe(10);
-        });
-
-        it('defaults intervalTicks to 0', () => {
-            const action = new RepeatableAction(understudy, 'attack');
-            expect(action.intervalTicks).toBe(0);
-        });
-    });
-
-    describe('setInterval', () => {
-        it('updates intervalTicks', () => {
-            const action = new RepeatableAction(understudy, 'attack', 5);
-            action.setInterval(20);
-            expect(action.intervalTicks).toBe(20);
-        });
-    });
-
-    describe('isActionTick', () => {
-        it('always returns true when intervalTicks is 0', () => {
-            const action = new RepeatableAction(understudy, 'attack', 0);
-            system.currentTick = 7;
-            expect(action.isActionTick()).toBe(true);
-        });
-
-        it('returns true when elapsed ticks is a multiple of interval', () => {
-            system.currentTick = 0;
-            const action = new RepeatableAction(understudy, 'attack', 5);
-            system.currentTick = 5;
-            expect(action.isActionTick()).toBe(true);
-        });
-
-        it('returns false when elapsed ticks is not a multiple of interval', () => {
-            system.currentTick = 0;
-            const action = new RepeatableAction(understudy, 'attack', 5);
-            system.currentTick = 3;
-            expect(action.isActionTick()).toBe(false);
         });
     });
 
     describe('while connected', () => {
         beforeEach(() => {
             understudy.join({ location: { x: 0, y: 0, z: 0 }, dimension: world.getDimension('overworld') });
-        });
-
-        describe('onTick', () => {
-            it('calls perform when isActionTick returns true', () => {
-                const action = new RepeatableAction(understudy, REPEATABLE_ACTIONS.ATTACK, 0);
-                action.onTick();
-                expect(action.understudy.simulatedPlayer.attack).toHaveBeenCalled();
-            });
-
-            it('does not call perform when isActionTick returns false', () => {
-                system.currentTick = 0;
-                const action = new RepeatableAction(understudy, REPEATABLE_ACTIONS.ATTACK, 5);
-                system.currentTick = 3;
-                action.onTick();
-                expect(action.understudy.simulatedPlayer.attack).not.toHaveBeenCalled();
-            });
         });
 
         describe('perform', () => {

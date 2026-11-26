@@ -237,7 +237,7 @@ describe('Understudy', () => {
             });
 
             it('runs the actions', () => {
-                understudy.actions.once('attack');
+                understudy.actions.timeline.addOneShot('attack', void 0, { delay: 0 });
                 understudy.onConnectedTick();
                 expect(understudy.actions.isEmpty()).toBe(true);
             });
@@ -644,7 +644,7 @@ describe('Understudy', () => {
 
         describe('stopAll', () => {
             it('clears all actions', () => {
-                understudy.actions.once('attack');
+                understudy.actions.timeline.addOneShot('attack', void 0, { delay: 0 });
                 understudy.stopAll();
                 expect(understudy.actions.isEmpty()).toBe(true);
             });

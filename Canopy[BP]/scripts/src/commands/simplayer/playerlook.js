@@ -1,20 +1,15 @@
-import { ProxyInventoryEntity } from '../../classes/proxy/ProxyInventoryEntity';
 import { CustomCommandParamType, CommandPermissionLevel, CustomCommandStatus, Entity, system } from "@minecraft/server";
 import { VanillaCommand, PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin, ServerCommandOrigin } from "../../../lib/canopy/Canopy";
 import Understudies from "../../classes/simplayer/Understudies";
-import { Vector } from "../../../lib/Vector";
-import { getBlockFaceLocationFromRaycastHit } from "../../classes/simplayer/utils";
+import { CARDINAL_ROTATIONS, getViewedBlockFaceLocation, getViewedEntity } from "../../classes/simplayer/targeting";
+
+export { CARDINAL_ROTATIONS };
 
 export const LOOK_OPTIONS = Object.freeze({
     UP: 'up', DOWN: 'down', NORTH: 'north', SOUTH: 'south',
     EAST: 'east', WEST: 'west', BLOCK: 'block', ENTITY: 'entity',
     ME: 'me', AT: 'at', ROTATION: 'rotation', STOP: 'stop'
 });
-
-export const CARDINAL_ROTATIONS = {
-    up: { x: -90, y: 0 }, down: { x: 90, y: 0 }, north: { x: 0, y: 180 },
-    south: { x: 0, y: 0 }, east: { x: 0, y: -90 }, west: { x: 0, y: 90 }
-};
 
 export class PlayerLookCommand extends VanillaCommand {
     constructor() {
@@ -82,18 +77,17 @@ export class PlayerLookCommand extends VanillaCommand {
     }
 
     #lookAtCardinal(understudy, direction) {
-        system.run(() => understudy.look(CARDINAL_ROTATIONS[direction]));
+        this.#addLook(understudy, { kind: 'cardinal', direction });
     }
 
     #lookAtBlock(origin, understudy) {
         const source = origin.getSource();
         if (source instanceof Entity === false)
             return { status: CustomCommandStatus.Failure, message: 'commands.playerlook.block.entityonly' };
-        const raycastHit = source.getBlockFromViewDirection({ maxDistance: 16*64 });
-        const block = raycastHit?.block;
-        if (block === void 0)
+        const location = getViewedBlockFaceLocation(source);
+        if (location === void 0)
             return { status: CustomCommandStatus.Failure, message: 'commands.playerlook.block.noblock' };
-        system.run(() => understudy.look(getBlockFaceLocationFromRaycastHit(raycastHit)));
+        this.#addLook(understudy, { kind: 'location', location });
         return { status: CustomCommandStatus.Success };
     }
 
@@ -101,30 +95,35 @@ export class PlayerLookCommand extends VanillaCommand {
         const source = origin.getSource();
         if (source instanceof Entity === false)
             return { status: CustomCommandStatus.Failure, message: 'commands.playerlook.entity.entityonly' };
-        const entity = ProxyInventoryEntity.excludeFrom(source.getEntitiesFromViewDirection({ maxDistance: 16*64 }))[0]?.entity;
+        const entity = getViewedEntity(source);
         if (entity === void 0)
             return { status: CustomCommandStatus.Failure, message: 'commands.playerlook.entity.noentity' };
-        system.run(() => understudy.look(entity));
+        this.#addLook(understudy, { kind: 'entity', entity });
         return { status: CustomCommandStatus.Success };
     }
 
     #lookAtMe(origin, understudy) {
         if (origin instanceof ServerCommandOrigin)
             return { status: CustomCommandStatus.Failure, message: 'commands.playerlook.me.noserver' };
-        system.run(() => understudy.look(origin.getSource()));
+        this.#addLook(understudy, { kind: 'entity', entity: origin.getSource() });
         return { status: CustomCommandStatus.Success };
     }
 
     #lookAtLocation(understudy, location) {
-        system.run(() => understudy.look(Vector.from(location)));
+        this.#addLook(understudy, { kind: 'location', location });
     }
 
     #lookRotation(understudy, rotation) {
-        system.run(() => understudy.look(rotation));
+        this.#addLook(understudy, { kind: 'rotation', rotation });
     }
 
     #stopLooking(understudy) {
+        understudy.actions.timeline.removeType('look');
         system.run(() => understudy.stopLooking());
+    }
+
+    #addLook(understudy, target) {
+        understudy.actions.timeline.addOneShot('look', { target }, { delay: 0 });
     }
 }
 

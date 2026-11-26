@@ -1,8 +1,7 @@
-import { ProxyInventoryEntity } from '../../classes/proxy/ProxyInventoryEntity';
 import { CustomCommandParamType, CommandPermissionLevel, CustomCommandStatus, Entity, system } from "@minecraft/server";
 import { VanillaCommand, PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin, ServerCommandOrigin } from "../../../lib/canopy/Canopy";
 import Understudies from "../../classes/simplayer/Understudies";
-import { Vector } from "../../../lib/Vector";
+import { getViewedBlock, getViewedEntity } from "../../classes/simplayer/targeting";
 
 export const MOVE_OPTIONS = Object.freeze({
     FORWARD: 'forward', BACKWARD: 'backward', LEFT: 'left', RIGHT: 'right',
@@ -63,18 +62,18 @@ export class PlayerMoveCommand extends VanillaCommand {
         return { status: CustomCommandStatus.Success };
     }
 
-    #moveRelatively(understudy, moveOption) {
-        system.run(() => understudy.moveRelative(moveOption));
+    #moveRelatively(understudy, direction) {
+        understudy.actions.timeline.setLooping('move', { direction }, { length: 1, ticks: [0] });
     }
 
     #moveToBlock(origin, understudy) {
         const source = origin.getSource();
         if (source instanceof Entity === false)
             return { status: CustomCommandStatus.Failure, message: 'commands.playermove.block.entityonly' };
-        const block = source.getBlockFromViewDirection({ maxDistance: 16*64 })?.block;
+        const block = getViewedBlock(source);
         if (block === void 0)
             return { status: CustomCommandStatus.Failure, message: 'commands.playermove.block.noblock' };
-        system.run(() => understudy.moveLocation(block));
+        this.#addMoveTo(understudy, { kind: 'block', block });
         return { status: CustomCommandStatus.Success };
     }
 
@@ -82,26 +81,33 @@ export class PlayerMoveCommand extends VanillaCommand {
         const source = origin.getSource();
         if (source instanceof Entity === false)
             return { status: CustomCommandStatus.Failure, message: 'commands.playermove.entity.entityonly' };
-        const entity = ProxyInventoryEntity.excludeFrom(source.getEntitiesFromViewDirection({ maxDistance: 16*64 }))[0]?.entity;
+        const entity = getViewedEntity(source);
         if (entity === void 0)
             return { status: CustomCommandStatus.Failure, message: 'commands.playermove.entity.noentity' };
-        system.run(() => understudy.moveLocation(entity));
+        this.#addMoveTo(understudy, { kind: 'entity', entity });
         return { status: CustomCommandStatus.Success };
     }
 
     #moveToMe(origin, understudy) {
         if (origin instanceof ServerCommandOrigin)
             return { status: CustomCommandStatus.Failure, message: 'commands.playermove.me.noserver' };
-        system.run(() => understudy.moveLocation(origin.getSource()));
+        this.#addMoveTo(understudy, { kind: 'entity', entity: origin.getSource() });
         return { status: CustomCommandStatus.Success };
     }
 
     #moveToLocation(understudy, location) {
-        system.run(() => understudy.moveLocation(Vector.from(location)));
+        this.#addMoveTo(understudy, { kind: 'location', location });
     }
 
     #stopMoving(understudy) {
+        const timeline = understudy.actions.timeline;
+        timeline.removeType('move');
+        timeline.removeType('moveto');
         system.run(() => understudy.stopMoving());
+    }
+
+    #addMoveTo(understudy, target) {
+        understudy.actions.timeline.addOneShot('moveto', { target }, { delay: 0 });
     }
 }
 

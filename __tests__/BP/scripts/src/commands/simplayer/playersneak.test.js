@@ -16,12 +16,14 @@ vi.mock('../../../../../../Canopy[BP]/scripts/lib/canopy/Canopy', async (importO
 });
 
 describe('playersneakCommand', () => {
+    let mockTimeline;
     let mockUnderstudy;
     let mockOrigin;
 
     beforeEach(() => {
         vi.clearAllMocks();
-        mockUnderstudy = { sneak: vi.fn(), name: 'TestBot' };
+        mockTimeline = { setLooping: vi.fn(), clearTrack: vi.fn() };
+        mockUnderstudy = { name: 'TestBot', actions: { timeline: mockTimeline } };
         mockOrigin = { sendMessage: vi.fn() };
     });
 
@@ -32,17 +34,19 @@ describe('playersneakCommand', () => {
         expect(mockOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.notonline', with: ['TestBot'] });
     });
 
-    it('returns success and queues sneak(true) when online', () => {
+    it('holds sneak on every tick when true', () => {
         vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
-        const result = playersneakCommand.playersneakCommand(undefined, 'TestBot', true);
+        const result = playersneakCommand.playersneakCommand(mockOrigin, 'TestBot', true);
         expect(result.status).toBe(CustomCommandStatus.Success);
-        expect(system.run).toHaveBeenCalled();
+        expect(mockTimeline.setLooping).toHaveBeenCalledWith('sneak', void 0, { length: 1, ticks: [0] });
+        expect(system.run).not.toHaveBeenCalled();
     });
 
-    it('returns success and queues sneak(false) when online', () => {
+    it('clears the sneak track when false', () => {
         vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
-        const result = playersneakCommand.playersneakCommand(undefined, 'TestBot', false);
+        const result = playersneakCommand.playersneakCommand(mockOrigin, 'TestBot', false);
         expect(result.status).toBe(CustomCommandStatus.Success);
-        expect(system.run).toHaveBeenCalled();
+        expect(mockTimeline.clearTrack).toHaveBeenCalledWith('sneak');
+        expect(mockTimeline.setLooping).not.toHaveBeenCalled();
     });
 });

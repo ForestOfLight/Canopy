@@ -1,4 +1,3 @@
-import { system } from "@minecraft/server";
 import { UnknownRepeatingActionError } from "../errors/UnknownRepeatingActionError";
 
 export const REPEATABLE_ACTIONS = Object.freeze({
@@ -16,27 +15,10 @@ export const REPEATABLE_ACTIONS = Object.freeze({
 export class RepeatableAction {
     understudy;
     type;
-    intervalTicks = 0;
-    startTick;
 
-    constructor(understudy, type, intervalTicks = 0) {
+    constructor(understudy, type) {
         this.understudy = understudy;
         this.type = type;
-        this.intervalTicks = intervalTicks;
-        this.startTick = system.currentTick;
-    }
-
-    onTick() {
-        if (this.isActionTick())
-            this.perform();
-    }
-
-    setInterval(newIntervalTicks) {
-        this.intervalTicks = newIntervalTicks;
-    }
-
-    isActionTick() {
-        return (system.currentTick - this.startTick) % this.intervalTicks === 0 || this.intervalTicks === 0;
     }
 
     perform() {
