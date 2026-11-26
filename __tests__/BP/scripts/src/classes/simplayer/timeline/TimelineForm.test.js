@@ -1,6 +1,6 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { scheduler } from '@forestoflight/minecraft-vitest-mocks';
-import { TimelineForm, TIMELINE_FORM_MARKER, TIMELINE_ROW_MARKER, TIMELINE_CELL_MARKER, TIMELINE_PAGE_MARKER, TIMELINE_TRACK_PAGE_MARKER, TIMELINE_DISABLED_CELL_MARKER, TIMELINE_SETTINGS_MARKER } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/TimelineForm';
+import { TimelineForm, TIMELINE_FORM_MARKER, TIMELINE_ROW_MARKER, TIMELINE_CELL_MARKER, TIMELINE_PAGE_MARKER, TIMELINE_TRACK_PAGE_MARKER, TIMELINE_DISABLED_CELL_MARKER, TIMELINE_SETTINGS_MARKER, TIMELINE_HEADER_MARKER } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/TimelineForm';
 import { TimelineSettingsForm } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/TimelineSettingsForm';
 import { TimelineWelcomeForm } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/TimelineWelcomeForm';
 import { Timeline } from '../../../../../../../Canopy[BP]/scripts/src/classes/simplayer/timeline/Timeline';
@@ -27,15 +27,15 @@ const ATTACK = 0;
 const JUMP = 9;
 
 function rowIndex(row) {
-    return row * STRIDE;
+    return (row + 1) * STRIDE;
 }
 
 function cellIndex(row, column) {
-    return row * STRIDE + 1 + column;
+    return (row + 1) * STRIDE + 1 + column;
 }
 
 function trailing(rows) {
-    const start = rows * STRIDE;
+    const start = (rows + 1) * STRIDE;
     return { loop: start, page: start + 1, trackPage: start + 2, settings: start + 3, label: start + 4 };
 }
 
@@ -72,13 +72,44 @@ describe('TimelineForm', () => {
     describe('build', () => {
         it('lays out a label and twenty cells per track, then five trailing controls', () => {
             const form = new TimelineForm(player, understudy).build();
-            expect(form.elements).toHaveLength(BASE_ROWS * STRIDE + 5);
+            expect(form.elements).toHaveLength((BASE_ROWS + 1) * STRIDE + 5);
             expect(form.elements[rowIndex(0)].type).toBe('label');
             expect(form.elements[rowIndex(0)].text.rawtext[0]).toEqual({ text: TIMELINE_ROW_MARKER });
-            expect(form.elements.slice(1, STRIDE).every(element => element.type === 'toggle')).toBe(true);
+            expect(form.elements.slice(rowIndex(0) + 1, rowIndex(1)).every(element => element.type === 'toggle')).toBe(true);
             expect(form.elements[BASE.loop].type).toBe('slider');
             expect(form.elements[BASE.settings].type).toBe('toggle');
             expect(form.elements[BASE.label].type).toBe('label');
+        });
+
+        it('starts with a header row of labels numbering every fifth tick', () => {
+            const header = new TimelineForm(player, understudy).build().elements.slice(0, STRIDE);
+            expect(header.every(element => element.type === 'label')).toBe(true);
+            expect(header.map(element => element.text)).toEqual([
+                TIMELINE_HEADER_MARKER,
+                ...Array.from({ length: 20 }, (_, column) => (column + 1) % 5 === 0 ? `${TIMELINE_HEADER_MARKER}${column + 1}` : TIMELINE_HEADER_MARKER)
+            ]);
+        });
+
+        it('numbers the header for the tick page being shown', () => {
+            timeline.setLoopLength(40);
+            const header = new TimelineForm(player, understudy, 1).build().elements.slice(0, STRIDE);
+            expect(header[5].text).toBe(`${TIMELINE_HEADER_MARKER}25`);
+            expect(header[20].text).toBe(`${TIMELINE_HEADER_MARKER}40`);
+        });
+
+        it('leaves the header blank past the end of the longest loop', () => {
+            timeline.setLoopLength(30);
+            const header = new TimelineForm(player, understudy, 1).build().elements.slice(0, STRIDE);
+            expect(header[10].text).toBe(`${TIMELINE_HEADER_MARKER}30`);
+            expect(header[15].text).toBe(TIMELINE_HEADER_MARKER);
+            expect(header[20].text).toBe(TIMELINE_HEADER_MARKER);
+        });
+
+        it('keeps the header numbers when the first track has a short loop', () => {
+            timeline.setLooping('attack', void 0, { length: 3, ticks: [0] });
+            timeline.tracks.forEach(track => track.type !== 'attack' && timeline.remove(track.key));
+            const header = new TimelineForm(player, understudy).build().elements.slice(0, STRIDE);
+            expect(header[20].text).toBe(`${TIMELINE_HEADER_MARKER}20`);
         });
 
         it('labels each row with its track label', () => {
@@ -89,8 +120,8 @@ describe('TimelineForm', () => {
         });
 
         it('marks only the cells, row labels and page controls with distinct markers', () => {
-            const markers = [TIMELINE_ROW_MARKER, TIMELINE_CELL_MARKER, TIMELINE_PAGE_MARKER, TIMELINE_TRACK_PAGE_MARKER, TIMELINE_DISABLED_CELL_MARKER, TIMELINE_SETTINGS_MARKER];
-            expect(new Set(markers).size).toBe(6);
+            const markers = [TIMELINE_ROW_MARKER, TIMELINE_CELL_MARKER, TIMELINE_PAGE_MARKER, TIMELINE_TRACK_PAGE_MARKER, TIMELINE_DISABLED_CELL_MARKER, TIMELINE_SETTINGS_MARKER, TIMELINE_HEADER_MARKER];
+            expect(new Set(markers).size).toBe(7);
             for (const marker of markers)
                 expect(markers.filter(other => other.includes(marker))).toEqual([marker]);
             for (const marker of markers)
@@ -116,23 +147,23 @@ describe('TimelineForm', () => {
         it('shows the first thirteen tracks on the first track page', () => {
             addExtraTracks(timeline, 2);
             const form = new TimelineForm(player, understudy).build();
-            expect(form.elements).toHaveLength(BASE_ROWS * STRIDE + 5);
+            expect(form.elements).toHaveLength((BASE_ROWS + 1) * STRIDE + 5);
             expect(form.elements[rowIndex(0)].text.rawtext[1]).toEqual({ translate: 'simplayer.action.attack' });
         });
 
         it('shows up to thirteen added tracks on each later track page', () => {
             addExtraTracks(timeline, 15);
             const second = new TimelineForm(player, understudy, 0, 1).build();
-            expect(second.elements).toHaveLength(BASE_ROWS * STRIDE + 5);
+            expect(second.elements).toHaveLength((BASE_ROWS + 1) * STRIDE + 5);
             expect(second.elements[rowIndex(0)].text.rawtext[1]).toEqual({ translate: 'simplayer.timeline.track.look' });
             const third = new TimelineForm(player, understudy, 0, 2).build();
-            expect(third.elements).toHaveLength(2 * STRIDE + 5);
+            expect(third.elements).toHaveLength(3 * STRIDE + 5);
         });
 
         it('opens the last track page when the requested one no longer exists', () => {
             addExtraTracks(timeline, 1);
             const form = new TimelineForm(player, understudy, 0, 5).build();
-            expect(form.elements).toHaveLength(STRIDE + 5);
+            expect(form.elements).toHaveLength(2 * STRIDE + 5);
         });
 
         it('offers a page slider over every page at the current page', () => {

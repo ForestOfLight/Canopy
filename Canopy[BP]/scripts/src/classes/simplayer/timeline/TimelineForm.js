@@ -13,11 +13,13 @@ export const TIMELINE_PAGE_MARKER = '§p§a§g§r';
 export const TIMELINE_TRACK_PAGE_MARKER = '§t§p§g§r';
 export const TIMELINE_DISABLED_CELL_MARKER = '§d§i§s§r';
 export const TIMELINE_SETTINGS_MARKER = '§s§e§t§r';
+export const TIMELINE_HEADER_MARKER = '§h§e§d§r';
 
 export class TimelineForm {
     static ROW_STRIDE = Timeline.PAGE_WIDTH + 1;
     static TRAILING_CONTROL_COUNT = 5;
     static ROWS_PER_PAGE = 13;
+    static HEADER_INTERVAL = 5;
 
     #player;
     #understudy;
@@ -63,6 +65,7 @@ export class TimelineForm {
         ] });
         const firstRow = this.#trackPage * TimelineForm.ROWS_PER_PAGE;
         this.#rows = timeline.tracks.slice(firstRow, firstRow + TimelineForm.ROWS_PER_PAGE);
+        this.#addHeader(form, this.#longestLoop(timeline));
         for (const track of this.#rows)
             this.#addRow(form, track, timeline.loopLength);
         form.slider({ translate: 'simplayer.timeline.looplength' }, Timeline.MIN_LOOP_LENGTH, Timeline.MAX_LOOP_LENGTH, { valueStep: 1, defaultValue: timeline.loopLength });
@@ -76,7 +79,7 @@ export class TimelineForm {
 
     apply(formValues) {
         const timeline = this.#timeline;
-        const trailingStart = this.#rows.length * TimelineForm.ROW_STRIDE;
+        const trailingStart = (this.#rows.length + 1) * TimelineForm.ROW_STRIDE;
         const selectedPage = this.#selectedPage(formValues[trailingStart + 1], this.#page, timeline.pageCount);
         const selectedTrackPage = this.#selectedPage(formValues[trailingStart + 2], this.#trackPage, TimelineForm.trackPageCount(timeline));
         const lengthChanged = this.#applyLoopLength(timeline, formValues[trailingStart]);
@@ -130,6 +133,19 @@ export class TimelineForm {
         return rawtext;
     }
 
+    #addHeader(form, longestLoop) {
+        form.label(TIMELINE_HEADER_MARKER);
+        for (let column = 0; column < Timeline.PAGE_WIDTH; column++) {
+            const tick = this.#offsetAt(column) + 1;
+            const numbered = tick % TimelineForm.HEADER_INTERVAL === 0 && tick <= longestLoop;
+            form.label(numbered ? `${TIMELINE_HEADER_MARKER}${tick}` : TIMELINE_HEADER_MARKER);
+        }
+    }
+
+    #longestLoop(timeline) {
+        return Math.max(timeline.loopLength, ...timeline.tracks.map(track => track.effectiveLength(timeline.loopLength)));
+    }
+
     #addRow(form, track, loopLength) {
         form.label({ rawtext: [{ text: TIMELINE_ROW_MARKER }, ...track.labelParts()] });
         const length = track.effectiveLength(loopLength);
@@ -145,7 +161,7 @@ export class TimelineForm {
     #applyRow(timeline, track, row, formValues) {
         if (timeline.getTrack(track.key) !== track)
             return;
-        const cellStart = row * TimelineForm.ROW_STRIDE + 1;
+        const cellStart = (row + 1) * TimelineForm.ROW_STRIDE + 1;
         for (let column = 0; column < Timeline.PAGE_WIDTH; column++)
             track.setActive(this.#offsetAt(column), formValues[cellStart + column] === true, timeline.loopLength);
     }

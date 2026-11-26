@@ -1565,9 +1565,9 @@
 		"anchor_to": "top_left",
 		"grid_item_template": "server_form.canopy_timeline_grid_item",
 		"collection_name": "custom_form",
-		"size": [ 210, 117 ],
-		"offset": [ 48, 9 ],
-		"grid_dimensions": [ 21, 13 ]
+		"size": [ 210, 126 ],
+		"offset": [ 48, 0 ],
+		"grid_dimensions": [ 21, 14 ]
 	},
 	"canopy_timeline_grid_item": {
 		"type": "panel",
@@ -1683,7 +1683,7 @@
 						},
 						{
 							"binding_type": "view",
-							"source_property_name": "(((#collection_index = 5) or (#collection_index = 10) or (#collection_index = 15) or (#collection_index = 20) or (#collection_index = 26) or (#collection_index = 31) or (#collection_index = 36) or (#collection_index = 41) or (#collection_index = 47) or (#collection_index = 52) or (#collection_index = 57) or (#collection_index = 62) or (#collection_index = 68) or (#collection_index = 73) or (#collection_index = 78) or (#collection_index = 83) or (#collection_index = 89) or (#collection_index = 94) or (#collection_index = 99) or (#collection_index = 104) or (#collection_index = 110) or (#collection_index = 115) or (#collection_index = 120) or (#collection_index = 125) or (#collection_index = 131) or (#collection_index = 136) or (#collection_index = 141) or (#collection_index = 146) or (#collection_index = 152) or (#collection_index = 157) or (#collection_index = 162) or (#collection_index = 167) or (#collection_index = 173) or (#collection_index = 178) or (#collection_index = 183) or (#collection_index = 188) or (#collection_index = 194) or (#collection_index = 199) or (#collection_index = 204) or (#collection_index = 209) or (#collection_index = 215) or (#collection_index = 220) or (#collection_index = 225) or (#collection_index = 230) or (#collection_index = 236) or (#collection_index = 241) or (#collection_index = 246) or (#collection_index = 251) or (#collection_index = 257) or (#collection_index = 262) or (#collection_index = 267) or (#collection_index = 272)) and (not ((#custom_text - '§c§e§l§r') = #custom_text)))",
+							"source_property_name": "(((#collection_index = 5) or (#collection_index = 10) or (#collection_index = 15) or (#collection_index = 20) or (#collection_index = 26) or (#collection_index = 31) or (#collection_index = 36) or (#collection_index = 41) or (#collection_index = 47) or (#collection_index = 52) or (#collection_index = 57) or (#collection_index = 62) or (#collection_index = 68) or (#collection_index = 73) or (#collection_index = 78) or (#collection_index = 83) or (#collection_index = 89) or (#collection_index = 94) or (#collection_index = 99) or (#collection_index = 104) or (#collection_index = 110) or (#collection_index = 115) or (#collection_index = 120) or (#collection_index = 125) or (#collection_index = 131) or (#collection_index = 136) or (#collection_index = 141) or (#collection_index = 146) or (#collection_index = 152) or (#collection_index = 157) or (#collection_index = 162) or (#collection_index = 167) or (#collection_index = 173) or (#collection_index = 178) or (#collection_index = 183) or (#collection_index = 188) or (#collection_index = 194) or (#collection_index = 199) or (#collection_index = 204) or (#collection_index = 209) or (#collection_index = 215) or (#collection_index = 220) or (#collection_index = 225) or (#collection_index = 230) or (#collection_index = 236) or (#collection_index = 241) or (#collection_index = 246) or (#collection_index = 251) or (#collection_index = 257) or (#collection_index = 262) or (#collection_index = 267) or (#collection_index = 272) or (#collection_index = 278) or (#collection_index = 283) or (#collection_index = 288) or (#collection_index = 293)) and (not ((#custom_text - '§c§e§l§r') = #custom_text)))",
 							"target_property_name": "#visible"
 						}
 					]
@@ -1710,24 +1710,24 @@
 						},
 						{
 							"binding_type": "view",
-							"source_property_name": "(((#collection_index = 5) or (#collection_index = 10) or (#collection_index = 15) or (#collection_index = 20) or (#collection_index = 26) or (#collection_index = 31) or (#collection_index = 36) or (#collection_index = 41) or (#collection_index = 47) or (#collection_index = 52) or (#collection_index = 57) or (#collection_index = 62) or (#collection_index = 68) or (#collection_index = 73) or (#collection_index = 78) or (#collection_index = 83) or (#collection_index = 89) or (#collection_index = 94) or (#collection_index = 99) or (#collection_index = 104) or (#collection_index = 110) or (#collection_index = 115) or (#collection_index = 120) or (#collection_index = 125) or (#collection_index = 131) or (#collection_index = 136) or (#collection_index = 141) or (#collection_index = 146) or (#collection_index = 152) or (#collection_index = 157) or (#collection_index = 162) or (#collection_index = 167) or (#collection_index = 173) or (#collection_index = 178) or (#collection_index = 183) or (#collection_index = 188) or (#collection_index = 194) or (#collection_index = 199) or (#collection_index = 204) or (#collection_index = 209) or (#collection_index = 215) or (#collection_index = 220) or (#collection_index = 225) or (#collection_index = 230) or (#collection_index = 236) or (#collection_index = 241) or (#collection_index = 246) or (#collection_index = 251) or (#collection_index = 257) or (#collection_index = 262) or (#collection_index = 267) or (#collection_index = 272)) and (not ((#custom_text - '§c§e§l§r') = #custom_text)))",
+							"source_property_name": "(((#collection_index = 5) or (#collection_index = 10) or (#collection_index = 15) or (#collection_index = 20) or (#collection_index = 26) or (#collection_index = 31) or (#collection_index = 36) or (#collection_index = 41) or (#collection_index = 47) or (#collection_index = 52) or (#collection_index = 57) or (#collection_index = 62) or (#collection_index = 68) or (#collection_index = 73) or (#collection_index = 78) or (#collection_index = 83) or (#collection_index = 89) or (#collection_index = 94) or (#collection_index = 99) or (#collection_index = 104) or (#collection_index = 110) or (#collection_index = 115) or (#collection_index = 120) or (#collection_index = 125) or (#collection_index = 131) or (#collection_index = 136) or (#collection_index = 141) or (#collection_index = 146) or (#collection_index = 152) or (#collection_index = 157) or (#collection_index = 162) or (#collection_index = 167) or (#collection_index = 173) or (#collection_index = 178) or (#collection_index = 183) or (#collection_index = 188) or (#collection_index = 194) or (#collection_index = 199) or (#collection_index = 204) or (#collection_index = 209) or (#collection_index = 215) or (#collection_index = 220) or (#collection_index = 225) or (#collection_index = 230) or (#collection_index = 236) or (#collection_index = 241) or (#collection_index = 246) or (#collection_index = 251) or (#collection_index = 257) or (#collection_index = 262) or (#collection_index = 267) or (#collection_index = 272) or (#collection_index = 278) or (#collection_index = 283) or (#collection_index = 288) or (#collection_index = 293)) and (not ((#custom_text - '§c§e§l§r') = #custom_text)))",
 							"target_property_name": "#visible"
 						}
 					]
 				}
 			},
 			{
-				"tick_number": {
+				"header_label": {
 					"type": "label",
-					"text": "#tick_label",
+					"text": "#header_label",
 					"localize": false,
 					"font_scale_factor": 0.7,
 					"color": [ 0.8157, 0.8196, 0.8314 ],
 					"shadow": false,
 					"size": [ "default", "default" ],
-					"offset": [ 0, -1 ],
-					"anchor_from": "top_middle",
-					"anchor_to": "bottom_middle",
+					"offset": [ 0, 0.5 ],
+					"anchor_from": "center",
+					"anchor_to": "center",
 					"layer": 4,
 					"bindings": [
 						{
@@ -1736,17 +1736,13 @@
 							"binding_collection_name": "custom_form"
 						},
 						{
-							"binding_type": "collection_details",
-							"binding_collection_name": "custom_form"
+							"binding_type": "view",
+							"source_property_name": "(#custom_text - '§h§e§d§r')",
+							"target_property_name": "#header_label"
 						},
 						{
 							"binding_type": "view",
-							"source_property_name": "(#custom_text - '§c§e§l§r')",
-							"target_property_name": "#tick_label"
-						},
-						{
-							"binding_type": "view",
-							"source_property_name": "(((#collection_index = 5) or (#collection_index = 10) or (#collection_index = 15) or (#collection_index = 20)) and (not ((#custom_text - '§c§e§l§r') = #custom_text)) and ((#custom_text - '§d§i§s§r') = #custom_text))",
+							"source_property_name": "(not ((#custom_text - '§h§e§d§r') = #custom_text))",
 							"target_property_name": "#visible"
 						}
 					]
