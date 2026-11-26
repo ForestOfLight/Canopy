@@ -97,6 +97,12 @@ describe('TimelinePreset', () => {
         expect(timeline.tracks[0].params.target).toEqual({ kind: 'block', block });
     });
 
+    it('resolves block targets in custom and fully written dimensions', () => {
+        applyPreset(timeline, 'v1;20;moveto/block/canopy:sky/1,2,3:0;moveto/block/minecraft:the_end/4,5,6:0');
+        expect(world.getDimension).toHaveBeenCalledWith('canopy:sky');
+        expect(world.getDimension).toHaveBeenCalledWith('minecraft:the_end');
+    });
+
     describe('drops tracks whose target is missing and applies the rest', () => {
         function expectDropped(segment) {
             expect(applyPreset(timeline, `v1;20;attack:0;${segment}`)).toEqual({ dropped: [segment] });

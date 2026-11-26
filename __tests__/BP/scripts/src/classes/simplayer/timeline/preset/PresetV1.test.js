@@ -64,6 +64,12 @@ describe('PresetV1', () => {
             expect(PresetV1.encode(timeline)).toBe('20;look/north:0;look/rot/90,-12.346:0;look/pos/1.5,64,-3.25:0;moveto/block/overworld/10,64,-3:0;moveto/entity/-12884901887:0');
         });
 
+        it('writes a custom dimension with its namespace', () => {
+            const skyBlock = { dimension: { id: 'canopy:sky' }, location: { x: 1, y: 2, z: 3 } };
+            timeline.getOrCreate('moveto', { target: { kind: 'block', block: skyBlock } }).setActive(0, true, timeline.loopLength);
+            expect(PresetV1.encode(timeline)).toBe('20;moveto/block/canopy:sky/1,2,3:0');
+        });
+
         it('encodes invalid blocks and entities from their stored ids', () => {
             timeline.getOrCreate('moveto', { target: { kind: 'block', block } });
             timeline.getOrCreate('look', { target: { kind: 'entity', entity } });
@@ -94,6 +100,20 @@ describe('PresetV1', () => {
             ]);
         });
 
+        it('decodes custom and fully written dimensions', () => {
+            const dimensions = PresetV1.decode('20;moveto/block/canopy:sky/1,2,3:0;moveto/block/minecraft:the_end/1,2,3:0').tracks.map(track => track.params.target.dimension);
+            expect(dimensions).toEqual(['canopy:sky', 'minecraft:the_end']);
+        });
+
+        it('round-trips a custom dimension block', () => {
+            const skyBlock = { dimension: { id: 'my_pack.v2:deep-sky' }, location: { x: -5, y: 70, z: 12 } };
+            timeline.getOrCreate('moveto', { target: { kind: 'block', block: skyBlock } }).setActive(4, true, timeline.loopLength);
+            expect(PresetV1.decode(PresetV1.encode(timeline)).tracks[0]).toEqual({
+                source: 'moveto/block/my_pack.v2:deep-sky/-5,70,12:4', type: 'moveto',
+                params: { target: { kind: 'block', dimension: 'my_pack.v2:deep-sky', location: { x: -5, y: 70, z: 12 } } }, length: null, ticks: [4]
+            });
+        });
+
         it('round-trips what it encodes', () => {
             paint(timeline, timeline.getOrCreate('attack'), [0, 3, 4, 5, 19]);
             paint(timeline, timeline.getOrCreate('select', { slot: 8 }), [1]);
@@ -122,7 +142,8 @@ describe('PresetV1', () => {
 
         it('rejects unreadable tracks naming the segment', () => {
             const segments = ['Attack:0', 'attack', 'attack:a', 'attack:5-2', 'attack:-1', 'attack/1:0', 'select/0:0', 'select/10:0',
-                'move/up:0', 'look/rot/1:0', 'look/pos/1,2:0', 'look/pos/1e3,2,3:0', 'moveto/north:0', 'moveto/block/overworld/1.5,2,3:0', 'look/entity/abc:0'];
+                'move/up:0', 'look/rot/1:0', 'look/pos/1,2:0', 'look/pos/1e3,2,3:0', 'moveto/north:0', 'moveto/block/overworld/1.5,2,3:0', 'look/entity/abc:0',
+                'moveto/block/a:b:c/1,2,3:0', 'moveto/block/:sky/1,2,3:0', 'moveto/block/canopy:/1,2,3:0', 'attack:0:5'];
             for (const segment of segments)
                 expect(reasonOf(`20;${segment}`)).toEqual({ translate: 'simplayer.timeline.preset.error.track', with: [segment] });
         });

@@ -12,7 +12,7 @@ export function exportPreset(timeline) {
 
 function findBlock(dimensionId, location) {
     try {
-        return world.getDimension(`minecraft:${dimensionId}`).getBlock(location);
+        return world.getDimension(dimensionId.includes(':') ? dimensionId : `minecraft:${dimensionId}`).getBlock(location);
     } catch {
         return void 0;
     }

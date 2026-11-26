@@ -9,7 +9,7 @@ const CARDINAL_DIRECTIONS = Object.freeze(Object.keys(CARDINAL_ROTATIONS));
 const WHOLE_NUMBER = /^\d+$/;
 const INTEGER = /^-?\d+$/;
 const DECIMAL = /^-?\d+(\.\d+)?$/;
-const DIMENSION = /^[a-z_]+$/;
+const DIMENSION = /^([A-Za-z0-9_.-]+:)?[A-Za-z0-9_.-]+$/;
 
 function formatDecimal(value) {
     return String(Math.round(value * 1000) / 1000);
@@ -157,7 +157,7 @@ function expandRanges(ranges) {
 
 function parseTrack(source, loopLength) {
     const unreadable = new InvalidPresetError({ translate: 'simplayer.timeline.preset.error.track', with: [source] });
-    const colon = source.indexOf(':');
+    const colon = source.lastIndexOf(':');
     if (colon === -1)
         throw unreadable;
     const [path, lengthText, ...extra] = source.slice(0, colon).split('@');
