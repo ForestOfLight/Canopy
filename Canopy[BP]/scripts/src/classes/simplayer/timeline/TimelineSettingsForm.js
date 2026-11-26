@@ -50,7 +50,6 @@ export class TimelineSettingsForm {
         form.dropdown({ translate: 'simplayer.timeline.settings.addtrack.type' }, choice, TRACK_TYPE_ORDER.map((type, value) => ({ label: trackTypeLabel(type), value })));
         form.spacer();
         form.button({ translate: 'simplayer.timeline.settings.addtrack' }, () => this.#addTrack(form, TRACK_TYPE_ORDER[choice.getData()]));
-        form.spacer();
     }
 
     #addTrack(form, type) {
@@ -81,7 +80,6 @@ export class TimelineSettingsForm {
         form.spacer();
         const showError = this.#addErrorLabel(form);
         form.button({ translate: 'simplayer.timeline.settings.remove' }, () => this.#removeTrack(form, tracks[choice.getData()], showError));
-        form.spacer();
     }
 
     #removeTrack(form, track, showError) {
