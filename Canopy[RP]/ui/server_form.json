@@ -833,10 +833,9 @@
 											"size": [ "100%", "100%c" ],
 											"controls": [
 												{
-													"grid_1@server_form.canopy_timeline_grid": {
-														"size": [ 210, 9 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 1 ],
+													"grid_1": {
+														"type": "panel",
+														"size": [ "100%", 9 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -846,14 +845,22 @@
 																"source_property_name": "(not ((#title_text - '§q§0§1§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 9 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 1 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_2@server_form.canopy_timeline_grid": {
-														"size": [ 210, 18 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 2 ],
+													"grid_2": {
+														"type": "panel",
+														"size": [ "100%", 18 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -863,14 +870,22 @@
 																"source_property_name": "(not ((#title_text - '§q§0§2§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 18 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 2 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_3@server_form.canopy_timeline_grid": {
-														"size": [ 210, 27 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 3 ],
+													"grid_3": {
+														"type": "panel",
+														"size": [ "100%", 27 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -880,14 +895,22 @@
 																"source_property_name": "(not ((#title_text - '§q§0§3§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 27 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 3 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_4@server_form.canopy_timeline_grid": {
-														"size": [ 210, 36 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 4 ],
+													"grid_4": {
+														"type": "panel",
+														"size": [ "100%", 36 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -897,14 +920,22 @@
 																"source_property_name": "(not ((#title_text - '§q§0§4§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 36 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 4 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_5@server_form.canopy_timeline_grid": {
-														"size": [ 210, 45 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 5 ],
+													"grid_5": {
+														"type": "panel",
+														"size": [ "100%", 45 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -914,14 +945,22 @@
 																"source_property_name": "(not ((#title_text - '§q§0§5§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 45 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 5 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_6@server_form.canopy_timeline_grid": {
-														"size": [ 210, 54 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 6 ],
+													"grid_6": {
+														"type": "panel",
+														"size": [ "100%", 54 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -931,14 +970,22 @@
 																"source_property_name": "(not ((#title_text - '§q§0§6§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 54 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 6 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_7@server_form.canopy_timeline_grid": {
-														"size": [ 210, 63 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 7 ],
+													"grid_7": {
+														"type": "panel",
+														"size": [ "100%", 63 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -948,14 +995,22 @@
 																"source_property_name": "(not ((#title_text - '§q§0§7§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 63 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 7 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_8@server_form.canopy_timeline_grid": {
-														"size": [ 210, 72 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 8 ],
+													"grid_8": {
+														"type": "panel",
+														"size": [ "100%", 72 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -965,14 +1020,22 @@
 																"source_property_name": "(not ((#title_text - '§q§0§8§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 72 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 8 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_9@server_form.canopy_timeline_grid": {
-														"size": [ 210, 81 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 9 ],
+													"grid_9": {
+														"type": "panel",
+														"size": [ "100%", 81 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -982,14 +1045,22 @@
 																"source_property_name": "(not ((#title_text - '§q§0§9§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 81 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 9 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_10@server_form.canopy_timeline_grid": {
-														"size": [ 210, 90 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 10 ],
+													"grid_10": {
+														"type": "panel",
+														"size": [ "100%", 90 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -999,14 +1070,22 @@
 																"source_property_name": "(not ((#title_text - '§q§1§0§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 90 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 10 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_11@server_form.canopy_timeline_grid": {
-														"size": [ 210, 99 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 11 ],
+													"grid_11": {
+														"type": "panel",
+														"size": [ "100%", 99 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1016,14 +1095,22 @@
 																"source_property_name": "(not ((#title_text - '§q§1§1§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 99 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 11 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_12@server_form.canopy_timeline_grid": {
-														"size": [ 210, 108 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 12 ],
+													"grid_12": {
+														"type": "panel",
+														"size": [ "100%", 108 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1033,14 +1120,22 @@
 																"source_property_name": "(not ((#title_text - '§q§1§2§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 108 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 12 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_13@server_form.canopy_timeline_grid": {
-														"size": [ 210, 117 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 13 ],
+													"grid_13": {
+														"type": "panel",
+														"size": [ "100%", 117 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1050,14 +1145,22 @@
 																"source_property_name": "(not ((#title_text - '§q§1§3§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 117 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 13 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_14@server_form.canopy_timeline_grid": {
-														"size": [ 210, 126 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 14 ],
+													"grid_14": {
+														"type": "panel",
+														"size": [ "100%", 126 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1067,14 +1170,22 @@
 																"source_property_name": "(not ((#title_text - '§q§1§4§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 126 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 14 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_15@server_form.canopy_timeline_grid": {
-														"size": [ 210, 135 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 15 ],
+													"grid_15": {
+														"type": "panel",
+														"size": [ "100%", 135 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1084,14 +1195,22 @@
 																"source_property_name": "(not ((#title_text - '§q§1§5§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 135 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 15 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_16@server_form.canopy_timeline_grid": {
-														"size": [ 210, 144 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 16 ],
+													"grid_16": {
+														"type": "panel",
+														"size": [ "100%", 144 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1101,14 +1220,22 @@
 																"source_property_name": "(not ((#title_text - '§q§1§6§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 144 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 16 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_17@server_form.canopy_timeline_grid": {
-														"size": [ 210, 153 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 17 ],
+													"grid_17": {
+														"type": "panel",
+														"size": [ "100%", 153 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1118,14 +1245,22 @@
 																"source_property_name": "(not ((#title_text - '§q§1§7§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 153 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 17 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_18@server_form.canopy_timeline_grid": {
-														"size": [ 210, 162 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 18 ],
+													"grid_18": {
+														"type": "panel",
+														"size": [ "100%", 162 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1135,14 +1270,22 @@
 																"source_property_name": "(not ((#title_text - '§q§1§8§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 162 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 18 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_19@server_form.canopy_timeline_grid": {
-														"size": [ 210, 171 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 19 ],
+													"grid_19": {
+														"type": "panel",
+														"size": [ "100%", 171 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1152,14 +1295,22 @@
 																"source_property_name": "(not ((#title_text - '§q§1§9§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 171 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 19 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_20@server_form.canopy_timeline_grid": {
-														"size": [ 210, 180 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 20 ],
+													"grid_20": {
+														"type": "panel",
+														"size": [ "100%", 180 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1169,14 +1320,22 @@
 																"source_property_name": "(not ((#title_text - '§q§2§0§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 180 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 20 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_21@server_form.canopy_timeline_grid": {
-														"size": [ 210, 189 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 21 ],
+													"grid_21": {
+														"type": "panel",
+														"size": [ "100%", 189 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1186,14 +1345,22 @@
 																"source_property_name": "(not ((#title_text - '§q§2§1§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 189 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 21 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_22@server_form.canopy_timeline_grid": {
-														"size": [ 210, 198 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 22 ],
+													"grid_22": {
+														"type": "panel",
+														"size": [ "100%", 198 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1203,14 +1370,22 @@
 																"source_property_name": "(not ((#title_text - '§q§2§2§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 198 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 22 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_23@server_form.canopy_timeline_grid": {
-														"size": [ 210, 207 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 23 ],
+													"grid_23": {
+														"type": "panel",
+														"size": [ "100%", 207 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1220,14 +1395,22 @@
 																"source_property_name": "(not ((#title_text - '§q§2§3§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 207 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 23 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_24@server_form.canopy_timeline_grid": {
-														"size": [ 210, 216 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 24 ],
+													"grid_24": {
+														"type": "panel",
+														"size": [ "100%", 216 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1237,14 +1420,22 @@
 																"source_property_name": "(not ((#title_text - '§q§2§4§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 216 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 24 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_25@server_form.canopy_timeline_grid": {
-														"size": [ 210, 225 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 25 ],
+													"grid_25": {
+														"type": "panel",
+														"size": [ "100%", 225 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1254,14 +1445,22 @@
 																"source_property_name": "(not ((#title_text - '§q§2§5§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 225 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 25 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_26@server_form.canopy_timeline_grid": {
-														"size": [ 210, 234 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 26 ],
+													"grid_26": {
+														"type": "panel",
+														"size": [ "100%", 234 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1271,14 +1470,22 @@
 																"source_property_name": "(not ((#title_text - '§q§2§6§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 234 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 26 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_27@server_form.canopy_timeline_grid": {
-														"size": [ 210, 243 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 27 ],
+													"grid_27": {
+														"type": "panel",
+														"size": [ "100%", 243 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1288,14 +1495,22 @@
 																"source_property_name": "(not ((#title_text - '§q§2§7§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 243 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 27 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_28@server_form.canopy_timeline_grid": {
-														"size": [ 210, 252 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 28 ],
+													"grid_28": {
+														"type": "panel",
+														"size": [ "100%", 252 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1305,14 +1520,22 @@
 																"source_property_name": "(not ((#title_text - '§q§2§8§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 252 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 28 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_29@server_form.canopy_timeline_grid": {
-														"size": [ 210, 261 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 29 ],
+													"grid_29": {
+														"type": "panel",
+														"size": [ "100%", 261 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1322,14 +1545,22 @@
 																"source_property_name": "(not ((#title_text - '§q§2§9§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 261 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 29 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_30@server_form.canopy_timeline_grid": {
-														"size": [ 210, 270 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 30 ],
+													"grid_30": {
+														"type": "panel",
+														"size": [ "100%", 270 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1339,14 +1570,22 @@
 																"source_property_name": "(not ((#title_text - '§q§3§0§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 270 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 30 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_31@server_form.canopy_timeline_grid": {
-														"size": [ 210, 279 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 31 ],
+													"grid_31": {
+														"type": "panel",
+														"size": [ "100%", 279 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1356,14 +1595,22 @@
 																"source_property_name": "(not ((#title_text - '§q§3§1§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 279 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 31 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_32@server_form.canopy_timeline_grid": {
-														"size": [ 210, 288 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 32 ],
+													"grid_32": {
+														"type": "panel",
+														"size": [ "100%", 288 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1373,14 +1620,22 @@
 																"source_property_name": "(not ((#title_text - '§q§3§2§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 288 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 32 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_33@server_form.canopy_timeline_grid": {
-														"size": [ 210, 297 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 33 ],
+													"grid_33": {
+														"type": "panel",
+														"size": [ "100%", 297 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1390,14 +1645,22 @@
 																"source_property_name": "(not ((#title_text - '§q§3§3§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 297 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 33 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_34@server_form.canopy_timeline_grid": {
-														"size": [ 210, 306 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 34 ],
+													"grid_34": {
+														"type": "panel",
+														"size": [ "100%", 306 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1407,14 +1670,22 @@
 																"source_property_name": "(not ((#title_text - '§q§3§4§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 306 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 34 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_35@server_form.canopy_timeline_grid": {
-														"size": [ 210, 315 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 35 ],
+													"grid_35": {
+														"type": "panel",
+														"size": [ "100%", 315 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1424,14 +1695,22 @@
 																"source_property_name": "(not ((#title_text - '§q§3§5§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 315 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 35 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_36@server_form.canopy_timeline_grid": {
-														"size": [ 210, 324 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 36 ],
+													"grid_36": {
+														"type": "panel",
+														"size": [ "100%", 324 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1441,14 +1720,22 @@
 																"source_property_name": "(not ((#title_text - '§q§3§6§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 324 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 36 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_37@server_form.canopy_timeline_grid": {
-														"size": [ 210, 333 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 37 ],
+													"grid_37": {
+														"type": "panel",
+														"size": [ "100%", 333 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1458,14 +1745,22 @@
 																"source_property_name": "(not ((#title_text - '§q§3§7§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 333 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 37 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_38@server_form.canopy_timeline_grid": {
-														"size": [ 210, 342 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 38 ],
+													"grid_38": {
+														"type": "panel",
+														"size": [ "100%", 342 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1475,14 +1770,22 @@
 																"source_property_name": "(not ((#title_text - '§q§3§8§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 342 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 38 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_39@server_form.canopy_timeline_grid": {
-														"size": [ 210, 351 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 39 ],
+													"grid_39": {
+														"type": "panel",
+														"size": [ "100%", 351 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1492,14 +1795,22 @@
 																"source_property_name": "(not ((#title_text - '§q§3§9§r') = #title_text))",
 																"target_property_name": "#visible"
 															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 351 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 39 ]
+																}
+															}
 														]
 													}
 												},
 												{
-													"grid_40@server_form.canopy_timeline_grid": {
-														"size": [ 210, 360 ],
-														"offset": [ 48, 0 ],
-														"grid_dimensions": [ 21, 40 ],
+													"grid_40": {
+														"type": "panel",
+														"size": [ "100%", 360 ],
 														"bindings": [
 															{
 																"binding_name": "#title_text"
@@ -1508,6 +1819,15 @@
 																"binding_type": "view",
 																"source_property_name": "(not ((#title_text - '§q§4§0§r') = #title_text))",
 																"target_property_name": "#visible"
+															}
+														],
+														"controls": [
+															{
+																"cells@server_form.canopy_timeline_grid": {
+																	"size": [ 210, 360 ],
+																	"offset": [ 48, 0 ],
+																	"grid_dimensions": [ 21, 40 ]
+																}
 															}
 														]
 													}
