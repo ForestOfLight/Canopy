@@ -25,7 +25,9 @@ export class TimelineSettingsForm {
 
     show() {
         const form = new CustomForm(this.#player, { translate: 'simplayer.timeline.settings.title', with: [this.#understudy.name] });
-        this.#addTrackButtons(form);
+        this.#addAddTrack(form);
+        form.divider();
+        this.#addRemoveTrack(form);
         form.divider();
         const lengthInputs = this.#addLengthInputs(form);
         const showError = this.#addErrorLabel(form);
@@ -38,14 +40,54 @@ export class TimelineSettingsForm {
         form.show();
     }
 
-    #addTrackButtons(form) {
+    #addAddTrack(form) {
+        const choice = new ObservableNumber(0, { clientWritable: true });
         form.header({ translate: 'simplayer.timeline.settings.addtrack' });
-        for (const type of PARAMETERISED_TYPES) {
-            form.button({ translate: `simplayer.timeline.addtrack.${type}` }, () => {
-                form.close();
-                system.run(() => new AddTrackForm(this.#player, this.#understudy, type, this.#page, this.#trackPage).show());
-            });
+        form.spacer();
+        form.dropdown({ translate: 'simplayer.timeline.settings.addtrack.type' }, choice, PARAMETERISED_TYPES.map((type, value) => ({ label: { translate: `simplayer.timeline.addtrack.${type}` }, value })));
+        form.button({ translate: 'simplayer.timeline.settings.addtrack' }, () => {
+            const type = PARAMETERISED_TYPES[choice.getData()];
+            form.close();
+            system.run(() => new AddTrackForm(this.#player, this.#understudy, type, this.#page, this.#trackPage).show());
+        });
+        form.spacer();
+    }
+
+    #addRemoveTrack(form) {
+        const tracks = this.#timeline.tracks.filter(track => !track.isAlwaysPresent());
+        form.header({ translate: 'simplayer.timeline.settings.remove.header' });
+        form.spacer();
+        if (tracks.length === 0) {
+            form.label({ translate: 'simplayer.timeline.settings.remove.none' });
+            form.spacer();
+            return;
         }
+        const choice = new ObservableNumber(0, { clientWritable: true });
+        form.dropdown({ translate: 'simplayer.timeline.settings.remove.track' }, choice, tracks.map((track, value) => ({ label: { rawtext: track.baseLabel() }, value })));
+        const showError = this.#addErrorLabel(form);
+        form.button({ translate: 'simplayer.timeline.settings.remove' }, () => this.#removeTrack(form, tracks[choice.getData()], showError));
+        form.spacer();
+    }
+
+    #removeTrack(form, track, showError) {
+        if (!this.#isConnected(form))
+            return;
+        const timeline = this.#timeline;
+        if (timeline.getTrack(track.key) !== track) {
+            showError({ translate: 'simplayer.timeline.settings.trackgone' });
+            return;
+        }
+        timeline.remove(track.key);
+        form.close();
+        this.#reopenTimeline();
+    }
+
+    #isConnected(form) {
+        if (this.#understudy.isConnected())
+            return true;
+        form.close();
+        this.#player.sendMessage(Understudies.getNotOnlineMessage(this.#understudy.name));
+        return false;
     }
 
     #addLengthInputs(form) {
@@ -65,10 +107,13 @@ export class TimelineSettingsForm {
         choice.subscribe(showTrack);
         showTrack(0);
         form.header({ translate: 'simplayer.timeline.settings.looplength' });
+        form.spacer();
         form.label({ translate: 'simplayer.timeline.settings.looplength.description' });
+        form.spacer();
         form.dropdown({ translate: 'simplayer.timeline.settings.track' }, choice, tracks.map((track, value) => ({ label: { rawtext: track.baseLabel() }, value })));
         form.toggle({ translate: 'simplayer.timeline.settings.shared' }, shared);
         form.textField({ translate: 'simplayer.timeline.settings.ticks' }, ticks, { visible: ticksVisible });
+        form.spacer();
         return { tracks, choice, shared, ticks };
     }
 
@@ -83,11 +128,8 @@ export class TimelineSettingsForm {
     }
 
     #applyLength(form, { tracks, choice, shared, ticks }, showError) {
-        if (!this.#understudy.isConnected()) {
-            form.close();
-            this.#player.sendMessage(Understudies.getNotOnlineMessage(this.#understudy.name));
+        if (!this.#isConnected(form))
             return;
-        }
         const timeline = this.#timeline;
         const track = tracks[choice.getData()];
         if (timeline.getTrack(track.key) !== track) {

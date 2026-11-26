@@ -250,16 +250,6 @@ describe('TimelineForm', () => {
             expect(result).toMatchObject({ nextPage: 0, nextTrackPage: 1 });
         });
 
-        it('reopens on the last remaining track page when its tracks are emptied', () => {
-            addExtraTracks(timeline, 1);
-            const extraPage = trailing(1);
-            const result = submit(new TimelineForm(player, understudy, 0, 1), values => {
-                values[cellIndex(0, 0)] = false;
-                values[extraPage.loop] = 40;
-            });
-            expect(result).toMatchObject({ nextPage: 0, nextTrackPage: 0 });
-        });
-
         it('reopens on a newly selected page', () => {
             timeline.setLoopLength(80);
             const result = submit(new TimelineForm(player, understudy), values => { values[BASE.page] = 2; });
@@ -319,10 +309,13 @@ describe('TimelineForm', () => {
             expect(timeline.getTrack('jump').isEmpty()).toBe(true);
         });
 
-        it('removes an extra track saved with no active cells', () => {
-            timeline.getOrCreate('select', { slot: 2 }).setActive(0, true, 20);
-            submit(new TimelineForm(player, understudy, 0, 1), values => { values[cellIndex(0, 0)] = false; });
-            expect(timeline.getTrack('select:2')).toBeUndefined();
+        it('keeps an added track saved with no active cells', () => {
+            const select = timeline.getOrCreate('select', { slot: 2 });
+            select.setActive(0, true, 20);
+            const result = submit(new TimelineForm(player, understudy, 0, 1), values => { values[cellIndex(0, 0)] = false; });
+            expect(timeline.getTrack('select:2')).toBe(select);
+            expect(select.isEmpty()).toBe(true);
+            expect(result.nextPage).toBeUndefined();
         });
 
         it('keeps an always-present track saved with no active cells', () => {

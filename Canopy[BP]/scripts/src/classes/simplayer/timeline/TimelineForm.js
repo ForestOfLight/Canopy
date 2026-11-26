@@ -80,9 +80,9 @@ export class TimelineForm {
         const selectedPage = this.#selectedPage(formValues[trailingStart + 1], this.#page, timeline.pageCount);
         const selectedTrackPage = this.#selectedPage(formValues[trailingStart + 2], this.#trackPage, TimelineForm.trackPageCount(timeline));
         const lengthChanged = this.#applyLoopLength(timeline, formValues[trailingStart]);
-        const rowsRemoved = this.#rows.filter((track, row) => this.#applyRow(timeline, track, row, formValues)).length > 0;
+        this.#rows.forEach((track, row) => this.#applyRow(timeline, track, row, formValues));
         const openSettings = formValues[trailingStart + 3] === true;
-        if (!lengthChanged && !rowsRemoved && selectedPage === this.#page && selectedTrackPage === this.#trackPage)
+        if (!lengthChanged && selectedPage === this.#page && selectedTrackPage === this.#trackPage)
             return { nextPage: void 0, nextTrackPage: void 0, openSettings };
         return {
             nextPage: Math.min(selectedPage, timeline.pageCount - 1),
@@ -140,14 +140,10 @@ export class TimelineForm {
 
     #applyRow(timeline, track, row, formValues) {
         if (timeline.getTrack(track.key) !== track)
-            return false;
+            return;
         const cellStart = row * TimelineForm.ROW_STRIDE + 1;
         for (let column = 0; column < Timeline.PAGE_WIDTH; column++)
             track.setActive(this.#offsetAt(column), formValues[cellStart + column] === true, timeline.loopLength);
-        if (track.isAlwaysPresent() || !track.isEmpty())
-            return false;
-        timeline.remove(track.key);
-        return true;
     }
 
     #applyLoopLength(timeline, loopLength) {

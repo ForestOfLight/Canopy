@@ -34,8 +34,12 @@ describe('TimelineSettingsForm', () => {
         return form.controls.find(control => control.type === 'button' && control.label.translate === key);
     }
 
+    function dropdown(form, key) {
+        return form.controls.find(control => control.type === 'dropdown' && control.label.translate === key);
+    }
+
     function picker(form) {
-        return form.getControl('dropdown');
+        return dropdown(form, 'simplayer.timeline.settings.track');
     }
 
     function sharedToggle(form) {
@@ -77,22 +81,41 @@ describe('TimelineSettingsForm', () => {
             expect(form.closeButton).toHaveBeenCalled();
         });
 
-        it('offers a button to add each kind of parameterised track', () => {
+        it('offers a dropdown of the kinds of track to add', () => {
+            const addType = dropdown(open(), 'simplayer.timeline.settings.addtrack.type');
+            expect(addType.observable).toBeInstanceOf(ObservableNumber);
+            expect(addType.observable.options).toEqual({ clientWritable: true });
+            expect(addType.items).toEqual(['select', 'look', 'move', 'moveto'].map((type, value) => ({ label: { translate: `simplayer.timeline.addtrack.${type}` }, value })));
+        });
+
+        it('offers a dropdown of the added tracks to remove', () => {
+            timeline.getOrCreate('select', { slot: 2 });
+            timeline.setLooping('move', { direction: 'left' }, { length: 1, ticks: [0] });
+            const remove = dropdown(open(), 'simplayer.timeline.settings.remove.track');
+            expect(remove.items).toEqual([
+                { label: { rawtext: [{ translate: 'simplayer.timeline.track.select', with: ['3'] }] }, value: 0 },
+                { label: { rawtext: [{ translate: 'simplayer.timeline.track.move.left' }] }, value: 1 }
+            ]);
+            expect(button(open(), 'simplayer.timeline.settings.remove')).toBeDefined();
+        });
+
+        it('says there is nothing to remove when no tracks were added', () => {
             const form = open();
-            for (const type of ['select', 'look', 'move', 'moveto'])
-                expect(button(form, `simplayer.timeline.addtrack.${type}`)).toBeDefined();
+            expect(dropdown(form, 'simplayer.timeline.settings.remove.track')).toBeUndefined();
+            expect(button(form, 'simplayer.timeline.settings.remove')).toBeUndefined();
+            expect(form.controls.some(control => control.type === 'label' && control.label.translate === 'simplayer.timeline.settings.remove.none')).toBe(true);
         });
 
         it('lists every looping track in the track picker', () => {
             timeline.getOrCreate('select', { slot: 2 });
             timeline.addOneShot('jump', void 0, { delay: 5 });
-            const dropdown = picker(open());
-            expect(dropdown.label).toEqual({ translate: 'simplayer.timeline.settings.track' });
-            expect(dropdown.observable).toBeInstanceOf(ObservableNumber);
-            expect(dropdown.observable.options).toEqual({ clientWritable: true });
-            expect(dropdown.items).toHaveLength(14);
-            expect(dropdown.items[0]).toEqual({ label: { rawtext: [{ translate: 'simplayer.action.attack' }] }, value: 0 });
-            expect(dropdown.items[13]).toEqual({ label: { rawtext: [{ translate: 'simplayer.timeline.track.select', with: ['3'] }] }, value: 13 });
+            const trackPicker = picker(open());
+            expect(trackPicker.label).toEqual({ translate: 'simplayer.timeline.settings.track' });
+            expect(trackPicker.observable).toBeInstanceOf(ObservableNumber);
+            expect(trackPicker.observable.options).toEqual({ clientWritable: true });
+            expect(trackPicker.items).toHaveLength(14);
+            expect(trackPicker.items[0]).toEqual({ label: { rawtext: [{ translate: 'simplayer.action.attack' }] }, value: 0 });
+            expect(trackPicker.items[13]).toEqual({ label: { rawtext: [{ translate: 'simplayer.timeline.track.select', with: ['3'] }] }, value: 13 });
         });
 
         it('starts on the first track using the shared loop with its ticks field hidden', () => {
@@ -130,13 +153,48 @@ describe('TimelineSettingsForm', () => {
     });
 
     describe('adding a track', () => {
-        it('closes and opens the add-track form for that type on the same pages', () => {
+        it('closes and opens the add-track form for the chosen type on the same pages', () => {
             const form = open(2, 1);
-            button(form, 'simplayer.timeline.addtrack.look').onClick();
+            dropdown(form, 'simplayer.timeline.settings.addtrack.type').observable.setData(1);
+            button(form, 'simplayer.timeline.settings.addtrack').onClick();
             scheduler.advanceTicks(1);
             expect(form.close).toHaveBeenCalled();
             expect(AddTrackForm).toHaveBeenCalledWith(player, understudy, 'look', 2, 1);
             expect(vi.mocked(AddTrackForm).mock.instances[0].show).toHaveBeenCalled();
+        });
+    });
+
+    describe('removing a track', () => {
+        it('removes the chosen added track and returns to the timeline', () => {
+            timeline.getOrCreate('select', { slot: 2 });
+            timeline.setLooping('move', { direction: 'left' }, { length: 1, ticks: [0] });
+            const form = open(0, 1);
+            dropdown(form, 'simplayer.timeline.settings.remove.track').observable.setData(1);
+            button(form, 'simplayer.timeline.settings.remove').onClick();
+            scheduler.advanceTicks(1);
+            expect(timeline.getTrack('move:left')).toBeUndefined();
+            expect(timeline.getTrack('select:2')).toBeDefined();
+            expect(form.close).toHaveBeenCalled();
+            expect(showSpy.mock.contexts[0].trackPage).toBe(1);
+        });
+
+        it('shows an error when the chosen track changed while the form was open', () => {
+            timeline.getOrCreate('select', { slot: 2 });
+            const form = open();
+            timeline.clearTrack('select', { slot: 2 });
+            button(form, 'simplayer.timeline.settings.remove').onClick();
+            expect(errorLabel(form).label.getData()).toEqual({ translate: 'simplayer.timeline.settings.trackgone' });
+            expect(form.close).not.toHaveBeenCalled();
+        });
+
+        it('reports a simplayer that left while the form was open', () => {
+            timeline.getOrCreate('select', { slot: 2 });
+            const form = open();
+            understudy.isConnected = () => false;
+            button(form, 'simplayer.timeline.settings.remove').onClick();
+            expect(form.close).toHaveBeenCalled();
+            expect(timeline.getTrack('select:2')).toBeDefined();
+            expect(player.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.notonline', with: ['Bot'] });
         });
     });
 
