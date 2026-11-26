@@ -30,6 +30,8 @@ export class PlayerTimelineCommand extends VanillaCommand {
                 "and releases it at the end. `/playerstop` clears the timeline.\n\n" +
                 "Give a preset as the second argument to load it onto the simplayer instead of opening the editor. " +
                 "A preset is a short text version of a whole timeline, such as `v1;20;attack:0,10;sneak:0-9;select/3:5`. " +
+                "Presets contain semicolons, so the preset must be wrapped in double quotes in the command, " +
+                "for example `/playertimeline Steve \"v1;20;attack:0,10;sneak:0-9;select/3:5\"`. " +
                 "The current timeline's preset can be copied from the settings page at any time, and a preset pasted there can be applied with `Apply Preset`. " +
                 "Loading a preset replaces the whole timeline. Tracks whose entity or block can't be found are left out with a message, " +
                 "and one-time actions aren't saved in presets."
