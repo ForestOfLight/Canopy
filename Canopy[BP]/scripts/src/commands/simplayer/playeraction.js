@@ -60,20 +60,20 @@ export class PlayerActionCommand extends VanillaCommand {
         }
         if (!Object.values(REPEATABLE_ACTIONS).includes(action))
             return { status: CustomCommandStatus.Failure, message: `commands.generic.invalidaction` };
-        const actions = understudy.actions;
+        const timeline = understudy.actions.timeline;
         switch (timingOption) {
             case TIMING_OPTIONS.ONCE:
-                actions.once(action);
+                timeline.addOneShot(action, void 0, { delay: 0 });
                 break;
             case TIMING_OPTIONS.AFTER:
-                return this.#singleAfterAction(origin, actions, action, timingOption, ticks);
+                return this.#singleAfterAction(origin, timeline, action, timingOption, ticks);
             case TIMING_OPTIONS.CONTINUOUS:
-                actions.repeat(action);
+                timeline.setLooping(action, void 0, { length: 1, ticks: [0] });
                 break;
             case TIMING_OPTIONS.INTERVAL:
-                return this.#intervalAction(origin, actions, action, timingOption, ticks);
+                return this.#intervalAction(origin, timeline, action, timingOption, ticks);
             case TIMING_OPTIONS.STOP:
-                actions.remove(action);
+                timeline.clearTrack(action);
                 break;
             default:
                 origin.sendMessage({ translate: 'commands.playeraction.invalidtiming', with: [action, timingOption] });
@@ -82,22 +82,25 @@ export class PlayerActionCommand extends VanillaCommand {
         return { status: CustomCommandStatus.Success };
     }
 
-    #singleAfterAction(origin, actions, action, timingOption, ticks) {
-        if (ticks === void 0) {
-            origin.sendMessage({ translate: 'commands.playeraction.invalidticks', with: [timingOption, String(ticks)] });
+    #singleAfterAction(origin, timeline, action, timingOption, ticks) {
+        if (!this.#isValidTicks(origin, timingOption, ticks))
             return;
-        }
-        actions.once(action, ticks);
+        timeline.addOneShot(action, void 0, { delay: ticks });
         return { status: CustomCommandStatus.Success };
     }
 
-    #intervalAction(origin, actions, action, timingOption, ticks) {
-        if (ticks === void 0) {
-            origin.sendMessage({ translate: 'commands.playeraction.invalidticks', with: [timingOption, String(ticks)] });
+    #intervalAction(origin, timeline, action, timingOption, ticks) {
+        if (!this.#isValidTicks(origin, timingOption, ticks))
             return;
-        }
-        actions.repeat(action, ticks);
+        timeline.setLooping(action, void 0, { length: Math.max(ticks, 1), ticks: [0] });
         return { status: CustomCommandStatus.Success };
+    }
+
+    #isValidTicks(origin, timingOption, ticks) {
+        if (ticks !== void 0 && ticks >= 0)
+            return true;
+        origin.sendMessage({ translate: 'commands.playeraction.invalidticks', with: [timingOption, String(ticks)] });
+        return false;
     }
 }
 

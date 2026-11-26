@@ -17,14 +17,16 @@ vi.mock('../../../../../../Canopy[BP]/scripts/lib/canopy/Canopy', async (importO
 });
 
 describe('playerlookCommand', () => {
+    let mockTimeline;
     let mockUnderstudy;
     let mockEntityOrigin;
 
     beforeEach(() => {
         vi.clearAllMocks();
-        mockUnderstudy = { look: vi.fn(), stopLooking: vi.fn(), name: 'TestBot' };
+        mockTimeline = { addOneShot: vi.fn(), removeType: vi.fn() };
+        mockUnderstudy = { look: vi.fn(), stopLooking: vi.fn(), name: 'TestBot', actions: { timeline: mockTimeline } };
         const mockEntity = new Entity();
-        mockEntity.getBlockFromViewDirection = vi.fn(() => ({ block: { location: { x: 0, y: 64, z: 0 } } }));
+        mockEntity.getBlockFromViewDirection = vi.fn(() => ({ block: { location: { x: 0, y: 64, z: 0 } }, face: 'North', faceLocation: { x: 0.5, y: 0.5, z: 0 } }));
         mockEntity.getEntitiesFromViewDirection = vi.fn(() => [{ entity: new Entity() }]);
         mockEntityOrigin = { getSource: vi.fn(() => mockEntity), sendMessage: vi.fn() };
     });
@@ -42,7 +44,7 @@ describe('playerlookCommand', () => {
             vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
             const result = playerlookCommand.playerlookCommand(mockEntityOrigin, 'TestBot', direction);
             expect(result.status).toBe(CustomCommandStatus.Success);
-            expect(system.run).toHaveBeenCalled();
+            expect(mockTimeline.addOneShot).toHaveBeenCalledWith('look', { target: { kind: 'cardinal', direction } }, { delay: 0 });
         }
     );
 
@@ -135,5 +137,51 @@ describe('playerlookCommand', () => {
         const result = playerlookCommand.playerlookCommand(mockEntityOrigin, 'TestBot', 'invalid');
         expect(result).toBeUndefined();
         expect(mockEntityOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'commands.playerlook.invalidoption', with: ['invalid'] });
+    });
+
+    it('adds a look event at the viewed block face', () => {
+        vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
+        mockEntityOrigin.getSource().getBlockFromViewDirection.mockReturnValue({ block: { location: { x: 1, y: 64, z: 2 } }, face: 'North', faceLocation: { x: 0.5, y: 0.5, z: 0 } });
+        playerlookCommand.playerlookCommand(mockEntityOrigin, 'TestBot', LOOK_OPTIONS.BLOCK);
+        const [type, params, options] = mockTimeline.addOneShot.mock.calls[0];
+        expect(type).toBe('look');
+        expect(params.target.kind).toBe('location');
+        expect({ x: params.target.location.x, y: params.target.location.y, z: params.target.location.z }).toEqual({ x: 1.5, y: 64.5, z: 2 });
+        expect(options).toEqual({ delay: 0 });
+    });
+
+    it('adds a look event at the viewed entity', () => {
+        vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
+        const entity = mockEntityOrigin.getSource().getEntitiesFromViewDirection()[0].entity;
+        mockEntityOrigin.getSource().getEntitiesFromViewDirection.mockReturnValue([{ entity }]);
+        playerlookCommand.playerlookCommand(mockEntityOrigin, 'TestBot', LOOK_OPTIONS.ENTITY);
+        expect(mockTimeline.addOneShot).toHaveBeenCalledWith('look', { target: { kind: 'entity', entity } }, { delay: 0 });
+    });
+
+    it('adds a look event at the command source for ME', () => {
+        vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
+        playerlookCommand.playerlookCommand(mockEntityOrigin, 'TestBot', LOOK_OPTIONS.ME);
+        expect(mockTimeline.addOneShot).toHaveBeenCalledWith('look', { target: { kind: 'entity', entity: mockEntityOrigin.getSource() } }, { delay: 0 });
+    });
+
+    it('adds a look event at coordinates for AT', () => {
+        vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
+        playerlookCommand.playerlookCommand(mockEntityOrigin, 'TestBot', LOOK_OPTIONS.AT, 1, 64, 2);
+        expect(mockTimeline.addOneShot).toHaveBeenCalledWith('look', { target: { kind: 'location', location: { x: 1, y: 64, z: 2 } } }, { delay: 0 });
+    });
+
+    it('adds a look event at a rotation', () => {
+        vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
+        playerlookCommand.playerlookCommand(mockEntityOrigin, 'TestBot', LOOK_OPTIONS.ROTATION, 10, 90);
+        expect(mockTimeline.addOneShot).toHaveBeenCalledWith('look', { target: { kind: 'rotation', rotation: { x: 10, y: 90 } } }, { delay: 0 });
+    });
+
+    it('removes look tracks and stops looking for STOP', () => {
+        vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
+        playerlookCommand.playerlookCommand(mockEntityOrigin, 'TestBot', LOOK_OPTIONS.STOP);
+        expect(mockTimeline.removeType).toHaveBeenCalledWith('look');
+        expect(system.run).toHaveBeenCalled();
+        system.run.mock.calls.at(-1)[0]();
+        expect(mockUnderstudy.stopLooking).toHaveBeenCalled();
     });
 });

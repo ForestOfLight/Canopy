@@ -17,18 +17,18 @@ vi.mock('../../../../../../Canopy[BP]/scripts/lib/canopy/Canopy', async (importO
 });
 
 describe('playeractionCommand', () => {
-    let mockActions;
+    let mockTimeline;
     let mockUnderstudy;
     let mockOrigin;
 
     beforeEach(() => {
         vi.clearAllMocks();
-        mockActions = {
-            once: vi.fn(),
-            repeat: vi.fn(),
-            remove: vi.fn(),
+        mockTimeline = {
+            addOneShot: vi.fn(),
+            setLooping: vi.fn(),
+            clearTrack: vi.fn(),
         };
-        mockUnderstudy = { name: 'TestBot', actions: mockActions };
+        mockUnderstudy = { name: 'TestBot', actions: { timeline: mockTimeline } };
         mockOrigin = { sendMessage: vi.fn() };
     });
 
@@ -42,7 +42,7 @@ describe('playeractionCommand', () => {
     it('queues a once action with ONCE timing (default)', () => {
         vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
         const result = playeractionCommand.playeractionCommand(mockOrigin, 'TestBot', REPEATABLE_ACTIONS.ATTACK, TIMING_OPTIONS.ONCE);
-        expect(mockActions.once).toHaveBeenCalledWith(REPEATABLE_ACTIONS.ATTACK);
+        expect(mockTimeline.addOneShot).toHaveBeenCalledWith(REPEATABLE_ACTIONS.ATTACK, void 0, { delay: 0 });
         expect(result.status).toBe(CustomCommandStatus.Success);
     });
 
@@ -56,14 +56,14 @@ describe('playeractionCommand', () => {
     it('queues a delayed once action with AFTER timing', () => {
         vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
         const result = playeractionCommand.playeractionCommand(mockOrigin, 'TestBot', REPEATABLE_ACTIONS.ATTACK, TIMING_OPTIONS.AFTER, 10);
-        expect(mockActions.once).toHaveBeenCalledWith(REPEATABLE_ACTIONS.ATTACK, 10);
+        expect(mockTimeline.addOneShot).toHaveBeenCalledWith(REPEATABLE_ACTIONS.ATTACK, void 0, { delay: 10 });
         expect(result.status).toBe(CustomCommandStatus.Success);
     });
 
     it('queues a repeating action with CONTINUOUS timing', () => {
         vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
         const result = playeractionCommand.playeractionCommand(mockOrigin, 'TestBot', REPEATABLE_ACTIONS.ATTACK, TIMING_OPTIONS.CONTINUOUS);
-        expect(mockActions.repeat).toHaveBeenCalledWith(REPEATABLE_ACTIONS.ATTACK);
+        expect(mockTimeline.setLooping).toHaveBeenCalledWith(REPEATABLE_ACTIONS.ATTACK, void 0, { length: 1, ticks: [0] });
         expect(result.status).toBe(CustomCommandStatus.Success);
     });
 
@@ -77,14 +77,14 @@ describe('playeractionCommand', () => {
     it('queues an interval repeating action with INTERVAL timing', () => {
         vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
         const result = playeractionCommand.playeractionCommand(mockOrigin, 'TestBot', REPEATABLE_ACTIONS.ATTACK, TIMING_OPTIONS.INTERVAL, 20);
-        expect(mockActions.repeat).toHaveBeenCalledWith(REPEATABLE_ACTIONS.ATTACK, 20);
+        expect(mockTimeline.setLooping).toHaveBeenCalledWith(REPEATABLE_ACTIONS.ATTACK, void 0, { length: 20, ticks: [0] });
         expect(result.status).toBe(CustomCommandStatus.Success);
     });
 
     it('removes a repeating action with STOP timing', () => {
         vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
         const result = playeractionCommand.playeractionCommand(mockOrigin, 'TestBot', REPEATABLE_ACTIONS.ATTACK, TIMING_OPTIONS.STOP);
-        expect(mockActions.remove).toHaveBeenCalledWith(REPEATABLE_ACTIONS.ATTACK);
+        expect(mockTimeline.clearTrack).toHaveBeenCalledWith(REPEATABLE_ACTIONS.ATTACK);
         expect(result.status).toBe(CustomCommandStatus.Success);
     });
 
@@ -98,6 +98,21 @@ describe('playeractionCommand', () => {
     it('defaults to ONCE timing when no timing option is provided', () => {
         vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
         playeractionCommand.playeractionCommand(mockOrigin, 'TestBot', REPEATABLE_ACTIONS.ATTACK);
-        expect(mockActions.once).toHaveBeenCalledWith(REPEATABLE_ACTIONS.ATTACK);
+        expect(mockTimeline.addOneShot).toHaveBeenCalledWith(REPEATABLE_ACTIONS.ATTACK, void 0, { delay: 0 });
+    });
+
+    it('treats an interval of 0 as every tick', () => {
+        vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
+        playeractionCommand.playeractionCommand(mockOrigin, 'TestBot', REPEATABLE_ACTIONS.JUMP, TIMING_OPTIONS.INTERVAL, 0);
+        expect(mockTimeline.setLooping).toHaveBeenCalledWith(REPEATABLE_ACTIONS.JUMP, void 0, { length: 1, ticks: [0] });
+    });
+
+    it.each([[TIMING_OPTIONS.INTERVAL, -3], [TIMING_OPTIONS.AFTER, -1]])('rejects %s with negative ticks %i', (timing, ticks) => {
+        vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
+        const result = playeractionCommand.playeractionCommand(mockOrigin, 'TestBot', REPEATABLE_ACTIONS.JUMP, timing, ticks);
+        expect(result).toBeUndefined();
+        expect(mockOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'commands.playeraction.invalidticks', with: [timing, String(ticks)] });
+        expect(mockTimeline.setLooping).not.toHaveBeenCalled();
+        expect(mockTimeline.addOneShot).not.toHaveBeenCalled();
     });
 });

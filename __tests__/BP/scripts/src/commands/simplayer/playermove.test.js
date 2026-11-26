@@ -17,12 +17,14 @@ vi.mock('../../../../../../Canopy[BP]/scripts/lib/canopy/Canopy', async (importO
 });
 
 describe('playermoveCommand', () => {
+    let mockTimeline;
     let mockUnderstudy;
     let mockEntityOrigin;
 
     beforeEach(() => {
         vi.clearAllMocks();
-        mockUnderstudy = { moveRelative: vi.fn(), moveLocation: vi.fn(), stopMoving: vi.fn(), name: 'TestBot' };
+        mockTimeline = { addOneShot: vi.fn(), setLooping: vi.fn(), removeType: vi.fn() };
+        mockUnderstudy = { moveRelative: vi.fn(), moveLocation: vi.fn(), stopMoving: vi.fn(), name: 'TestBot', actions: { timeline: mockTimeline } };
         const mockEntity = new Entity();
         mockEntity.getBlockFromViewDirection = vi.fn(() => ({ block: { location: { x: 0, y: 64, z: 0 } } }));
         mockEntity.getEntitiesFromViewDirection = vi.fn(() => [{ entity: new Entity() }]);
@@ -42,7 +44,7 @@ describe('playermoveCommand', () => {
             vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
             const result = playermoveCommand.playermoveCommand(mockEntityOrigin, 'TestBot', direction);
             expect(result.status).toBe(CustomCommandStatus.Success);
-            expect(system.run).toHaveBeenCalled();
+            expect(mockTimeline.setLooping).toHaveBeenCalledWith('move', { direction }, { length: 1, ticks: [0] });
         }
     );
 
@@ -116,5 +118,42 @@ describe('playermoveCommand', () => {
         const result = playermoveCommand.playermoveCommand(mockEntityOrigin, 'TestBot', 'invalid');
         expect(result).toBeUndefined();
         expect(mockEntityOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'commands.playermove.invalidoption', with: ['invalid'] });
+    });
+
+    it('adds a moveto event to the viewed block', () => {
+        vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
+        const block = { location: { x: 1, y: 64, z: 2 } };
+        mockEntityOrigin.getSource().getBlockFromViewDirection.mockReturnValue({ block });
+        playermoveCommand.playermoveCommand(mockEntityOrigin, 'TestBot', MOVE_OPTIONS.BLOCK);
+        expect(mockTimeline.addOneShot).toHaveBeenCalledWith('moveto', { target: { kind: 'block', block } }, { delay: 0 });
+    });
+
+    it('adds a moveto event to the viewed entity', () => {
+        vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
+        const entity = new Entity();
+        mockEntityOrigin.getSource().getEntitiesFromViewDirection.mockReturnValue([{ entity }]);
+        playermoveCommand.playermoveCommand(mockEntityOrigin, 'TestBot', MOVE_OPTIONS.ENTITY);
+        expect(mockTimeline.addOneShot).toHaveBeenCalledWith('moveto', { target: { kind: 'entity', entity } }, { delay: 0 });
+    });
+
+    it('adds a moveto event to the command source for ME', () => {
+        vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
+        playermoveCommand.playermoveCommand(mockEntityOrigin, 'TestBot', MOVE_OPTIONS.ME);
+        expect(mockTimeline.addOneShot).toHaveBeenCalledWith('moveto', { target: { kind: 'entity', entity: mockEntityOrigin.getSource() } }, { delay: 0 });
+    });
+
+    it('adds a moveto event to a location for TO', () => {
+        vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
+        playermoveCommand.playermoveCommand(mockEntityOrigin, 'TestBot', MOVE_OPTIONS.TO, { x: 3, y: 64, z: 4 });
+        expect(mockTimeline.addOneShot).toHaveBeenCalledWith('moveto', { target: { kind: 'location', location: { x: 3, y: 64, z: 4 } } }, { delay: 0 });
+    });
+
+    it('removes move tracks and stops moving for STOP', () => {
+        vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
+        playermoveCommand.playermoveCommand(mockEntityOrigin, 'TestBot', MOVE_OPTIONS.STOP);
+        expect(mockTimeline.removeType).toHaveBeenCalledWith('move');
+        expect(mockTimeline.removeType).toHaveBeenCalledWith('moveto');
+        system.run.mock.calls.at(-1)[0]();
+        expect(mockUnderstudy.stopMoving).toHaveBeenCalled();
     });
 });

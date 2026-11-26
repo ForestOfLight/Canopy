@@ -1,4 +1,4 @@
-import { CustomCommandParamType, CommandPermissionLevel, CustomCommandStatus, system } from "@minecraft/server";
+import { CustomCommandParamType, CommandPermissionLevel, CustomCommandStatus } from "@minecraft/server";
 import { VanillaCommand, PlayerCommandOrigin, BlockCommandOrigin, EntityCommandOrigin, ServerCommandOrigin } from "../../../lib/canopy/Canopy";
 import Understudies from "../../classes/simplayer/Understudies";
 
@@ -23,7 +23,11 @@ export class PlayerSprintCommand extends VanillaCommand {
             origin.sendMessage(Understudies.getNotOnlineMessage(playername));
             return;
         }
-        system.run(() => understudy.sprint(shouldSprint));
+        const timeline = understudy.actions.timeline;
+        if (shouldSprint)
+            timeline.setLooping('sprint', void 0, { length: 1, ticks: [0] });
+        else
+            timeline.clearTrack('sprint');
         return { status: CustomCommandStatus.Success };
     }
 }

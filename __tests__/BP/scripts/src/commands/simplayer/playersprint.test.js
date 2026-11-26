@@ -16,12 +16,14 @@ vi.mock('../../../../../../Canopy[BP]/scripts/lib/canopy/Canopy', async (importO
 });
 
 describe('playersprintCommand', () => {
+    let mockTimeline;
     let mockUnderstudy;
     let mockOrigin;
 
     beforeEach(() => {
         vi.clearAllMocks();
-        mockUnderstudy = { sprint: vi.fn(), name: 'TestBot' };
+        mockTimeline = { setLooping: vi.fn(), clearTrack: vi.fn() };
+        mockUnderstudy = { name: 'TestBot', actions: { timeline: mockTimeline } };
         mockOrigin = { sendMessage: vi.fn() };
     });
 
@@ -32,17 +34,19 @@ describe('playersprintCommand', () => {
         expect(mockOrigin.sendMessage).toHaveBeenCalledWith({ translate: 'simplayer.notonline', with: ['TestBot'] });
     });
 
-    it('returns success and queues sprint(true) when online', () => {
+    it('holds sprint on every tick when true', () => {
         vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
-        const result = playersprintCommand.playersprintCommand(undefined, 'TestBot', true);
+        const result = playersprintCommand.playersprintCommand(mockOrigin, 'TestBot', true);
         expect(result.status).toBe(CustomCommandStatus.Success);
-        expect(system.run).toHaveBeenCalled();
+        expect(mockTimeline.setLooping).toHaveBeenCalledWith('sprint', void 0, { length: 1, ticks: [0] });
+        expect(system.run).not.toHaveBeenCalled();
     });
 
-    it('returns success and queues sprint(false) when online', () => {
+    it('clears the sprint track when false', () => {
         vi.mocked(Understudies.get).mockReturnValue(mockUnderstudy);
-        const result = playersprintCommand.playersprintCommand(undefined, 'TestBot', false);
+        const result = playersprintCommand.playersprintCommand(mockOrigin, 'TestBot', false);
         expect(result.status).toBe(CustomCommandStatus.Success);
-        expect(system.run).toHaveBeenCalled();
+        expect(mockTimeline.clearTrack).toHaveBeenCalledWith('sprint');
+        expect(mockTimeline.setLooping).not.toHaveBeenCalled();
     });
 });
