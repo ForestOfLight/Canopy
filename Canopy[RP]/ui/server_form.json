@@ -2590,54 +2590,8 @@
 							}
 						},
 						{
-							"fifth_column_background": {
-								"type": "image",
-								"texture": "textures/ui/timeline_cell",
-								"color": [ 0.549, 0.5529, 0.5647 ],
-								"keep_ratio": false,
-								"size": [ 9, 7 ],
-								"offset": [ 0, 0 ],
-								"anchor_from": "center",
-								"anchor_to": "center",
-								"layer": 2,
-								"bindings": [
-									{
-										"binding_type": "collection_details",
-										"binding_collection_name": "custom_form"
-									},
-									{
-										"binding_type": "view",
-										"source_property_name": "(((#collection_index % 21) = 5) or ((#collection_index % 21) = 10) or ((#collection_index % 21) = 15) or ((#collection_index % 21) = 20))",
-										"target_property_name": "#visible"
-									}
-								]
-							}
-						},
-						{
 							"cell@server_form.canopy_timeline_cell": {
 								"layer": 3
-							}
-						},
-						{
-							"fifth_column_highlight": {
-								"type": "image",
-								"texture": "textures/ui/timeline_cell",
-								"color": [ 1, 1, 1 ],
-								"alpha": 0.1,
-								"keep_ratio": false,
-								"size": [ 9, 7 ],
-								"layer": 4,
-								"bindings": [
-									{
-										"binding_type": "collection_details",
-										"binding_collection_name": "custom_form"
-									},
-									{
-										"binding_type": "view",
-										"source_property_name": "(((#collection_index % 21) = 5) or ((#collection_index % 21) = 10) or ((#collection_index % 21) = 15) or ((#collection_index % 21) = 20))",
-										"target_property_name": "#visible"
-									}
-								]
 							}
 						},
 						{
@@ -2662,42 +2616,98 @@
 									}
 								]
 							}
+						}
+					]
+				}
+			},
+			{
+				"fifth_column_background": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 0.549, 0.5529, 0.5647 ],
+					"keep_ratio": false,
+					"size": [ 9, 7 ],
+					"offset": [ 0, 0 ],
+					"anchor_from": "center",
+					"anchor_to": "center",
+					"layer": 2,
+					"bindings": [
+						{
+							"binding_name": "#custom_text",
+							"binding_type": "collection",
+							"binding_collection_name": "custom_form"
 						},
 						{
-							"tick_number": {
-								"type": "label",
-								"text": "#tick_label",
-								"localize": false,
-								"font_scale_factor": 0.7,
-								"color": [ 0.8157, 0.8196, 0.8314 ],
-								"shadow": false,
-								"size": [ "default", "default" ],
-								"offset": [ 0, -1 ],
-								"anchor_from": "top_middle",
-								"anchor_to": "bottom_middle",
-								"layer": 4,
-								"bindings": [
-									{
-										"binding_name": "#custom_text",
-										"binding_type": "collection",
-										"binding_collection_name": "custom_form"
-									},
-									{
-										"binding_type": "collection_details",
-										"binding_collection_name": "custom_form"
-									},
-									{
-										"binding_type": "view",
-										"source_property_name": "(#custom_text - '§c§e§l§r')",
-										"target_property_name": "#tick_label"
-									},
-									{
-										"binding_type": "view",
-										"source_property_name": "(((#collection_index = 5) or (#collection_index = 10) or (#collection_index = 15) or (#collection_index = 20)) and (not ((#custom_text - '§c§e§l§r') = '-')))",
-										"target_property_name": "#visible"
-									}
-								]
-							}
+							"binding_type": "collection_details",
+							"binding_collection_name": "custom_form"
+						},
+						{
+							"binding_type": "view",
+							"source_property_name": "(((#collection_index = 5) or (#collection_index = 10) or (#collection_index = 15) or (#collection_index = 20) or (#collection_index = 26) or (#collection_index = 31) or (#collection_index = 36) or (#collection_index = 41) or (#collection_index = 47) or (#collection_index = 52) or (#collection_index = 57) or (#collection_index = 62) or (#collection_index = 68) or (#collection_index = 73) or (#collection_index = 78) or (#collection_index = 83) or (#collection_index = 89) or (#collection_index = 94) or (#collection_index = 99) or (#collection_index = 104) or (#collection_index = 110) or (#collection_index = 115) or (#collection_index = 120) or (#collection_index = 125) or (#collection_index = 131) or (#collection_index = 136) or (#collection_index = 141) or (#collection_index = 146) or (#collection_index = 152) or (#collection_index = 157) or (#collection_index = 162) or (#collection_index = 167) or (#collection_index = 173) or (#collection_index = 178) or (#collection_index = 183) or (#collection_index = 188) or (#collection_index = 194) or (#collection_index = 199) or (#collection_index = 204) or (#collection_index = 209) or (#collection_index = 215) or (#collection_index = 220) or (#collection_index = 225) or (#collection_index = 230) or (#collection_index = 236) or (#collection_index = 241) or (#collection_index = 246) or (#collection_index = 251) or (#collection_index = 257) or (#collection_index = 262) or (#collection_index = 267) or (#collection_index = 272) or (#collection_index = 278) or (#collection_index = 283) or (#collection_index = 288) or (#collection_index = 293) or (#collection_index = 299) or (#collection_index = 304) or (#collection_index = 309) or (#collection_index = 314) or (#collection_index = 320) or (#collection_index = 325) or (#collection_index = 330) or (#collection_index = 335) or (#collection_index = 341) or (#collection_index = 346) or (#collection_index = 351) or (#collection_index = 356) or (#collection_index = 362) or (#collection_index = 367) or (#collection_index = 372) or (#collection_index = 377) or (#collection_index = 383) or (#collection_index = 388) or (#collection_index = 393) or (#collection_index = 398) or (#collection_index = 404) or (#collection_index = 409) or (#collection_index = 414) or (#collection_index = 419) or (#collection_index = 425) or (#collection_index = 430) or (#collection_index = 435) or (#collection_index = 440) or (#collection_index = 446) or (#collection_index = 451) or (#collection_index = 456) or (#collection_index = 461) or (#collection_index = 467) or (#collection_index = 472) or (#collection_index = 477) or (#collection_index = 482) or (#collection_index = 488) or (#collection_index = 493) or (#collection_index = 498) or (#collection_index = 503) or (#collection_index = 509) or (#collection_index = 514) or (#collection_index = 519) or (#collection_index = 524) or (#collection_index = 530) or (#collection_index = 535) or (#collection_index = 540) or (#collection_index = 545) or (#collection_index = 551) or (#collection_index = 556) or (#collection_index = 561) or (#collection_index = 566) or (#collection_index = 572) or (#collection_index = 577) or (#collection_index = 582) or (#collection_index = 587) or (#collection_index = 593) or (#collection_index = 598) or (#collection_index = 603) or (#collection_index = 608) or (#collection_index = 614) or (#collection_index = 619) or (#collection_index = 624) or (#collection_index = 629) or (#collection_index = 635) or (#collection_index = 640) or (#collection_index = 645) or (#collection_index = 650) or (#collection_index = 656) or (#collection_index = 661) or (#collection_index = 666) or (#collection_index = 671) or (#collection_index = 677) or (#collection_index = 682) or (#collection_index = 687) or (#collection_index = 692) or (#collection_index = 698) or (#collection_index = 703) or (#collection_index = 708) or (#collection_index = 713) or (#collection_index = 719) or (#collection_index = 724) or (#collection_index = 729) or (#collection_index = 734) or (#collection_index = 740) or (#collection_index = 745) or (#collection_index = 750) or (#collection_index = 755) or (#collection_index = 761) or (#collection_index = 766) or (#collection_index = 771) or (#collection_index = 776) or (#collection_index = 782) or (#collection_index = 787) or (#collection_index = 792) or (#collection_index = 797) or (#collection_index = 803) or (#collection_index = 808) or (#collection_index = 813) or (#collection_index = 818) or (#collection_index = 824) or (#collection_index = 829) or (#collection_index = 834) or (#collection_index = 839)) and (not ((#custom_text - '§c§e§l§r') = #custom_text)))",
+							"target_property_name": "#visible"
+						}
+					]
+				}
+			},
+			{
+				"fifth_column_highlight": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 1, 1, 1 ],
+					"alpha": 0.1,
+					"keep_ratio": false,
+					"size": [ 9, 7 ],
+					"layer": 4,
+					"bindings": [
+						{
+							"binding_name": "#custom_text",
+							"binding_type": "collection",
+							"binding_collection_name": "custom_form"
+						},
+						{
+							"binding_type": "collection_details",
+							"binding_collection_name": "custom_form"
+						},
+						{
+							"binding_type": "view",
+							"source_property_name": "(((#collection_index = 5) or (#collection_index = 10) or (#collection_index = 15) or (#collection_index = 20) or (#collection_index = 26) or (#collection_index = 31) or (#collection_index = 36) or (#collection_index = 41) or (#collection_index = 47) or (#collection_index = 52) or (#collection_index = 57) or (#collection_index = 62) or (#collection_index = 68) or (#collection_index = 73) or (#collection_index = 78) or (#collection_index = 83) or (#collection_index = 89) or (#collection_index = 94) or (#collection_index = 99) or (#collection_index = 104) or (#collection_index = 110) or (#collection_index = 115) or (#collection_index = 120) or (#collection_index = 125) or (#collection_index = 131) or (#collection_index = 136) or (#collection_index = 141) or (#collection_index = 146) or (#collection_index = 152) or (#collection_index = 157) or (#collection_index = 162) or (#collection_index = 167) or (#collection_index = 173) or (#collection_index = 178) or (#collection_index = 183) or (#collection_index = 188) or (#collection_index = 194) or (#collection_index = 199) or (#collection_index = 204) or (#collection_index = 209) or (#collection_index = 215) or (#collection_index = 220) or (#collection_index = 225) or (#collection_index = 230) or (#collection_index = 236) or (#collection_index = 241) or (#collection_index = 246) or (#collection_index = 251) or (#collection_index = 257) or (#collection_index = 262) or (#collection_index = 267) or (#collection_index = 272) or (#collection_index = 278) or (#collection_index = 283) or (#collection_index = 288) or (#collection_index = 293) or (#collection_index = 299) or (#collection_index = 304) or (#collection_index = 309) or (#collection_index = 314) or (#collection_index = 320) or (#collection_index = 325) or (#collection_index = 330) or (#collection_index = 335) or (#collection_index = 341) or (#collection_index = 346) or (#collection_index = 351) or (#collection_index = 356) or (#collection_index = 362) or (#collection_index = 367) or (#collection_index = 372) or (#collection_index = 377) or (#collection_index = 383) or (#collection_index = 388) or (#collection_index = 393) or (#collection_index = 398) or (#collection_index = 404) or (#collection_index = 409) or (#collection_index = 414) or (#collection_index = 419) or (#collection_index = 425) or (#collection_index = 430) or (#collection_index = 435) or (#collection_index = 440) or (#collection_index = 446) or (#collection_index = 451) or (#collection_index = 456) or (#collection_index = 461) or (#collection_index = 467) or (#collection_index = 472) or (#collection_index = 477) or (#collection_index = 482) or (#collection_index = 488) or (#collection_index = 493) or (#collection_index = 498) or (#collection_index = 503) or (#collection_index = 509) or (#collection_index = 514) or (#collection_index = 519) or (#collection_index = 524) or (#collection_index = 530) or (#collection_index = 535) or (#collection_index = 540) or (#collection_index = 545) or (#collection_index = 551) or (#collection_index = 556) or (#collection_index = 561) or (#collection_index = 566) or (#collection_index = 572) or (#collection_index = 577) or (#collection_index = 582) or (#collection_index = 587) or (#collection_index = 593) or (#collection_index = 598) or (#collection_index = 603) or (#collection_index = 608) or (#collection_index = 614) or (#collection_index = 619) or (#collection_index = 624) or (#collection_index = 629) or (#collection_index = 635) or (#collection_index = 640) or (#collection_index = 645) or (#collection_index = 650) or (#collection_index = 656) or (#collection_index = 661) or (#collection_index = 666) or (#collection_index = 671) or (#collection_index = 677) or (#collection_index = 682) or (#collection_index = 687) or (#collection_index = 692) or (#collection_index = 698) or (#collection_index = 703) or (#collection_index = 708) or (#collection_index = 713) or (#collection_index = 719) or (#collection_index = 724) or (#collection_index = 729) or (#collection_index = 734) or (#collection_index = 740) or (#collection_index = 745) or (#collection_index = 750) or (#collection_index = 755) or (#collection_index = 761) or (#collection_index = 766) or (#collection_index = 771) or (#collection_index = 776) or (#collection_index = 782) or (#collection_index = 787) or (#collection_index = 792) or (#collection_index = 797) or (#collection_index = 803) or (#collection_index = 808) or (#collection_index = 813) or (#collection_index = 818) or (#collection_index = 824) or (#collection_index = 829) or (#collection_index = 834) or (#collection_index = 839)) and (not ((#custom_text - '§c§e§l§r') = #custom_text)))",
+							"target_property_name": "#visible"
+						}
+					]
+				}
+			},
+			{
+				"tick_number": {
+					"type": "label",
+					"text": "#tick_label",
+					"localize": false,
+					"font_scale_factor": 0.7,
+					"color": [ 0.8157, 0.8196, 0.8314 ],
+					"shadow": false,
+					"size": [ "default", "default" ],
+					"offset": [ 0, -1 ],
+					"anchor_from": "top_middle",
+					"anchor_to": "bottom_middle",
+					"layer": 4,
+					"bindings": [
+						{
+							"binding_name": "#custom_text",
+							"binding_type": "collection",
+							"binding_collection_name": "custom_form"
+						},
+						{
+							"binding_type": "collection_details",
+							"binding_collection_name": "custom_form"
+						},
+						{
+							"binding_type": "view",
+							"source_property_name": "(#custom_text - '§c§e§l§r')",
+							"target_property_name": "#tick_label"
+						},
+						{
+							"binding_type": "view",
+							"source_property_name": "(((#collection_index = 5) or (#collection_index = 10) or (#collection_index = 15) or (#collection_index = 20)) and (not ((#custom_text - '§c§e§l§r') = #custom_text)) and (not ((#custom_text - '§c§e§l§r') = '-')))",
+							"target_property_name": "#visible"
 						}
 					]
 				}
