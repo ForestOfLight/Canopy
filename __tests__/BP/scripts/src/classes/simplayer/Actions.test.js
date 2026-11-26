@@ -88,29 +88,41 @@ describe('Actions', () => {
             vi.spyOn(simplayerActionInfo, 'getNativeValue').mockReturnValue(true);
         });
 
-        it('lists every non-empty track with its label and length once', () => {
+        function engineLineLengths(message) {
+            return JSON.stringify(message).split('\\n').map(line => line.length);
+        }
+
+        it('lists every non-empty looping track with its label and length', () => {
             actions.timeline.setLooping('jump', void 0, { length: 7, ticks: [3] });
             actions.timeline.getTrack('attack').setActive(5, true, 20);
-            actions.timeline.addOneShot('select', { slot: 2 }, { delay: 40 });
             actions.onTick();
             expect(lastActionInfoText()).toEqual([
-                { text: 'TestBot\n' },
-                { text: '§a' }, { translate: 'simplayer.action.attack' }, { text: ' §7(20t)\n' },
-                { text: '§a' }, { translate: 'simplayer.action.jump' }, { text: ' §7(7t)\n' },
-                { text: '§a' }, { translate: 'simplayer.timeline.track.select', with: ['3'] }, { text: ' §7(' }, { translate: 'simplayer.action.track.once' }, { text: ')\n' }
+                { text: 'TestBot\n§a' },
+                { translate: 'simplayer.action.attack' }, { text: ' §7(20t)\n§a' },
+                { translate: 'simplayer.action.jump' }, { text: ' §7(7t)' }
             ]);
         });
 
-        it('keeps every piece within the raw message line limit', () => {
+        it('hides the action info when only one-shot tracks remain', () => {
+            actions.timeline.addOneShot('select', { slot: 2 }, { delay: 40 });
+            actions.onTick();
+            expect(world.primitiveShapesManager.addText).not.toHaveBeenCalled();
+            expect(mockUnderstudy.simulatedPlayer.nameplateRenderDistance).toBe(64);
+        });
+
+        it('keeps every line within the text primitive line limit', () => {
             const block = { location: { x: -12345, y: 64, z: 67890 }, dimension: { id: 'minecraft:overworld' } };
-            actions.timeline.setLooping('look', { target: { kind: 'cardinal', direction: 'north' } }, { length: 7, ticks: [3] });
-            actions.timeline.addOneShot('look', { target: { kind: 'location', location: { x: -12345.5, y: 64, z: 67890.5 } } }, { delay: 40 });
-            actions.timeline.addOneShot('moveto', { target: { kind: 'block', block } }, { delay: 40 });
-            actions.timeline.setLooping('move', { direction: 'backward' }, { length: 7, ticks: [3] });
+            const entity = { id: '9', nameTag: 'A Very Long Custom Entity Name Tag That Goes On', typeId: 'minecraft:zombie', isValid: true };
+            actions.timeline.setLooping('look', { target: { kind: 'cardinal', direction: 'north' } }, { length: 200, ticks: [3] });
+            actions.timeline.setLooping('look', { target: { kind: 'location', location: { x: -12345.5, y: 64, z: 67890.5 } } }, { length: 200, ticks: [3] });
+            actions.timeline.setLooping('look', { target: { kind: 'rotation', rotation: { x: -89.5, y: -179.5 } } }, { length: 200, ticks: [3] });
+            actions.timeline.setLooping('moveto', { target: { kind: 'block', block } }, { length: 200, ticks: [3] });
+            actions.timeline.setLooping('moveto', { target: { kind: 'entity', entity } }, { length: 200, ticks: [3] });
+            actions.timeline.setLooping('move', { direction: 'backward' }, { length: 200, ticks: [3] });
             actions.timeline.getOrCreate('select', { slot: 2 }).setActive(5, true, 20);
             actions.onTick();
-            for (const piece of lastActionInfoText())
-                expect(JSON.stringify(piece).length).toBeLessThanOrEqual(128);
+            for (const length of engineLineLengths({ rawtext: lastActionInfoText() }))
+                expect(length).toBeLessThanOrEqual(128);
         });
 
         it('hides the info and restores the nameplate when every track is empty', () => {

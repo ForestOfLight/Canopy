@@ -41,29 +41,23 @@ export class Actions {
         const simplayer = this.understudy.simulatedPlayer;
         if (simplayer.nameplateRenderDistance > 0)
             this.#vanillaNameplateRenderDistance = simplayer.nameplateRenderDistance;
-        if (this.#timeline.isEmpty()) {
+        const tracks = this.#timeline.tracks.filter(track => track.loops && !track.isEmpty());
+        if (tracks.length === 0) {
             this.#disableActionInfo();
             return;
         }
         if (!this.#actionInfoDebugShape)
             this.#createActionInfoDebugShape();
-        this.#actionInfoDebugShape.setText(this.#getActionInfoText());
+        this.#actionInfoDebugShape.setText(this.#getActionInfoText(tracks));
     }
 
-    #getActionInfoText() {
-        const output = { rawtext: [
-            { text: this.understudy.nameTag + '\n' }
-        ]};
-        for (const track of this.#timeline.tracks) {
-            if (track.isEmpty())
-                continue;
-            output.rawtext.push({ text: '§a' }, track.baseLabel());
-            if (track.loops)
-                output.rawtext.push({ text: ` §7(${track.effectiveLength(this.#timeline.loopLength)}t)\n` });
-            else
-                output.rawtext.push({ text: ' §7(' }, { translate: 'simplayer.action.track.once' }, { text: ')\n' });
+    #getActionInfoText(tracks) {
+        const rawtext = [{ text: this.understudy.nameTag }];
+        for (const track of tracks) {
+            rawtext.at(-1).text += '\n§a';
+            rawtext.push(...track.baseLabel(), { text: ` §7(${track.effectiveLength(this.#timeline.loopLength)}t)` });
         }
-        return output;
+        return { rawtext };
     }
 
     #createActionInfoDebugShape() {

@@ -76,49 +76,54 @@ describe('TrackTypes', () => {
 
     describe('trackLabel', () => {
         it('uses the action label key for a plain action', () => {
-            expect(trackLabel('jump')).toEqual({ translate: 'simplayer.action.jump' });
+            expect(trackLabel('jump')).toEqual([{ translate: 'simplayer.action.jump' }]);
         });
 
         it('uses the timeline label key for use and holds', () => {
-            expect(trackLabel('use')).toEqual({ translate: 'simplayer.timeline.track.use' });
-            expect(trackLabel('usehold')).toEqual({ translate: 'simplayer.timeline.track.usehold' });
-            expect(trackLabel('glide')).toEqual({ translate: 'simplayer.timeline.track.glide' });
+            expect(trackLabel('use')).toEqual([{ translate: 'simplayer.timeline.track.use' }]);
+            expect(trackLabel('usehold')).toEqual([{ translate: 'simplayer.timeline.track.usehold' }]);
+            expect(trackLabel('glide')).toEqual([{ translate: 'simplayer.timeline.track.glide' }]);
         });
 
         it('shows a one-indexed slot for select', () => {
-            expect(trackLabel('select', { slot: 3 })).toEqual({ translate: 'simplayer.timeline.track.select', with: ['4'] });
+            expect(trackLabel('select', { slot: 3 })).toEqual([{ translate: 'simplayer.timeline.track.select', with: ['4'] }]);
         });
 
         it('names the move direction', () => {
-            expect(trackLabel('move', { direction: 'left' })).toEqual({ translate: 'simplayer.timeline.track.move.left' });
+            expect(trackLabel('move', { direction: 'left' })).toEqual([{ translate: 'simplayer.timeline.track.move.left' }]);
         });
 
         it('names a cardinal look target', () => {
-            expect(trackLabel('look', cardinal('north'))).toEqual({ translate: 'simplayer.timeline.track.look', with: { rawtext: [{ translate: 'simplayer.timeline.target.north' }] } });
+            expect(trackLabel('look', cardinal('north'))).toEqual([{ translate: 'simplayer.timeline.track.look.north' }]);
         });
 
         it('rounds location coordinates to one decimal', () => {
             const label = trackLabel('moveto', { target: { kind: 'location', location: { x: 1.26, y: 64, z: -3.04 } } });
-            expect(label).toEqual({ translate: 'simplayer.timeline.track.moveto', with: { rawtext: [{ text: '1.3 64 -3' }] } });
+            expect(label).toEqual([{ translate: 'simplayer.timeline.track.moveto' }, { text: ' 1.3 64 -3' }]);
         });
 
         it('shows block coordinates', () => {
             const block = { location: { x: 1, y: 64, z: 2 }, dimension: { id: 'minecraft:overworld' } };
-            expect(trackLabel('moveto', { target: { kind: 'block', block } })).toEqual({ translate: 'simplayer.timeline.track.moveto', with: { rawtext: [{ text: '1 64 2' }] } });
+            expect(trackLabel('moveto', { target: { kind: 'block', block } })).toEqual([{ translate: 'simplayer.timeline.track.moveto' }, { text: ' 1 64 2' }]);
         });
 
         it('shows a rotation', () => {
-            expect(trackLabel('look', { target: { kind: 'rotation', rotation: { x: 10, y: 90 } } })).toEqual({ translate: 'simplayer.timeline.track.look', with: { rawtext: [{ text: '10 90' }] } });
+            expect(trackLabel('look', { target: { kind: 'rotation', rotation: { x: 10, y: 90 } } })).toEqual([{ translate: 'simplayer.timeline.track.look' }, { text: ' 10 90' }]);
         });
 
         it('uses the entity name tag when present', () => {
             const entity = { id: '1', nameTag: 'Steve', typeId: 'minecraft:player' };
-            expect(trackLabel('look', { target: { kind: 'entity', entity } })).toEqual({ translate: 'simplayer.timeline.track.look', with: { rawtext: [{ text: 'Steve' }] } });
+            expect(trackLabel('look', { target: { kind: 'entity', entity } })).toEqual([{ translate: 'simplayer.timeline.track.look' }, { text: ' Steve' }]);
+        });
+
+        it('shortens a long entity name tag', () => {
+            const entity = { id: '1', nameTag: 'A Very Long Custom Entity Name Tag That Goes On', typeId: 'minecraft:zombie' };
+            expect(trackLabel('look', { target: { kind: 'entity', entity } })).toEqual([{ translate: 'simplayer.timeline.track.look' }, { text: ' A Very Long Custom Enti…' }]);
         });
 
         it('falls back to the entity type without its namespace', () => {
             const entity = { id: '1', nameTag: '', typeId: 'minecraft:cow' };
-            expect(trackLabel('look', { target: { kind: 'entity', entity } })).toEqual({ translate: 'simplayer.timeline.track.look', with: { rawtext: [{ text: 'cow' }] } });
+            expect(trackLabel('look', { target: { kind: 'entity', entity } })).toEqual([{ translate: 'simplayer.timeline.track.look' }, { text: ' cow' }]);
         });
     });
 });

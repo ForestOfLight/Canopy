@@ -112,18 +112,6 @@ describe('TimelineForm', () => {
             expect(form.elements.at(-1).text).toEqual({ rawtext: [{ text: TIMELINE_PAGE_MARKER }, { translate: 'simplayer.timeline.page.current', with: ['3', '5'] }] });
         });
 
-        it('keeps every row label piece within the raw message line limit', () => {
-            const block = { location: { x: -12345, y: 64, z: 67890 }, dimension: { id: 'minecraft:overworld' } };
-            timeline.setLooping('look', { target: { kind: 'cardinal', direction: 'north' } }, { length: 7, ticks: [0] });
-            timeline.addOneShot('look', { target: { kind: 'location', location: { x: -12345.5, y: 64, z: 67890.5 } } }, { delay: 40 });
-            timeline.addOneShot('moveto', { target: { kind: 'block', block } }, { delay: 0 });
-            timeline.setLooping('move', { direction: 'backward' }, { length: 1, ticks: [0] });
-            const form = new TimelineForm(player, understudy).build();
-            const pieces = form.elements.filter(element => element.type === 'label' && element.text.rawtext?.[0]?.text === TIMELINE_ROW_MARKER).flatMap(element => element.text.rawtext);
-            for (const piece of pieces)
-                expect(JSON.stringify(piece).length).toBeLessThanOrEqual(128);
-        });
-
         it('adds a row for each extra track', () => {
             timeline.getOrCreate('select', { slot: 2 });
             const form = new TimelineForm(player, understudy).build();

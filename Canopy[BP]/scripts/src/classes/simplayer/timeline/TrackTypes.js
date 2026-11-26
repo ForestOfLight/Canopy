@@ -36,6 +36,8 @@ export const ALWAYS_PRESENT_TYPES = Object.freeze(Object.values(TRACK_TYPES).fil
 
 export const PARAMETERISED_TYPES = Object.freeze(['select', 'look', 'move', 'moveto']);
 
+const MAX_TARGET_NAME_LENGTH = 24;
+
 export const MOVE_DIRECTIONS = Object.freeze(['forward', 'backward', 'left', 'right']);
 
 function joinCoordinates(location, separator) {
@@ -63,18 +65,21 @@ function targetKey(target) {
     }
 }
 
+function shorten(text) {
+    return text.length > MAX_TARGET_NAME_LENGTH ? `${text.slice(0, MAX_TARGET_NAME_LENGTH - 1)}…` : text;
+}
+
 function targetLabel(target) {
     switch (target.kind) {
-        case 'cardinal':
-            return { translate: `simplayer.timeline.target.${target.direction}` };
+
         case 'rotation':
-            return { text: `${roundCoordinate(target.rotation.x)} ${roundCoordinate(target.rotation.y)}` };
+            return [{ text: ` ${roundCoordinate(target.rotation.x)} ${roundCoordinate(target.rotation.y)}` }];
         case 'location':
-            return { text: [target.location.x, target.location.y, target.location.z].map(roundCoordinate).join(' ') };
+            return [{ text: ` ${[target.location.x, target.location.y, target.location.z].map(roundCoordinate).join(' ')}` }];
         case 'block':
-            return { text: joinCoordinates(target.block.location, ' ') };
+            return [{ text: ` ${joinCoordinates(target.block.location, ' ')}` }];
         case 'entity':
-            return { text: target.entity.nameTag || target.entity.typeId.replace(/^minecraft:/, '') };
+            return [{ text: ` ${shorten(target.entity.nameTag || target.entity.typeId.replace(/^minecraft:/, ''))}` }];
         default:
             throw new Error(`[Canopy] Unknown track target kind: ${target.kind}`);
     }
@@ -97,13 +102,15 @@ export function trackKey(type, params) {
 export function trackLabel(type, params) {
     switch (type) {
         case 'select':
-            return { translate: TRACK_TYPES.select.labelKey, with: [String(params.slot + 1)] };
+            return [{ translate: TRACK_TYPES.select.labelKey, with: [String(params.slot + 1)] }];
         case 'move':
-            return { translate: `${TRACK_TYPES.move.labelKey}.${params.direction}` };
+            return [{ translate: `${TRACK_TYPES.move.labelKey}.${params.direction}` }];
         case 'look':
         case 'moveto':
-            return { translate: TRACK_TYPES[type].labelKey, with: { rawtext: [targetLabel(params.target)] } };
+            if (params.target.kind === 'cardinal')
+                return [{ translate: `${TRACK_TYPES[type].labelKey}.${params.target.direction}` }];
+            return [{ translate: TRACK_TYPES[type].labelKey }, ...targetLabel(params.target)];
         default:
-            return { translate: TRACK_TYPES[type].labelKey };
+            return [{ translate: TRACK_TYPES[type].labelKey }];
     }
 }

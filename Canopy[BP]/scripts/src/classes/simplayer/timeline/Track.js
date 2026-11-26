@@ -91,14 +91,14 @@ export class Track {
     }
 
     baseLabel() {
-        return this.#baseLabel;
+        return [...this.#baseLabel];
     }
 
     labelParts() {
         if (!this.loops)
-            return [this.#baseLabel, { text: ' §7(' }, { translate: 'simplayer.action.track.once' }, { text: ')' }];
+            return [...this.#baseLabel, { text: ' §7(' }, { translate: 'simplayer.action.track.once' }, { text: ')' }];
         if (this.length !== Track.SHARED)
-            return [this.#baseLabel, { text: ` §7(${this.length}t)` }];
-        return [this.#baseLabel];
+            return [...this.#baseLabel, { text: ` §7(${this.length}t)` }];
+        return [...this.#baseLabel];
     }
 }

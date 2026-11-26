@@ -89,7 +89,7 @@ describe('Track', () => {
             alive = false;
             entity.isValid = false;
             expect(() => track.labelParts()).not.toThrow();
-            expect(track.labelParts()).toEqual([{ translate: 'simplayer.timeline.track.look', with: { rawtext: [{ text: 'Zed' }] } }]);
+            expect(track.labelParts()).toEqual([{ translate: 'simplayer.timeline.track.look' }, { text: ' Zed' }]);
         });
 
 
