@@ -23,9 +23,9 @@ describe('Timeline', () => {
 
     it('validates loop lengths', () => {
         expect(Timeline.isValidLoopLength(1)).toBe(true);
-        expect(Timeline.isValidLoopLength(200)).toBe(true);
+        expect(Timeline.isValidLoopLength(800)).toBe(true);
         expect(Timeline.isValidLoopLength(0)).toBe(false);
-        expect(Timeline.isValidLoopLength(201)).toBe(false);
+        expect(Timeline.isValidLoopLength(801)).toBe(false);
         expect(Timeline.isValidLoopLength(2.5)).toBe(false);
         expect(timeline.setLoopLength(0)).toBe(false);
         expect(timeline.loopLength).toBe(20);
@@ -193,8 +193,8 @@ describe('Timeline', () => {
         });
 
         it('covers the shared loop even with no tracks', () => {
-            timeline.setLoopLength(200);
-            expect(timeline.pageCount).toBe(10);
+            timeline.setLoopLength(800);
+            expect(timeline.pageCount).toBe(40);
         });
 
         it('ignores tracks shorter than the shared loop', () => {

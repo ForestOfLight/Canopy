@@ -71,7 +71,7 @@ describe('TimelineWelcomeForm', () => {
             expect(slider.observable.options).toEqual({ clientWritable: true });
             expect(slider.observable.getData()).toBe(20);
             expect(slider.min).toBe(1);
-            expect(slider.max).toBe(200);
+            expect(slider.max).toBe(800);
             expect(slider.options).toEqual({ step: 1 });
         });
     });

@@ -281,17 +281,17 @@ describe('TimelineSettingsForm', () => {
             expect(jump.length).toBe(Track.SHARED);
         });
 
-        it('accepts a custom loop length of 200 ticks', () => {
+        it('accepts a custom loop length of 800 ticks', () => {
             const jump = timeline.getOrCreate('jump');
             const form = open();
             choose(form, jump);
             sharedToggle(form).observable.setData(false);
-            ticksField(form).observable.setData('200');
+            ticksField(form).observable.setData('800');
             apply(form);
-            expect(jump.length).toBe(200);
+            expect(jump.length).toBe(800);
         });
 
-        it.each(['', 'abc', '0', '-2', '2.5', '201'])('shows an error for %j ticks and stays open', (ticks) => {
+        it.each(['', 'abc', '0', '-2', '2.5', '801'])('shows an error for %j ticks and stays open', (ticks) => {
             const jump = timeline.getOrCreate('jump');
             const form = open();
             choose(form, jump);

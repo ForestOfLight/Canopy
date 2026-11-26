@@ -97,27 +97,27 @@ describe('TimelineForm', () => {
             expect(header[20].text).toBe(`${TIMELINE_HEADER_MARKER}40`);
         });
 
-        it('shows at most 200 ticks of pages for a longer track', () => {
-            timeline.setLooping('jump', void 0, { length: 500, ticks: [0] });
+        it('shows at most 800 ticks of pages for a longer track', () => {
+            timeline.setLooping('jump', void 0, { length: 2000, ticks: [0] });
             const form = new TimelineForm(player, understudy).build();
-            expect(form.elements[BASE.page].maximumValue).toBe(10);
-            expect(form.elements.at(-1).text.rawtext[1]).toEqual({ translate: 'simplayer.timeline.page.current', with: ['1', '10'] });
+            expect(form.elements[BASE.page].maximumValue).toBe(40);
+            expect(form.elements.at(-1).text.rawtext[1]).toEqual({ translate: 'simplayer.timeline.page.current', with: ['1', '40'] });
         });
 
-        it('opens the 200 tick page when a later page is asked for', () => {
-            timeline.setLooping('jump', void 0, { length: 500, ticks: [0] });
-            const form = new TimelineForm(player, understudy, 14).build();
+        it('opens the 800 tick page when a later page is asked for', () => {
+            timeline.setLooping('jump', void 0, { length: 2000, ticks: [0] });
+            const form = new TimelineForm(player, understudy, 55).build();
             const header = form.elements.slice(0, STRIDE);
-            expect(header[20].text).toBe(`${TIMELINE_HEADER_MARKER}200`);
-            expect(form.elements.at(-1).text.rawtext[1]).toEqual({ translate: 'simplayer.timeline.page.current', with: ['10', '10'] });
+            expect(header[20].text).toBe(`${TIMELINE_HEADER_MARKER}800`);
+            expect(form.elements.at(-1).text.rawtext[1]).toEqual({ translate: 'simplayer.timeline.page.current', with: ['40', '40'] });
         });
 
-        it('never reopens past the 200 tick page', () => {
-            timeline.setLooping('jump', void 0, { length: 500, ticks: [0] });
-            const timelineForm = new TimelineForm(player, understudy, 9);
+        it('never reopens past the 800 tick page', () => {
+            timeline.setLooping('jump', void 0, { length: 2000, ticks: [0] });
+            const timelineForm = new TimelineForm(player, understudy, 39);
             const values = defaultValues(timelineForm.build());
             values[BASE.loop] = 30;
-            expect(timelineForm.apply(values).nextPage).toBe(9);
+            expect(timelineForm.apply(values).nextPage).toBe(39);
         });
 
         it('leaves the header blank past the end of the longest loop', () => {
@@ -202,7 +202,7 @@ describe('TimelineForm', () => {
         it('offers a loop length slider over the allowed range at the current length', () => {
             const slider = new TimelineForm(player, understudy).build().elements[BASE.loop];
             expect(slider.minimumValue).toBe(1);
-            expect(slider.maximumValue).toBe(200);
+            expect(slider.maximumValue).toBe(800);
             expect(slider.options).toEqual({ valueStep: 1, defaultValue: 20 });
         });
 
@@ -292,7 +292,7 @@ describe('TimelineForm', () => {
             expect(timeline.getTrack('attack').activeOffsets()).toHaveLength(20);
         });
 
-        it.each([0, 201, 12.5, -3, '40', undefined])('keeps the loop length for invalid input %j', (value) => {
+        it.each([0, 801, 12.5, -3, '40', undefined])('keeps the loop length for invalid input %j', (value) => {
             const result = submit(new TimelineForm(player, understudy), values => { values[BASE.loop] = value; });
             expect(timeline.loopLength).toBe(20);
             expect(result.nextPage).toBeUndefined();

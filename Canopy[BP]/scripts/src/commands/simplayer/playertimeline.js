@@ -15,7 +15,7 @@ export class PlayerTimelineCommand extends VanillaCommand {
             wikiDescription: "Opens a timeline editor for the simulated player with the given name.\n\n" +
                 "The timeline starts with no tracks. When it is empty, a welcome page asks for the first track and the loop length. " +
                 "Each row is a track and each cell is one tick of a loop. Toggle cells to choose which ticks the track happens on. " +
-                "The shared loop length can be set from 1 to 200 ticks, " +
+                "The shared loop length can be set from 1 to 800 ticks, " +
                 "and loops longer than 20 ticks are split into pages.\n\n" +
                 "The timeline is the same data the other simplayer commands use, so `/playeraction`, `/playermove`, `/playerlook`, " +
                 "`/playerselect`, `/playersneak`, `/playersprint` and `/playerglide` all show up here as tracks. " +
