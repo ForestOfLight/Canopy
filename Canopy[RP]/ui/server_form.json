@@ -421,6 +421,36 @@
 				}
 			},
 			{
+				"add_track": {
+					"type": "stack_panel",
+					"size": [ "100%", "100%c" ],
+					"orientation": "vertical",
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"factory": {
+						"name": "buttons",
+						"control_ids": {
+							"label": "@server_form.canopy_timeline_hidden_item",
+							"toggle": "@server_form.canopy_timeline_hidden_item",
+							"slider": "@server_form.canopy_timeline_hidden_item",
+							"step_slider": "@server_form.canopy_timeline_hidden_item",
+							"dropdown": "@server_form.canopy_timeline_add_track_row",
+							"input": "@server_form.canopy_timeline_hidden_item",
+							"header": "@server_form.canopy_timeline_hidden_item",
+							"divider": "@server_form.canopy_timeline_hidden_item",
+							"multiselect": "@server_form.canopy_timeline_hidden_item"
+						}
+					},
+					"collection_name": "custom_form",
+					"bindings": [
+						{
+							"binding_name": "#custom_form_length",
+							"binding_name_override": "#collection_length"
+						}
+					]
+				}
+			},
+			{
 				"save@server_form.canopy_timeline_button_row": {}
 			}
 		]
@@ -468,8 +498,11 @@
 				"binding_collection_name": "custom_form"
 			},
 			{
+				"binding_name": "#custom_form_length"
+			},
+			{
 				"binding_type": "view",
-				"source_property_name": "(#collection_index = 260)",
+				"source_property_name": "(#collection_index = (#custom_form_length - 4))",
 				"target_property_name": "#visible"
 			}
 		],
@@ -591,8 +624,11 @@
 				"binding_collection_name": "custom_form"
 			},
 			{
+				"binding_name": "#custom_form_length"
+			},
+			{
 				"binding_type": "view",
-				"source_property_name": "(#collection_index = 261)",
+				"source_property_name": "(#collection_index = (#custom_form_length - 3))",
 				"target_property_name": "#visible"
 			}
 		],
@@ -685,7 +721,7 @@
 	},
 	"canopy_timeline_actions_row": {
 		"type": "panel",
-		"size": [ "100%", 162 ],
+		"size": [ "100%", "100%c" ],
 		"controls": [
 			{
 				"content": {
@@ -784,14 +820,26 @@
 						},
 						{
 							"grid_area": {
-								"type": "panel",
-								"size": [ "100%", 126 ],
+								"type": "stack_panel",
+								"orientation": "vertical",
+								"size": [ "100%", "100%c" ],
 								"controls": [
 									{
-										"track_labels@server_form.canopy_timeline_track_labels": {}
+										"tick_header": {
+											"type": "panel",
+											"size": [ "100%", 9 ]
+										}
 									},
 									{
-										"cells@server_form.canopy_timeline_grid": {}
+										"rows": {
+											"type": "panel",
+											"size": [ "100%", "100%c" ],
+											"controls": [
+												{
+													"cells@server_form.canopy_timeline_grid": {}
+												}
+											]
+										}
 									}
 								]
 							}
@@ -831,6 +879,20 @@
 						}
 					]
 				}
+			}
+		],
+		"bindings": [
+			{
+				"binding_type": "collection_details",
+				"binding_collection_name": "custom_form"
+			},
+			{
+				"binding_name": "#custom_form_length"
+			},
+			{
+				"binding_type": "view",
+				"source_property_name": "(#collection_index = (#custom_form_length - 1))",
+				"target_property_name": "#visible"
 			}
 		]
 	},
@@ -1488,109 +1550,21 @@
 			}
 		]
 	},
-	"canopy_timeline_track_label": {
-		"type": "panel",
-		"size": [ 56, 9 ],
-		"controls": [
-			{
-				"text": {
-					"type": "label",
-					"text": "$track_label",
-					"color": [ 1, 1, 1 ],
-					"shadow": false,
-					"font_scale_factor": 0.8,
-					"size": [ "100%", "default" ],
-					"offset": [ 0, 0.8 ],
-					"anchor_from": "left_middle",
-					"anchor_to": "left_middle"
-				}
-			}
-		]
-	},
-	"canopy_timeline_track_labels": {
-		"type": "stack_panel",
-		"orientation": "vertical",
-		"size": [ 56, 117 ],
-		"offset": [ 0, 9 ],
-		"anchor_from": "top_left",
-		"anchor_to": "top_left",
-		"controls": [
-			{
-				"attack@server_form.canopy_timeline_track_label": {
-					"$track_label": "simplayer.action.attack"
-				}
-			},
-			{
-				"interact@server_form.canopy_timeline_track_label": {
-					"$track_label": "simplayer.action.interact"
-				}
-			},
-			{
-				"use@server_form.canopy_timeline_track_label": {
-					"$track_label": "simplayer.timeline.track.use"
-				}
-			},
-			{
-				"usehold@server_form.canopy_timeline_track_label": {
-					"$track_label": "simplayer.timeline.track.usehold"
-				}
-			},
-			{
-				"build@server_form.canopy_timeline_track_label": {
-					"$track_label": "simplayer.action.build"
-				}
-			},
-			{
-				"break@server_form.canopy_timeline_track_label": {
-					"$track_label": "simplayer.action.break"
-				}
-			},
-			{
-				"drop@server_form.canopy_timeline_track_label": {
-					"$track_label": "simplayer.action.drop"
-				}
-			},
-			{
-				"dropstack@server_form.canopy_timeline_track_label": {
-					"$track_label": "simplayer.action.dropstack"
-				}
-			},
-			{
-				"dropall@server_form.canopy_timeline_track_label": {
-					"$track_label": "simplayer.action.dropall"
-				}
-			},
-			{
-				"jump@server_form.canopy_timeline_track_label": {
-					"$track_label": "simplayer.action.jump"
-				}
-			},
-			{
-				"sneak@server_form.canopy_timeline_track_label": {
-					"$track_label": "simplayer.timeline.track.sneak"
-				}
-			},
-			{
-				"sprint@server_form.canopy_timeline_track_label": {
-					"$track_label": "simplayer.timeline.track.sprint"
-				}
-			},
-			{
-				"glide@server_form.canopy_timeline_track_label": {
-					"$track_label": "simplayer.timeline.track.glide"
-				}
-			}
-		]
-	},
 	"canopy_timeline_grid": {
 		"type": "grid",
-		"size": [ 200, 117 ],
-		"offset": [ 58, 9 ],
+		"size": [ 210, "default" ],
+		"offset": [ 48, 0 ],
 		"anchor_from": "top_left",
 		"anchor_to": "top_left",
-		"grid_dimensions": [ 20, 13 ],
 		"grid_item_template": "server_form.canopy_timeline_grid_item",
-		"collection_name": "custom_form"
+		"collection_name": "custom_form",
+		"grid_rescaling_type": "horizontal",
+		"bindings": [
+			{
+				"binding_name": "#custom_form_length",
+				"binding_name_override": "#maximum_grid_items"
+			}
+		]
 	},
 	"canopy_timeline_grid_item": {
 		"type": "panel",
@@ -1601,85 +1575,19 @@
 				"binding_collection_name": "custom_form"
 			},
 			{
+				"binding_name": "#custom_form_length"
+			},
+			{
 				"binding_type": "view",
-				"source_property_name": "(#collection_index < 260)",
+				"source_property_name": "(#collection_index < (#custom_form_length - 4))",
 				"target_property_name": "#visible"
 			}
 		],
 		"controls": [
 			{
-				"off_background": {
-					"type": "image",
-					"texture": "textures/ui/timeline_cell",
-					"color": [ 0.4471, 0.451, 0.4627 ],
-					"keep_ratio": false,
-					"size": [ 9, 7 ],
-					"offset": [ 0, 0 ],
-					"anchor_from": "center",
-					"anchor_to": "center",
-					"layer": 1
-				}
-			},
-			{
-				"fifth_column_background": {
-					"type": "image",
-					"texture": "textures/ui/timeline_cell",
-					"color": [ 0.549, 0.5529, 0.5647 ],
-					"keep_ratio": false,
-					"size": [ 9, 7 ],
-					"offset": [ 0, 0 ],
-					"anchor_from": "center",
-					"anchor_to": "center",
-					"layer": 2,
-					"bindings": [
-						{
-							"binding_type": "collection_details",
-							"binding_collection_name": "custom_form"
-						},
-						{
-							"binding_type": "view",
-							"source_property_name": "((#collection_index = 4) or (#collection_index = 9) or (#collection_index = 14) or (#collection_index = 19) or (#collection_index = 24) or (#collection_index = 29) or (#collection_index = 34) or (#collection_index = 39) or (#collection_index = 44) or (#collection_index = 49) or (#collection_index = 54) or (#collection_index = 59) or (#collection_index = 64) or (#collection_index = 69) or (#collection_index = 74) or (#collection_index = 79) or (#collection_index = 84) or (#collection_index = 89) or (#collection_index = 94) or (#collection_index = 99) or (#collection_index = 104) or (#collection_index = 109) or (#collection_index = 114) or (#collection_index = 119) or (#collection_index = 124) or (#collection_index = 129) or (#collection_index = 134) or (#collection_index = 139) or (#collection_index = 144) or (#collection_index = 149) or (#collection_index = 154) or (#collection_index = 159) or (#collection_index = 164) or (#collection_index = 169) or (#collection_index = 174) or (#collection_index = 179) or (#collection_index = 184) or (#collection_index = 189) or (#collection_index = 194) or (#collection_index = 199) or (#collection_index = 204) or (#collection_index = 209) or (#collection_index = 214) or (#collection_index = 219) or (#collection_index = 224) or (#collection_index = 229) or (#collection_index = 234) or (#collection_index = 239) or (#collection_index = 244) or (#collection_index = 249) or (#collection_index = 254) or (#collection_index = 259))",
-							"target_property_name": "#visible"
-						}
-					]
-				}
-			},
-			{
-				"cell@server_form.canopy_timeline_cell": {
-					"layer": 3
-				}
-			},
-			{
-				"fifth_column_highlight": {
-					"type": "image",
-					"texture": "textures/ui/timeline_cell",
-					"color": [ 1, 1, 1 ],
-					"alpha": 0.1,
-					"keep_ratio": false,
-					"size": [ 9, 7 ],
-					"layer": 4,
-					"bindings": [
-						{
-							"binding_type": "collection_details",
-							"binding_collection_name": "custom_form"
-						},
-						{
-							"binding_type": "view",
-							"source_property_name": "((#collection_index = 4) or (#collection_index = 9) or (#collection_index = 14) or (#collection_index = 19) or (#collection_index = 24) or (#collection_index = 29) or (#collection_index = 34) or (#collection_index = 39) or (#collection_index = 44) or (#collection_index = 49) or (#collection_index = 54) or (#collection_index = 59) or (#collection_index = 64) or (#collection_index = 69) or (#collection_index = 74) or (#collection_index = 79) or (#collection_index = 84) or (#collection_index = 89) or (#collection_index = 94) or (#collection_index = 99) or (#collection_index = 104) or (#collection_index = 109) or (#collection_index = 114) or (#collection_index = 119) or (#collection_index = 124) or (#collection_index = 129) or (#collection_index = 134) or (#collection_index = 139) or (#collection_index = 144) or (#collection_index = 149) or (#collection_index = 154) or (#collection_index = 159) or (#collection_index = 164) or (#collection_index = 169) or (#collection_index = 174) or (#collection_index = 179) or (#collection_index = 184) or (#collection_index = 189) or (#collection_index = 194) or (#collection_index = 199) or (#collection_index = 204) or (#collection_index = 209) or (#collection_index = 214) or (#collection_index = 219) or (#collection_index = 224) or (#collection_index = 229) or (#collection_index = 234) or (#collection_index = 239) or (#collection_index = 244) or (#collection_index = 249) or (#collection_index = 254) or (#collection_index = 259))",
-							"target_property_name": "#visible"
-						}
-					]
-				}
-			},
-			{
-				"disabled_overlay": {
-					"type": "image",
-					"texture": "textures/ui/timeline_cell",
-					"color": [ 0.2824, 0.2863, 0.2902 ],
-					"alpha": 0.85,
-					"keep_ratio": false,
-					"size": [ 9, 7 ],
-					"layer": 5,
+				"cell_layer": {
+					"type": "panel",
+					"size": [ "100%", "100%" ],
 					"bindings": [
 						{
 							"binding_name": "#custom_text",
@@ -1688,25 +1596,144 @@
 						},
 						{
 							"binding_type": "view",
-							"source_property_name": "(#custom_text = '-')",
+							"source_property_name": "((#custom_text - '§r§o§w') = #custom_text)",
 							"target_property_name": "#visible"
+						}
+					],
+					"controls": [
+						{
+							"off_background": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 0.4471, 0.451, 0.4627 ],
+								"keep_ratio": false,
+								"size": [ 9, 7 ],
+								"offset": [ 0, 0 ],
+								"anchor_from": "center",
+								"anchor_to": "center",
+								"layer": 1
+							}
+						},
+						{
+							"fifth_column_background": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 0.549, 0.5529, 0.5647 ],
+								"keep_ratio": false,
+								"size": [ 9, 7 ],
+								"offset": [ 0, 0 ],
+								"anchor_from": "center",
+								"anchor_to": "center",
+								"layer": 2,
+								"bindings": [
+									{
+										"binding_type": "collection_details",
+										"binding_collection_name": "custom_form"
+									},
+									{
+										"binding_type": "view",
+										"source_property_name": "(((#collection_index % 21) = 5) or ((#collection_index % 21) = 10) or ((#collection_index % 21) = 15) or ((#collection_index % 21) = 20))",
+										"target_property_name": "#visible"
+									}
+								]
+							}
+						},
+						{
+							"cell@server_form.canopy_timeline_cell": {
+								"layer": 3
+							}
+						},
+						{
+							"fifth_column_highlight": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 1, 1, 1 ],
+								"alpha": 0.1,
+								"keep_ratio": false,
+								"size": [ 9, 7 ],
+								"layer": 4,
+								"bindings": [
+									{
+										"binding_type": "collection_details",
+										"binding_collection_name": "custom_form"
+									},
+									{
+										"binding_type": "view",
+										"source_property_name": "(((#collection_index % 21) = 5) or ((#collection_index % 21) = 10) or ((#collection_index % 21) = 15) or ((#collection_index % 21) = 20))",
+										"target_property_name": "#visible"
+									}
+								]
+							}
+						},
+						{
+							"disabled_overlay": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 0.2824, 0.2863, 0.2902 ],
+								"alpha": 0.85,
+								"keep_ratio": false,
+								"size": [ 9, 7 ],
+								"layer": 5,
+								"bindings": [
+									{
+										"binding_name": "#custom_text",
+										"binding_type": "collection",
+										"binding_collection_name": "custom_form"
+									},
+									{
+										"binding_type": "view",
+										"source_property_name": "(#custom_text = '-')",
+										"target_property_name": "#visible"
+									}
+								]
+							}
+						},
+						{
+							"tick_number": {
+								"type": "label",
+								"text": "#custom_text",
+								"localize": false,
+								"font_scale_factor": 0.7,
+								"color": [ 0.8157, 0.8196, 0.8314 ],
+								"shadow": false,
+								"size": [ "default", "default" ],
+								"offset": [ 0, -1 ],
+								"anchor_from": "top_middle",
+								"anchor_to": "bottom_middle",
+								"layer": 4,
+								"bindings": [
+									{
+										"binding_name": "#custom_text",
+										"binding_type": "collection",
+										"binding_collection_name": "custom_form"
+									},
+									{
+										"binding_type": "collection_details",
+										"binding_collection_name": "custom_form"
+									},
+									{
+										"binding_type": "view",
+										"source_property_name": "((#collection_index < 21) and (((#collection_index % 21) = 5) or ((#collection_index % 21) = 10) or ((#collection_index % 21) = 15) or ((#collection_index % 21) = 20)) and (not (#custom_text = '-')))",
+										"target_property_name": "#visible"
+									}
+								]
+							}
 						}
 					]
 				}
 			},
 			{
-				"tick_number": {
+				"row_label": {
 					"type": "label",
-					"text": "#custom_text",
-					"localize": false,
-					"font_scale_factor": 0.7,
-					"color": [ 0.8157, 0.8196, 0.8314 ],
+					"text": "#row_label",
+					"color": [ 1, 1, 1 ],
 					"shadow": false,
-					"size": [ "default", "default" ],
-					"offset": [ 0, -1 ],
-					"anchor_from": "top_middle",
-					"anchor_to": "bottom_middle",
-					"layer": 4,
+					"font_scale_factor": 0.8,
+					"size": [ 56, "default" ],
+					"offset": [ -2, 0.8 ],
+					"anchor_from": "right_middle",
+					"anchor_to": "right_middle",
+					"layer": 3,
 					"bindings": [
 						{
 							"binding_name": "#custom_text",
@@ -1714,12 +1741,13 @@
 							"binding_collection_name": "custom_form"
 						},
 						{
-							"binding_type": "collection_details",
-							"binding_collection_name": "custom_form"
+							"binding_type": "view",
+							"source_property_name": "(#custom_text - '§r§o§w')",
+							"target_property_name": "#row_label"
 						},
 						{
 							"binding_type": "view",
-							"source_property_name": "(((#collection_index = 4) or (#collection_index = 9) or (#collection_index = 14) or (#collection_index = 19)) and (not (#custom_text = '-')))",
+							"source_property_name": "(not ((#custom_text - '§r§o§w') = #custom_text))",
 							"target_property_name": "#visible"
 						}
 					]
@@ -1767,5 +1795,52 @@
 	"canopy_timeline_hidden_item": {
 		"type": "panel",
 		"size": [ 0, 0 ]
+	},
+	"canopy_timeline_add_track_row": {
+		"type": "panel",
+		"size": [ "100%", "100%c" ],
+		"bindings": [
+			{
+				"binding_type": "collection_details",
+				"binding_collection_name": "custom_form"
+			},
+			{
+				"binding_name": "#custom_form_length"
+			},
+			{
+				"binding_type": "view",
+				"source_property_name": "(#collection_index = (#custom_form_length - 2))",
+				"target_property_name": "#visible"
+			}
+		],
+		"controls": [
+			{
+				"content": {
+					"type": "stack_panel",
+					"orientation": "vertical",
+					"size": [ "100% - 24px", "100%c" ],
+					"offset": [ 12, 0 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"controls": [
+						{
+							"row_top": {
+								"type": "panel",
+								"size": [ "100%", 6 ]
+							}
+						},
+						{
+							"dropdown@server_form.custom_dropdown": {}
+						},
+						{
+							"row_bottom": {
+								"type": "panel",
+								"size": [ "100%", 6 ]
+							}
+						}
+					]
+				}
+			}
+		]
 	}
 }
