@@ -16,11 +16,7 @@ const ATTACK = 0;
 const JUMP = 9;
 
 function defaultValues(form) {
-    return form.elements.map(element => {
-        if (element.type === 'dropdown')
-            return element.options.defaultValueIndex;
-        return element.options.defaultValue;
-    });
+    return form.elements.map(element => element.options?.defaultValue);
 }
 
 function cellIndex(row, column) {
@@ -41,19 +37,34 @@ describe('TimelineForm', () => {
     });
 
     describe('build', () => {
-        it('lays out 260 cell toggles, then the loop length slider, then the page dropdown', () => {
+        it('lays out 260 cell toggles, then the loop length slider, the page slider, and the page label', () => {
+            timeline.setLoopLength(40);
             const form = new TimelineForm(player, understudy).build();
-            expect(form.elements).toHaveLength(262);
+            expect(form.elements).toHaveLength(263);
             expect(form.elements.slice(0, LOOP_INDEX).every(element => element.type === 'toggle')).toBe(true);
             expect(form.elements[LOOP_INDEX].type).toBe('slider');
-            expect(form.elements[PAGE_INDEX].type).toBe('dropdown');
+            expect(form.elements[PAGE_INDEX].type).toBe('slider');
+            expect(form.elements[262].type).toBe('label');
         });
 
-        it('labels cells with their tick and disables cells past the loop', () => {
+        it('leaves out the page slider when the loop fits on one page', () => {
+            const form = new TimelineForm(player, understudy).build();
+            expect(form.elements).toHaveLength(262);
+            expect(form.elements[LOOP_INDEX].type).toBe('slider');
+            expect(form.elements[PAGE_INDEX].type).toBe('label');
+        });
+
+        it('labels the current page out of the page count', () => {
+            timeline.setLoopLength(100);
+            const form = new TimelineForm(player, understudy, 2).build();
+            expect(form.elements.at(-1).text).toEqual({ translate: 'simplayer.timeline.page.current', with: ['3', '5'] });
+        });
+
+        it('labels cells with their one-indexed tick and disables cells past the loop', () => {
             timeline.setLoopLength(30);
             const form = new TimelineForm(player, understudy, 1).build();
-            expect(form.elements[cellIndex(ATTACK, 0)].label).toBe('20');
-            expect(form.elements[cellIndex(ATTACK, 9)].label).toBe('29');
+            expect(form.elements[cellIndex(ATTACK, 0)].label).toBe('21');
+            expect(form.elements[cellIndex(ATTACK, 9)].label).toBe('30');
             expect(form.elements[cellIndex(ATTACK, 10)].label).toBe(TimelineForm.DISABLED_CELL_LABEL);
             expect(form.elements[cellIndex(JUMP, 19)].label).toBe('-');
         });
@@ -74,13 +85,13 @@ describe('TimelineForm', () => {
             expect(form.titleText.rawtext[1]).toEqual({ translate: 'simplayer.timeline.title', with: ['Bot'] });
         });
 
-        it('offers one dropdown item per page and selects the current page', () => {
+        it('offers a page slider over every page at the current page', () => {
             timeline.setLoopLength(100);
-            const form = new TimelineForm(player, understudy, 2).build();
-            const dropdown = form.elements[PAGE_INDEX];
-            expect(dropdown.items).toHaveLength(5);
-            expect(dropdown.items[2]).toEqual({ translate: 'simplayer.timeline.page.option', with: ['3', '5'] });
-            expect(dropdown.options.defaultValueIndex).toBe(2);
+            const slider = new TimelineForm(player, understudy, 2).build().elements[PAGE_INDEX];
+            expect(slider.label).toEqual({ translate: 'simplayer.timeline.page' });
+            expect(slider.minimumValue).toBe(1);
+            expect(slider.maximumValue).toBe(5);
+            expect(slider.options).toEqual({ valueStep: 1, defaultValue: 3 });
         });
 
         it('offers a loop length slider over the allowed range at the current length', () => {
@@ -171,8 +182,29 @@ describe('TimelineForm', () => {
 
         it('reopens on a newly selected page', () => {
             timeline.setLoopLength(80);
-            const result = submit(new TimelineForm(player, understudy), values => { values[PAGE_INDEX] = 1; });
+            const result = submit(new TimelineForm(player, understudy), values => { values[PAGE_INDEX] = 2; });
             expect(result).toBe(1);
+        });
+
+        it('clamps a selected page to the last page of a shortened loop', () => {
+            timeline.setLoopLength(100);
+            const result = submit(new TimelineForm(player, understudy), values => {
+                values[PAGE_INDEX] = 4;
+                values[LOOP_INDEX] = 30;
+            });
+            expect(result).toBe(1);
+        });
+
+        it.each([0, 5, 1.5, '2', undefined])('stays on the current page for invalid page %j', (value) => {
+            timeline.setLoopLength(80);
+            const result = submit(new TimelineForm(player, understudy, 1), values => { values[PAGE_INDEX] = value; });
+            expect(result).toBeUndefined();
+        });
+
+        it('closes when a single-page timeline is saved', () => {
+            const result = submit(new TimelineForm(player, understudy), values => { values[cellIndex(ATTACK, 3)] = true; });
+            expect(timeline.isActive('attack', 3)).toBe(true);
+            expect(result).toBeUndefined();
         });
     });
 
@@ -212,7 +244,7 @@ describe('TimelineForm', () => {
             const timelineForm = new TimelineForm(player, understudy);
             const form = timelineForm.build();
             const values = defaultValues(form);
-            values[PAGE_INDEX] = 1;
+            values[PAGE_INDEX] = 2;
             vi.spyOn(timelineForm, 'build').mockReturnValue(form);
             form.show.mockResolvedValue({ canceled: false, formValues: values });
             const showSpy = vi.spyOn(TimelineForm.prototype, 'show');

@@ -40,21 +40,23 @@ export class TimelineForm {
         for (const track of TIMELINE_TRACKS) {
             for (let column = 0; column < Timeline.PAGE_WIDTH; column++) {
                 const tick = this.#tickAt(column);
-                const label = tick < timeline.loopLength ? String(tick) : TimelineForm.DISABLED_CELL_LABEL;
+                const label = tick < timeline.loopLength ? String(tick + 1) : TimelineForm.DISABLED_CELL_LABEL;
                 form.toggle(label, { defaultValue: timeline.isActive(track.id, tick) });
             }
         }
         form.slider({ translate: 'simplayer.timeline.looplength' }, Timeline.MIN_LOOP_LENGTH, Timeline.MAX_LOOP_LENGTH, { valueStep: 1, defaultValue: timeline.loopLength });
-        form.dropdown({ translate: 'simplayer.timeline.page' }, this.#pageOptions(timeline.pageCount), { defaultValueIndex: this.#page });
+        if (timeline.pageCount > 1)
+            form.slider({ translate: 'simplayer.timeline.page' }, 1, timeline.pageCount, { valueStep: 1, defaultValue: this.#page + 1 });
+        form.label({ translate: 'simplayer.timeline.page.current', with: [String(this.#page + 1), String(timeline.pageCount)] });
         form.submitButton({ translate: 'simplayer.timeline.save' });
         return form;
     }
 
     apply(formValues) {
         const timeline = this.#timeline;
+        const selectedPage = this.#selectedPage(formValues[TimelineForm.PAGE_INDEX], timeline.pageCount);
         const lengthChanged = this.#applyLoopLength(timeline, formValues[TimelineForm.LOOP_LENGTH_INDEX]);
         TIMELINE_TRACKS.forEach((track, row) => this.#applyTrack(timeline, track, row, formValues));
-        const selectedPage = formValues[TimelineForm.PAGE_INDEX];
         if (!lengthChanged && selectedPage === this.#page)
             return void 0;
         return Math.min(selectedPage, timeline.pageCount - 1);
@@ -93,10 +95,9 @@ export class TimelineForm {
         return this.#page * Timeline.PAGE_WIDTH + column;
     }
 
-    #pageOptions(pageCount) {
-        const options = [];
-        for (let page = 0; page < pageCount; page++)
-            options.push({ translate: 'simplayer.timeline.page.option', with: [String(page + 1), String(pageCount)] });
-        return options;
+    #selectedPage(pageNumber, pageCount) {
+        if (!Number.isInteger(pageNumber) || pageNumber < 1 || pageNumber > pageCount)
+            return this.#page;
+        return pageNumber - 1;
     }
 }

@@ -1,7 +1,7 @@
 {
 	"namespace": "server_form",
-
 	"main_screen_content": {
+		"size": [ "100%", "100%" ],
 		"modifications": [
 			{
 				"array_name": "controls",
@@ -19,15 +19,16 @@
 			}
 		]
 	},
-
 	"canopy_custom_form_router": {
 		"type": "panel",
-		"size": [ 0, 0 ],
+		"size": [ "100%", "100%" ],
 		"controls": [
 			{
 				"vanilla_custom_form@server_form.custom_form": {
 					"bindings": [
-						{ "binding_name": "#title_text" },
+						{
+							"binding_name": "#title_text"
+						},
 						{
 							"binding_type": "view",
 							"source_property_name": "((#title_text - '§t§i§m§e§l§i§n§e§r') = #title_text)",
@@ -37,9 +38,11 @@
 				}
 			},
 			{
-				"canopy_timeline_form@server_form.canopy_timeline_form": {
+				"canopy_timeline_screen@server_form.canopy_timeline_screen": {
 					"bindings": [
-						{ "binding_name": "#title_text" },
+						{
+							"binding_name": "#title_text"
+						},
 						{
 							"binding_type": "view",
 							"source_property_name": "(not ((#title_text - '§t§i§m§e§l§i§n§e§r') = #title_text))",
@@ -50,124 +53,415 @@
 			}
 		]
 	},
-
-	"canopy_timeline_form@common_dialogs.main_panel_no_buttons": {
-		"$title_panel": "common_dialogs.standard_title_label",
-		"$title_size": [ "100% - 15px", 10 ],
-		"$title_max_size": [ "100% - 15px", 10 ],
-		"size": [ 300, 230 ],
-		"$text_name": "#title_text",
-		"$title_text_binding_type": "none",
-		"$child_control": "server_form.canopy_timeline_panel",
-		"layer": 2
-	},
-
-	"canopy_timeline_panel@common.scrolling_panel": {
-		"anchor_to": "top_left",
-		"anchor_from": "top_left",
-		"$show_background": false,
+	"canopy_timeline_screen": {
+		"type": "panel",
 		"size": [ "100%", "100%" ],
-		"$scrolling_content": "server_form.canopy_timeline_content",
-		"$scroll_size": [ 5, "100% - 4px" ],
-		"$scrolling_pane_size": [ "100% - 4px", "100% - 2px" ],
-		"$scrolling_pane_offset": [ 2, 0 ],
-		"$scroll_bar_right_padding_size": [ 0, 0 ]
-	},
-
-	"canopy_timeline_content": {
-		"type": "stack_panel",
-		"size": [ "100% - 4px", "100%c" ],
-		"offset": [ 2, 0 ],
-		"orientation": "vertical",
-		"anchor_from": "top_left",
-		"anchor_to": "top_left",
 		"controls": [
 			{
-				"grid_area": {
+				"backdrop": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 0, 0, 0 ],
+					"alpha": 0.4,
+					"keep_ratio": false,
+					"size": [ "100%", "100%" ],
+					"layer": 1
+				}
+			},
+			{
+				"form@server_form.canopy_timeline_form": {}
+			}
+		]
+	},
+	"canopy_timeline_form": {
+		"type": "panel",
+		"size": [ 286, "80%" ],
+		"max_size": [ 286, 345 ],
+		"anchor_from": "center",
+		"anchor_to": "center",
+		"layer": 2,
+		"controls": [
+			{
+				"background": {
+					"type": "image",
+					"texture": "textures/ui/timeline_panel",
+					"size": [ "100%", "100%" ],
+					"keep_ratio": false,
+					"layer": 1
+				}
+			},
+			{
+				"title": {
 					"type": "panel",
-					"size": [ "100%", 103 ],
+					"size": [ "100% - 28px", 12 ],
+					"offset": [ 14, 8 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 3,
 					"controls": [
-						{ "track_labels@server_form.canopy_timeline_track_labels": {} },
-						{ "cells@server_form.canopy_timeline_grid": {} }
+						{
+							"text": {
+								"type": "label",
+								"text": "#title_text",
+								"color": [ 1, 1, 1 ],
+								"shadow": true,
+								"font_scale_factor": 1.2,
+								"size": [ "100%", "default" ],
+								"offset": [ 0, 0 ],
+								"anchor_from": "left_middle",
+								"anchor_to": "left_middle",
+								"layer": 3,
+								"font_type": "MinecraftTen",
+								"bindings": [
+									{
+										"binding_name": "#title_text"
+									}
+								]
+							}
+						}
 					]
 				}
 			},
-			{ "settings@server_form.canopy_timeline_settings": {} },
 			{
-				"submit_button@common_buttons.light_text_button": {
-					"$pressed_button_name": "button.submit_custom_form",
-					"anchor_from": "top_left",
-					"anchor_to": "top_left",
-					"size": [ "100%", 32 ],
-					"$button_text": "#submit_text",
-					"$button_text_binding_type": "global",
-					"$button_binding_condition": "once",
-					"bindings": [
+				"close@server_form.canopy_timeline_close_button": {}
+			},
+			{
+				"content@server_form.canopy_timeline_scroll": {}
+			}
+		]
+	},
+	"canopy_timeline_close_text": {
+		"type": "label",
+		"text": "x",
+		"localize": false,
+		"color": "$close_color",
+		"shadow": true,
+		"size": [ "default", "default" ],
+		"offset": [ 4, 10 ],
+		"anchor_from": "top_left",
+		"anchor_to": "top_left",
+		"layer": 2
+	},
+	"canopy_timeline_close_button@common.button": {
+		"size": [ 17, 18 ],
+		"anchor_from": "top_right",
+		"anchor_to": "top_right",
+		"layer": 4,
+		"$pressed_button_name": "button.menu_exit",
+		"controls": [
+			{
+				"default": {
+					"type": "panel",
+					"controls": [
 						{
-							"binding_name": "#submit_button_visible",
-							"binding_name_override": "#visible"
+							"x@server_form.canopy_timeline_close_text": {
+								"$close_color": [ 1, 1, 1 ]
+							}
+						}
+					]
+				}
+			},
+			{
+				"hover": {
+					"type": "panel",
+					"controls": [
+						{
+							"x@server_form.canopy_timeline_close_text": {
+								"$close_color": [ 0.9216, 0.9216, 0.9216 ]
+							}
+						}
+					]
+				}
+			},
+			{
+				"pressed": {
+					"type": "panel",
+					"controls": [
+						{
+							"x@server_form.canopy_timeline_close_text": {
+								"$close_color": [ 0.9216, 0.9216, 0.9216 ]
+							}
 						}
 					]
 				}
 			}
 		]
 	},
-
-	"canopy_timeline_track_label": {
-		"type": "label",
-		"size": [ 56, 9 ],
-		"font_scale_factor": 0.8,
-		"color": "$body_text_color",
-		"text": "$track_label"
+	"canopy_timeline_scroll@common.scrolling_panel": {
+		"anchor_from": "top_left",
+		"anchor_to": "top_left",
+		"offset": [ 2, 26 ],
+		"size": [ "100% - 4px", "100% - 36px" ],
+		"layer": 3,
+		"$show_background": false,
+		"$scrolling_content": "server_form.canopy_timeline_content",
+		"$scrolling_pane_size": [ "100%", "100%" ],
+		"$scrolling_pane_size_touch": [ "100%", "100%" ],
+		"$scroll_bar_contained": true,
+		"$scroll_bar_contained_touch": true,
+		"$scroll_size": [ 6, "100% - 8px" ],
+		"$scroll_size_touch": [ 6, "100% - 8px" ],
+		"$scroll_bar_right_padding_size": [ 2, 0 ],
+		"$scroll_bar_right_padding_size_touch": [ 2, 0 ],
+		"$scroll_track_image_control": "server_form.canopy_timeline_scroll_rail",
+		"$scroll_box_mouse_image_control": "server_form.canopy_timeline_scroll_thumb",
+		"$scroll_box_touch_image_control": "server_form.canopy_timeline_scroll_thumb",
+		"$scroll_box_visible_touch": true,
+		"$allow_scrolling_even_when_content_fits": false
 	},
-
-	"canopy_timeline_track_labels": {
+	"canopy_timeline_scroll_rail": {
+		"type": "panel",
+		"size": [ 6, "100%" ],
+		"controls": [
+			{
+				"rail": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 0.3451, 0.3451, 0.3529 ],
+					"keep_ratio": false,
+					"size": [ 2, "100%" ],
+					"offset": [ 2, 0 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 1
+				}
+			}
+		]
+	},
+	"canopy_timeline_scroll_thumb": {
+		"type": "panel",
+		"size": [ 6, "100%" ],
+		"layer": 4,
+		"controls": [
+			{
+				"outline": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 0, 0, 0 ],
+					"keep_ratio": false,
+					"size": [ "100%", "100%" ],
+					"offset": [ 0, 0 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 1
+				}
+			},
+			{
+				"face": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 0.902, 0.9098, 0.9216 ],
+					"keep_ratio": false,
+					"size": [ "100% - 2px", "100% - 4px" ],
+					"offset": [ 1, 1 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 2
+				}
+			},
+			{
+				"specular_top": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 1, 1, 1 ],
+					"keep_ratio": false,
+					"size": [ "100% - 2px", 1 ],
+					"offset": [ 1, 3 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 3,
+					"alpha": 0.6
+				}
+			},
+			{
+				"specular_left": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 1, 1, 1 ],
+					"keep_ratio": false,
+					"size": [ 1, "100% - 7px" ],
+					"offset": [ 1, 4 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 3,
+					"alpha": 0.6
+				}
+			},
+			{
+				"specular_bottom": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 1, 1, 1 ],
+					"keep_ratio": false,
+					"size": [ "100% - 2px", 1 ],
+					"offset": [ 1, "100% - 4px" ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 4,
+					"alpha": 0.4
+				}
+			},
+			{
+				"specular_right": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 1, 1, 1 ],
+					"keep_ratio": false,
+					"size": [ 1, "100% - 7px" ],
+					"offset": [ "100% - 2px", 3 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 4,
+					"alpha": 0.4
+				}
+			},
+			{
+				"shadow": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 0.3451, 0.3451, 0.3529 ],
+					"keep_ratio": false,
+					"size": [ "100% - 2px", 2 ],
+					"offset": [ 1, "100% - 3px" ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 2
+				}
+			},
+			{
+				"drop_shadow": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 0, 0, 0 ],
+					"keep_ratio": false,
+					"size": [ "100%", 1 ],
+					"offset": [ 0, "100%" ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 1,
+					"alpha": 0.2
+				}
+			}
+		]
+	},
+	"canopy_timeline_content": {
 		"type": "stack_panel",
+		"size": [ "100%", "100%c" ],
 		"orientation": "vertical",
-		"size": [ 56, 90 ],
-		"offset": [ 0, 9 ],
 		"anchor_from": "top_left",
 		"anchor_to": "top_left",
 		"controls": [
-			{ "attack@server_form.canopy_timeline_track_label": { "$track_label": "simplayer.action.attack" } },
-			{ "interact@server_form.canopy_timeline_track_label": { "$track_label": "simplayer.action.interact" } },
-			{ "use@server_form.canopy_timeline_track_label": { "$track_label": "simplayer.timeline.track.use" } },
-			{ "usehold@server_form.canopy_timeline_track_label": { "$track_label": "simplayer.timeline.track.usehold" } },
-			{ "build@server_form.canopy_timeline_track_label": { "$track_label": "simplayer.action.build" } },
-			{ "break@server_form.canopy_timeline_track_label": { "$track_label": "simplayer.action.break" } },
-			{ "drop@server_form.canopy_timeline_track_label": { "$track_label": "simplayer.action.drop" } },
-			{ "dropstack@server_form.canopy_timeline_track_label": { "$track_label": "simplayer.action.dropstack" } },
-			{ "dropall@server_form.canopy_timeline_track_label": { "$track_label": "simplayer.action.dropall" } },
-			{ "jump@server_form.canopy_timeline_track_label": { "$track_label": "simplayer.action.jump" } }
+			{
+				"loop_length": {
+					"type": "stack_panel",
+					"size": [ "100%", "100%c" ],
+					"orientation": "vertical",
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"factory": {
+						"name": "buttons",
+						"control_ids": {
+							"label": "@server_form.canopy_timeline_hidden_item",
+							"toggle": "@server_form.canopy_timeline_hidden_item",
+							"slider": "@server_form.canopy_timeline_loop_length_row",
+							"step_slider": "@server_form.canopy_timeline_hidden_item",
+							"dropdown": "@server_form.canopy_timeline_hidden_item",
+							"input": "@server_form.canopy_timeline_hidden_item",
+							"header": "@server_form.canopy_timeline_hidden_item",
+							"divider": "@server_form.canopy_timeline_hidden_item",
+							"multiselect": "@server_form.canopy_timeline_hidden_item"
+						}
+					},
+					"collection_name": "custom_form",
+					"bindings": [
+						{
+							"binding_name": "#custom_form_length",
+							"binding_name_override": "#collection_length"
+						}
+					]
+				}
+			},
+			{
+				"divider_top@server_form.canopy_timeline_divider": {}
+			},
+			{
+				"actions@server_form.canopy_timeline_actions_row": {}
+			},
+			{
+				"divider_bottom@server_form.canopy_timeline_divider": {}
+			},
+			{
+				"page": {
+					"type": "stack_panel",
+					"size": [ "100%", "100%c" ],
+					"orientation": "vertical",
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"factory": {
+						"name": "buttons",
+						"control_ids": {
+							"label": "@server_form.canopy_timeline_hidden_item",
+							"toggle": "@server_form.canopy_timeline_hidden_item",
+							"slider": "@server_form.canopy_timeline_page_row",
+							"step_slider": "@server_form.canopy_timeline_hidden_item",
+							"dropdown": "@server_form.canopy_timeline_hidden_item",
+							"input": "@server_form.canopy_timeline_hidden_item",
+							"header": "@server_form.canopy_timeline_hidden_item",
+							"divider": "@server_form.canopy_timeline_hidden_item",
+							"multiselect": "@server_form.canopy_timeline_hidden_item"
+						}
+					},
+					"collection_name": "custom_form",
+					"bindings": [
+						{
+							"binding_name": "#custom_form_length",
+							"binding_name_override": "#collection_length"
+						}
+					]
+				}
+			},
+			{
+				"save@server_form.canopy_timeline_button_row": {}
+			}
 		]
 	},
-
-	"canopy_timeline_grid": {
-		"type": "grid",
-		"size": [
-			200,
-			90
-		],
-		"offset": [
-			58,
-			9
-		],
-		"anchor_from": "top_left",
-		"anchor_to": "top_left",
-		"grid_dimensions": [
-			20,
-			10
-		],
-		"grid_item_template": "server_form.canopy_timeline_grid_item",
-		"collection_name": "custom_form"
-	},
-
-	"canopy_timeline_grid_item": {
+	"canopy_timeline_divider": {
 		"type": "panel",
-		"size": [
-			10,
-			9
-		],
+		"size": [ "100%", 14 ],
+		"controls": [
+			{
+				"dark": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 0, 0, 0 ],
+					"keep_ratio": false,
+					"size": [ "100%", 1 ],
+					"offset": [ 0, 6 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 1,
+					"alpha": 0.3
+				}
+			},
+			{
+				"light": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 1, 1, 1 ],
+					"keep_ratio": false,
+					"size": [ "100%", 1 ],
+					"offset": [ 0, 7 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 1,
+					"alpha": 0.1
+				}
+			}
+		]
+	},
+	"canopy_timeline_loop_length_row": {
+		"type": "panel",
+		"size": [ "100%", 52 ],
 		"bindings": [
 			{
 				"binding_type": "collection_details",
@@ -175,28 +469,1194 @@
 			},
 			{
 				"binding_type": "view",
-				"source_property_name": "(#collection_index < 200)",
+				"source_property_name": "(#collection_index = 260)",
 				"target_property_name": "#visible"
 			}
 		],
 		"controls": [
 			{
-				"cell@server_form.canopy_timeline_cell": {}
+				"content": {
+					"type": "stack_panel",
+					"orientation": "vertical",
+					"size": [ "100% - 24px", "100%c" ],
+					"offset": [ 12, 0 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"controls": [
+						{
+							"row_top": {
+								"type": "panel",
+								"size": [ "100%", 6 ]
+							}
+						},
+						{
+							"heading": {
+								"type": "panel",
+								"size": [ "100%", 10 ],
+								"controls": [
+									{
+										"text": {
+											"type": "label",
+											"text": "#custom_slider_text",
+											"color": [ 1, 1, 1 ],
+											"shadow": false,
+											"font_scale_factor": 0.8,
+											"size": [ "default", "default" ],
+											"offset": [ 0, 2.2 ],
+											"anchor_from": "top_left",
+											"anchor_to": "top_left",
+											"layer": 3,
+											"bindings": [
+												{
+													"binding_name": "#custom_slider_text",
+													"binding_type": "collection",
+													"binding_collection_name": "custom_form"
+												}
+											]
+										}
+									},
+									{
+										"value": {
+											"type": "label",
+											"text": "#custom_slider_text_value",
+											"color": [ 1, 1, 1 ],
+											"shadow": false,
+											"font_scale_factor": 0.8,
+											"size": [ "default", "default" ],
+											"offset": [ 0, 2.2 ],
+											"anchor_from": "top_right",
+											"anchor_to": "top_right",
+											"layer": 3,
+											"localize": false,
+											"bindings": [
+												{
+													"binding_name": "#custom_slider_text_value",
+													"binding_type": "collection",
+													"binding_collection_name": "custom_form"
+												}
+											]
+										}
+									}
+								]
+							}
+						},
+						{
+							"description": {
+								"type": "panel",
+								"size": [ "100%", 10 ],
+								"controls": [
+									{
+										"text": {
+											"type": "label",
+											"text": "simplayer.timeline.looplength.description",
+											"color": [ 0.8157, 0.8196, 0.8314 ],
+											"shadow": false,
+											"font_scale_factor": 0.7,
+											"size": [ "100%", "default" ],
+											"offset": [ 0, 2.55 ],
+											"anchor_from": "top_left",
+											"anchor_to": "top_left",
+											"layer": 3
+										}
+									}
+								]
+							}
+						},
+						{
+							"gap": {
+								"type": "panel",
+								"size": [ "100%", 4 ]
+							}
+						},
+						{
+							"slider@server_form.canopy_timeline_slider": {}
+						},
+						{
+							"row_bottom": {
+								"type": "panel",
+								"size": [ "100%", 6 ]
+							}
+						}
+					]
+				}
+			}
+		]
+	},
+	"canopy_timeline_page_row": {
+		"type": "panel",
+		"size": [ "100%", 42 ],
+		"bindings": [
+			{
+				"binding_type": "collection_details",
+				"binding_collection_name": "custom_form"
+			},
+			{
+				"binding_type": "view",
+				"source_property_name": "(#collection_index = 261)",
+				"target_property_name": "#visible"
+			}
+		],
+		"controls": [
+			{
+				"content": {
+					"type": "stack_panel",
+					"orientation": "vertical",
+					"size": [ "100% - 24px", "100%c" ],
+					"offset": [ 12, 0 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"controls": [
+						{
+							"row_top": {
+								"type": "panel",
+								"size": [ "100%", 6 ]
+							}
+						},
+						{
+							"heading": {
+								"type": "panel",
+								"size": [ "100%", 10 ],
+								"controls": [
+									{
+										"text": {
+											"type": "label",
+											"text": "#custom_slider_text",
+											"color": [ 1, 1, 1 ],
+											"shadow": false,
+											"font_scale_factor": 0.8,
+											"size": [ "default", "default" ],
+											"offset": [ 0, 2.2 ],
+											"anchor_from": "top_left",
+											"anchor_to": "top_left",
+											"layer": 3,
+											"bindings": [
+												{
+													"binding_name": "#custom_slider_text",
+													"binding_type": "collection",
+													"binding_collection_name": "custom_form"
+												}
+											]
+										}
+									},
+									{
+										"value": {
+											"type": "label",
+											"text": "#custom_slider_text_value",
+											"color": [ 1, 1, 1 ],
+											"shadow": false,
+											"font_scale_factor": 0.8,
+											"size": [ "default", "default" ],
+											"offset": [ 0, 2.2 ],
+											"anchor_from": "top_right",
+											"anchor_to": "top_right",
+											"layer": 3,
+											"localize": false,
+											"bindings": [
+												{
+													"binding_name": "#custom_slider_text_value",
+													"binding_type": "collection",
+													"binding_collection_name": "custom_form"
+												}
+											]
+										}
+									}
+								]
+							}
+						},
+						{
+							"gap": {
+								"type": "panel",
+								"size": [ "100%", 4 ]
+							}
+						},
+						{
+							"slider@server_form.canopy_timeline_slider": {}
+						},
+						{
+							"row_bottom": {
+								"type": "panel",
+								"size": [ "100%", 6 ]
+							}
+						}
+					]
+				}
+			}
+		]
+	},
+	"canopy_timeline_actions_row": {
+		"type": "panel",
+		"size": [ "100%", 162 ],
+		"controls": [
+			{
+				"content": {
+					"type": "stack_panel",
+					"orientation": "vertical",
+					"size": [ "100% - 24px", "100%c" ],
+					"offset": [ 12, 0 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"controls": [
+						{
+							"row_top": {
+								"type": "panel",
+								"size": [ "100%", 6 ]
+							}
+						},
+						{
+							"heading": {
+								"type": "panel",
+								"size": [ "100%", 10 ],
+								"controls": [
+									{
+										"text": {
+											"type": "label",
+											"text": "simplayer.timeline.actions",
+											"color": [ 1, 1, 1 ],
+											"shadow": false,
+											"font_scale_factor": 0.8,
+											"size": [ "default", "default" ],
+											"offset": [ 0, 2.2 ],
+											"anchor_from": "top_left",
+											"anchor_to": "top_left",
+											"layer": 3
+										}
+									},
+									{
+										"page": {
+											"type": "stack_panel",
+											"orientation": "vertical",
+											"size": [ "100%", 10 ],
+											"anchor_from": "top_right",
+											"anchor_to": "top_right",
+											"factory": {
+												"name": "buttons",
+												"control_ids": {
+													"label": "@server_form.canopy_timeline_page_label",
+													"toggle": "@server_form.canopy_timeline_hidden_item",
+													"slider": "@server_form.canopy_timeline_hidden_item",
+													"step_slider": "@server_form.canopy_timeline_hidden_item",
+													"dropdown": "@server_form.canopy_timeline_hidden_item",
+													"input": "@server_form.canopy_timeline_hidden_item",
+													"header": "@server_form.canopy_timeline_hidden_item",
+													"divider": "@server_form.canopy_timeline_hidden_item",
+													"multiselect": "@server_form.canopy_timeline_hidden_item"
+												}
+											},
+											"collection_name": "custom_form",
+											"bindings": [
+												{
+													"binding_name": "#custom_form_length",
+													"binding_name_override": "#collection_length"
+												}
+											]
+										}
+									}
+								]
+							}
+						},
+						{
+							"description": {
+								"type": "panel",
+								"size": [ "100%", 10 ],
+								"controls": [
+									{
+										"text": {
+											"type": "label",
+											"text": "simplayer.timeline.actions.description",
+											"color": [ 0.8157, 0.8196, 0.8314 ],
+											"shadow": false,
+											"font_scale_factor": 0.7,
+											"size": [ "100%", "default" ],
+											"offset": [ 0, 2.55 ],
+											"anchor_from": "top_left",
+											"anchor_to": "top_left",
+											"layer": 3
+										}
+									}
+								]
+							}
+						},
+						{
+							"gap": {
+								"type": "panel",
+								"size": [ "100%", 4 ]
+							}
+						},
+						{
+							"grid_area": {
+								"type": "panel",
+								"size": [ "100%", 126 ],
+								"controls": [
+									{
+										"track_labels@server_form.canopy_timeline_track_labels": {}
+									},
+									{
+										"cells@server_form.canopy_timeline_grid": {}
+									}
+								]
+							}
+						},
+						{
+							"row_bottom": {
+								"type": "panel",
+								"size": [ "100%", 6 ]
+							}
+						}
+					]
+				}
+			}
+		]
+	},
+	"canopy_timeline_page_label": {
+		"type": "panel",
+		"size": [ "100%", 10 ],
+		"controls": [
+			{
+				"text": {
+					"type": "label",
+					"text": "#custom_text",
+					"color": [ 1, 1, 1 ],
+					"shadow": false,
+					"font_scale_factor": 0.8,
+					"size": [ "default", "default" ],
+					"offset": [ 0, 2.2 ],
+					"anchor_from": "top_right",
+					"anchor_to": "top_right",
+					"layer": 3,
+					"bindings": [
+						{
+							"binding_name": "#custom_text",
+							"binding_type": "collection",
+							"binding_collection_name": "custom_form"
+						}
+					]
+				}
+			}
+		]
+	},
+	"canopy_timeline_button_row": {
+		"type": "panel",
+		"size": [ "100%", 25 ],
+		"controls": [
+			{
+				"button@server_form.canopy_timeline_save_button": {
+					"size": [ "100% - 24px", 24 ],
+					"offset": [ 12, 0.5 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left"
+				}
+			}
+		]
+	},
+	"canopy_timeline_save_button@common.button": {
+		"$pressed_button_name": "button.submit_custom_form",
+		"$button_bindings": [
+			{
+				"binding_name": "#submit_button_visible",
+				"binding_name_override": "#visible"
+			}
+		],
+		"controls": [
+			{
+				"default": {
+					"type": "panel",
+					"size": [ "100%", "100%" ],
+					"controls": [
+						{
+							"outline": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 0.1176, 0.1176, 0.1216 ],
+								"keep_ratio": false,
+								"size": [ "100%", 24 ],
+								"offset": [ 0, 0 ],
+								"anchor_from": "top_left",
+								"anchor_to": "top_left",
+								"layer": 1
+							}
+						},
+						{
+							"shadow": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 0.3451, 0.3451, 0.3529 ],
+								"keep_ratio": false,
+								"size": [ "100% - 2px", 22 ],
+								"offset": [ 1, 1 ],
+								"anchor_from": "top_left",
+								"anchor_to": "top_left",
+								"layer": 2
+							}
+						},
+						{
+							"face": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 0.8157, 0.8196, 0.8314 ],
+								"keep_ratio": false,
+								"size": [ "100% - 2px", 20 ],
+								"offset": [ 1, 1 ],
+								"anchor_from": "top_left",
+								"anchor_to": "top_left",
+								"layer": 3
+							}
+						},
+						{
+							"specular_top": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 1, 1, 1 ],
+								"keep_ratio": false,
+								"size": [ "100% - 2px", 1 ],
+								"offset": [ 1, 1 ],
+								"anchor_from": "top_left",
+								"anchor_to": "top_left",
+								"layer": 4,
+								"alpha": 0.6
+							}
+						},
+						{
+							"specular_left": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 1, 1, 1 ],
+								"keep_ratio": false,
+								"size": [ 1, 19 ],
+								"offset": [ 1, 2 ],
+								"anchor_from": "top_left",
+								"anchor_to": "top_left",
+								"layer": 4,
+								"alpha": 0.6
+							}
+						},
+						{
+							"specular_bottom": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 1, 1, 1 ],
+								"keep_ratio": false,
+								"size": [ "100% - 2px", 1 ],
+								"offset": [ 1, 20 ],
+								"anchor_from": "top_left",
+								"anchor_to": "top_left",
+								"layer": 5,
+								"alpha": 0.4
+							}
+						},
+						{
+							"specular_right": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 1, 1, 1 ],
+								"keep_ratio": false,
+								"size": [ 1, 19 ],
+								"offset": [ "100% - 2px", 1 ],
+								"anchor_from": "top_left",
+								"anchor_to": "top_left",
+								"layer": 5,
+								"alpha": 0.4
+							}
+						},
+						{
+							"text": {
+								"type": "label",
+								"text": "#submit_text",
+								"color": [ 0.1176, 0.1176, 0.1216 ],
+								"shadow": false,
+								"font_scale_factor": 0.8,
+								"size": [ "default", "default" ],
+								"offset": [ 0, 8.2 ],
+								"anchor_from": "top_middle",
+								"anchor_to": "top_middle",
+								"layer": 6,
+								"bindings": [
+									{
+										"binding_name": "#submit_text",
+										"binding_type": "global"
+									}
+								]
+							}
+						}
+					]
+				}
+			},
+			{
+				"hover": {
+					"type": "panel",
+					"size": [ "100%", "100%" ],
+					"controls": [
+						{
+							"outline": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 0.1176, 0.1176, 0.1216 ],
+								"keep_ratio": false,
+								"size": [ "100%", 24 ],
+								"offset": [ 0, 0 ],
+								"anchor_from": "top_left",
+								"anchor_to": "top_left",
+								"layer": 1
+							}
+						},
+						{
+							"shadow": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 0.3451, 0.3451, 0.3529 ],
+								"keep_ratio": false,
+								"size": [ "100% - 2px", 22 ],
+								"offset": [ 1, 1 ],
+								"anchor_from": "top_left",
+								"anchor_to": "top_left",
+								"layer": 2
+							}
+						},
+						{
+							"face": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 0.6941, 0.698, 0.7098 ],
+								"keep_ratio": false,
+								"size": [ "100% - 2px", 20 ],
+								"offset": [ 1, 1 ],
+								"anchor_from": "top_left",
+								"anchor_to": "top_left",
+								"layer": 3
+							}
+						},
+						{
+							"specular_top": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 1, 1, 1 ],
+								"keep_ratio": false,
+								"size": [ "100% - 2px", 1 ],
+								"offset": [ 1, 1 ],
+								"anchor_from": "top_left",
+								"anchor_to": "top_left",
+								"layer": 4,
+								"alpha": 0.8
+							}
+						},
+						{
+							"specular_left": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 1, 1, 1 ],
+								"keep_ratio": false,
+								"size": [ 1, 19 ],
+								"offset": [ 1, 2 ],
+								"anchor_from": "top_left",
+								"anchor_to": "top_left",
+								"layer": 4,
+								"alpha": 0.8
+							}
+						},
+						{
+							"specular_bottom": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 1, 1, 1 ],
+								"keep_ratio": false,
+								"size": [ "100% - 2px", 1 ],
+								"offset": [ 1, 20 ],
+								"anchor_from": "top_left",
+								"anchor_to": "top_left",
+								"layer": 5,
+								"alpha": 0.6
+							}
+						},
+						{
+							"specular_right": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 1, 1, 1 ],
+								"keep_ratio": false,
+								"size": [ 1, 19 ],
+								"offset": [ "100% - 2px", 1 ],
+								"anchor_from": "top_left",
+								"anchor_to": "top_left",
+								"layer": 5,
+								"alpha": 0.6
+							}
+						},
+						{
+							"text": {
+								"type": "label",
+								"text": "#submit_text",
+								"color": [ 0.1176, 0.1176, 0.1216 ],
+								"shadow": false,
+								"font_scale_factor": 0.8,
+								"size": [ "default", "default" ],
+								"offset": [ 0, 8.2 ],
+								"anchor_from": "top_middle",
+								"anchor_to": "top_middle",
+								"layer": 6,
+								"bindings": [
+									{
+										"binding_name": "#submit_text",
+										"binding_type": "global"
+									}
+								]
+							}
+						}
+					]
+				}
+			},
+			{
+				"pressed": {
+					"type": "panel",
+					"size": [ "100%", "100%" ],
+					"controls": [
+						{
+							"outline": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 0.1176, 0.1176, 0.1216 ],
+								"keep_ratio": false,
+								"size": [ "100%", 22 ],
+								"offset": [ 0, 2 ],
+								"anchor_from": "top_left",
+								"anchor_to": "top_left",
+								"layer": 1
+							}
+						},
+						{
+							"face": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 0.6941, 0.698, 0.7098 ],
+								"keep_ratio": false,
+								"size": [ "100% - 2px", 20 ],
+								"offset": [ 1, 3 ],
+								"anchor_from": "top_left",
+								"anchor_to": "top_left",
+								"layer": 3
+							}
+						},
+						{
+							"specular_top": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 1, 1, 1 ],
+								"keep_ratio": false,
+								"size": [ "100% - 2px", 1 ],
+								"offset": [ 1, 3 ],
+								"anchor_from": "top_left",
+								"anchor_to": "top_left",
+								"layer": 4,
+								"alpha": 0.8
+							}
+						},
+						{
+							"specular_left": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 1, 1, 1 ],
+								"keep_ratio": false,
+								"size": [ 1, 19 ],
+								"offset": [ 1, 4 ],
+								"anchor_from": "top_left",
+								"anchor_to": "top_left",
+								"layer": 4,
+								"alpha": 0.8
+							}
+						},
+						{
+							"specular_bottom": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 1, 1, 1 ],
+								"keep_ratio": false,
+								"size": [ "100% - 2px", 1 ],
+								"offset": [ 1, 22 ],
+								"anchor_from": "top_left",
+								"anchor_to": "top_left",
+								"layer": 5,
+								"alpha": 0.6
+							}
+						},
+						{
+							"specular_right": {
+								"type": "image",
+								"texture": "textures/ui/timeline_cell",
+								"color": [ 1, 1, 1 ],
+								"keep_ratio": false,
+								"size": [ 1, 19 ],
+								"offset": [ "100% - 2px", 3 ],
+								"anchor_from": "top_left",
+								"anchor_to": "top_left",
+								"layer": 5,
+								"alpha": 0.6
+							}
+						},
+						{
+							"text": {
+								"type": "label",
+								"text": "#submit_text",
+								"color": [ 0.1176, 0.1176, 0.1216 ],
+								"shadow": false,
+								"font_scale_factor": 0.8,
+								"size": [ "default", "default" ],
+								"offset": [ 0, 10.2 ],
+								"anchor_from": "top_middle",
+								"anchor_to": "top_middle",
+								"layer": 6,
+								"bindings": [
+									{
+										"binding_name": "#submit_text",
+										"binding_type": "global"
+									}
+								]
+							}
+						}
+					]
+				}
+			}
+		]
+	},
+	"canopy_timeline_slider_thumb": {
+		"type": "panel",
+		"size": [ "100%", "100%" ],
+		"controls": [
+			{
+				"outline": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 0.1176, 0.1176, 0.1216 ],
+					"keep_ratio": false,
+					"size": [ "100%", "100%" ],
+					"offset": [ 0, 0 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 1
+				}
+			},
+			{
+				"face": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 0.8157, 0.8196, 0.8314 ],
+					"keep_ratio": false,
+					"size": [ "100% - 2px", "100% - 4px" ],
+					"offset": [ 1, 1 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 2
+				}
+			},
+			{
+				"specular_top": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 1, 1, 1 ],
+					"keep_ratio": false,
+					"size": [ "100% - 2px", 1 ],
+					"offset": [ 1, 1 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 3,
+					"alpha": 0.6
+				}
+			},
+			{
+				"specular_left": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 1, 1, 1 ],
+					"keep_ratio": false,
+					"size": [ 1, "100% - 5px" ],
+					"offset": [ 1, 2 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 3,
+					"alpha": 0.6
+				}
+			},
+			{
+				"specular_bottom": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 1, 1, 1 ],
+					"keep_ratio": false,
+					"size": [ "100% - 2px", 1 ],
+					"offset": [ 1, "100% - 4px" ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 4,
+					"alpha": 0.4
+				}
+			},
+			{
+				"specular_right": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 1, 1, 1 ],
+					"keep_ratio": false,
+					"size": [ 1, "100% - 5px" ],
+					"offset": [ "100% - 2px", 1 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 4,
+					"alpha": 0.4
+				}
+			},
+			{
+				"shadow": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 0.3451, 0.3451, 0.3529 ],
+					"keep_ratio": false,
+					"size": [ "100% - 2px", 2 ],
+					"offset": [ 1, "100% - 3px" ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 2
+				}
+			}
+		]
+	},
+	"canopy_timeline_slider_thumb_hover": {
+		"type": "panel",
+		"size": [ "100%", "100%" ],
+		"controls": [
+			{
+				"outline": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 0.1176, 0.1176, 0.1216 ],
+					"keep_ratio": false,
+					"size": [ "100%", "100%" ],
+					"offset": [ 0, 0 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 1
+				}
+			},
+			{
+				"face": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 0.6941, 0.698, 0.7098 ],
+					"keep_ratio": false,
+					"size": [ "100% - 2px", "100% - 4px" ],
+					"offset": [ 1, 1 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 2
+				}
+			},
+			{
+				"specular_top": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 1, 1, 1 ],
+					"keep_ratio": false,
+					"size": [ "100% - 2px", 1 ],
+					"offset": [ 1, 1 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 3,
+					"alpha": 0.8
+				}
+			},
+			{
+				"specular_left": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 1, 1, 1 ],
+					"keep_ratio": false,
+					"size": [ 1, "100% - 5px" ],
+					"offset": [ 1, 2 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 3,
+					"alpha": 0.8
+				}
+			},
+			{
+				"specular_bottom": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 1, 1, 1 ],
+					"keep_ratio": false,
+					"size": [ "100% - 2px", 1 ],
+					"offset": [ 1, "100% - 4px" ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 4,
+					"alpha": 0.6
+				}
+			},
+			{
+				"specular_right": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 1, 1, 1 ],
+					"keep_ratio": false,
+					"size": [ 1, "100% - 5px" ],
+					"offset": [ "100% - 2px", 1 ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 4,
+					"alpha": 0.6
+				}
+			},
+			{
+				"shadow": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 0.3451, 0.3451, 0.3529 ],
+					"keep_ratio": false,
+					"size": [ "100% - 2px", 2 ],
+					"offset": [ 1, "100% - 3px" ],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": 2
+				}
+			}
+		]
+	},
+	"canopy_timeline_slider_track": {
+		"type": "image",
+		"texture": "textures/ui/timeline_cell",
+		"color": [ 0.549, 0.5529, 0.5647 ],
+		"keep_ratio": false
+	},
+	"canopy_timeline_slider_progress": {
+		"type": "image",
+		"texture": "textures/ui/timeline_slider_progress",
+		"keep_ratio": false
+	},
+	"canopy_timeline_slider_bar@common.slider_bar_default": {
+		"texture": "textures/ui/timeline_cell",
+		"color": [ 0.1176, 0.1176, 0.1216 ],
+		"keep_ratio": false,
+		"size": [ "100%", 6 ],
+		"anchor_from": "left_middle",
+		"anchor_to": "left_middle",
+		"$background_control": "server_form.canopy_timeline_slider_track",
+		"$progress_control": "server_form.canopy_timeline_slider_progress",
+		"$background_control_name": "slider_background",
+		"$progress_control_name": "slider_progress"
+	},
+	"canopy_timeline_slider_bar_hover@common.slider_bar_default": {
+		"texture": "textures/ui/timeline_cell",
+		"color": [ 0.1176, 0.1176, 0.1216 ],
+		"keep_ratio": false,
+		"size": [ "100%", 6 ],
+		"anchor_from": "left_middle",
+		"anchor_to": "left_middle",
+		"$background_control": "server_form.canopy_timeline_slider_track",
+		"$progress_control": "server_form.canopy_timeline_slider_progress",
+		"$background_control_name": "slider_background_hover",
+		"$progress_control_name": "slider_progress_hover"
+	},
+	"canopy_timeline_slider@common.slider": {
+		"size": [ "100%", 16 ],
+		"anchor_from": "top_left",
+		"anchor_to": "top_left",
+		"$slider_box_layout": "server_form.canopy_timeline_slider_thumb",
+		"$slider_box_hover_layout": "server_form.canopy_timeline_slider_thumb_hover",
+		"$slider_box_locked_layout": "server_form.canopy_timeline_slider_thumb",
+		"$slider_box_indent_layout": "server_form.canopy_timeline_slider_thumb_hover",
+		"$slider_box_size": [ 16, 16 ],
+		"$slider_name": "custom_slider",
+		"$slider_value_binding_name": "#custom_slider_value",
+		"$slider_tts_text_value": "#custom_slider_text_value",
+		"$slider_binding_type": "collection",
+		"$slider_collection_name": "custom_form",
+		"$slider_enabled_binding_name": "#custom_slider_enabled",
+		"$slider_enabled_binding_type": "collection",
+		"$slider_timeout_binding_type": "collection",
+		"$slider_timeout_binding_name": "#custom_slider_timeout",
+		"controls": [
+			{
+				"slider_box@common.slider_box": {
+					"$slider_box_layout": "$slider_box_layout",
+					"$slider_box_size": "$slider_box_size",
+					"$slider_track_button": "$slider_name"
+				}
+			},
+			{
+				"slider_bar_default@server_form.canopy_timeline_slider_bar": {}
+			},
+			{
+				"slider_bar_hover@server_form.canopy_timeline_slider_bar_hover": {
+					"visible": false
+				}
+			}
+		]
+	},
+	"canopy_timeline_track_label": {
+		"type": "panel",
+		"size": [ 56, 9 ],
+		"controls": [
+			{
+				"text": {
+					"type": "label",
+					"text": "$track_label",
+					"color": [ 1, 1, 1 ],
+					"shadow": false,
+					"font_scale_factor": 0.8,
+					"size": [ "100%", "default" ],
+					"offset": [ 0, 0.8 ],
+					"anchor_from": "left_middle",
+					"anchor_to": "left_middle"
+				}
+			}
+		]
+	},
+	"canopy_timeline_track_labels": {
+		"type": "stack_panel",
+		"orientation": "vertical",
+		"size": [ 56, 117 ],
+		"offset": [ 0, 9 ],
+		"anchor_from": "top_left",
+		"anchor_to": "top_left",
+		"controls": [
+			{
+				"attack@server_form.canopy_timeline_track_label": {
+					"$track_label": "simplayer.action.attack"
+				}
+			},
+			{
+				"interact@server_form.canopy_timeline_track_label": {
+					"$track_label": "simplayer.action.interact"
+				}
+			},
+			{
+				"use@server_form.canopy_timeline_track_label": {
+					"$track_label": "simplayer.timeline.track.use"
+				}
+			},
+			{
+				"usehold@server_form.canopy_timeline_track_label": {
+					"$track_label": "simplayer.timeline.track.usehold"
+				}
+			},
+			{
+				"build@server_form.canopy_timeline_track_label": {
+					"$track_label": "simplayer.action.build"
+				}
+			},
+			{
+				"break@server_form.canopy_timeline_track_label": {
+					"$track_label": "simplayer.action.break"
+				}
+			},
+			{
+				"drop@server_form.canopy_timeline_track_label": {
+					"$track_label": "simplayer.action.drop"
+				}
+			},
+			{
+				"dropstack@server_form.canopy_timeline_track_label": {
+					"$track_label": "simplayer.action.dropstack"
+				}
+			},
+			{
+				"dropall@server_form.canopy_timeline_track_label": {
+					"$track_label": "simplayer.action.dropall"
+				}
+			},
+			{
+				"jump@server_form.canopy_timeline_track_label": {
+					"$track_label": "simplayer.action.jump"
+				}
+			},
+			{
+				"sneak@server_form.canopy_timeline_track_label": {
+					"$track_label": "simplayer.timeline.track.sneak"
+				}
+			},
+			{
+				"sprint@server_form.canopy_timeline_track_label": {
+					"$track_label": "simplayer.timeline.track.sprint"
+				}
+			},
+			{
+				"glide@server_form.canopy_timeline_track_label": {
+					"$track_label": "simplayer.timeline.track.glide"
+				}
+			}
+		]
+	},
+	"canopy_timeline_grid": {
+		"type": "grid",
+		"size": [ 200, 117 ],
+		"offset": [ 58, 9 ],
+		"anchor_from": "top_left",
+		"anchor_to": "top_left",
+		"grid_dimensions": [ 20, 13 ],
+		"grid_item_template": "server_form.canopy_timeline_grid_item",
+		"collection_name": "custom_form"
+	},
+	"canopy_timeline_grid_item": {
+		"type": "panel",
+		"size": [ 10, 9 ],
+		"bindings": [
+			{
+				"binding_type": "collection_details",
+				"binding_collection_name": "custom_form"
+			},
+			{
+				"binding_type": "view",
+				"source_property_name": "(#collection_index < 260)",
+				"target_property_name": "#visible"
+			}
+		],
+		"controls": [
+			{
+				"off_background": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 0.4471, 0.451, 0.4627 ],
+					"keep_ratio": false,
+					"size": [ 9, 7 ],
+					"offset": [ 0, 0 ],
+					"anchor_from": "center",
+					"anchor_to": "center",
+					"layer": 1
+				}
+			},
+			{
+				"fifth_column_background": {
+					"type": "image",
+					"texture": "textures/ui/timeline_cell",
+					"color": [ 0.549, 0.5529, 0.5647 ],
+					"keep_ratio": false,
+					"size": [ 9, 7 ],
+					"offset": [ 0, 0 ],
+					"anchor_from": "center",
+					"anchor_to": "center",
+					"layer": 2,
+					"bindings": [
+						{
+							"binding_type": "collection_details",
+							"binding_collection_name": "custom_form"
+						},
+						{
+							"binding_type": "view",
+							"source_property_name": "((#collection_index = 4) or (#collection_index = 9) or (#collection_index = 14) or (#collection_index = 19) or (#collection_index = 24) or (#collection_index = 29) or (#collection_index = 34) or (#collection_index = 39) or (#collection_index = 44) or (#collection_index = 49) or (#collection_index = 54) or (#collection_index = 59) or (#collection_index = 64) or (#collection_index = 69) or (#collection_index = 74) or (#collection_index = 79) or (#collection_index = 84) or (#collection_index = 89) or (#collection_index = 94) or (#collection_index = 99) or (#collection_index = 104) or (#collection_index = 109) or (#collection_index = 114) or (#collection_index = 119) or (#collection_index = 124) or (#collection_index = 129) or (#collection_index = 134) or (#collection_index = 139) or (#collection_index = 144) or (#collection_index = 149) or (#collection_index = 154) or (#collection_index = 159) or (#collection_index = 164) or (#collection_index = 169) or (#collection_index = 174) or (#collection_index = 179) or (#collection_index = 184) or (#collection_index = 189) or (#collection_index = 194) or (#collection_index = 199) or (#collection_index = 204) or (#collection_index = 209) or (#collection_index = 214) or (#collection_index = 219) or (#collection_index = 224) or (#collection_index = 229) or (#collection_index = 234) or (#collection_index = 239) or (#collection_index = 244) or (#collection_index = 249) or (#collection_index = 254) or (#collection_index = 259))",
+							"target_property_name": "#visible"
+						}
+					]
+				}
+			},
+			{
+				"cell@server_form.canopy_timeline_cell": {
+					"layer": 3
+				}
 			},
 			{
 				"fifth_column_highlight": {
 					"type": "image",
 					"texture": "textures/ui/timeline_cell",
-					"color": [
-						1.0,
-						1.0,
-						1.0
-					],
+					"color": [ 1, 1, 1 ],
 					"alpha": 0.1,
-					"size": [
-						9,
-						7
-					],
+					"keep_ratio": false,
+					"size": [ 9, 7 ],
 					"layer": 4,
 					"bindings": [
 						{
@@ -205,7 +1665,7 @@
 						},
 						{
 							"binding_type": "view",
-							"source_property_name": "((#collection_index = 0) or (#collection_index = 5) or (#collection_index = 10) or (#collection_index = 15) or (#collection_index = 20) or (#collection_index = 25) or (#collection_index = 30) or (#collection_index = 35) or (#collection_index = 40) or (#collection_index = 45) or (#collection_index = 50) or (#collection_index = 55) or (#collection_index = 60) or (#collection_index = 65) or (#collection_index = 70) or (#collection_index = 75) or (#collection_index = 80) or (#collection_index = 85) or (#collection_index = 90) or (#collection_index = 95) or (#collection_index = 100) or (#collection_index = 105) or (#collection_index = 110) or (#collection_index = 115) or (#collection_index = 120) or (#collection_index = 125) or (#collection_index = 130) or (#collection_index = 135) or (#collection_index = 140) or (#collection_index = 145) or (#collection_index = 150) or (#collection_index = 155) or (#collection_index = 160) or (#collection_index = 165) or (#collection_index = 170) or (#collection_index = 175) or (#collection_index = 180) or (#collection_index = 185) or (#collection_index = 190) or (#collection_index = 195))",
+							"source_property_name": "((#collection_index = 4) or (#collection_index = 9) or (#collection_index = 14) or (#collection_index = 19) or (#collection_index = 24) or (#collection_index = 29) or (#collection_index = 34) or (#collection_index = 39) or (#collection_index = 44) or (#collection_index = 49) or (#collection_index = 54) or (#collection_index = 59) or (#collection_index = 64) or (#collection_index = 69) or (#collection_index = 74) or (#collection_index = 79) or (#collection_index = 84) or (#collection_index = 89) or (#collection_index = 94) or (#collection_index = 99) or (#collection_index = 104) or (#collection_index = 109) or (#collection_index = 114) or (#collection_index = 119) or (#collection_index = 124) or (#collection_index = 129) or (#collection_index = 134) or (#collection_index = 139) or (#collection_index = 144) or (#collection_index = 149) or (#collection_index = 154) or (#collection_index = 159) or (#collection_index = 164) or (#collection_index = 169) or (#collection_index = 174) or (#collection_index = 179) or (#collection_index = 184) or (#collection_index = 189) or (#collection_index = 194) or (#collection_index = 199) or (#collection_index = 204) or (#collection_index = 209) or (#collection_index = 214) or (#collection_index = 219) or (#collection_index = 224) or (#collection_index = 229) or (#collection_index = 234) or (#collection_index = 239) or (#collection_index = 244) or (#collection_index = 249) or (#collection_index = 254) or (#collection_index = 259))",
 							"target_property_name": "#visible"
 						}
 					]
@@ -215,16 +1675,10 @@
 				"disabled_overlay": {
 					"type": "image",
 					"texture": "textures/ui/timeline_cell",
-					"color": [
-						0.05,
-						0.05,
-						0.05
-					],
-					"alpha": 0.8,
-					"size": [
-						9,
-						7
-					],
+					"color": [ 0.2824, 0.2863, 0.2902 ],
+					"alpha": 0.85,
+					"keep_ratio": false,
+					"size": [ 9, 7 ],
 					"layer": 5,
 					"bindings": [
 						{
@@ -245,16 +1699,11 @@
 					"type": "label",
 					"text": "#custom_text",
 					"localize": false,
-					"font_scale_factor": 0.5,
-					"color": "$body_text_color",
-					"size": [
-						"default",
-						"default"
-					],
-					"offset": [
-						0,
-						-1
-					],
+					"font_scale_factor": 0.7,
+					"color": [ 0.8157, 0.8196, 0.8314 ],
+					"shadow": false,
+					"size": [ "default", "default" ],
+					"offset": [ 0, -1 ],
 					"anchor_from": "top_middle",
 					"anchor_to": "bottom_middle",
 					"layer": 4,
@@ -270,7 +1719,7 @@
 						},
 						{
 							"binding_type": "view",
-							"source_property_name": "(((#collection_index = 0) or (#collection_index = 5) or (#collection_index = 10) or (#collection_index = 15)) and (not (#custom_text = '-')))",
+							"source_property_name": "(((#collection_index = 4) or (#collection_index = 9) or (#collection_index = 14) or (#collection_index = 19)) and (not (#custom_text = '-')))",
 							"target_property_name": "#visible"
 						}
 					]
@@ -278,54 +1727,28 @@
 			}
 		]
 	},
-
 	"canopy_timeline_cell_visual": {
 		"type": "image",
 		"texture": "textures/ui/timeline_cell",
-		"size": [
-			9,
-			7
-		],
-		"color": "$cell_color"
+		"color": "$cell_color",
+		"keep_ratio": false,
+		"size": [ 9, 7 ]
 	},
-
-	"canopy_timeline_cell_off@server_form.canopy_timeline_cell_visual": {
-		"$cell_color": [
-			0.22,
-			0.22,
-			0.22
-		]
+	"canopy_timeline_cell_off": {
+		"type": "panel",
+		"size": [ 9, 7 ]
 	},
-
 	"canopy_timeline_cell_off_hover@server_form.canopy_timeline_cell_visual": {
-		"$cell_color": [
-			0.45,
-			0.45,
-			0.45
-		]
+		"$cell_color": [ 0.6941, 0.698, 0.7098 ]
 	},
-
 	"canopy_timeline_cell_on@server_form.canopy_timeline_cell_visual": {
-		"$cell_color": [
-			0.33,
-			0.8,
-			0.33
-		]
+		"$cell_color": [ 0.2353, 0.5216, 0.1529 ]
 	},
-
 	"canopy_timeline_cell_on_hover@server_form.canopy_timeline_cell_visual": {
-		"$cell_color": [
-			0.55,
-			0.95,
-			0.55
-		]
+		"$cell_color": [ 0.1647, 0.3922, 0.1098 ]
 	},
-
 	"canopy_timeline_cell@common.toggle": {
-		"size": [
-			10,
-			9
-		],
+		"size": [ 10, 9 ],
 		"$toggle_name": "custom_toggle",
 		"$toggle_state_binding_name": "#custom_toggle_state",
 		"$toggle_binding_type": "collection",
@@ -341,38 +1764,8 @@
 		"$unchecked_locked_hover_control": "server_form.canopy_timeline_cell_off",
 		"$checked_locked_hover_control": "server_form.canopy_timeline_cell_on"
 	},
-
 	"canopy_timeline_hidden_item": {
 		"type": "panel",
 		"size": [ 0, 0 ]
-	},
-
-	"canopy_timeline_settings": {
-		"type": "stack_panel",
-		"size": [ "100%", "100%c" ],
-		"orientation": "vertical",
-		"anchor_from": "top_left",
-		"anchor_to": "top_left",
-		"factory": {
-			"name": "buttons",
-			"control_ids": {
-				"label": "@server_form.canopy_timeline_hidden_item",
-				"toggle": "@server_form.canopy_timeline_hidden_item",
-				"slider": "@server_form.canopy_timeline_hidden_item",
-				"step_slider": "@server_form.canopy_timeline_hidden_item",
-				"dropdown": "@server_form.custom_dropdown",
-				"input": "@server_form.custom_input",
-				"header": "@server_form.canopy_timeline_hidden_item",
-				"divider": "@server_form.canopy_timeline_hidden_item",
-				"multiselect": "@server_form.canopy_timeline_hidden_item"
-			}
-		},
-		"collection_name": "custom_form",
-		"bindings": [
-			{
-				"binding_name": "#custom_form_length",
-				"binding_name_override": "#collection_length"
-			}
-		]
 	}
 }
