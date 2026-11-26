@@ -100,6 +100,11 @@ export class Timeline {
         return this.#tracks.every(track => track.isEmpty());
     }
 
+    replace(loopLength, specs) {
+        this.#loopLength = loopLength;
+        this.#tracks = specs.map(({ type, params, length, ticks }) => new Track({ type, params, key: trackKey(type, params), length, ticks }));
+    }
+
     reset() {
         this.#tracks = [];
         this.#loopLength = Timeline.DEFAULT_LOOP_LENGTH;

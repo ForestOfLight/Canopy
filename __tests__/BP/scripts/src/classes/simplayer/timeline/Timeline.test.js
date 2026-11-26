@@ -212,4 +212,21 @@ describe('Timeline', () => {
         expect(timeline.tracks).toEqual([]);
         expect(timeline.loopLength).toBe(20);
     });
+    describe('replace', () => {
+        it('replaces every track and the loop length', () => {
+            timeline.getOrCreate('attack');
+            timeline.addOneShot('jump', void 0, { delay: 5 });
+            timeline.replace(40, [
+                { type: 'select', params: { slot: 2 }, length: null, ticks: [5] },
+                { type: 'jump', params: void 0, length: 8, ticks: [0, 7] }
+            ]);
+            expect(timeline.loopLength).toBe(40);
+            expect(timeline.tracks.map(track => track.key)).toEqual(['select:2', 'jump']);
+            const jump = timeline.getTrack('jump');
+            expect(jump.length).toBe(8);
+            expect(jump.activeOffsets()).toEqual([0, 7]);
+            expect(timeline.getTrack('select:2').length).toBe(Track.SHARED);
+            expect(timeline.tracks.every(track => track.originTick === 0 && track.loops)).toBe(true);
+        });
+    });
 });
